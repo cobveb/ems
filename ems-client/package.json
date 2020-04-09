@@ -1,0 +1,48 @@
+{
+  "name": "ems-client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.4.3",
+    "@material-ui/icons": "^4.4.3",
+    "axios": "^0.19.0",
+    "classnames": "^2.2.6",
+    "http-proxy-middleware": "^0.20.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-redux": "^7.1.1",
+    "react-router-dom": "^5.1.0",
+    "react-scripts": "^3.1.2",
+    "react-text-mask": "^5.4.3",
+    "redux": "^4.0.4",
+    "redux-form": "^8.2.6",
+    "redux-form-material-ui": "^4.3.4",
+    "redux-thunk": "^2.3.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "proxy": "http://localhost:8080",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "axios-mock-adapter": "^1.17.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.1",
+    "jest": "^24.9.0",
+    "jest-cli": "^24.9.0",
+    "jest-dom": "^4.0.0",
+    "react-testing-library": "^8.0.1",
+    "redux-mock-store": "^1.5.4"
+  }
+}

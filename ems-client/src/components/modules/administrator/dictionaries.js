@@ -1,0 +1,140 @@
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
+import ModalDialog from 'common/modalDialog';
+import Spinner from 'common/spinner';
+import * as constants from 'constants/uiNames';
+import { SearchField, Button, Table } from 'common/gui';
+import { LibraryBooks } from '@material-ui/icons/';
+import Dictionary from 'components/modules/administrator/dictionary';
+
+const styles = theme => ({
+    root: {
+        flexGrow: 1,
+    },
+    icon: {
+        marginLeft: theme.spacing(1),
+    },
+    tableWrapper: {
+            minHeight: `calc(100vh - ${theme.spacing(37)}px)`,
+    },
+})
+
+class Dictionaries extends Component {
+    state = {
+        headCells: [
+            {
+                id: 'code',
+                numeric: false,
+                label: 'Kod',
+                boolean: false,
+            },
+            {
+                id: 'name',
+                numeric: false,
+                label: 'Nazwa',
+                boolean: false,
+            },
+        ],
+        selected: '',
+        filter: [],
+        openDictionary: false,
+    };
+
+    handleSelect = (id) => {
+        this.setState({selected: id});
+    }
+
+    handleOpen = () => {
+        this.setState({openDictionary: true})
+    }
+
+    handleClose = () => {
+        this.setState({openDictionary: false})
+    }
+
+    handleCloseDialog = () =>{
+        this.props.clearError(null);
+    }
+
+    filter = (event) => {
+        let searchValue ='';
+        let updateList = [];
+        searchValue = event.target.value;
+        let dictionaries = this.props.initialValues;
+
+        updateList = dictionaries.filter((item) => {
+            return item.name.toLowerCase().search(
+                searchValue.toLowerCase()) !== -1 ||
+                item.code.toLowerCase().search(
+                searchValue.toLowerCase()) !== -1;
+        });
+
+        this.setState({
+            filter: updateList,
+        });
+    }
+
+    componentDidUpdate(prevProps){
+        if(this.props.initialValues !== prevProps.initialValues){
+            this.setState({
+                filter: this.props.initialValues,
+            });
+        }
+    }
+
+    render(){
+        const { classes, isLoading, error} = this.props;
+        const { filter, selected, headCells, openDictionary  } = this.state;
+        return(
+            <>
+                <Dictionary dictionary={selected} open={openDictionary} onClose={this.handleClose}/>
+                {isLoading && <Spinner />}
+                {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
+                <div className={classes.root}>
+                    <Grid
+                        container
+                        direction="column"
+                        spacing={0}
+                    >
+                        <Typography variant="h6">{constants.SUBMENU_CONFIGURATIONS_DICTIONARIES}</Typography>
+                        <Divider />
+                        <Grid item xs={12}>
+                            <SearchField
+                                onChange={this.filter}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Table
+                                rows={filter}
+                                headCells={headCells}
+                                onSelect={this.handleSelect}
+                                className={classes.tableWrapper}
+                            />
+                        </Grid>
+                        <Grid
+                            container
+                            direction="row"
+                            justify="center"
+                            alignItems="flex-end"
+                        >
+                            <Button
+                                label={constants.BUTTON_POSITIONS}
+                                icon=<LibraryBooks className={classes.icon}/>
+                                iconAlign="right"
+                                variant="cancel"
+                                disabled={!selected}
+                                onClick={this.handleOpen}
+                            />
+                        </Grid>
+                    </Grid>
+                </div>
+            </>
+        )
+    }
+}
+Dictionaries.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(Dictionaries);

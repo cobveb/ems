@@ -1,0 +1,44 @@
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/.mvn/wrapper/
+/node_modules/
+/mvnw
+/mvnw.cmd
+/ems-client/node/
+/ems-client/coverage/
+/ems-client/node_modules/
+/ems-client/build/
+/src/ems-client/
+/ems.txt
+/ems-client/public/
+/ems-client/src/common/__tests__/__snapshots__/
+/ems-client/src/common/menu/__tests__/__snapshots__/
+/ems-client/src/components/login/__tests__/__snapshots__/
+/ems-client/src/components/logout/__tests__/__snapshots__/
+/ems-client/src/components/modules/administrator/__tests__/__snapshots__/
+/ems-client/src/components/modules/modules/__tests__/__snapshots__/
+/ems-client/src/containers/login/__tests__/__snapshots__/
+/ems-client/src/containers/modules/administrator/__tests__/__snapshots__/

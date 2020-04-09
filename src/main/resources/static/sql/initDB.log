@@ -1,0 +1,168 @@
+(1/3) connecting user emsarch
+Connected.
+(1/3) start execute emsarch schema script
+
+Table EMSARCH.TOKENS dropped.
+
+
+Table EMSARCH.TOKENS created.
+
+
+Grant succeeded.
+
+
+Table EMSARCH.ROLES dropped.
+
+
+Table EMSARCH.ROLES created.
+
+
+Grant succeeded.
+
+
+Table EMSARCH.USERS dropped.
+
+
+Table EMSARCH.USERS created.
+
+
+Grant succeeded.
+
+
+Table EMSARCH.USER_ROLES dropped.
+
+
+Table EMSARCH.USER_ROLES created.
+
+
+Grant succeeded.
+
+
+Table EMSARCH.MODULES dropped.
+
+
+Table EMSARCH.MODULES created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Grant succeeded.
+
+
+Sequence ROLE_SEQ dropped.
+
+
+Sequence ROLE_SEQ created.
+
+
+Grant succeeded.
+
+
+Sequence USER_SEQ dropped.
+
+
+Sequence USER_SEQ created.
+
+
+Grant succeeded.
+
+
+Sequence MODULE_SEQ dropped.
+
+
+Sequence MODULE_SEQ created.
+
+
+Grant succeeded.
+
+(1/3) stop execute emsarch schema script
+(2/3) start inserting data into emsarch schema
+
+1 row inserted.
+
+
+1 row inserted.
+
+
+1 row inserted.
+
+
+1 row inserted.
+
+
+1 row inserted.
+
+
+1 row inserted.
+
+
+1 row inserted.
+
+
+1 row inserted.
+
+
+1 row inserted.
+
+(2/3) stop inserting data into emsarch schema
+
+Disconnected from Oracle Database 11g Release 11.2.0.3.0 - 64bit Production
+With the Automatic Storage Management option
+Connected.
+(3/3) start execute emsadm schema script
+
+Table EMSADM.ORGANIZATION_UNITS dropped.
+
+
+Table EMSADM.ORGANIZATION_UNITS created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Comment created.
+
+
+Disconnected from Oracle Database 11g Release 11.2.0.3.0 - 64bit Production
+With the Automatic Storage Management option
+(3/3) stop execute emsadm schema script
