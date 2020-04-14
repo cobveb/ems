@@ -1,5 +1,5 @@
 import { reduxForm } from 'redux-form';
-import ParameterForm from 'components/modules/administrator/parameterForm';
+import ParameterForm from 'components/modules/administrator/parameters/parameterForm';
 
 
 let ParameterFormContainer = reduxForm({

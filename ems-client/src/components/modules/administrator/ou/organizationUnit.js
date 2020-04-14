@@ -5,9 +5,12 @@ import Spinner from 'common/spinner';
 import ModalDialog from 'common/modalDialog';
 
 const styles = theme => ({
-    icon: {
-        marginRight: theme.spacing(1),
-    }
+    root: {
+        margin: 0,
+        padding: 0,
+        width: '100%',
+        height: `calc(100vh - ${theme.spacing(11)}px)`,
+    },
 });
 
 class OrganizationUnit extends Component {
@@ -21,19 +24,20 @@ class OrganizationUnit extends Component {
     }
 
     render(){
-        const { classes, initialValues, isLoading, error, title, edit } = this.props;
+        const { classes, initialValues, isLoading, error, title, edit, onClose } = this.props;
         return(
             <>
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
                 <Grid container spacing={0} direction="column">
-                    <div className={classes.section}>
+                    <div className={classes.root}>
                         <Typography variant="h6">{title}</Typography>
                         <Divider />
                         <OrganizationUnitFormContainer
                             onSubmit={this.handleSubmit}
                             initialValues={initialValues}
                             edit={edit}
+                            onClose={() => onClose(initialValues)}
                         />
                     </div>
                 </Grid>

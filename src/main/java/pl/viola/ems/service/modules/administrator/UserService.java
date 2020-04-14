@@ -1,6 +1,8 @@
 package pl.viola.ems.service.modules.administrator;
 
+import pl.viola.ems.model.modules.administrator.Group;
 import pl.viola.ems.model.modules.administrator.User;
+import pl.viola.ems.model.security.AcPrivilege;
 import pl.viola.ems.payload.api.UserDetails;
 
 import java.util.List;
@@ -18,7 +20,11 @@ public interface UserService {
 
     List<UserDetails> findAll();
 
-    void saveUser(UserDetails userDetails);
+    UserDetails saveUser(UserDetails userDetails);
+
+    void saveUserPermissions(List<AcPrivilege> privileges, String username, Long acObjectId);
+
+    void saveUserGroups (List<Group> users, String username);
 
     String deleteUserById(Long userId);
 

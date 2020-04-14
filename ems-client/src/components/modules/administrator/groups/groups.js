@@ -9,10 +9,6 @@ import { Delete, Add, Edit } from '@material-ui/icons/';
 import GroupContainer from 'containers/modules/administrator/groupContainer';
 
 const styles = theme => ({
-    root: {
-        width: '100%',
-        marginTop: theme.spacing(3),
-    },
     tableWrapper: {
             minHeight: `calc(100vh - ${theme.spacing(35 )}px)`,
     },
@@ -37,9 +33,7 @@ class Groups extends Component {
         ],
         selected: '',
         codeNameSearch: '',
-        actionDelete: false,
         isDetailsVisible: false,
-        isEdit: false,
         action:'',
     }
 
@@ -67,9 +61,12 @@ class Groups extends Component {
         this.setState(state => ({isDetailsVisible: !state.isDetailsVisible, action: action}));
     }
 
-    handleClose = () =>{
-        this.setState(state => ({isDetailsVisible: !state.isDetailsVisible, selected: ''}));
-        this.props.onCloseGroup();
+    handleClose = (group) => {
+        this.setState(state => ({
+            isDetailsVisible: !state.isDetailsVisible,
+            selected: '',
+            rows: this.props.onClose(group),
+        }));
     }
 
     handleDeleteGroup = (event, action) => {
@@ -77,8 +74,11 @@ class Groups extends Component {
     }
 
     handleConfirmDeleteGroup = () =>{
-        this.setState({ action: '' });
         this.props.onDelete(this.state.selected.code);
+        this.setState({
+            action: '',
+            selected: '',
+        });
     }
 
     handleCancelDeleteGroup = () =>{

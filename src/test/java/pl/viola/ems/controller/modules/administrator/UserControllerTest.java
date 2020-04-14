@@ -114,9 +114,11 @@ public class UserControllerTest {
     );
 
     private List<UserDetails> userDetailsAll = Arrays.asList(userD, fakeUserD);
-    private List<UserDetails> groupUsers = Arrays.asList(fakeUserD, userD);
+    private List<UserDetails> groups = Arrays.asList(fakeUserD, userD);
 
     private List<User> all = Arrays.asList(user, fakeUser);
+
+
 
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
@@ -140,6 +142,7 @@ public class UserControllerTest {
     private AcObject acObject = new AcObject((long)1, (long)1, "Moduł testowy", "MODULE", new HashSet<AcPermission>(), new HashSet<AcPrivilege>());
     private AcPrivilege privilege = new AcPrivilege((long)1, "0001", "Przywilej testowy", new HashSet<AcObject>(),new HashSet<AcPermission>());
     private AcPermissionDetails permissionDetails = new AcPermissionDetails(privilege.getId(), privilege.getCode(), privilege.getName());
+    private AcPermission permission = new AcPermission((long)1, acObject, privilege, user, null);
 
     @BeforeEach
     public void setup() {
@@ -157,7 +160,7 @@ public class UserControllerTest {
         given(userService.findAll()).willReturn(userDetailsAll);
         given(userService.findById((long)1)).willReturn(java.util.Optional.of(fakeUserD));
         given(userService.findByUsername("user")).willReturn(java.util.Optional.of(user));
-        given(userService.findUsersByGroup("test")).willReturn(groupUsers);
+        given(userService.findUsersByGroup("test")).willReturn(groups);
         given(acPermissionService.findByUserAndAcObject("user", (long)1)).willReturn(permissions);
     }
 
@@ -212,7 +215,7 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect((jsonPath("$.status").value("FOUND")))
                 .andExpect((jsonPath("$.data").isArray()))
-                .andExpect(jsonPath("$.data", hasSize(groupUsers.size())))
+                .andExpect(jsonPath("$.data", hasSize(groups.size())))
                 .andExpect((jsonPath("$.data[0].username").value(fakeUserD.getUsername())))
                 .andExpect((jsonPath("$.data[1].username").value(userD.getUsername())));
     }
@@ -247,6 +250,40 @@ public class UserControllerTest {
                 .content(toJson(user)))
                 .andExpect((jsonPath("$.status").value("CREATED")))
                 .andExpect((jsonPath("$.data").value(response.getData())));
+    }
+
+    @WithMockUser
+    @DisplayName("Controller - saveUserGroups")
+    @Test
+    void saveUserGroups() throws Exception {
+
+        Group newGroup = new Group((long)3, "test", "Testowa", new HashSet<AcPermission>(), new HashSet<User>());
+
+
+        List<Group> groups = Arrays.asList(newGroup);
+
+        mvc.perform(put("/api/users/test/saveGroups")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(groups)))
+                .andExpect((jsonPath("$.status").value("CREATED")))
+                .andExpect((jsonPath("$.data").isArray()))
+                .andExpect(jsonPath("$.data", hasSize(groups.size())))
+                .andExpect((jsonPath("$.data[0]").value(groups.get(0))));
+    }
+
+    @WithMockUser
+    @DisplayName("saveUserPermissions")
+    @Test
+    void saveUserPermissions() throws Exception {
+        permission.setAcPrivilege(privilege);
+        List<AcPrivilege> permissions = Arrays.asList(permission.getAcPrivilege());
+        mvc.perform(put("/api/users/test/1/savePermission")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(permissions)))
+                .andExpect((jsonPath("$.status").value("CREATED")))
+                .andExpect((jsonPath("$.data").isArray()))
+                .andExpect(jsonPath("$.data", hasSize(permissions.size())))
+                .andExpect((jsonPath("$.data[0]").value(permissions.get(0))));
     }
 
     @WithMockUser

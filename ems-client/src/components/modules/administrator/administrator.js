@@ -4,7 +4,6 @@ import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import { LocationCity, Person, Business, LibraryBooks, SettingsEthernet, Settings, Security, DeviceHub } from '@material-ui/icons/';
 import GroupIcon from '@material-ui/icons/Group';
 import InstitutionContainer from 'containers/modules/administrator/institutionContainer';
-import OrganizationUnitContainer from 'containers/modules/administrator/organizationUnitContainer';
 import StructureContainer from 'containers/modules/administrator/structureContainer';
 import UsersContainer from 'containers/modules/administrator/usersContainer';
 import UserContainer from 'containers/modules/administrator/userContainer';
@@ -116,9 +115,7 @@ class Administrator extends Component {
                                     <PrivateRoute exact path='/modules/administrator/' component={UsersContainer}/>
                                     <PrivateRoute path='/modules/administrator/institution' component={InstitutionContainer}/>
                                     <PrivateRoute exact path='/modules/administrator/structure' component={StructureContainer}/>
-                                    <PrivateRoute path='/modules/administrator/structure/:action/:ou?' component={OrganizationUnitContainer}/>
-                                    <PrivateRoute exact path='/modules/administrator/users' component={UsersContainer}/>
-                                    <PrivateRoute path='/modules/administrator/users/:action/:userId?' component={UserContainer}/>
+                                    <PrivateRoute path='/modules/administrator/users' component={UserContainer}/>
                                     <PrivateRoute path='/modules/administrator/groups' component={GroupsContainer}/>
                                     <PrivateRoute path='/modules/administrator/parameters' component={ParametersContainer}/>
                                     <PrivateRoute path='/modules/administrator/dictionaries' component={DictionariesContainer}/>

@@ -9,13 +9,16 @@ import pl.viola.ems.model.modules.administrator.Group;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.administrator.repository.OrganizationUnitRepository;
 import pl.viola.ems.model.modules.administrator.repository.UserRepository;
+import pl.viola.ems.model.security.AcPrivilege;
 import pl.viola.ems.payload.api.UserDetails;
 import pl.viola.ems.service.modules.administrator.GroupService;
 import pl.viola.ems.service.modules.administrator.UserService;
+import pl.viola.ems.service.security.AcPermissionService;
 import pl.viola.ems.service.security.PasswordService;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -34,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordService passwordService;
+
+    @Autowired
+    private AcPermissionService acPermissionService;
 
     private static final ResourceBundle bundle = ResourceBundle.getBundle("messages");
 
@@ -102,7 +108,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void saveUser(UserDetails userDetails) {
+    public UserDetails saveUser(UserDetails userDetails) {
 
         //If exist user id update user data
         if(userDetails.getId() != null){
@@ -137,7 +143,8 @@ public class UserServiceImpl implements UserService {
                                 userDetails.getIsCredentialsExpired(),
                                 organizationUnitRepository.findByCode(userDetails.getUnit()).orElseThrow(() -> new AppException("Administrator.user.organizationUnit.notFound", HttpStatus.BAD_REQUEST))
                         );
-                        userRepository.save(user);
+                        user.setId(userRepository.saveAndFlush(user).getId());
+                        userDetails.setId(user.getId());
                     }
                 } else {
                     throw new AppException("Administrator.user.passwordNotSet", HttpStatus.BAD_REQUEST);
@@ -146,6 +153,25 @@ public class UserServiceImpl implements UserService {
                 throw new AppException("Administrator.user.usernameExist", HttpStatus.BAD_REQUEST);
             }
         }
+        return userDetails;
+    }
+
+    @Override
+    @Transactional
+    public void saveUserPermissions(List<AcPrivilege> privileges, String username, Long acObjectId) {
+        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException("Administrator.user.notFound", HttpStatus.NOT_FOUND)));
+        acPermissionService.saveObjectPermission(privileges, user.get(), acObjectId);
+    }
+
+    @Override
+    @Transactional
+    public void saveUserGroups(List<Group> groups, String username) {
+        Set<Group> userGroups = groups.stream().collect(Collectors.toSet());
+        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException("Administrator.user.notFound", HttpStatus.BAD_REQUEST)));
+        user.get().setGroups(userGroups);
+        userRepository.save(user.get());
     }
 
     @Override

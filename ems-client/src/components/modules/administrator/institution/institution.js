@@ -6,14 +6,14 @@ import Spinner from 'common/spinner';
 import ModalDialog from 'common/modalDialog';
 
 const styles = theme => ({
+    root: {
+        margin: 0,
+        padding: 0,
+        width: '100%',
+        height: `calc(100vh - ${theme.spacing(11)}px)`,
+    },
     textField: {
         marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
-    section: {
-        marginBottom: theme.spacing(1),
-    },
-    subheaderIcon: {
         marginRight: theme.spacing(1),
     },
     required: {
@@ -61,7 +61,7 @@ class Institution extends Component {
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
                 <Grid container spacing={0} direction="column">
-                    <div className={classes.section}>
+                    <div className={classes.root}>
                         <Typography variant="h6">{constants.SUBMENU_INSTITUTION_DETAIL}</Typography>
                         <Divider />
                         <InstitutionFormContainer onSubmit={this.handleSubmit} initialValues={initialValues}/>

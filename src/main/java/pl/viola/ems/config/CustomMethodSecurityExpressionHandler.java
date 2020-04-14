@@ -1,4 +1,4 @@
-package pl.viola.ems.security;
+package pl.viola.ems.config;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;

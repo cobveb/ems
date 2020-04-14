@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
-import OrganizationUnit from 'components/modules/administrator/organizationUnit';
+import OrganizationUnit from 'components/modules/administrator/ou/organizationUnit';
 import AdministratorApi from 'api/modules/administrator/administratorApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
-import { Redirect } from 'react-router'
 import * as constants from 'constants/uiNames';
 
 class OrganizationUnitContainer extends Component {
@@ -15,53 +14,34 @@ class OrganizationUnitContainer extends Component {
             coordinator: false,
         },
         isEdit: false,
-        redirect: false,
-        action: this.props.match.params.action
     }
 
     handelSubmitSucceeded = (data) => {
-        if(this.state.action === "addOu"){
-            data.parent = this.props.match.params.ou
+        if(this.props.action === "add"){
+            data.parent = this.props.initialValues.parent;
         }
         AdministratorApi.saveOu(data)
         .then(response => {
             this.setState({
-                data: response.data.data,
-                redirect: true,
+                initData: response.data.data,
             });
             this.props.loading(false)
         })
         .catch(error => {});
     };
 
-    handleInitialValues(){
-        this.props.loading(true);
-        AdministratorApi.getOu(this.props.match.params.ou)
-        .then(response => {
-            this.setState({
-                initData: response.data.data,
-            })
-            this.props.loading(false)
-        })
-        .catch(error => {});
-    }
-
     componentDidMount() {
-        if(this.state.action === "editOu"){
+        if(this.props.action === "edit"){
             this.setState({
                 isEdit: true,
+                initData: this.props.initialValues,
             });
-            this.handleInitialValues();
         }
     }
 
     render(){
-        const {isLoading, error, clearError} = this.props;
-        const {isEdit, redirect, initData} = this.state;
-
-        if (redirect === true) {
-            return <Redirect to="/modules/administrator/structure" />
-        }
+        const {isLoading, initialValues, action, error, clearError, handleClose} = this.props;
+        const {isEdit, initData} = this.state;
 
         return(
             <OrganizationUnit
@@ -69,9 +49,10 @@ class OrganizationUnitContainer extends Component {
                 isLoading={isLoading}
                 error={error}
                 submitSucceeded={this.handelSubmitSucceeded}
-                title={isEdit ? constants.ORGANIZATION_UNIT_TITLE_EDIT + " " + this.props.match.params.ou : constants.ORGANIZATION_UNIT_TITLE_ADD}
+                title={action === "edit" ? constants.ORGANIZATION_UNIT_TITLE_EDIT + " " + initialValues.code : constants.ORGANIZATION_UNIT_TITLE_ADD}
                 edit={isEdit}
                 clearError={clearError}
+                onClose={handleClose}
             />
         )
     }

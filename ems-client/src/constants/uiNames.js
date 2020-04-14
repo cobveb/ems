@@ -64,10 +64,12 @@ export const USER_TABLE_HEAD_ROW_ACTIVE = 'Aktywny';
 export const USER_TABLE_HEAD_ROW_LOCKED = 'Zablokowany';
 export const USER_CONFIRM_DELETE_MESSAGE = 'Użytkownik zostanie usunięty. Czy kontynuować?';
 /* components/modules/administrator/user.js */
-export const USER_TITLE_ADD = 'Nowy użytkownik';
-export const USER_TITLE_EDIT = 'Edycja użytkownika - ';
-/* components/modules/administrator/userForm.js */
+export const USER_TITLE_ADD = 'Użytkownik - Nowy użytkownik';
+export const USER_TITLE_EDIT = 'Użytkownik - ';
 export const USER_BASIC_INFORMATION = 'Dane podstawowe';
+export const USER_PERMISSIONS = 'Uprawnienia';
+export const USER_GROUPS = 'Grupy';
+/* components/modules/administrator/userForm.js */
 export const USER_BASIC_INFORMATION_NAME = 'Imię';
 export const USER_BASIC_INFORMATION_SURNAME = 'Nazwisko';
 export const USER_BASIC_INFORMATION_OU = 'Jednostka organizacyjna';
@@ -79,6 +81,11 @@ export const USER_ACCOUNT_USERNAME = 'Nazwa użytkownika';
 export const USER_PASSWORD = 'Hasło';
 export const USER_PASSWORD_CHANGE = 'Hasło wymaga zmiany:';
 export const USER_PASSWORD_NEW = 'Nowe hasło';
+/* components/modules/administrator/userGroupsForm.js */
+export const USER_GROUPS_ALL_GROUPS = 'Wszystkie grupy:';
+export const USER_GROUPS_ALL_USER_GROUPS = 'Przypisane grupy:';
+export const USER_GROUPS_TABLE_HEAD_ROW_CODE = 'Kod';
+export const USER_GROUPS_TABLE_HEAD_ROW_NAME = 'Nazwa';
 /* components/modules/administrator/groups.js */
 export const GROUPS_TABLE_HEAD_ROW_CODE = 'Kod';
 export const GROUPS_TABLE_HEAD_ROW_NAME = 'Nazwa';
@@ -89,9 +96,11 @@ export const GROUP_BASIC_INFORMATION = 'Dane podstawowe';
 export const GROUP_BASIC_INFORMATION_CODE = 'Kod';
 export const GROUP_BASIC_INFORMATION_NAME = 'Nazwa';
 export const GROUP_USERS = 'Użytkownicy';
+export const GROUP_PERMISSIONS = 'Uprawnienia';
+/* components/modules/administrator/GroupUsersForm.js */
 export const GROUP_USERS_ALL_USERS = 'Wszyscy użytkownicy:';
 export const GROUP_USERS_USERS_IN_GROUP = 'Przypisani użytkownicy:';
-export const GROUP_PERMISSIONS = 'Uprawnienia';
+/* components/modules/administrator/AcPermissionsForm.js */
 export const GROUP_PERMISSIONS_SEARCH_AC_OBJECTS_NAME = 'Nazwa';
 export const GROUP_PERMISSIONS_SEARCH_PRIVILEGES_CODE_NAME = 'Kod / Nazwa';
 export const GROUP_PERMISSIONS_TABLE_PRIVILEGES_LABEL = 'Lista uprawnień:';

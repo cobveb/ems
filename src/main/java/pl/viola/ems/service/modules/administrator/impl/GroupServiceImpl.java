@@ -48,14 +48,19 @@ public class GroupServiceImpl implements GroupService {
 
         User user = userService.findByUsername(username)
                 .orElseThrow(() ->  new AppException("Administrator.user.notFound", HttpStatus.BAD_REQUEST));
-
         return groupRepository.findByUsers(user);
     }
 
     @Override
     @Transactional
     public void saveGroup(Group group) {
-        groupRepository.save(group);
+        if(!groupRepository.existsByCode(group.getCode())){ //create new group
+            groupRepository.save(group);
+        } else if(group.getId() != null){ // edit group
+            groupRepository.save(group);
+        } else {
+            throw new AppException("Administrator.group.groupCodeExist", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

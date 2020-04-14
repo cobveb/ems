@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import Users from 'components/modules/administrator/users';
+import Users from 'components/modules/administrator/users/users';
 import AdministratorApi from 'api/modules/administrator/administratorApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
-
+import {updateOnCloseDetails} from 'utils'
 class UsersContainer extends Component {
     state = {
         initData: [],
@@ -36,6 +36,11 @@ class UsersContainer extends Component {
         .catch(error => {});
     }
 
+    handleUpdateOnCloseUser = (user) => {
+        let users = this.state.initData;
+        return updateOnCloseDetails(users, user);
+    }
+
     componentDidMount() {
         this.handleAll();
     }
@@ -50,6 +55,7 @@ class UsersContainer extends Component {
                 error = {error}
                 clearError = {clearError}
                 onDelete={this.handleDelete.bind(this)}
+                onClose={this.handleUpdateOnCloseUser.bind(this)}
                 loading={loading}
             />
         )

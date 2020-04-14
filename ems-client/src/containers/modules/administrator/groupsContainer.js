@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import Groups from 'components/modules/administrator/groups';
+import Groups from 'components/modules/administrator/groups/groups';
 import GroupsApi from 'api/modules/administrator/groupsApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
+import {updateOnCloseDetails} from 'utils';
 
 class GroupsContainer extends Component {
     state = {
@@ -29,8 +30,10 @@ class GroupsContainer extends Component {
         .catch(error => {});
     }
 
-    handleUpdateOnCloseGroup(){
-        this.handleAll();
+    handleUpdateOnCloseGroup(group){
+        console.log(group)
+        let groups = this.state.initData[0].basic;
+        return updateOnCloseDetails(groups, group);
     }
 
     handleDelete(code){
@@ -61,7 +64,7 @@ class GroupsContainer extends Component {
                 error = {error}
                 clearError = {clearError}
                 onDelete={this.handleDelete.bind(this)}
-                onCloseGroup={this.handleUpdateOnCloseGroup.bind(this)}
+                onClose={this.handleUpdateOnCloseGroup.bind(this)}
             />
         )
     }

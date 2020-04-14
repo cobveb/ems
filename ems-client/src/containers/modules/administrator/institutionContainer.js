@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
-import Institution from 'components/modules/administrator/institution';
+import Institution from 'components/modules/administrator/institution/institution';
 import AdministratorApi from 'api/modules/administrator/administratorApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';

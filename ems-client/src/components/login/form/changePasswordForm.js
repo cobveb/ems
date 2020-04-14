@@ -30,7 +30,7 @@ const styles = theme => ({
 
 class ChangePasswordForm extends Component {
 
-    componentWillMount(){
+    componentDidMount(){
         this.props.changeTitle(`${this.props.initialValues.username} - ${constants.PASSWORD_NEEDS_CHANGE}`);
     }
 

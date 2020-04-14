@@ -16,12 +16,16 @@ import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.administrator.repository.OrganizationUnitRepository;
 import pl.viola.ems.model.modules.administrator.repository.UserRepository;
+import pl.viola.ems.model.security.AcObject;
 import pl.viola.ems.model.security.AcPermission;
+import pl.viola.ems.model.security.AcPrivilege;
 import pl.viola.ems.payload.api.UserDetails;
 import pl.viola.ems.service.modules.administrator.GroupService;
 import pl.viola.ems.service.modules.administrator.UserService;
+import pl.viola.ems.service.security.AcPermissionService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,14 +59,16 @@ public class UserServiceImplTest {
     @MockBean
     private GroupService groupService;
 
-   private Group test = new Group((long)3, "test", "Testowa",  new HashSet<AcPermission>(), new HashSet<User>());
+    @MockBean
+    private AcPermissionService acPermissionService;
 
-
+    private Group test = new Group((long)3, "test", "Testowa",  new HashSet<AcPermission>(), new HashSet<User>());
+    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
     private Throwable thrown;
 
     @BeforeEach
     void Setup(){
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+
 
         User user = new User(
                 (long)0,
@@ -102,6 +108,7 @@ public class UserServiceImplTest {
         Mockito.when(userRepository.findById((long)0)).thenReturn(Optional.of(user));
         Mockito.when(userRepository.findByUsernameIn(usersName)).thenReturn(Arrays.asList(repo.get(0)));
         Mockito.when(userRepository.findAll()).thenReturn(repo);
+        Mockito.when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
         Mockito.when(userRepository.findByGroups(test)).thenReturn(repo);
         Mockito.when(groupService.findGroupByCode("test")).thenReturn(Optional.ofNullable(test));
         Mockito.when(organizationUnitRepository.findByCode("uck")).thenReturn(Optional.of(ou));
@@ -241,6 +248,23 @@ public class UserServiceImplTest {
                 "uck"
         );
 
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+
+        User userTest = new User(
+                (long)0,
+                "UserAdmin",
+                "Passwd123!T!",
+                new Date(),
+                "Admin",
+                "Admin",
+                true,
+                false,
+                false,
+                false,
+                ou,
+                new HashSet<AcPermission>(),
+                new HashSet<Group>()
+        );
 
         User user = new User(
                 test.getUsername(),
@@ -253,10 +277,11 @@ public class UserServiceImplTest {
                 test.getIsCredentialsExpired(),
                 organizationUnitRepository.findByCode(test.getUnit()).get()
         );
+        Mockito.when(userRepository.saveAndFlush(user)).thenReturn(userTest);
+        UserDetails newUserDetails = userService.saveUser(test);
 
-        userService.saveUser(test);
-
-        verify(userRepository, times(1)).save(user);
+        verify(userRepository, times(1)).saveAndFlush(userTest);
+        assertThat(newUserDetails.getId()).isEqualTo(userTest.getId());
     }
 
     @DisplayName("create user - Exception password not set")
@@ -399,6 +424,88 @@ public class UserServiceImplTest {
         });
 
         assertEquals("Nie znaleziono jednostki organizacyjnej użytkownika", thrown.getMessage());
+    }
+
+    @DisplayName("Service - saveUserPermissions")
+    @Test
+    void saveUserPermissions(){
+
+        User user = new User(
+                (long)0,
+                "user",
+                "user",
+                new Date(),
+                "User",
+                "Test",
+                true,
+                false,
+                false,
+                false,
+                ou,
+                new HashSet<AcPermission>(),
+                new HashSet<Group>()
+        );
+
+        AcPrivilege privilege = new AcPrivilege((long)1, "0001", "Przywilej testowy", new HashSet<AcObject>(),new HashSet<AcPermission>());
+        List<AcPrivilege> privileges = Arrays.asList(privilege);
+        userService.saveUserPermissions(privileges, "user", (long) 1);
+        verify(acPermissionService, times(1)).saveObjectPermission(privileges, user, (long) 1);
+    }
+
+    @DisplayName("Services - saveUserPermissions - Exception user not found")
+    @Test
+    void saveUserPermissionsNotFoundException(){
+        List<AcPrivilege> privileges = new ArrayList<AcPrivilege>();
+        thrown = assertThrows(AppException.class, () -> {
+            userService.saveUserPermissions(privileges, "test", (long)1);
+        });
+
+        assertEquals("Nie znaleziono użytkownika", thrown.getMessage());
+    }
+
+    @DisplayName("Service - saveUserGroups")
+    @Test
+    void saveUserGroups(){
+        User user = new User(
+                (long)0,
+                "user",
+                "user",
+                new Date(),
+                "User",
+                "Test",
+                true,
+                false,
+                false,
+                false,
+                ou,
+                new HashSet<AcPermission>(),
+                new HashSet<Group>()
+        );
+
+        Group newGroup = new Group((long)3, "test", "Testowa", new HashSet<AcPermission>(), new HashSet<User>());
+
+
+        List<Group> groups = Arrays.asList(newGroup);
+        Set<Group> userGroups = groups.stream().collect(Collectors.toSet());
+        user.setGroups(userGroups);
+        userService.saveUserGroups(groups, "user");
+
+        verify(userRepository, times(1)).save(user);
+
+    }
+
+    @DisplayName("Services - saveUserGroups - Exception user not found")
+    @Test
+    void saveUserGroupsUserNotFoundException(){
+        Group newGroup = new Group((long)3, "test", "Testowa", new HashSet<AcPermission>(), new HashSet<User>());
+
+
+        List<Group> groups = Arrays.asList(newGroup);
+        thrown = assertThrows(AppException.class, () -> {
+            userService.saveUserGroups(groups, "test");
+        });
+
+        assertEquals("Nie znaleziono użytkownika", thrown.getMessage());
     }
 
     @DisplayName("deleteUser")

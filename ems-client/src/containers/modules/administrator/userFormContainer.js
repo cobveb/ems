@@ -1,6 +1,6 @@
 import { reduxForm } from 'redux-form';
-import UserForm from 'components/modules/administrator/userForm';
-import {validate} from 'components/modules/administrator/userFormValid';
+import UserForm from 'components/modules/administrator/users/userForm';
+import {validate} from 'components/modules/administrator/users/userFormValid';
 
 
 let UserFormContainer = reduxForm({

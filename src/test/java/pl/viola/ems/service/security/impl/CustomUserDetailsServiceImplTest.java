@@ -48,19 +48,14 @@ public class CustomUserDetailsServiceImplTest {
     void loadUserByUsername() {
 
         User user = new User((long)1,"user", "userPass", new Date(), "UserName", "UserSurname",true,false,false,false, ou, new HashSet<AcPermission>(), new HashSet<Group>());
-        /*Set<User> users = new HashSet<User>();
-        users.add(user);
-        AcPermission acPermission = new AcPermission((long)1, new AcObject((long)1, (long)1, "test", "module", new HashSet<AcPrivilege>()), new AcPrivilege());
-        Set<AcPermission> permissions = new HashSet<AcPermission>();
-        permissions.add(acPermission);
-        Group groups = new Group((long) 1, "test", "GR_TEST", permissions, users );*/
 
         Mockito.when(userRepository.findByUsername("user")).thenReturn(java.util.Optional.of(user));
 
         Optional<User> test = userRepository.findByUsername("user");
+
         UserPrincipal userC = (UserPrincipal) customUserDetailsService.loadUserByUsername("user");
 
-        User newUser = new User((long)1,"user", "userPass", new Date(), "UserName", "UserSurname",true,false,false,false, ou, new HashSet<AcPermission>(),new HashSet<Group>());
+        User newUser = new User((long)1,"user", "userPass", new Date(), "UserName", "UserSurname",true,false,false,false, ou, new HashSet<AcPermission>(), new HashSet<Group>());
 
 
         assertThat(userC).isNotNull();
@@ -70,6 +65,7 @@ public class CustomUserDetailsServiceImplTest {
         assertThat(userC.isAccountNonLocked()).isTrue();
         assertThat(userC.isCredentialsNonExpired()).isTrue();
         assertThat(userC.isEnabled()).isTrue();
+
     }
 
     @DisplayName("loadUserByUsername - Exception")
@@ -88,8 +84,6 @@ public class CustomUserDetailsServiceImplTest {
     @DisplayName("loadUserById")
     @Test
     void loadUserById() {
-//        User user = new User("user", "passwd", "UserName", "UserSurname", true, false, false, false, ou);
-//        user.setId((long)0);
         User user = new User((long)0,"user", "userPass", new Date(), "UserName", "UserSurname",true,false,false,false, ou, new HashSet<AcPermission>(),new HashSet<Group>());
 
         List<User> repo = Arrays.asList(user);

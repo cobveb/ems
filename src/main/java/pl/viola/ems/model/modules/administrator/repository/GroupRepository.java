@@ -15,6 +15,5 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     List<Group> findByUsers(User user);
 
-    void deleteByCode(String code);
-
+    Boolean existsByCode(String code);
 }

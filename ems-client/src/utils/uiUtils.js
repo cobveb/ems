@@ -144,4 +144,16 @@ export function isExistsOuNodes(parent, ous){
      isExist = true;
     }
     return isExist;
-}
+};
+
+export function updateOnCloseDetails(objects, object, prop){
+    if(object){
+        const idProp = (prop !== undefined ? prop : 'id')
+        if(object[idProp] !== undefined) { // Closed without sending data during the add action. Do not update.
+            const index = objects.findIndex((oldObject) => oldObject[idProp] === object[idProp]);
+            const count = (index !== -1 ? 1 : 0);
+            objects.splice(index, count, object);
+        }
+    }
+    return objects;
+};

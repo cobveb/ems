@@ -10,12 +10,24 @@ class UsersApi {
         return Axios.get(`/api/users/getUser/${id}`)
     }
 
+    static getUserGroups(username){
+        return Axios.get(`/api/usersGroups/${username}`)
+    }
+
     static getUserObjectPermission(user, acObject){
-        return Axios.get(`/api/usersGroups/${user}/${acObject}/getPermissions`)
+        return Axios.get(`/api/users/${user}/${acObject}/getPermissions`)
     }
 
     static saveUser(data){
         return Axios.put(`/api/users/saveUser`, data)
+    }
+
+    static saveUserObjectPermissions(data, username, acObject){
+        return Axios.put(`/api/users/${username}/${acObject}/savePermission`, data)
+    }
+
+    static saveUserGroups(data, username){
+        return Axios.put(`/api/users/${username}/saveGroups`, data)
     }
 
     static deleteUser(code){

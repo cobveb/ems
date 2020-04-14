@@ -1,5 +1,5 @@
 import { reduxForm } from 'redux-form';
-import GroupUsersForm from 'components/modules/administrator/groupUsersForm';
+import GroupUsersForm from 'components/modules/administrator/groups/groupUsersForm';
 
 let GroupUsersFormContainer = reduxForm({
     form: 'GroupUsersForm',

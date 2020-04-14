@@ -34,12 +34,8 @@ public class Group {
     @Size(max = 30)
     private String name;
 
-    /* Po uruchomieniu repo i serwisu ac  sprawdzić czy możliwy zapis do właściwch pól bazy
-     *  uprawnień dla usera i grupy jak nie wrócić  wrócić do table ac_group_permision
-     */
-
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY,  mappedBy = "group")
+    @OneToMany(fetch = FetchType.LAZY,  mappedBy = "group", cascade = CascadeType.REMOVE)
     private Set<AcPermission> acPermissions = new HashSet<AcPermission>();
 
     @JsonIgnore

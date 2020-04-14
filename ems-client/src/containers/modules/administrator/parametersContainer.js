@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import Parameters from 'components/modules/administrator/parameters';
+import Parameters from 'components/modules/administrator/parameters/parameters';
 import AdministratorApi from 'api/modules/administrator/administratorApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';

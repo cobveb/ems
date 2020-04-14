@@ -1,10 +1,11 @@
-package pl.viola.ems.security;
+package pl.viola.ems.config;
 
 import lombok.Data;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import pl.viola.ems.security.UserPrincipal;
 
 import java.util.Collection;
 

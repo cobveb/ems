@@ -1,6 +1,6 @@
 import { reduxForm } from 'redux-form';
-import GroupBasicInfoForm from 'components/modules/administrator/groupBasicInfoForm';
-import {validate} from 'components/modules/administrator/groupBasicInfoFormValid';
+import GroupBasicInfoForm from 'components/modules/administrator/groups/groupBasicInfoForm';
+import {validate} from 'components/modules/administrator/groups/groupBasicInfoFormValid';
 
 
 let GroupBasicInfoFormContainer = reduxForm({

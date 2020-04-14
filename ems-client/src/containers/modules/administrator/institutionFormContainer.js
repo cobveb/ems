@@ -1,6 +1,6 @@
 import { reduxForm } from 'redux-form';
-import InstitutionForm from 'components/modules/administrator/institutionForm';
-import {validate} from 'components/modules/administrator/institutionFormValid';
+import InstitutionForm from 'components/modules/administrator/institution/institutionForm';
+import {validate} from 'components/modules/administrator/institution/institutionFormValid';
 
 let InstitutionFormContainer = reduxForm({
     form: 'InstitutionForm',

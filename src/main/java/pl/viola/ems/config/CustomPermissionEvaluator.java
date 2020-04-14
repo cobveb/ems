@@ -1,8 +1,9 @@
-package pl.viola.ems.security;
+package pl.viola.ems.config;
 
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import pl.viola.ems.security.AcObject;
 
 import java.io.Serializable;
 

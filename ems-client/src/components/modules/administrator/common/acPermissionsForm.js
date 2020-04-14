@@ -44,6 +44,7 @@ class GroupPermissionsForm extends Component {
         privilegesCodeNameSearch: '',
         acObjects: [],
         allObjectPrivileges: [],
+        disabled: true,
     }
 
     filter = (items, object) => {
@@ -71,8 +72,14 @@ class GroupPermissionsForm extends Component {
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.selectedObject !== prevProps.selectedObject){
-            if(this.props.selectedObject.length){ // selected AcObject
-                this.props.handelAcObjectChanged(this.props.selectedObject);
+            this.setState({
+                disabled: true,
+            });
+            if(this.props.selectedObject.length > 0){ // selected AcObject
+                if( this.props.selectedObject[0] !== prevProps.selectedObject[0] ){ //get selected AcObject permissions
+                    this.props.handelAcObjectChanged(this.props.selectedObject);
+                }
+
                 if(this.state.privilegesCodeNameSearch){
                     this.setState({
                         allObjectPrivileges: this.filter(this.props.selectedObject[0].privileges, 'privilegesCodeNameSearch'),
@@ -82,9 +89,10 @@ class GroupPermissionsForm extends Component {
                         allObjectPrivileges: this.props.selectedObject[0].privileges,
                     });
                 }
-            } else { // not selected AcObject, remove privileges
+            } else { // not selected AcObject, remove privileges from table
                 this.setState({
                     allObjectPrivileges: [],
+                    disabled: true,
                 });
             }
         } else if(this.props.acObjects !== prevProps.acObjects){
@@ -92,24 +100,31 @@ class GroupPermissionsForm extends Component {
                 acObjects: this.props.acObjects,
                 allObjectPrivileges: [],
             })
-        } else if(this.state.acObjectNameSearch !== prevState.acObjectNameSearch){
-            console.log(this.state.acObjects)
+
+        } else if(this.state.acObjectNameSearch !== prevState.acObjectNameSearch){ // filter acObjects
+            this.props.initialValues.permissions.acObject = []
             this.setState({
                 acObjects: this.filter(this.props.acObjects, 'acObjectNameSearch'),
                 allObjectPrivileges:[],
             })
-        } else if(this.state.privilegesCodeNameSearch !== prevState.privilegesCodeNameSearch){
+        } else if(this.state.privilegesCodeNameSearch !== prevState.privilegesCodeNameSearch){//privilege filter
             if(this.props.selectedObject.length){
                 this.setState({
                     allObjectPrivileges: this.filter(this.props.selectedObject[0].privileges, 'privilegesCodeNameSearch'),
                 })
             }
         }
+
+        if (this.props.selectedPrivileges !== prevProps.selectedPrivileges){
+            this.setState({
+                disabled: false,
+            });
+        }
     }
 
     render(){
         const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, error, onClose } = this.props;
-        const { acObjects, allObjectPrivileges } = this.state;
+        const { acObjects, allObjectPrivileges, disabled } = this.state;
         return(
             <>
                 {error && <ModalDialog message={error} variant="error"/>}
@@ -139,10 +154,10 @@ class GroupPermissionsForm extends Component {
                                     <Grid item xs={12} sm={12}>
                                         <FormTableField
                                             className={classes.tableWrapper}
-                                            name="permissions.acObjects"
+                                            name="permissions.acObject"
                                             head={headObjects}
                                             allRows={acObjects}
-                                            checkedRows={initialValues.permissions.acObjects}
+                                            checkedRows={initialValues.permissions.acObject}
                                             multiChecked={false}
                                             label={constants.GROUP_PERMISSIONS_TABLE_OBJECTS_LABEL}
                                             checkedColumnFirst={true}
@@ -195,7 +210,7 @@ class GroupPermissionsForm extends Component {
                                 iconAlign="left"
                                 type='submit'
                                 variant="submit"
-                                disabled={pristine || submitting || invalid || submitSucceeded }
+                                disabled={pristine || submitting || invalid || submitSucceeded || disabled }
                             />
                             <Button
                                 label={constants.BUTTON_CLOSE}

@@ -59,25 +59,47 @@ function setValues (fields, values) {
     return values;
 }
 
+function EnhancedTableHeadCheckedColumn(props){
+    const {checkedColumnFirst, numSelected, rowCount, disableCheckAll, onChange} = props;
+
+    return (
+        <TableCell padding="checkbox" size="small" align={checkedColumnFirst ? "left" : "right"}>
+            <Checkbox
+                onChange={onChange}
+                inputProps={{ 'aria-label': 'select all desserts' }}
+                checked={numSelected === rowCount && rowCount !==0 && !disableCheckAll}
+                disabled={disableCheckAll}
+            />
+        </TableCell>
+    )
+}
+
+EnhancedTableHeadCheckedColumn.propTypes = {
+    checkedColumnFirst: PropTypes.bool.isRequired,
+    numSelected: PropTypes.number.isRequired,
+    rowCount: PropTypes.number.isRequired,
+    disableCheckAll: PropTypes.bool.isRequired,
+    onChange: PropTypes.func.isRequired,
+};
+
+
 function EnhancedTableHead(props) {
     const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells, disableCheckAll, checkedColumnFirst } = props;
 
     const createSortHandler = property => event => {
         onRequestSort(event, property);
     };
-
     return (
         <TableHead>
             <TableRow>
                 { checkedColumnFirst &&
-                    <TableCell padding="checkbox" size="small" >
-                        <Checkbox
-                            onChange={onSelectAllClick}
-                            inputProps={{ 'aria-label': 'select all desserts' }}
-                            checked={numSelected === rowCount && rowCount !==0}
-                            disabled={disableCheckAll}
-                        />
-                    </TableCell>
+                    <EnhancedTableHeadCheckedColumn
+                        checkedColumnFirst={checkedColumnFirst}
+                        numSelected={numSelected}
+                        rowCount={rowCount}
+                        disableCheckAll={disableCheckAll}
+                        onChange={onSelectAllClick}
+                    />
                 }
             {headCells.map(headCell => (
                 <TableCell
@@ -102,14 +124,13 @@ function EnhancedTableHead(props) {
                 </TableCell>
             ))}
                 { !checkedColumnFirst &&
-                    <TableCell padding="checkbox" size="small" align="right">
-                        <Checkbox
-                            onChange={onSelectAllClick}
-                            inputProps={{ 'aria-label': 'select all desserts' }}
-                            checked={numSelected === rowCount && rowCount !==0}
-                            disabled={disableCheckAll}
-                        />
-                    </TableCell>
+                    <EnhancedTableHeadCheckedColumn
+                        checkedColumnFirst={checkedColumnFirst}
+                        numSelected={numSelected}
+                        rowCount={rowCount}
+                        disableCheckAll={disableCheckAll}
+                        onChange={onSelectAllClick}
+                    />
                 }
             </TableRow>
         </TableHead>
@@ -300,16 +321,13 @@ export default function TableForm({ fields, head, allRows, checkedRows, ...custo
             setChecked(setValues(fields, checkedRows))
         } else if(checkedRows !== prevCheckedRows) {
             setPrevCheckedRows(checkedRows)
-            if (checkedRows.length === 0){
-                setChecked([])
-            }
+            setChecked(setValues(fields, checkedRows))
         }
     },  [checkedRows, prevCheckedRows, rows, allRows, checked, fields])
 
     const handleToggle = (value) => {
         setChecked(setValues(fields, value));
     };
-
 
     return (
         <Grid container spacing={1} className={classes.root}>

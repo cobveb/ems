@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import Group from 'components/modules/administrator/group';
+import Group from 'components/modules/administrator/groups/group';
 import GroupsApi from 'api/modules/administrator/groupsApi';
 import UsersApi from 'api/modules/administrator/usersApi';
 import AccessControlApi from 'api/modules/administrator/accessControlApi';
@@ -11,16 +11,17 @@ class GroupContainer extends Component {
 
     state = {
         initData: [{
-            basic: [],
+            basic: {},
             acObjects: [],
             permissions: {
-                acObjects : [],
+                acObject : [],
                 privileges : [],
             },
             users: '',
             allUsers: [],
         }],
         action: this.props.action,
+        update: false,
     }
 
     handleSubmitBasic = (values) => {
@@ -28,13 +29,13 @@ class GroupContainer extends Component {
         .then(response => {
             this.setState( prevState => {
                 const initData = { ...prevState.initData};
-                initData[0].basic = values;
+                initData[0].basic = response.data.data;
                 return {initData};
             });
             this.setState({
                 action: "edit",
+                update: true,
             })
-
         })
         .catch(error => {
             this.setState( prevState => {
@@ -42,6 +43,9 @@ class GroupContainer extends Component {
                 initData[0].basic = values;
                 return {initData};
             });
+            this.setState({
+                update: false,
+            })
         });
     }
 
@@ -57,9 +61,8 @@ class GroupContainer extends Component {
         .catch(error => {})
     }
 
-    handleSubmitPrivileges = (values) => {
-        console.log(values)
-        GroupsApi.saveGroupObjectPermissions(values.permissions.privileges, this.state.initData[0].basic.code, values.permissions.acObjects[0].id)
+    handleSubmitPermissions = (values) => {
+        GroupsApi.saveGroupObjectPermissions(values.permissions.privileges, this.state.initData[0].basic.code, values.permissions.acObject[0].id)
         .then(response => {
             this.setState( prevState => {
                 const initData = { ...prevState.initData};
@@ -70,7 +73,7 @@ class GroupContainer extends Component {
         .catch(error => {})
     }
 
-    handleGroupUsers(group){
+    handleGroupUsers = (group) => {
         this.props.loading(true);
         GroupsApi.getGroupUsers(group)
         .then(response => {
@@ -93,7 +96,7 @@ class GroupContainer extends Component {
         .catch(error => {});
     }
 
-    handleGroupPermissions(){
+    handleGroupPermissions = () => {
         this.props.loading(true);
         AccessControlApi.getAllAcObject()
             .then(response => {
@@ -107,7 +110,7 @@ class GroupContainer extends Component {
             .catch(error => {})
     }
 
-    handelAcObjectChanged(AcObject){
+    handelAcObjectChanged = (AcObject) => {
         this.props.loading(true);
         GroupsApi.getGroupObjectPermission(this.state.initData[0].basic.code, AcObject[0].id)
             .then(response => {
@@ -121,7 +124,7 @@ class GroupContainer extends Component {
                 })
                 this.setState( prevState => {
                     const initData = { ...prevState.initData};
-                    initData[0].permissions.acObjects = AcObject;
+                    initData[0].permissions.acObject = AcObject;
                     initData[0].permissions.privileges = groupPrivileges;
                     return {initData};
                 });
@@ -130,37 +133,42 @@ class GroupContainer extends Component {
             .catch(error => {})
     }
 
+    handleClose = (group) => {
+        if(this.state.update){
+            this.props.handleClose(group);
+        } else {
+             this.props.handleClose(null);
+        }
+    }
+
     componentDidMount(){
-        this.props.loading(true);
         this.setState( prevState => {
             const initData = { ...prevState.initData};
             initData[0].basic = this.props.initialValues;
             return {initData};
         });
-
-        this.props.loading(false)
     }
 
     render(){
-        const {changeVisibleDetails, handleClose, error, clearError} = this.props;
+        const {isLoading, error, clearError} = this.props;
         const {initData, action} = this.state;
         return(
             <Group
+                isLoading = {isLoading}
                 initialValues = {initData}
                 basicInfo = {initData[0].basic}
                 users={{users: initData[0].users}}
                 allUsers={initData[0].allUsers}
                 acObjects={initData[0].acObjects}
                 permissions = {{permissions: initData[0].permissions}}
-                changeVisibleDetails = {changeVisibleDetails}
                 action={action}
-                handleClose={handleClose}
-                handleGroupUsers={this.handleGroupUsers.bind(this)}
-                handleGroupPermissions={this.handleGroupPermissions.bind(this)}
+                handleClose={this.handleClose}
+                handleGroupUsers={this.handleGroupUsers}
+                handleGroupPermissions={this.handleGroupPermissions}
                 handleSubmitBasic={this.handleSubmitBasic}
-                handleSubmitPrivileges={this.handleSubmitPrivileges}
+                handleSubmitPermissions={this.handleSubmitPermissions}
                 handleSubmitUsers={this.handleSubmitUsers}
-                handelAcObjectChanged={this.handelAcObjectChanged.bind(this)}
+                handelAcObjectChanged={this.handelAcObjectChanged}
                 error = {error}
                 clearError = {clearError}
             />

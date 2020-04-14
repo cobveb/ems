@@ -85,7 +85,7 @@ class GroupServiceImplTest {
         Mockito.when(groupRepository.findAll()).thenReturn(allGroups);
         Mockito.when(groupRepository.findByCode("test")).thenReturn(Optional.of(test));
         Mockito.when(groupRepository.findByUsers(userG)).thenReturn(allGroups);
-
+        Mockito.when(groupRepository.existsByCode("test")).thenReturn(true);
     }
 
     @DisplayName("Service - findAll")
@@ -132,14 +132,37 @@ class GroupServiceImplTest {
         assertEquals("Nie znaleziono użytkownika", thrown.getMessage());
     }
 
-    @DisplayName("Service - saveGroup")
+    @DisplayName("Service - saveGroup - Create")
     @Test
-    void saveGroup(){
+    void saveGroupCreate(){
         Group newGroup = new Group((long)3, "newTest", "newTestowa", new HashSet<AcPermission>(), new HashSet<User>());
 
         groupService.saveGroup(newGroup);
 
         verify(groupRepository, times(1)).save(newGroup);
+
+    }
+
+    @DisplayName("Servivce - saveGroup - Edit")
+    @Test
+    void saveGroupEdit(){
+        Group group = new Group((long)3, "test", "Testowa", new HashSet<AcPermission>(), new HashSet<User>());
+
+        groupService.saveGroup(group);
+
+        verify(groupRepository, times(1)).save(group);
+    }
+
+    @DisplayName("Service - saveGroup - Exception group exists")
+    @Test
+    void saveGroupExceptionGroupExists(){
+        Group group = new Group(null, "test", "Testowa", new HashSet<AcPermission>(), new HashSet<User>());
+
+        thrown = assertThrows(AppException.class, () -> {
+            groupService.saveGroup(group);
+        });
+
+        assertEquals("Grupa już istnieje.", thrown.getMessage());
 
     }
 

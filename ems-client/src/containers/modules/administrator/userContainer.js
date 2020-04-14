@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import User from 'components/modules/administrator/user';
+import User from 'components/modules/administrator/users/user';
 import AdministratorApi from 'api/modules/administrator/administratorApi';
+import AccessControlApi from 'api/modules/administrator/accessControlApi';
+import GroupsApi from 'api/modules/administrator/groupsApi';
+import UsersApi from 'api/modules/administrator/usersApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
-import { Redirect } from 'react-router'
 
 class UserContainer extends Component {
     state = {
@@ -23,9 +25,13 @@ class UserContainer extends Component {
                 state: true
             }
         ],
-        isEdit: false,
-        redirect: false,
-        action: this.props.match.params.action
+        acObjects: [],
+        permissions: {
+            acObject : [],
+            privileges : [],
+        },
+        allGroups: [],
+        userGroups: [],
     }
 
     handleGetOus(){
@@ -42,7 +48,7 @@ class UserContainer extends Component {
 
     handleGetUser(){
         this.props.loading(true);
-        AdministratorApi.getUser(this.props.match.params.userId)
+        AdministratorApi.getUser(this.props.initialValues.id)
         .then(response => {
             this.setState(previousState => ({
                 initData: response.data.data,
@@ -51,13 +57,13 @@ class UserContainer extends Component {
         .catch(error => {});
     }
 
-    handelSubmitSucceeded = (data) => {
+    handleSubmitBasic = (data) => {
         AdministratorApi.saveUser(data)
         .then(response => {
-            this.setState({
-                redirect: true,
-            });
             this.props.loading(false)
+            this.setState(previousState => ({
+                initData: response.data.data,
+            }));
         })
         .catch(error => {
             this.setState(previousState => ({
@@ -66,34 +72,114 @@ class UserContainer extends Component {
         });
     }
 
+    handleSubmitPermissions = (values) => {
+        UsersApi.saveUserObjectPermissions(values.permissions.privileges, this.state.initData.username, values.permissions.acObject[0].id)
+        .then(response => {
+            this.setState( prevState => {
+                let permissions = { ...prevState.permissions};
+                permissions = values.permissions;
+                return {permissions};
+            });
+        })
+        .catch(error => {})
+    }
+
+    handleSubmitGroups = (values) => {
+        UsersApi.saveUserGroups(values.groups, this.state.initData.username)
+        .then(response => {
+            this.setState({
+                userGroups: values.groups,
+            });
+        })
+        .catch(error => {})
+    }
+
+    handelAcObjectChanged = (AcObject) => {
+        this.props.loading(true);
+        UsersApi.getUserObjectPermission(this.state.initData.username, AcObject[0].id)
+            .then(response => {
+                let userPrivileges = [];
+                response.data.data.map(privilege => {
+                    return userPrivileges.push(
+                        AcObject[0].privileges.find(item => {
+                            return item.id === privilege.id;
+                        })
+                    )
+                })
+                this.setState( prevState => {
+                    const permissions = { ...prevState.permissions};
+                    permissions.acObject = AcObject;
+                    permissions.privileges = userPrivileges;
+                    return {permissions};
+                });
+                this.props.loading(false);
+            })
+            .catch(error => {})
+    }
+
+    handleUserPermissions = () => {
+        this.props.loading(true);
+        AccessControlApi.getAllAcObject()
+            .then(response => {
+                this.setState( prevState => {
+                    let acObjects = { ...prevState.acObjects};
+                    acObjects = response.data.data;
+                    return {acObjects};
+                });
+                this.props.loading(false);
+            })
+            .catch(error => {})
+    }
+
+    handleUserGroups = (user) => {
+        this.props.loading(true);
+        UsersApi.getUserGroups(user.username)
+        .then(response => {
+            this.setState({
+                userGroups: response.data.data,
+            });
+            GroupsApi.getAllUserGroups()
+            .then(response => {
+                this.setState({
+                    allGroups: response.data.data,
+                });
+            })
+            .catch(error => {});
+                this.props.loading(false)
+            })
+        .catch(error => {});
+    }
+
     componentDidMount() {
         this.handleGetOus();
-        if(this.state.action === "edit"){
-            this.setState({
-                isEdit: true,
-            });
+        if(this.props.action === "edit"){
             this.handleGetUser();
         }
     }
 
     render(){
-        const {isLoading, error, clearError} = this.props;
-        const {initData, isEdit, ous, redirect} = this.state;
-
-        if (redirect === true) {
-            return <Redirect to="/modules/administrator" />
-        }
-
+        const {isLoading, error, clearError, action, handleClose } = this.props;
+        const {initData, ous, acObjects, permissions, userGroups, allGroups} = this.state;
         return(
             <User
-                initialValues = {initData}
                 isLoading = {isLoading}
-                error = {error}
-                submitSucceeded={this.handelSubmitSucceeded}
-                title={isEdit ? constants.USER_TITLE_EDIT + " " + initData.username : constants.USER_TITLE_ADD}
-                edit = {isEdit}
+                basicInfo = {initData}
+                title={action === 'edit' ? constants.USER_TITLE_EDIT + " " + this.props.initialValues.username : constants.USER_TITLE_ADD}
+                action = {action}
                 ous = {ous}
+                acObjects={acObjects}
+                permissions = {{permissions: permissions}}
+                userGroups={{groups: userGroups}}
+                allGroups={allGroups}
+                handleUserPermissions={this.handleUserPermissions}
+                handleUserGroups={this.handleUserGroups}
+                handelAcObjectChanged={this.handelAcObjectChanged}
+                handleSubmitBasic={this.handleSubmitBasic}
+                handleSubmitPermissions={this.handleSubmitPermissions}
+                handleSubmitGroups={this.handleSubmitGroups}
+                error = {error}
                 clearError = {clearError}
+                onClose={handleClose}
             />
         )
     }

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
-import Structure from 'components/modules/administrator/structure';
+import Structure from 'components/modules/administrator/ou/structure';
 import AdministratorApi from 'api/modules/administrator/administratorApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
+import {updateOnCloseDetails} from 'utils';
 
 class StructureContainer extends Component {
     state = {
@@ -23,22 +24,27 @@ class StructureContainer extends Component {
         .catch(error => {});
     }
 
-    componentDidMount() {
-        this.handleAll();
-    }
-
-    handleDelete(code){
+    handleDelete = (code) => {
         this.props.loading(true);
         AdministratorApi.deleteOu(code)
         .then(response => {
             let ous = this.state.initData
-            ous = ous.filter(ou => ou.active === true && ou.code !== code)
+            ous = ous.filter(ou => ou.code !== code)
             this.setState({
                 initData: ous,
             })
             this.props.loading(false);
         })
         .catch(error => {});
+    }
+
+    handleUpdateOnClose = (ou) => {
+        let ous = this.state.initData;
+        return updateOnCloseDetails(ous, ou, 'code');
+    }
+
+    componentDidMount() {
+        this.handleAll();
     }
 
     render(){
@@ -50,7 +56,8 @@ class StructureContainer extends Component {
                 isLoading={isLoading}
                 error={error}
                 loading={loading}
-                onDelete={this.handleDelete.bind(this)}
+                onDelete={this.handleDelete}
+                onClose={this.handleUpdateOnClose}
                 clearError={clearError}
             />
         )
