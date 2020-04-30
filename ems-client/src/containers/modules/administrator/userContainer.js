@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import User from 'components/modules/administrator/users/user';
-import AdministratorApi from 'api/modules/administrator/administratorApi';
 import AccessControlApi from 'api/modules/administrator/accessControlApi';
+import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import GroupsApi from 'api/modules/administrator/groupsApi';
 import UsersApi from 'api/modules/administrator/usersApi';
 import { bindActionCreators } from 'redux';
@@ -36,7 +36,7 @@ class UserContainer extends Component {
 
     handleGetOus(){
         this.props.loading(true);
-        return AdministratorApi.getActiveOu()
+        return OrganizationUnitsApi.getActiveOu()
         .then(response => {
             this.setState({
                 ous: this.state.ous.concat(response.data.data),
@@ -48,7 +48,7 @@ class UserContainer extends Component {
 
     handleGetUser(){
         this.props.loading(true);
-        AdministratorApi.getUser(this.props.initialValues.id)
+        UsersApi.getUser(this.props.initialValues.id)
         .then(response => {
             this.setState(previousState => ({
                 initData: response.data.data,
@@ -58,7 +58,7 @@ class UserContainer extends Component {
     }
 
     handleSubmitBasic = (data) => {
-        AdministratorApi.saveUser(data)
+        UsersApi.saveUser(data)
         .then(response => {
             this.props.loading(false)
             this.setState(previousState => ({

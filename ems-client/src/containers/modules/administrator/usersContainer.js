@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import Users from 'components/modules/administrator/users/users';
-import AdministratorApi from 'api/modules/administrator/administratorApi';
+import UsersApi from 'api/modules/administrator/usersApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import {updateOnCloseDetails} from 'utils'
@@ -12,7 +12,7 @@ class UsersContainer extends Component {
 
     handleAll(){
         this.props.loading(true);
-        AdministratorApi.getAllUsers()
+        UsersApi.getAllUsers()
         .then(response => {
             this.setState({
                 initData: response.data.data,
@@ -24,7 +24,7 @@ class UsersContainer extends Component {
 
     handleDelete(code){
         this.props.loading(true);
-        AdministratorApi.deleteUser(code)
+        UsersApi.deleteUser(code)
         .then(response => {
             let users = this.state.initData;
             users = users.filter(user => user.id !== code)

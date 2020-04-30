@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import Institution from 'components/modules/administrator/institution/institution';
-import AdministratorApi from 'api/modules/administrator/administratorApi';
+import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 
@@ -12,7 +12,7 @@ class InstitutionContainer extends Component {
     }
 
     handelSubmitSucceeded = (data) => {
-        AdministratorApi.saveOu(data)
+        OrganizationUnitsApi.saveOu(data)
         .then(response => {
             this.setState({
                 data: response.data.data,
@@ -25,7 +25,7 @@ class InstitutionContainer extends Component {
 
     handleInitialValues(){
         this.props.loading(true);
-        AdministratorApi.getMainOu()
+        OrganizationUnitsApi.getMainOu()
         .then(response => {
             this.setState({
                 data: response.data.data,

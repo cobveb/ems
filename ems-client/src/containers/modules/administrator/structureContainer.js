@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import Structure from 'components/modules/administrator/ou/structure';
-import AdministratorApi from 'api/modules/administrator/administratorApi';
+import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import {updateOnCloseDetails} from 'utils';
@@ -14,7 +14,7 @@ class StructureContainer extends Component {
 
     handleAll(){
         this.props.loading(true);
-        AdministratorApi.getAllOu()
+        OrganizationUnitsApi.getAllOu()
         .then(response => {
             this.setState({
                 initData: response.data.data,
@@ -26,7 +26,7 @@ class StructureContainer extends Component {
 
     handleDelete = (code) => {
         this.props.loading(true);
-        AdministratorApi.deleteOu(code)
+        OrganizationUnitsApi.deleteOu(code)
         .then(response => {
             let ous = this.state.initData
             ous = ous.filter(ou => ou.code !== code)

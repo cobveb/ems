@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import Parameters from 'components/modules/administrator/parameters/parameters';
-import AdministratorApi from 'api/modules/administrator/administratorApi';
+import ParametersApi from 'api/modules/administrator/parametersApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
@@ -19,7 +19,7 @@ class ParametersContainer extends Component {
 
     handleInitialValues(){
         this.props.loading(true);
-        AdministratorApi.getParamsCategory()
+        ParametersApi.getParamsCategory()
         .then(response => {
             this.setState(prevState => {
                 const data = response.data.data;
@@ -33,7 +33,7 @@ class ParametersContainer extends Component {
                 initData[0].categorySearch = "System"
                 return { initData };
             })
-            AdministratorApi.getParamsByCategory(this.state.initData[0].categorySearch)
+            ParametersApi.getParamsByCategory(this.state.initData[0].categorySearch)
                 .then(response => {
                     this.setState(prevState => {
                         const data = response.data.data;
@@ -61,7 +61,7 @@ class ParametersContainer extends Component {
 
     handleChangeCategory = (category) =>{
         this.props.loading(true);
-        AdministratorApi.getParamsByCategory(category)
+        ParametersApi.getParamsByCategory(category)
         .then(response => {
             this.setState(prevState => {
                 const data = response.data.data;
@@ -87,7 +87,7 @@ class ParametersContainer extends Component {
     }
 
     handleSubmit = (data, closeParameterDetails) => {
-        return AdministratorApi.saveParam(data)
+        return ParametersApi.saveParam(data)
             .then(response => {
                 this.setState(prevState => {
                     const initData = [{ ...prevState.initData[0]}];
