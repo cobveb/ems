@@ -14,17 +14,28 @@ const styles = theme => ({
 });
 
 class OrganizationUnit extends Component {
+    state = {
+        // if an API error has occurred, do not update the list of organizational units with data that is currently being edited
+        isError: false,
+    };
 
     handleSubmit = (values) => {
         this.props.submitSucceeded(values);
+        this.setState({
+            isError: false,
+        })
     }
 
     handleCloseDialog = () =>{
         this.props.clearError(null);
+        this.setState({
+            isError: true,
+        })
     }
 
     render(){
         const { classes, initialValues, isLoading, error, title, edit, onClose } = this.props;
+        const { isError} = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -37,7 +48,7 @@ class OrganizationUnit extends Component {
                             onSubmit={this.handleSubmit}
                             initialValues={initialValues}
                             edit={edit}
-                            onClose={() => onClose(initialValues)}
+                            onClose={() => onClose(isError === true ? null : initialValues)}
                         />
                     </div>
                 </Grid>

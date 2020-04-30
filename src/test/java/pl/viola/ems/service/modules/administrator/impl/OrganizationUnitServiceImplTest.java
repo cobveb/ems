@@ -60,6 +60,7 @@ public class OrganizationUnitServiceImplTest {
         Mockito.when(organizationUnitRepository.findByActiveTrueAndParentIsNotNullOrderByName()).thenReturn(active);
         Mockito.when(organizationUnitRepository.findMainOu()).thenReturn(ou);
         Mockito.when(organizationUnitRepository.findById("it")).thenReturn(Optional.of(it));
+        Mockito.when(organizationUnitRepository.existsById("uck")).thenReturn(true);
     }
 
     @DisplayName("findAll")
@@ -129,11 +130,11 @@ public class OrganizationUnitServiceImplTest {
         assertEquals("Nie znaleziono głównej jednostki organizacyjnej.", thrown.getMessage());
     }
 
-    @DisplayName("saveOU")
+    @DisplayName("saveOuOnAdd")
     @Test
-    void saveOrganoztionUnit(){
+    void saveOrganizationUnitOnAdd(){
         OrganizationUnit ou = new OrganizationUnit(
-                "UCK",
+                "test",
                 "Uniwersyteckie Centrum",
                 "UCK SUM",
                 "1111111111",
@@ -151,9 +152,79 @@ public class OrganizationUnitServiceImplTest {
                 new HashSet<User>()
         );
 
-        organizationUnitService.saveOu(ou);
+        organizationUnitService.saveOu("add", ou);
 
-        verify(organizationUnitRepository, times(1)).save(ou);
+        verify(organizationUnitRepository, times(1)).saveAndFlush(ou);
+    }
+
+    @DisplayName("saveOuExistsException")
+    @Test
+    void saveOuExistsException(){
+        OrganizationUnit ou = new OrganizationUnit(
+                "uck",
+                "Uniwersyteckie Centrum",
+                "UCK SUM",
+                "1111111111",
+                "123456789",
+                "Katowice",
+                "40 - 514",
+                "Ceglana",
+                "35",
+                "+48 (32) 123 12 34",
+                "+48 (32) 123 12 34",
+                "uck@uck.it",
+                true,
+                false,
+                null,
+                new HashSet<User>()
+        );
+
+        thrown = assertThrows(AppException.class, () -> {
+            organizationUnitService.saveOu("add", ou);
+        });
+
+        assertEquals("Jednostka organizacyjna o podanym kodzie już istnieje.", thrown.getMessage());
+
+    }
+
+    @DisplayName("saveOuOnEdit")
+    @Test
+    void saveOrganizationUnitOnEdit(){
+        OrganizationUnit ou = new OrganizationUnit(
+                "uck",
+                "Uniwersyteckie Centrum",
+                "UCK SUM",
+                "1111111111",
+                "123456789",
+                "Katowice",
+                "40 - 514",
+                "Ceglana",
+                "35",
+                "+48 (32) 123 12 34",
+                "+48 (32) 123 12 34",
+                "uck@uck.it",
+                true,
+                false,
+                null,
+                new HashSet<User>()
+        );
+
+        organizationUnitService.saveOu("edit", ou);
+
+        verify(organizationUnitRepository, times(1)).saveAndFlush(ou);
+    }
+
+    @DisplayName("saveOuBadActionException")
+    @Test
+    void saveOuBadActionException(){
+        OrganizationUnit ou = new OrganizationUnit();
+
+        thrown = assertThrows(AppException.class, () -> {
+            organizationUnitService.saveOu("test", ou);
+        });
+
+        assertEquals("Niepoprawna akcja. Dozwolone akcje to add lub edit.", thrown.getMessage());
+
     }
 
     @DisplayName("findByCode")

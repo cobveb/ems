@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import OrganizationUnit from 'components/modules/administrator/ou/organizationUnit';
-import AdministratorApi from 'api/modules/administrator/administratorApi';
+import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
@@ -20,14 +20,18 @@ class OrganizationUnitContainer extends Component {
         if(this.props.action === "add"){
             data.parent = this.props.initialValues.parent;
         }
-        AdministratorApi.saveOu(data)
+        OrganizationUnitsApi.saveOu(this.props.action, data)
         .then(response => {
             this.setState({
                 initData: response.data.data,
             });
             this.props.loading(false)
         })
-        .catch(error => {});
+        .catch(error => {
+            this.setState({
+                initData: data,
+            });
+        });
     };
 
     componentDidMount() {

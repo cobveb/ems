@@ -44,8 +44,18 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
     }
 
     @Override
-    public void saveOu(OrganizationUnit ou) {
-        organizationUnitRepository.save(ou);
+    public OrganizationUnit saveOu(final String action, final OrganizationUnit ou) {
+        if(action.toLowerCase().equals("add")){
+            if(!organizationUnitRepository.existsById(ou.getCode())){
+                return  organizationUnitRepository.saveAndFlush(ou);
+            } else {
+                throw new AppException("Administrator.organizationUnit.exists", HttpStatus.BAD_REQUEST);
+            }
+        } else if (action.toLowerCase().equals("edit")) {
+            return  organizationUnitRepository.saveAndFlush(ou);
+        } else {
+            throw new AppException("Administrator.organizationUnit.invalidAction", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

@@ -39,10 +39,9 @@ public class OrganizationUnitController {
 		return new ApiResponse(HttpStatus.FOUND, organizationUnitService.findById(code));
 	}
 
-	@PutMapping("saveOu")
-	public ApiResponse saveOrganizationUnit(@Valid @RequestBody OrganizationUnit ou){
-		organizationUnitService.saveOu(ou);
-		return new ApiResponse(HttpStatus.CREATED, ou);
+	@PutMapping("/{action}")
+	public ApiResponse saveOrganizationUnit(@Valid @RequestBody OrganizationUnit ou, @PathVariable String action){
+		return new ApiResponse(HttpStatus.CREATED, organizationUnitService.saveOu(action, ou));
 	}
 
 	@DeleteMapping("/deleteOu/{code}")

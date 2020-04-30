@@ -10,7 +10,7 @@ public interface OrganizationUnitService {
 
     OrganizationUnit findMainOu();
 
-    void saveOu(OrganizationUnit ou);
+    OrganizationUnit saveOu(String action, OrganizationUnit ou);
 
     Optional<OrganizationUnit> findById(String code);
 

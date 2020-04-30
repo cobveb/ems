@@ -17,8 +17,8 @@ class OrganizationUnitsApi {
         return Axios.get(`/api/ou/getOu/${code}`)
     }
 
-    static saveOu(data){
-        return Axios.put(`/api/ou/saveOu`, data)
+    static saveOu(action, data){
+        return Axios.put(`/api/ou/${action}`, data)
     }
 
     static deleteOu(code){

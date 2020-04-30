@@ -11,6 +11,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.payload.api.ApiResponse;
@@ -23,6 +24,7 @@ import java.util.List;
 import static groovy.json.JsonOutput.toJson;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,10 +52,14 @@ public class OrganizationUnitControllerTest {
         mvc = MockMvcBuilders
                 .webAppContextSetup(context)
                 .build();
+
+        given(organizationUnitService.saveOu("add", main)).willReturn(main);
+        given(organizationUnitService.saveOu("edit", main)).willReturn(main);
+        when(organizationUnitService.saveOu("save", main)).thenThrow(new AppException("Administrator.organizationUnit.invalidAction", HttpStatus.BAD_REQUEST));
     }
 
     @WithMockUser("user")
-    @DisplayName("OrganizationUnits - Controller - getAllOrganizationUnits")
+    @DisplayName("Controller - getAllOrganizationUnits")
     @Test
     void getAllOrganizationUnits() throws Exception{
 
@@ -68,7 +74,7 @@ public class OrganizationUnitControllerTest {
     }
 
     @WithMockUser("user")
-    @DisplayName("OrganizationUnits - Controller - getActiveOrganizationUnits")
+    @DisplayName("Controller - getActiveOrganizationUnits")
     @Test
     void getActiveOrganizationUnits() throws Exception{
 
@@ -83,7 +89,7 @@ public class OrganizationUnitControllerTest {
     }
 
     @WithMockUser("user")
-    @DisplayName("OrganizationUnits - Controller - getMainOrganizationUnit")
+    @DisplayName("Controller - getMainOrganizationUnit")
     @Test
     void getMainOrganizationUnit() throws Exception{
 
@@ -96,7 +102,7 @@ public class OrganizationUnitControllerTest {
     }
 
     @WithMockUser("user")
-    @DisplayName("OrganizationUnits - Controller - getOrganizationUnitById")
+    @DisplayName("Controller - getOrganizationUnitById")
     @Test
     void getOrganizationUnitById() throws Exception{
 
@@ -109,7 +115,7 @@ public class OrganizationUnitControllerTest {
     }
 
     @WithMockUser("user")
-    @DisplayName("OrganizationUnits - Controller - getOrganizationIsNull")
+    @DisplayName("Controller - getOrganizationIsNull")
     @Test
     void getOrganizationUnitIsNull() throws Exception{
 
@@ -120,31 +126,46 @@ public class OrganizationUnitControllerTest {
     }
 
     @WithMockUser("user")
-    @DisplayName("OrganizationUnits - Controller - saveOrganizationUnit")
-    @Test
-    void saveOrganizatioUnit() throws Exception{
-        OrganizationUnit ou = new OrganizationUnit(
-            "UCK",
-            "Uniwersyteckie Centrum",
-            "UCK SUM",
-            "1111111111",
-            "123456789",
-            "Katowice",
-            "40 - 514",
-            "Ceglana",
-            "35",
-            "+48 (32) 123 12 34",
-            "+48 (32) 123 12 34",
-            "uck@uck.it",
-            true,
-            false,
-            null,
-        new HashSet<User>()
-        );
+    @DisplayName("Controller - saveOrganizationUnitOnAdd")
+    @Test()
+    void saveOrganizationUnitOnAdd() throws Exception {
+
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+
 
         ApiResponse response = new ApiResponse(HttpStatus.CREATED, ou);
 
-        mvc.perform(put("/api/ou/saveOu")
+        mvc.perform(put("/api/ou/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(ou)))
+                .andExpect((jsonPath("$.status").value("CREATED")))
+                .andExpect((jsonPath("$.data").value(response.getData())));
+    }
+
+    @WithMockUser("user")
+    @DisplayName("Controller - saveOrganizationUnitBadActionException")
+    @Test()
+    void saveOrganizationUnitBadActionException() throws Exception {
+
+        mvc.perform(put("/api/ou/save")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(main)))
+                .andExpect(status().isBadRequest())
+                .andExpect((jsonPath("$.message").isNotEmpty()))
+                .andExpect((jsonPath("$.message").value("Niepoprawna akcja. Dozwolone akcje to add lub edit.")));
+    }
+
+    @WithMockUser("user")
+    @DisplayName("Controller - saveOrganizationUnitOnEdit")
+    @Test()
+    void saveOrganizationUnitOnEdit() throws Exception {
+
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+
+
+        ApiResponse response = new ApiResponse(HttpStatus.CREATED, ou);
+
+        mvc.perform(put("/api/ou/edit")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(ou)))
                 .andExpect((jsonPath("$.status").value("CREATED")))
@@ -152,21 +173,21 @@ public class OrganizationUnitControllerTest {
     }
 
     @WithMockUser
-    @DisplayName( "OrganizationUnits - Controller - saveOUArgumentNotValidException")
+    @DisplayName("Controller - saveOUArgumentNotValidException")
     @Test
-    void saveOrganizatioUnitException() throws Exception{
+    void saveOrganizationUnitException() throws Exception{
         OrganizationUnit ou = new OrganizationUnit(
-                "",
-                "",
-                "",
-                "111111111",
-                "12345689",
+                "uck",
+                "uck",
+                "uck",
+                "1111111111",
+                "123456789",
                 "Katowice",
-                "40-514",
+                "40 - 514",
                 "Ceglana",
                 "35",
-                "+48 (32) 123 12 3",
-                "+48 (32) 123 12 3",
+                "+48 (32) 123 12 34",
+                "+48 (32) 123 12 34",
                 "uckuck.it",
                 true,
                 false,
@@ -174,16 +195,15 @@ public class OrganizationUnitControllerTest {
                 new HashSet<User>()
         );
 
-
-        mvc.perform(put("/api/ou/saveOu")
+        mvc.perform(put("/api/ou/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(ou)))
                 .andExpect(status().isBadRequest())
-                .andExpect((jsonPath("$.message").isNotEmpty()));
+                .andExpect((jsonPath("$.message").isNotEmpty())); //email: Nieprawidłowy adres email.
     }
 
     @WithMockUser
-    @DisplayName("OrganizationUnits - Controller - deleteOrganizationUnit")
+    @DisplayName("Controller - deleteOrganizationUnit")
     @Test
     void deleteOrganizationUnit() throws Exception {
         ApiResponse response = new ApiResponse(HttpStatus.CREATED, "Pomyslnie usunięto jednostkę organizacyjną.");
