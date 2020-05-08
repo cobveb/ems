@@ -7,7 +7,7 @@ import pl.viola.ems.security.AcObject;
 
 import java.io.Serializable;
 
-public class CustomPermissionEvaluator implements PermissionEvaluator {
+public class CustomPermissionEvaluatorConfig implements PermissionEvaluator {
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if ((authentication == null) || (targetDomainObject == null) || !(permission instanceof String)){

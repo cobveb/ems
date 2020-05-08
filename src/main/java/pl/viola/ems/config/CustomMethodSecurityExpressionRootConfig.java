@@ -5,17 +5,18 @@ import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import pl.viola.ems.security.UserPrincipal;
+import pl.viola.ems.security.impl.UserPrincipal;
 
 import java.util.Collection;
 
 @Data
-public class CustomMethodSecurityExpressionRoot  extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
+
+public class CustomMethodSecurityExpressionRootConfig extends SecurityExpressionRoot implements MethodSecurityExpressionOperations {
 
     private Object filterObject;
     private Object returnObject;
 
-    public CustomMethodSecurityExpressionRoot(Authentication authentication) {
+    public CustomMethodSecurityExpressionRootConfig(Authentication authentication) {
         super(authentication);
     }
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.administrator.repository.UserRepository;
-import pl.viola.ems.security.UserPrincipal;
+import pl.viola.ems.security.impl.UserPrincipal;
 import pl.viola.ems.service.security.PasswordService;
 
 @Service
@@ -36,7 +36,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 	
 	// This method is used by JWTAuthenticationFilter
     @Transactional
-    public UserDetails loadUserById(Long id) {
+    public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
         
     	User user = userRepository.findById(id).orElseThrow(
             () -> new UsernameNotFoundException("User not found with id : " + id)

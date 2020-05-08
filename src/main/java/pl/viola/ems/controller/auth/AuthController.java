@@ -13,8 +13,8 @@ import pl.viola.ems.payload.auth.JwtAuthenticationResponse;
 import pl.viola.ems.payload.auth.LoginRequest;
 import pl.viola.ems.payload.auth.PasswordChangeRequest;
 import pl.viola.ems.payload.auth.RefreshTokenRequest;
-import pl.viola.ems.security.JwtTokenProvider;
-import pl.viola.ems.security.UserPrincipal;
+import pl.viola.ems.security.impl.JwtTokenProvider;
+import pl.viola.ems.security.impl.UserPrincipal;
 import pl.viola.ems.service.security.JwtTokenService;
 import pl.viola.ems.service.security.PasswordService;
 

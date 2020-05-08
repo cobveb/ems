@@ -1,7 +1,7 @@
 package pl.viola.ems.service.security;
 
 import pl.viola.ems.model.modules.administrator.User;
-import pl.viola.ems.security.UserPrincipal;
+import pl.viola.ems.security.impl.UserPrincipal;
 
 public interface JwtTokenService {
 

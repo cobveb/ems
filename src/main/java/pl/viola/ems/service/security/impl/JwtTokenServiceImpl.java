@@ -10,7 +10,7 @@ import pl.viola.ems.model.auth.JwtRefreshToken;
 import pl.viola.ems.model.auth.repository.JwtRefreshTokenRepository;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.administrator.repository.UserRepository;
-import pl.viola.ems.security.UserPrincipal;
+import pl.viola.ems.security.impl.UserPrincipal;
 import pl.viola.ems.service.security.JwtTokenService;
 
 import java.util.Date;

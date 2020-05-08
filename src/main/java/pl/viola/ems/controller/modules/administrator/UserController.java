@@ -10,7 +10,7 @@ import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.payload.api.UserDetails;
 import pl.viola.ems.payload.auth.UserSummary;
 import pl.viola.ems.security.CurrentUser;
-import pl.viola.ems.security.UserPrincipal;
+import pl.viola.ems.security.impl.UserPrincipal;
 import pl.viola.ems.service.modules.administrator.UserService;
 import pl.viola.ems.service.security.AcPermissionService;
 

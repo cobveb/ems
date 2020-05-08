@@ -11,13 +11,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pl.viola.ems.security.JwtAccessDeniedHandler;
-import pl.viola.ems.security.JwtAuthenticationEntryPoint;
-import pl.viola.ems.security.JwtAuthenticationFilter;
-import pl.viola.ems.service.security.impl.CustomUserDetailsServiceImpl;
+import pl.viola.ems.security.impl.JwtAccessDeniedHandler;
+import pl.viola.ems.security.impl.JwtAuthenticationEntryPoint;
+import pl.viola.ems.security.impl.JwtAuthenticationFilter;
 
 /**
  * The class responsible for launching Spring Web Security in the application,
@@ -43,7 +43,7 @@ import pl.viola.ems.service.security.impl.CustomUserDetailsServiceImpl;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
-    private CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
+    private UserDetailsService userDetailsService;
 	
 	@Autowired
     private JwtAuthenticationEntryPoint unauthorizedHandler;
@@ -56,13 +56,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new JwtAuthenticationFilter();
     }
 	
-	/*@Autowired
-	private PasswordEncoder passwordEncoder;
-	*/
 	@Override
 	public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
 		authenticationManagerBuilder
-	    	.userDetailsService(customUserDetailsServiceImpl)
+	    	.userDetailsService(userDetailsService)
 	        .passwordEncoder(passwordEncoder());
 	}
 	

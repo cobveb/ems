@@ -10,6 +10,7 @@ import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.security.AcObject;
 import pl.viola.ems.model.security.AcPermission;
 import pl.viola.ems.model.security.AcPrivilege;
+import pl.viola.ems.security.impl.UserPrincipal;
 
 import java.util.*;
 

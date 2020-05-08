@@ -14,7 +14,7 @@ import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.administrator.repository.UserRepository;
 import pl.viola.ems.model.security.AcPermission;
-import pl.viola.ems.security.UserPrincipal;
+import pl.viola.ems.security.impl.UserPrincipal;
 
 import java.util.*;
 

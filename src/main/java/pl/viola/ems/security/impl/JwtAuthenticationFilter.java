@@ -1,9 +1,8 @@
-package pl.viola.ems.security;
+package pl.viola.ems.security.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	@Autowired
     private CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
 	@Override

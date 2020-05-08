@@ -1,4 +1,4 @@
-package pl.viola.ems.security;
+package pl.viola.ems.security.impl;
 
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;

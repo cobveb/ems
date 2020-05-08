@@ -1,4 +1,4 @@
-package pl.viola.ems.security;
+package pl.viola.ems.security.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -46,7 +46,6 @@ public class UserPrincipal implements UserDetails{
 	private Collection<String> groups;
 
     public static UserPrincipal create(User user) {
-    	System.out.println(user);
 		return new UserPrincipal(
 			user.getId(),
 			user.getName(),

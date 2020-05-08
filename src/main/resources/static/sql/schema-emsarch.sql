@@ -16,20 +16,6 @@ CREATE TABLE emsarch.tokens
 GRANT SELECT, INSERT, DELETE ON emsarch.tokens TO emsadm;
 /
 
--- Create the table of applications roles
-DROP TABLE emsarch.roles CASCADE CONSTRAINTS PURGE;
-/
-CREATE TABLE emsarch.roles
-(
-    id NUMBER(19,0) NOT NULL,
-	name VARCHAR2(30) NOT NULL,
-    CONSTRAINT role_pk PRIMARY KEY(id),
-    CONSTRAINT role_name_unq UNIQUE(name)
-)TABLESPACE ems_architecture
-/
-GRANT SELECT, INSERT ON emsarch.roles TO emsadm;
-/
-
 -- Create the table of application users
 DROP TABLE emsarch.users CASCADE CONSTRAINTS PURGE;
 /
@@ -53,22 +39,9 @@ CREATE TABLE emsarch.users
 	CONSTRAINT user_pk PRIMARY KEY(id),
     CONSTRAINT user_username_unq UNIQUE(username)
     CONSTRAINT user_organization_unit_fk FOREIGN KEY (ou) REFERENCES emsadm.organization_units(code)
-) TABLESPACE ems_architecture;
+) TABLESPACE ems_users;
 /
 GRANT SELECT, INSERT, UPDATE, DELETE ON emsarch.users TO emsadm;
-/
-
--- Create table witch join user role
-DROP TABLE emsarch.user_roles CASCADE CONSTRAINTS PURGE;
-/
-CREATE TABLE emsarch.user_roles
-(
-    user_id NUMBER(19,0) NOT NULL,
-    role_id NUMBER(19,0) NOT NULL,
-    CONSTRAINT user_roles_pk PRIMARY KEY(user_id, role_id)
-)TABLESPACE ems_architecture ;
-/
-GRANT SELECT, INSERT, UPDATE, DELETE ON emsarch.user_roles TO emsadm;
 /
 
 -- Create the table of application modules
@@ -205,13 +178,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON emsarch.user_groups TO emsadm;
 /*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   SEQUENCE                                            			    */
 /*-------------------------------------------------------------------------------------------------------------------- */
--- Create sequence of table roles
-DROP SEQUENCE role_seq;
-/
-CREATE SEQUENCE role_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
-/
-GRANT SELECT ON emsarch.role_seq TO emsadm;
-/
 -- Create sequence of table user
 DROP SEQUENCE user_seq;
 /
