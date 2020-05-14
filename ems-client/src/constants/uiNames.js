@@ -127,6 +127,28 @@ export const PARAMETER_CODE= 'Kod';
 export const PARAMETER_NAME= 'Nazwa';
 export const PARAMETER_DESCRIPTION = 'Opis';
 export const PARAMETER_VALUE = 'Wartość';
+/* components/modules/applicant.js */
+export const MENU_APPLICATION = 'Wnioski';
+export const SUBMENU_APPLICATIONS = 'Wnioski';
+/* components/modules/applicant/applications/applications.js */
+export const APPLICATION_CONFIRM_DELETE_MESSAGE = 'Wniosek zostanie usunięty. Czy kontynuować?';
+export const APPLICATIONS_SEARCH_NUMBER = 'Numer wniosku';
+export const APPLICATIONS_SEARCH_STATUS = 'Status';
+export const APPLICATIONS_SEARCH_DATE_FROM = 'Data od';
+export const APPLICATIONS_SEARCH_DATE_TO = 'Data do';
+export const APPLICATIONS_TABLE_HEAD_ROW_NUMBER = 'Numer';
+export const APPLICATIONS_TABLE_HEAD_ROW_STATUS = 'Status';
+export const APPLICATIONS_APPLICATION_STATUS_SAVED = 'Zapisany';
+export const APPLICATIONS_APPLICATION_STATUS_SEND = 'Wysłany';
+export const APPLICATIONS_APPLICATION_STATUS_CONSIDERED = 'Rozpatrywany';
+export const APPLICATIONS_APPLICATION_STATUS_PARTIALLY_APPROVED = 'Częściowo zatwierdzony';
+export const APPLICATIONS_APPLICATION_STATUS_APPROVED = 'Zatwierdzony';
+export const APPLICATIONS_APPLICATION_STATUS_PARTIALLY_REALIZED = 'Częściowo realizowany';
+export const APPLICATIONS_APPLICATION_STATUS_REALIZED = 'Realizowany';
+export const APPLICATIONS_APPLICATION_STATUS_PARTIALLY_EXECUTED = 'Częściowo zrealizowany';
+export const APPLICATIONS_APPLICATION_STATUS_EXECUTED = 'Zrealizowany';
+export const APPLICATIONS_APPLICATION_STATUS_PARTIALLY_REJECTED = 'Częściowo odrzucony';
+export const APPLICATIONS_APPLICATION_STATUS_REJECTED = 'Odrzucony';
 /* components/modules/coordinator/coordinator.js */
 export const COORDINATOR = "Koordynator";
 /* Commons sections */
@@ -141,6 +163,7 @@ export const BUTTON_EDIT= 'Edytuj';
 export const BUTTON_ADD = 'Dodaj';
 export const BUTTON_PREVIEW = 'Podgląd';
 export const BUTTON_POSITIONS = 'Pozycje';
+export const BUTTON_SELECT = 'Wybierz';
 export const TEXTFIELD_SEARCH = 'Szukaj';
 export const DRAWER_MENU_SHOW = 'Pokaż';
 export const DRAWER_MENU_HIDE = 'Ukryj';
@@ -155,6 +178,22 @@ export const MODAL_DIALOG_ERROR = 'Błąd';
 export const MODAL_DIALOG_INFORMATION = 'Informacja';
 export const MODAL_DIALOG_WARNING = 'Ostrzeżenie';
 export const MODAL_DIALOG_CONFIRM = 'Potwierdzenie';
+/*common/gui/guiDatePicker.js*/
+export const DATE_PICKER_INVALID_DATE_MESSAGE = 'Nieprawidłowy format daty';
+export const DATE_PICKER_MAX_DATE_MESSAGE = 'Data późniejsza niż data maksymalna';
+export const DATE_PICKER_MIN_DATE_MESSAGE = 'Data wcześniejsza niż data minimalna';
+export const DATE_PICKER_MONTHS_JANUARY = 'Styczeń';
+export const DATE_PICKER_MONTHS_FEBRUARY = 'Luty';
+export const DATE_PICKER_MONTHS_MARCH= 'Marzec';
+export const DATE_PICKER_MONTHS_APRIL= 'Kwiecień';
+export const DATE_PICKER_MONTHS_MAI= 'Maj';
+export const DATE_PICKER_MONTHS_JUNE= 'Czerwiec';
+export const DATE_PICKER_MONTHS_JULY= 'Lipiec';
+export const DATE_PICKER_MONTHS_AUGUST= 'Sierpień';
+export const DATE_PICKER_MONTHS_SEPTEMBER= 'Wrzesień';
+export const DATE_PICKER_MONTHS_OCTOBER= 'Październik';
+export const DATE_PICKER_MONTHS_NOVEMBER= 'Listopad';
+export const DATE_PICKER_MONTHS_DECEMBER= 'Grudzień';
 /* Form error names */
 export const FORM_ERROR_MSG_REQUIRED_FIELD = 'Pole wymagane';
 export const FORM_ERROR_MSG_INVALID_EMAIL_ADDRESS = 'Nieprawidłowy adres email';

@@ -7,6 +7,7 @@ import Tabs from 'common/gui/guiTabs';
 import Tab from 'common/gui/guiTab';
 import TabPanel from 'common/gui/guiTabPanel';
 import Table from 'common/gui/guiTable';
+import DatePicker from 'common/gui/guiDatePicker';
 
 export { SearchField };
 export { InputField };
@@ -17,3 +18,4 @@ export { Tabs };
 export { Tab };
 export { TabPanel };
 export { Table };
+export { DatePicker };
