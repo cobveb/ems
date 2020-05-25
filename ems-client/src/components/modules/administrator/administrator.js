@@ -25,7 +25,7 @@ const styles = theme => ({
         height: `calc(100vh - ${theme.spacing(6)}px)`,
         maxHeight: `calc(100vh - ${theme.spacing(6)}px)`,
         minHeight: `calc(100vh - ${theme.spacing(6)}px)`,
-        padding: `0 0 0 ${theme.spacing(0.8)}px`,
+        padding: `0 0 0 ${theme.spacing(0.5)}px`,
         transition: theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -33,7 +33,7 @@ const styles = theme => ({
         zIndex: 1300,
     },
     card: {
-        minHeight: "100%",
+        height: "100%",
     },
 });
 

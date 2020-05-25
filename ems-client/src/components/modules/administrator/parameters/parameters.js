@@ -15,7 +15,7 @@ const styles = theme => ({
         marginLeft: theme.spacing(1),
     },
     tableWrapper: {
-            minHeight: `calc(100vh - ${theme.spacing(35)}px)`,
+            minHeight: `calc(100vh - ${theme.spacing(32)}px)`,
     },
 })
 

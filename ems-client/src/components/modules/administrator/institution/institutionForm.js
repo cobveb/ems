@@ -8,7 +8,7 @@ import { Button } from 'common/gui';
 
 const styles = theme => ({
     content: {
-        height: `calc(100vh - ${theme.spacing(19.5)}px)`,
+        height: `calc(100vh - ${theme.spacing(18.2)}px)`,
         overflow: 'auto',
         padding: 0,
     },

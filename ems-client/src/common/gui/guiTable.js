@@ -86,9 +86,12 @@ TablePaginationActions.propTypes = {
 
 
 const styles = theme => ({
-    root: {
+    content:{
         flexGrow: 1,
-        marginTop: theme.spacing(1),
+        width: '100%',
+        maxWidth: '100%',
+        padding: `${theme.spacing(1)}px ${theme.spacing(0.1)}px 0 ${theme.spacing(0.1)}px`,
+
     },
     tableBody: {
         height: `calc(100vh - ${theme.spacing(43)}px)`,
@@ -194,84 +197,86 @@ class ContainedTable extends Component {
         const { curPage, rowsPerPage, selected, order, orderBy  } = this.state;
         return(
             <>
-                <Paper className={classes.root}>
-                    <div className={classNames(classes.tableBody, this.props.className)}>
-                        <Table size='small' stickyHeader>
-                            <TableHead>
-                                <TableRow>
-                                    {headCells.map(row => (
-                                        <StyledTableCell
-                                            key={row.id}
-                                            align={row.numeric ? 'right' : 'left'}
-                                            padding="default"
-                                            sortDirection={orderBy === row.id ? order : false}
-                                            className={classNames(
-                                                classes.headCell,
-                                                headCells.length > 2 ? null : row.id === rowKey ? classes.colCode: null
-                                            )}
-                                        >
-                                            <TableSortLabel
-                                                active={orderBy === row.id}
-                                                direction={order}
-                                                onClick={this.createSortHandler(row.id)}
+                <div className={classes.content}>
+                    <Paper>
+                        <div className={classNames(classes.tableBody, this.props.className)}>
+                            <Table size='small' stickyHeader>
+                                <TableHead>
+                                    <TableRow>
+                                        {headCells.map(row => (
+                                            <StyledTableCell
+                                                key={row.id}
+                                                align={row.numeric ? 'right' : 'left'}
+                                                padding="default"
+                                                sortDirection={orderBy === row.id ? order : false}
+                                                className={classNames(
+                                                    classes.headCell,
+                                                    headCells.length > 2 ? null : row.id === rowKey ? classes.colCode: null
+                                                )}
                                             >
-                                                {row.label}
-                                            </TableSortLabel>
-                                        </StyledTableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody >
-                                {this.stableSort(rows, this.getSorting(order, orderBy))
-                                .slice(curPage * rowsPerPage, curPage * rowsPerPage + rowsPerPage)
-                                .map((row, key) => (
-                                    <TableRow
-                                        hover
-                                        key={key}
-                                        onClick={event => this.handleClick(event, row)}
-                                        selected={selected === row[rowKey] ? true : false}
-                                    >
-                                        {headCells.map((cell, key) =>
-                                            <TableCell
-                                                key={key}
-                                                padding={cell.boolean ? "checkbox" : "default"}
-                                                align={cell.numeric ? 'right' : cell.boolean ? 'center' : 'left'}
-                                                classes={{ sizeSmall: classes.tableCell }}
-                                            >
-                                                {cell.boolean ? <Checkbox
-                                                                    checked={row[cell.id]}
-                                                                    disabled={true}
-                                                                />
-                                                                : row[cell.id]
-                                                }
-                                            </TableCell>
-                                        )}
+                                                <TableSortLabel
+                                                    active={orderBy === row.id}
+                                                    direction={order}
+                                                    onClick={this.createSortHandler(row.id)}
+                                                >
+                                                    {row.label}
+                                                </TableSortLabel>
+                                            </StyledTableCell>
+                                        ))}
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
-                    <div>
-                        <Table>
-                            <TableFooter
-                                classes={{root: classes.tableFooter}}
-                            >
-                                <TableRow>
-                                    <TablePagination
-                                        rowsPerPageOptions={[rowsPerPage]}
-                                        rowsPerPage={rowsPerPage}
-                                        count = {rows.length}
-                                        page = {curPage}
-                                        onChangePage={this.handleChangePage}
-                                        ActionsComponent={TablePaginationActions}
-                                        labelDisplayedRows={this.labelRows}
-                                        classes={{spacer: classes.spacer}}
-                                    />
-                                </TableRow>
-                            </TableFooter>
-                        </Table>
-                    </div>
-                </Paper>
+                                </TableHead>
+                                <TableBody >
+                                    {this.stableSort(rows, this.getSorting(order, orderBy))
+                                    .slice(curPage * rowsPerPage, curPage * rowsPerPage + rowsPerPage)
+                                    .map((row, key) => (
+                                        <TableRow
+                                            hover
+                                            key={key}
+                                            onClick={event => this.handleClick(event, row)}
+                                            selected={selected === row[rowKey] ? true : false}
+                                        >
+                                            {headCells.map((cell, key) =>
+                                                <TableCell
+                                                    key={key}
+                                                    padding={cell.boolean ? "checkbox" : "default"}
+                                                    align={cell.numeric ? 'right' : cell.boolean ? 'center' : 'left'}
+                                                    classes={{ sizeSmall: classes.tableCell }}
+                                                >
+                                                    {cell.boolean ? <Checkbox
+                                                                        checked={row[cell.id]}
+                                                                        disabled={true}
+                                                                    />
+                                                                    : row[cell.id]
+                                                    }
+                                                </TableCell>
+                                            )}
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                        <div>
+                            <Table>
+                                <TableFooter
+                                    classes={{root: classes.tableFooter}}
+                                >
+                                    <TableRow>
+                                        <TablePagination
+                                            rowsPerPageOptions={[rowsPerPage]}
+                                            rowsPerPage={rowsPerPage}
+                                            count = {rows.length}
+                                            page = {curPage}
+                                            onChangePage={this.handleChangePage}
+                                            ActionsComponent={TablePaginationActions}
+                                            labelDisplayedRows={this.labelRows}
+                                            classes={{spacer: classes.spacer}}
+                                        />
+                                    </TableRow>
+                                </TableFooter>
+                            </Table>
+                        </div>
+                    </Paper>
+                </div>
             </>
         )
     }

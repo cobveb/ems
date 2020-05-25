@@ -55,6 +55,8 @@ function DatePicker(props) {
         <MuiPickersUtilsProvider utils={LocalizedUtils} locale={pl}>
             <ThemeProvider theme={customDialogTheme}>
                 <KeyboardDatePicker
+                    autoOk
+                    variant="inline"
                     disableToolbar
                     fullWidth
                     inputVariant="outlined"
@@ -75,8 +77,6 @@ function DatePicker(props) {
                     }}
                     mask = "__-__-____"
                     invalidDateMessage = {constants.DATE_PICKER_INVALID_DATE_MESSAGE}
-                    cancelLabel = {constants.BUTTON_CLOSE}
-                    okLabel = {constants.BUTTON_SELECT}
                     maxDateMessage = {constants.DATE_PICKER_MAX_DATE_MESSAGE}
                     minDateMessage = {constants.DATE_PICKER_MIN_DATE_MESSAGE}
                     {...custom}

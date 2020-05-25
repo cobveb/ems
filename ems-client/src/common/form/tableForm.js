@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
         margin: 0,
         padding: 0,
         maxWidth: "100%",
-        height: `calc(100vh - ${theme.spacing(35)}px)`,
+        height: '100%',
     },
     paper: {
         minWidth: '100%',
@@ -21,10 +21,6 @@ const useStyles = makeStyles(theme => ({
     button: {
         margin: theme.spacing(0.5, 0),
     },
-    buttonContainer: {
-        overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(33.5)}px)`,
-    }
 }));
 
 function desc(a, b, orderBy) {

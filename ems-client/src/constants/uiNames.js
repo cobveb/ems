@@ -149,6 +149,16 @@ export const APPLICATIONS_APPLICATION_STATUS_PARTIALLY_EXECUTED = 'Częściowo z
 export const APPLICATIONS_APPLICATION_STATUS_EXECUTED = 'Zrealizowany';
 export const APPLICATIONS_APPLICATION_STATUS_PARTIALLY_REJECTED = 'Częściowo odrzucony';
 export const APPLICATIONS_APPLICATION_STATUS_REJECTED = 'Odrzucony';
+/* components/modules/applicant/applications/application.js */
+export const APPLICATION_CREATE_NEW_APPLICATION_TITLE = 'Nowy wniosek'
+export const APPLICATION_EDIT_APPLICATION_TITLE = 'Edycja wniosku '
+/*components/modules/applicant/applications/forms/applicationForm.js*/
+export const HEADING = 'Naglówek';
+export const HEADING_NUMBER = 'Numer';
+export const HEADING_STATUS = 'Status';
+export const HEADING_CREATE_DATE = 'Data utworzenia';
+export const HEADING_SEND_DATE = 'Data wysłania';
+export const POSITIONS = 'Pozycje';
 /* components/modules/coordinator/coordinator.js */
 export const COORDINATOR = "Koordynator";
 /* Commons sections */
@@ -203,3 +213,4 @@ export const FORM_ERROR_MSG_INVALID_CHAR = 'Pole zawiera niedozwolone znaki';
 export const FORM_ERROR_MSG_INVALID_ZIP_CODE = 'Nieprawidłowy kod pocztowy';
 export const FORM_ERROR_MSG_INVALID_PHONE_NUMBER = 'Nieprawidłowy numer telefonu';
 export const FORM_ERROR_MSG_INVALID_FAX_NUMBER = 'Nieprawidłowy numer fax';
+export const FORM_ERROR_MSG_INVALID_DATE = 'Nieprawidłowa data';

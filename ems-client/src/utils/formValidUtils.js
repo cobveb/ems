@@ -85,3 +85,14 @@ export function isValidPhoneFaxNumber(number, type){
         }
     }
 };
+
+export function isValidDate(date) {
+    const curDate = Date.parse(date);
+    const maxDate = Date.parse('01-01-2100')
+    const minDate = Date.parse('01-01-1900')
+
+    if (!curDate || curDate < minDate || curDate > maxDate){
+        return constants.FORM_ERROR_MSG_INVALID_DATE;
+    }
+    return null;
+}

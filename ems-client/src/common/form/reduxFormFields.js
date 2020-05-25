@@ -4,6 +4,11 @@ import { Visibility, VisibilityOff }from '@material-ui/icons/';
 import { green } from '@material-ui/core/colors/';
 import TableTransferList from 'common/form/tableTransferList';
 import TableForm from 'common/form/tableForm';
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from '@date-io/date-fns';
+import format from "date-fns/format";
+import { pl } from 'date-fns/locale';
+
 
 const GreenCheckbox = withStyles({
     root: {
@@ -119,4 +124,39 @@ export function RenderFormTable({fields, head, allRows, checkedRows, ...custom})
             {...custom}
         />
     )
+}
+
+export function renderDateField({meta: { submitting, error, invalid }, input: { value, ...inputProps }, name, label, ...others}){
+
+    class LocalizedUtils extends DateFnsUtils {
+        getCalendarHeaderText(date) {
+            return  format(date, "LLLL yyyy", { locale: this.locale });
+        }
+    }
+
+    const onChange = date => {
+        Date.parse(date) ? inputProps.onChange(date.toISOString()) : inputProps.onChange(date);
+    };
+
+    return(
+        <MuiPickersUtilsProvider utils={LocalizedUtils} locale={pl}>
+            <KeyboardDatePicker
+                id={name}
+                autoOk
+                variant="inline"
+                disableToolbar
+                fullWidth
+                inputVariant="outlined"
+                format="dd-MM-yyyy"
+                mask = "__-__-____"
+                label={label}
+                value={value ? new Date(value) : null}
+                keyboardIcon = {others.disabled && null}
+                disabled={submitting}
+                onChange={onChange}
+                error={error && invalid}
+                {...others}
+            />
+        </MuiPickersUtilsProvider>
+    );
 }

@@ -10,7 +10,7 @@ import GroupContainer from 'containers/modules/administrator/groupContainer';
 
 const styles = theme => ({
     tableWrapper: {
-            minHeight: `calc(100vh - ${theme.spacing(35 )}px)`,
+            minHeight: `calc(100vh - ${theme.spacing(32)}px)`,
     },
 })
 

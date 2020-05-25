@@ -21,7 +21,7 @@ const styles = theme => ({
         marginLeft: theme.spacing(1),
     },
     treeContent: {
-        height: `calc(100vh - ${theme.spacing(33)}px)`,
+        height: `calc(100vh - ${theme.spacing(29.7)}px)`,
         overflow: 'auto'
     },
 })
@@ -232,7 +232,6 @@ class Structure extends Component {
                                 </Grid>
                                 </div>
                                 <div>
-                                    <Grid item xs={12}>
                                         <Divider />
                                         <Grid
                                           container
@@ -267,7 +266,6 @@ class Structure extends Component {
                                                 variant="delete"
                                             />
                                          </Grid>
-                                     </Grid>
                                  </div>
                              </Grid>
                         </>
