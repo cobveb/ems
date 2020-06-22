@@ -1,20 +1,23 @@
 import React from 'react';
 import { withStyles, TextField  }  from '@material-ui/core/';
-import * as constants from 'constants/uiNames';
 import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
-import {digitsAndNumberMask} from 'utils/';
+import {TextMask, digitsAndNumberMask} from 'utils/';
 
 const inputField = theme => ({
-    field: {
-        marginTop: theme.spacing(0.8),
-    },
     inputLabel: {
         transform: `translate(14px, 14px) scale(1)`,
     },
     input: {
         padding: theme.spacing(1.5),
     },
+   inputRequired: {
+        padding: theme.spacing(1.5),
+        backgroundColor: '#faffbd',
+    },
+    disabled: {
+        color: '#757575',
+    }
 });
 
 function TextMaskCustom(props) {
@@ -39,20 +42,25 @@ TextMaskCustom.propTypes = {
 
 function InputField(props){
 
-    const { classes, onChange, ...custom } = props;
+    const { classes, label, mask, valueType, onChange, isRequired, ...custom } = props;
     return(
         <TextField
             id="textField"
             fullWidth
             variant="outlined"
             classes={{root: classes.field}}
+            label={label}
+            placeholder={label}
             onChange={onChange}
             InputLabelProps={{
                 classes: {outlined: classes.inputLabel}
             }}
             InputProps={{
-                inputComponent: TextMaskCustom,
-                classes: {input: classes.input},
+                inputComponent: mask ? TextMask(mask) : valueType === "numbers" ? TextMaskCustom(valueType) : valueType === "digits" ? TextMaskCustom(valueType) : undefined,
+                classes: {
+                    input: isRequired ? classes.inputRequired : classes.input,
+                    disabled: classes.disabled,
+                },
             }}
             {...custom}
         />
