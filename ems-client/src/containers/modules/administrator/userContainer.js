@@ -50,6 +50,9 @@ class UserContainer extends Component {
         this.props.loading(true);
         UsersApi.getUser(this.props.initialValues.id)
         .then(response => {
+            response.data.data.unit = this.state.ous.find(ou => {
+                return ou.code === response.data.data.unit.code
+            });
             this.setState(previousState => ({
                 initData: response.data.data,
             }));
@@ -60,6 +63,9 @@ class UserContainer extends Component {
     handleSubmitBasic = (data) => {
         UsersApi.saveUser(data)
         .then(response => {
+            response.data.data.unit = this.state.ous.find(ou => {
+                return ou.code === response.data.data.unit.code
+            });
             this.props.loading(false)
             this.setState(previousState => ({
                 initData: response.data.data,
@@ -160,6 +166,8 @@ class UserContainer extends Component {
     render(){
         const {isLoading, error, clearError, action, handleClose } = this.props;
         const {initData, ous, acObjects, permissions, userGroups, allGroups} = this.state;
+        console.log(ous)
+        console.log(initData)
         return(
             <User
                 isLoading = {isLoading}

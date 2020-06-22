@@ -36,6 +36,7 @@ class UserForm extends Component {
 
     render(){
         const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, action, ous, initialValues, onClose } = this.props
+        console.log(initialValues)
         return(
             <>
                 <form onSubmit={handleSubmit}>
@@ -53,6 +54,7 @@ class UserForm extends Component {
                                     <FormTextField
                                         name="name"
                                         label={constants.USER_BASIC_INFORMATION_NAME}
+                                        isRequired={true}
                                         inputProps={{ maxLength: 10 }}
                                     />
                                 </Grid>
@@ -60,6 +62,7 @@ class UserForm extends Component {
                                     <FormTextField
                                         name="surname"
                                         label={constants.USER_BASIC_INFORMATION_SURNAME}
+                                        isRequired={true}
                                         inputProps={{ maxLength: 80 }}
                                     />
                                 </Grid>
