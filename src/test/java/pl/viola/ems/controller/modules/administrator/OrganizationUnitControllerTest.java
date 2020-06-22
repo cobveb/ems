@@ -38,11 +38,12 @@ public class OrganizationUnitControllerTest {
     private MockMvc mvc;
 
     private OrganizationUnit main = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
-    private OrganizationUnit it = new OrganizationUnit("it", "IT", "It", "it@uck.katowice.pl", true, false);
+    private OrganizationUnit it = new OrganizationUnit("it", "IT", "It", "it@uck.katowice.pl", true, true);
     private OrganizationUnit activeOu = new OrganizationUnit("active", "IT", "It", "it@uck.katowice.pl", true, false);
 
     private List<OrganizationUnit> all = Arrays.asList(main, it);
     private List<OrganizationUnit> active = Arrays.asList(activeOu);
+    private List<OrganizationUnit> coordinators = Arrays.asList(it);
 
     @MockBean
     private OrganizationUnitService organizationUnitService;
@@ -86,6 +87,20 @@ public class OrganizationUnitControllerTest {
                 .andExpect(jsonPath("$.data", hasSize(1)))
                 .andExpect(jsonPath("$.data[0]").value(activeOu));
 
+    }
+
+    @WithMockUser("user")
+    @DisplayName("Controller - getCoordinators")
+    @Test
+    void getCoordinators() throws Exception{
+
+        given(organizationUnitService.findCoordinators()).willReturn(coordinators);
+
+        mvc.perform(get("/api/ou/getCoordinators")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0]").value(it));
     }
 
     @WithMockUser("user")

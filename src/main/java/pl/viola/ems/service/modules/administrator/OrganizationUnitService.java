@@ -18,4 +18,6 @@ public interface OrganizationUnitService {
 
     List<OrganizationUnit> findActive();
 
+    List<OrganizationUnit> findCoordinators();
+
 }

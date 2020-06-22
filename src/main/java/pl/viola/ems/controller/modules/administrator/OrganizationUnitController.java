@@ -39,6 +39,12 @@ public class OrganizationUnitController {
 		return new ApiResponse(HttpStatus.FOUND, organizationUnitService.findById(code));
 	}
 
+	@GetMapping("getCoordinators")
+	public ApiResponse getCoordinator(){
+
+		return new ApiResponse(HttpStatus.FOUND, organizationUnitService.findCoordinators());
+	}
+
 	@PutMapping("/{action}")
 	public ApiResponse saveOrganizationUnit(@Valid @RequestBody OrganizationUnit ou, @PathVariable String action){
 		return new ApiResponse(HttpStatus.CREATED, organizationUnitService.saveOu(action, ou));

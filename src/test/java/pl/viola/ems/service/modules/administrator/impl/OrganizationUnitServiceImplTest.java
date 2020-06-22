@@ -47,7 +47,7 @@ public class OrganizationUnitServiceImplTest {
     void setUp() {
         OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
         OrganizationUnit activeOu = new OrganizationUnit("active", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
-        OrganizationUnit it = new OrganizationUnit("it", "IT", "IT", "IT@uck.katowice.pl", true, false);
+        OrganizationUnit it = new OrganizationUnit("it", "IT", "IT", "IT@uck.katowice.pl", true, true);
 
         List<OrganizationUnit> units = new ArrayList<OrganizationUnit>();
         units.add(ou);
@@ -56,8 +56,13 @@ public class OrganizationUnitServiceImplTest {
         List<OrganizationUnit> active = new ArrayList<OrganizationUnit>();
         active.add(activeOu);
 
+
+        List<OrganizationUnit> coordinators = new ArrayList<OrganizationUnit>();
+        coordinators.add(it);
+
         Mockito.when(organizationUnitRepository.findAll()).thenReturn(units);
         Mockito.when(organizationUnitRepository.findByActiveTrueAndParentIsNotNullOrderByName()).thenReturn(active);
+        Mockito.when(organizationUnitRepository.findByActiveTrueAndCoordinatorTrue()).thenReturn(coordinators);
         Mockito.when(organizationUnitRepository.findMainOu()).thenReturn(ou);
         Mockito.when(organizationUnitRepository.findById("it")).thenReturn(Optional.of(it));
         Mockito.when(organizationUnitRepository.existsById("uck")).thenReturn(true);
@@ -81,6 +86,16 @@ public class OrganizationUnitServiceImplTest {
         assertThat(active).isNotEmpty();
         assertThat(active.size()).isGreaterThanOrEqualTo(1);
         assertThat(active.get(0).getCode()).isEqualTo("active");
+    }
+
+    @DisplayName("findCoordinators")
+    @Test
+    void findCoordinators() {
+        List<OrganizationUnit> coordinators = organizationUnitService.findCoordinators();
+
+        assertThat(coordinators).isNotEmpty();
+        assertThat(coordinators.size()).isGreaterThanOrEqualTo(1);
+        assertThat(coordinators.get(0).getCode()).isEqualTo("it");
     }
 
     @DisplayName("findAll - Exception NOT FOUND")

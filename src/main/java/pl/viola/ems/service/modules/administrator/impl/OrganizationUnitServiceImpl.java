@@ -77,4 +77,9 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
     public List<OrganizationUnit> findActive() {
         return organizationUnitRepository.findByActiveTrueAndParentIsNotNullOrderByName();
     }
+
+    @Override
+    public List<OrganizationUnit> findCoordinators() {
+        return organizationUnitRepository.findByActiveTrueAndCoordinatorTrue();
+    }
 }

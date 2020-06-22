@@ -16,4 +16,6 @@ public interface OrganizationUnitRepository extends JpaRepository<OrganizationUn
     List<OrganizationUnit> findByActiveTrueAndParentIsNotNullOrderByName();
 
     Optional <OrganizationUnit> findByCode(String code);
+
+    List<OrganizationUnit> findByActiveTrueAndCoordinatorTrue();
 }
