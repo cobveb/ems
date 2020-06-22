@@ -242,11 +242,13 @@ class ContainedTable extends Component {
                                                     align={cell.numeric ? 'right' : cell.boolean ? 'center' : 'left'}
                                                     classes={{ sizeSmall: classes.tableCell }}
                                                 >
-                                                    {cell.boolean ? <Checkbox
-                                                                        checked={row[cell.id]}
-                                                                        disabled={true}
-                                                                    />
-                                                                    : row[cell.id]
+                                                    {cell.boolean ?
+                                                            <Checkbox
+                                                                checked={row[cell.id]}
+                                                                disabled={true}
+                                                            />
+                                                        :
+                                                            cell.object ? (row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)]) : row[cell.id]
                                                     }
                                                 </TableCell>
                                             )}

@@ -16,18 +16,42 @@ const useStyles = makeStyles(theme => ({
     add: {
         backgroundColor: green[500],
         '&:hover': {
-             backgroundColor: green[800],
+             backgroundColor:  green[800],
+        },
+    },
+    addTxt: {
+        color: green[500],
+        backgroundColor: '#fff',
+        '&:hover': {
+             color: '#fff',
+             backgroundColor:  green[800],
         },
     },
     edit: {
         backgroundColor: amber[500],
         '&:hover': {
-             backgroundColor: amber[800],
+             backgroundColor:  amber[800],
+        },
+    },
+    editTxt: {
+        color: amber[500],
+        backgroundColor: '#fff',
+        '&:hover': {
+             color: '#fff',
+             backgroundColor:  amber[800],
         },
     },
     delete: {
         backgroundColor: red[500],
         '&:hover': {
+             backgroundColor: red[800],
+        },
+    },
+    deleteTxt: {
+        color: red[500],
+        backgroundColor: '#fff',
+        '&:hover': {
+             color: '#fff',
              backgroundColor: red[800],
         },
     },
@@ -41,6 +65,14 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: grey[500],
         '&:hover': {
              backgroundColor: grey[700],
+        },
+    },
+    cancelTxt: {
+        color: grey[500],
+        backgroundColor: '#fff',
+        '&:hover': {
+             color: '#fff',
+             backgroundColor: grey[800],
         },
     },
     buttonLabel: {
@@ -63,17 +95,20 @@ function ContainedButton(props){
     const { label, icon, iconAlign, onClick, variant, isLoading, ...other } = props;
     return(
         <Button
-            variant="contained"
+            variant={other.version ? other.version : "contained"}
             color="primary"
             className={classes.button}
-            classes={{root: classes[variant], label: classes.buttonLabel}}
-            size="medium"
+            classes={{
+                root: other.version ==='text' ? `${classes[`${variant}Txt`]}` : `${classes[`${variant}`]}`,
+                label: classes.buttonLabel
+            }}
+            size={other.size ? other.size : "medium"}
             onClick = {onClick}
+            startIcon={iconAlign === "left" && icon}
+            endIcon={iconAlign === "right" && icon}
             {...other}
         >
-            {iconAlign === "left" && icon}
             {label}
-            {iconAlign === "right" && icon}
             {isLoading && <CircularProgress  size={26} className={classes.buttonProgress} />}
         </Button>
     )

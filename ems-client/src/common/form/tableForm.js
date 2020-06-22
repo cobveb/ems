@@ -1,9 +1,12 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import {Grid, Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel, Typography, Paper} from '@material-ui/core/';
+import {Grid, Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel, Typography, Paper, Toolbar, Divider, ButtonGroup } from '@material-ui/core/';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'common/gui';
+import {AddCircle, Edit, Delete} from '@material-ui/icons';
+import * as constants from 'constants/uiNames';
+import { Button } from 'common/gui';
 
 
 const useStyles = makeStyles(theme => ({
@@ -22,6 +25,82 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(0.5, 0),
     },
 }));
+
+const useToolbarStyles = makeStyles(theme => ({
+    root: {
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(1),
+        minHeight: theme.spacing(2),
+
+    },
+    spacer: {
+        flex: '1 1 100%',
+    },
+
+}));
+
+const EnhancedTableToolbar = props => {
+    const classes = useToolbarStyles();
+    const { selected, onAdd, onEdit, onDelete, addButtonProps, editButtonProps, deleteButtonProps } = props;
+    return (
+        <>
+            <Toolbar
+                className={classes.root}
+            >
+                <div className={classes.spacer} />
+                <div>
+                    <ButtonGroup variant="text" color='inherit'>
+                        <Button
+                            label={addButtonProps && addButtonProps.label ? addButtonProps.label : constants.BUTTON_ADD}
+                            icon={addButtonProps && addButtonProps.icon ? addButtonProps.icon : <AddCircle /> }
+                            iconAlign="left"
+                            variant={addButtonProps && addButtonProps.variant ? addButtonProps.variant : "add" }
+                            size="small"
+                            version="text"
+                            onClick={(event) => onAdd(event, 'add')}
+                            disabled={ addButtonProps && addButtonProps.disabled }
+                        />
+                        <Button
+                            label={editButtonProps && editButtonProps.label ? editButtonProps.label : constants.BUTTON_EDIT}
+                            icon={editButtonProps && editButtonProps.icon ? editButtonProps.icon : <Edit />}
+                            iconAlign="left"
+                            variant={editButtonProps && editButtonProps.icon ? editButtonProps.variant : "edit"}
+                            size="small"
+                            version="text"
+                            onClick={(event) => onEdit(event, 'edit')}
+                            disabled={selected.length === 0 || (editButtonProps && editButtonProps.disabled) }
+                        />
+                        <Button
+                            label={deleteButtonProps && deleteButtonProps.label ? deleteButtonProps.label : constants.BUTTON_DELETE}
+                            icon={deleteButtonProps && deleteButtonProps.icon ? deleteButtonProps.icon : <Delete />}
+                            iconAlign="left"
+                            variant={deleteButtonProps && deleteButtonProps.variant ? deleteButtonProps.variant : "delete"}
+                            size="small"
+                            version="text"
+                            onClick={(event) => onDelete(event, 'delete')}
+                            disabled={selected.length === 0 || (deleteButtonProps && deleteButtonProps.disabled)}
+                        />
+                    </ButtonGroup>
+                </div>
+            </Toolbar>
+            <Divider/>
+        </>
+    );
+};
+
+EnhancedTableToolbar.propTypes = {
+  onAdd: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  selected: PropTypes.array.isRequired,
+  isAddDisabled: PropTypes.bool,
+};
+
+EnhancedTableToolbar.defaultProps = {
+  isAddDisabled: false,
+};
+
+
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -280,7 +359,7 @@ function EnhancedTable(props) {
                                                 size="small"
                                                 align={rowCell.numeric ? 'right' : 'left'}
                                             >
-                                                {row[rowCell.id]}
+                                                {rowCell.object ? (row[rowCell.id.substring(0, rowCell.id.indexOf('.'))][rowCell.id.substring(rowCell.id.indexOf('.') +1)]) : row[rowCell.id]}
                                             </TableCell>
                                         )}
                                         { !checkedColumnFirst &&
@@ -303,26 +382,42 @@ function EnhancedTable(props) {
 }
 
 
-export default function TableForm({ fields, head, allRows, checkedRows, ...custom}, ) {
+export default function TableForm({ fields, head, allRows, checkedRows, toolbar, ...custom}, ) {
     const classes = useStyles();
     const [checked, setChecked] = React.useState([]);
     const [rows, setRows] = React.useState(allRows);
     const [prevCheckedRows, setPrevCheckedRows] = React.useState([])
 
     React.useEffect(() => {
+
+        if(toolbar === true){
+            setValues(fields, allRows);
+        }
         if(rows !== allRows ){
-            setRows(allRows)
+            setRows(allRows);
         } else if((prevCheckedRows.length === 0 && checkedRows.length > 0)) {
-            setPrevCheckedRows(checkedRows)
-            setChecked(setValues(fields, checkedRows))
+            setPrevCheckedRows(checkedRows);
+            if(!toolbar || toolbar === false ){
+                setChecked(setValues(fields, checkedRows));
+            } else {
+                setChecked(checkedRows);
+            }
         } else if(checkedRows !== prevCheckedRows) {
             setPrevCheckedRows(checkedRows)
-            setChecked(setValues(fields, checkedRows))
+            if(!toolbar || toolbar === false ){
+                setChecked(setValues(fields, checkedRows))
+            } else {
+                setChecked(checkedRows);
+            }
         }
-    },  [checkedRows, prevCheckedRows, rows, allRows, checked, fields])
+    },  [checkedRows, prevCheckedRows, rows, allRows, checked, fields, toolbar])
 
     const handleToggle = (value) => {
-        setChecked(setValues(fields, value));
+        if(!toolbar || toolbar === false ){
+            setChecked(setValues(fields, value));
+        } else if ((custom.onSelect !== undefined || typeof(custom.onSelect) !== 'function') && custom.multiChecked === false) {
+            custom.onSelect(value);
+        }
     };
 
     return (
@@ -334,6 +429,18 @@ export default function TableForm({ fields, head, allRows, checkedRows, ...custo
                 >
                     {custom.label}
                 </Typography>
+                {toolbar &&
+                    <EnhancedTableToolbar
+                        selected={checked}
+                        addButtonProps={custom.addButtonProps}
+                        onAdd={custom.onAdd}
+                        onEdit={custom.onEdit}
+                        editButtonProps={custom.editButtonProps}
+                        onDelete={custom.onDelete}
+                        deleteButtonProps={custom.deleteButtonProps}
+                        isAddDisabled={custom.isAddDisabled}
+                    />
+                }
                 <EnhancedTable
                     className={custom.className}
                     headCells={head}
@@ -348,3 +455,25 @@ export default function TableForm({ fields, head, allRows, checkedRows, ...custo
         </Grid>
     );
 }
+
+TableForm.propTypes = {
+    toolbar: PropTypes.bool,
+    addButtonProps: PropTypes.object,
+    editButtonProps: PropTypes.object,
+    deleteButtonProps: PropTypes.object,
+    onAdd: function(props, propName, componentName) {
+        if ((props['toolbar'] === true && (props[propName] === undefined || typeof(props[propName]) !== 'function'))) {
+            return new Error('Please provide a onAdd function!');
+        }
+    },
+    onEdit: function(props, propName, componentName) {
+        if ((props['toolbar'] === true && (props[propName] === undefined || typeof(props[propName]) !== 'function'))) {
+            return new Error('Please provide a onEdit function!');
+        }
+    },
+    onDelete: function(props, propName, componentName) {
+        if ((props['toolbar'] === true && (props[propName] === undefined || typeof(props[propName]) !== 'function'))) {
+            return new Error('Please provide a onDelete function!');
+        }
+    },
+};

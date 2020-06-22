@@ -73,7 +73,7 @@ export function RenderSelectField({label, input, value, meta: { touched, error }
     }, []);
 
     return (
-        <FormControl variant="outlined" fullWidth={true} error={touched && error ? true : false}>
+        <FormControl variant="outlined" fullWidth={true} error={touched && error ? true : false} disabled={custom.disabled}>
             <InputLabel ref={inputLabel} htmlFor={custom.name} className={custom.classes.label}>
                 {label}
             </InputLabel>

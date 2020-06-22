@@ -29,7 +29,7 @@ class FormSelectField extends Component {
             this.props.options.map((item, i) => {
                 return (
                     <MenuItem
-                        value={item.code}
+                        value={item}
                         key={i}
                         name={item.code}
                     >
