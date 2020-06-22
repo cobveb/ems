@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import pl.viola.ems.model.modules.administrator.Group;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
@@ -28,16 +29,17 @@ public class CustomUserDetailsServiceImplTest {
     static class CustomUserDetailsServiceImplTestContextConfiguration {
 
         @Bean
-        public CustomUserDetailsServiceImpl customUserDetailsService (){
+        public UserDetailsService userDetailsService (){
             return new CustomUserDetailsServiceImpl();
         }
     }
 
     @Autowired
-    private CustomUserDetailsServiceImpl customUserDetailsService;
+    private CustomUserDetailsServiceImpl customUserDetailsServiceImpl;
 
     @MockBean
     private UserRepository userRepository;
+
 
     private Throwable thrown;
 
@@ -53,7 +55,7 @@ public class CustomUserDetailsServiceImplTest {
 
         Optional<User> test = userRepository.findByUsername("user");
 
-        UserPrincipal userC = (UserPrincipal) customUserDetailsService.loadUserByUsername("user");
+        UserPrincipal userC = (UserPrincipal) customUserDetailsServiceImpl.loadUserByUsername("user");
 
         User newUser = new User((long)1,"user", "userPass", new Date(), "UserName", "UserSurname",true,false,false,false, ou, new HashSet<AcPermission>(), new HashSet<Group>());
 
@@ -75,7 +77,7 @@ public class CustomUserDetailsServiceImplTest {
         Mockito.when(userRepository.findByUsername("admin")).thenReturn(Optional.empty());
 
         thrown = assertThrows(UsernameNotFoundException.class, () -> {
-            customUserDetailsService.loadUserByUsername("admin");
+            customUserDetailsServiceImpl.loadUserByUsername("admin");
         });
 
         assertEquals("User not found with username : admin", thrown.getMessage());
@@ -90,7 +92,7 @@ public class CustomUserDetailsServiceImplTest {
         List<Long> ids = Arrays.asList((long)0);
         Mockito.when(userRepository.findById((long)0)).thenReturn(Optional.of(user));
 
-        UserPrincipal userC = (UserPrincipal) customUserDetailsService.loadUserById((long)0);
+        UserPrincipal userC = (UserPrincipal) customUserDetailsServiceImpl.loadUserById((long)0);
         assertThat(userC).isNotNull();
         assertThat(userC.getUsername()).isEqualTo("user");
 
@@ -103,7 +105,7 @@ public class CustomUserDetailsServiceImplTest {
         Mockito.when(userRepository.findById((long)0)).thenReturn(Optional.empty());
 
         thrown = assertThrows(UsernameNotFoundException.class, () -> {
-            customUserDetailsService.loadUserById((long)0);
+            customUserDetailsServiceImpl.loadUserById((long)0);
         });
 
         assertEquals("User not found with id : 0", thrown.getMessage());

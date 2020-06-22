@@ -93,7 +93,7 @@ public class UserControllerTest {
             false,
             false,
             false,
-            "uck",
+            ou,
             new HashSet<AcPermission>(),
             new HashSet<Group>()
     );
@@ -108,7 +108,7 @@ public class UserControllerTest {
             false,
             false,
             false,
-            "uck",
+            ou,
             new HashSet<AcPermission>(),
             new HashSet<Group>()
     );
@@ -240,7 +240,7 @@ public class UserControllerTest {
                 "UserTest",
                 "user",
                 "User",
-                "uck"
+                ou
         );
 
         ApiResponse response = new ApiResponse(HttpStatus.CREATED, user);

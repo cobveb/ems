@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.viola.ems.model.modules.administrator.Group;
+import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.security.AcObject;
 import pl.viola.ems.model.security.AcPermission;
@@ -46,6 +47,8 @@ class GroupControllerTest {
 
     @MockBean
     AcPermissionService acPermissionService;
+
+    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
 
     private Group adm = new Group((long)1, "adm", "Administratorzy", new HashSet<AcPermission>(), new HashSet<User>());
     private Group user = new Group((long)2, "user", "Użytkownicy", new HashSet<AcPermission>(), new HashSet<User>());
@@ -136,13 +139,13 @@ class GroupControllerTest {
                 "UserTest",
                 "user",
                 "User",
-                "uck"
+                ou
         );
         UserDetails test = new UserDetails(
                 "test",
                 "test",
                 "test",
-                "uck"
+                ou
         );
 
         List<UserDetails> groupUsers = Arrays.asList(userDetails, test);

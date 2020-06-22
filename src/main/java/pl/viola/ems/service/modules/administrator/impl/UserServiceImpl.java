@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
                     user.getIsLocked(),
                     user.getIsExpired(),
                     user.getIsCredentialsExpired(),
-                    user.getOrganizationUnit().getCode(),
+                    user.getOrganizationUnit(),
                     user.getAcPermissions(),
                     user.getGroups()
             );
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
                     user.getIsLocked(),
                     user.getIsExpired(),
                     user.getIsCredentialsExpired(),
-                    user.getOrganizationUnit().getCode(),
+                    user.getOrganizationUnit(),
                     user.getAcPermissions(),
                     user.getGroups()
             );
@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
             user.setIsLocked(userDetails.getIsLocked());
             user.setIsExpired(userDetails.getIsExpired());
             user.setIsCredentialsExpired(userDetails.getIsCredentialsExpired());
-            user.setOrganizationUnit(organizationUnitRepository.findByCode(userDetails.getUnit()).orElseThrow(() -> new AppException("Administrator.user.organizationUnit.notFound", HttpStatus.BAD_REQUEST)));
+            user.setOrganizationUnit(organizationUnitRepository.findByCode(userDetails.getUnit().getCode()).orElseThrow(() -> new AppException("Administrator.user.organizationUnit.notFound", HttpStatus.BAD_REQUEST)));
             if (userDetails.getPassword() != null) {
                 if(passwordService.validatePassword(userDetails.getPassword())){
                     user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService {
                                 userDetails.getIsLocked(),
                                 userDetails.getIsExpired(),
                                 userDetails.getIsCredentialsExpired(),
-                                organizationUnitRepository.findByCode(userDetails.getUnit()).orElseThrow(() -> new AppException("Administrator.user.organizationUnit.notFound", HttpStatus.BAD_REQUEST))
+                                organizationUnitRepository.findByCode(userDetails.getUnit().getCode()).orElseThrow(() -> new AppException("Administrator.user.organizationUnit.notFound", HttpStatus.BAD_REQUEST))
                         );
                         user.setId(userRepository.saveAndFlush(user).getId());
                         userDetails.setId(user.getId());
@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
                     user.getIsLocked(),
                     user.getIsExpired(),
                     user.getIsCredentialsExpired(),
-                    user.getOrganizationUnit().getCode(),
+                    user.getOrganizationUnit(),
                     user.getAcPermissions(),
                     user.getGroups()
             );

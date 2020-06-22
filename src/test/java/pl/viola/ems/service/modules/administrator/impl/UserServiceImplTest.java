@@ -128,7 +128,7 @@ public class UserServiceImplTest {
                 false,
                 false,
                 false,
-                "uck",
+                ou,
                 new HashSet<AcPermission>(),
                 new HashSet<Group>()
         );
@@ -221,7 +221,7 @@ public class UserServiceImplTest {
                 false,
                 false,
                 false,
-                "uck",
+                ou,
                 new HashSet<AcPermission>(),
                 new HashSet<Group>()
         );
@@ -245,7 +245,7 @@ public class UserServiceImplTest {
                 false,
                 false,
                 false,
-                "uck"
+                ou
         );
 
         OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
@@ -275,7 +275,7 @@ public class UserServiceImplTest {
                 test.getIsLocked(),
                 test.getIsExpired(),
                 test.getIsCredentialsExpired(),
-                organizationUnitRepository.findByCode(test.getUnit()).get()
+                organizationUnitRepository.findByCode(test.getUnit().getCode()).get()
         );
         Mockito.when(userRepository.saveAndFlush(user)).thenReturn(userTest);
         UserDetails newUserDetails = userService.saveUser(test);
@@ -297,7 +297,7 @@ public class UserServiceImplTest {
                 false,
                 false,
                 false,
-                "uck",
+                ou,
                 null,
                 null
         );
@@ -322,7 +322,7 @@ public class UserServiceImplTest {
                 false,
                 false,
                 false,
-                "uck",
+                ou,
                 null,
                 null
         );
@@ -347,7 +347,7 @@ public class UserServiceImplTest {
                 false,
                 false,
                 false,
-                "uck",
+                ou,
                 null,
                 null
         );
@@ -389,7 +389,7 @@ public class UserServiceImplTest {
                 false,
                 false,
                 false,
-                "uck",
+                ou,
                 null,
                 null
         );
@@ -404,6 +404,8 @@ public class UserServiceImplTest {
     @DisplayName("update user - Exception Ou not found")
     @Test
     void updateUserOuNotFoundException(){
+        OrganizationUnit bad = new OrganizationUnit("bad", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+
         UserDetails test = new UserDetails(
                 (long)0,
                 "UserAdmin",
@@ -414,7 +416,7 @@ public class UserServiceImplTest {
                 false,
                 false,
                 false,
-                "x",
+                bad,
                 null,
                 null
         );
@@ -544,7 +546,7 @@ public class UserServiceImplTest {
                 false,
                 false,
                 false,
-                "uck",
+                ou,
                 new HashSet<AcPermission>(),
                 new HashSet<Group>()
         );

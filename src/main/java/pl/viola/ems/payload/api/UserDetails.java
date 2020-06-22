@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import pl.viola.ems.model.modules.administrator.Group;
+import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.security.AcPermission;
 
 import javax.validation.constraints.NotBlank;
@@ -32,11 +33,11 @@ public class UserDetails {
     private Boolean isCredentialsExpired;
 
     @NonNull
-    private String unit;
+    private OrganizationUnit unit;
     private Set<AcPermission> permissions;
     private Set<Group> groups;
 
-    public UserDetails(String username, String surname, String name, String password, Boolean isActive, Boolean isLocked, Boolean isExpired, Boolean isCredentialsExpired, String unit){
+    public UserDetails(String username, String surname, String name, String password, Boolean isActive, Boolean isLocked, Boolean isExpired, Boolean isCredentialsExpired, OrganizationUnit unit){
         this.username = username;
         this.surname = surname;
         this.name = name;
