@@ -4,6 +4,7 @@ import { Visibility, VisibilityOff }from '@material-ui/icons/';
 import { green } from '@material-ui/core/colors/';
 import TableTransferList from 'common/form/tableTransferList';
 import TableForm from 'common/form/tableForm';
+import DictionaryField from 'common/form/dictionaryField';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
 import format from "date-fns/format";
@@ -31,6 +32,40 @@ export const renderTextField = ({ label, input, meta: { touched, invalid, error 
         {...custom}
     />
 );
+
+
+export function RenderDigitsField({ label, input, meta: { touched, invalid, error }, ...custom }){
+    const [value, setValue] = React.useState(input.value);
+
+    React.useEffect(() => {
+        if(input.value !== value){
+            setValue(input.value)
+        }
+    },  [value, input])
+
+    return(
+        <>
+            <TextField
+                label={label}
+                placeholder={label}
+                fullWidth
+                value={value}
+                variant="outlined"
+                error={touched && invalid}
+                helperText={touched && error}
+                InputLabelProps={{
+                    classes: {outlined: custom.InputLabelProps.classes.outlined}
+                }}
+                className={custom.classes}
+                InputProps={{
+                    classes: {input: custom.InputProps.classes.input},
+                }}
+                onChange={(event) => input.onChange(event.target.value === '' ? '' : parseInt(event.target.value, 10))}
+                onBlur={(event) => input.onBlur(value)}
+            />
+        </>
+    );
+};
 
 export const renderPasswordField = ({label, input, meta: { touched, invalid, error }, showPassword, onClick,  ...custom }) => (
     <TextField
@@ -160,3 +195,34 @@ export function renderDateField({meta: { submitting, error, invalid }, input: { 
         </MuiPickersUtilsProvider>
     );
 }
+
+
+export function RenderDictionaryField({ label, input, value, meta, meta: { touched, invalid, error }, onClick, validate, ...custom} ){
+    const inputLabel = React.useRef(null);
+    const [labelWidth, setLabelWidth] = React.useState(0);
+    React.useEffect(() => {
+        setLabelWidth(inputLabel.current.offsetWidth);
+    }, []);
+
+    return(
+        <FormControl variant="outlined" fullWidth={true} error={touched && error ? true : false} disabled={custom.disabled}>
+            <InputLabel ref={inputLabel} htmlFor={input.name} className={custom.classes.label}>
+                {label}
+            </InputLabel>
+
+            <DictionaryField
+                labelWidth={labelWidth}
+                name={input.name}
+                dictionaryName={custom.dictionaryName}
+                classes={custom.classes.isRequired}
+                inputProps={custom.inputProps.classes}
+                disabled={custom.disabled}
+                items={custom.items}
+                error={error}
+                {...input}
+            />
+
+            <FormHelperText>{touched && error}</FormHelperText>
+        </FormControl>
+    );
+};

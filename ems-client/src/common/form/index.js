@@ -5,6 +5,8 @@ import FormCheckBox from 'common/form/formCheckbox';
 import FormTableTransferListField from 'common/form/formTableTransferListField';
 import FormTableField from 'common/form/formTableField';
 import FormDateField from 'common/form/formDateField';
+import FormDictionaryField from 'common/form/formDictionaryField';
+import FormDigitsField from 'common/form/formDigitsField';
 
 
 export * from 'common/form/reduxFormFields';
@@ -16,4 +18,6 @@ export {
     FormTableTransferListField,
     FormTableField,
     FormDateField,
+    FormDictionaryField,
+    FormDigitsField,
 };
