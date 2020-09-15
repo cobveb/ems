@@ -97,7 +97,6 @@ public class UserPrincipal implements UserDetails{
 
 	private static List<String> setGroups(final User user){
     	List<String> groups = user.getGroups().stream().map(group -> group.getName()).collect(Collectors.toList());
-    	System.out.println(groups);
     	return groups;
 	}
 
