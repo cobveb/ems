@@ -44,30 +44,30 @@ public class CustomMethodSecurityExpressionRootConfig extends SecurityExpression
         }
 
         AcPrivilege acPrivilege = acPrivilegeService.findByCode(permission.toString());
-       throw new AppException(HttpStatus.FORBIDDEN,
-               "Security.accessDenied.hasPrivilege",
-               acPrivilege.getCode() + " - " + acPrivilege.getName()
-       );
+        throw new AppException(HttpStatus.FORBIDDEN,
+            "Security.accessDenied.hasPrivilege",
+                acPrivilege.getCode() + " - " + acPrivilege.getName()
+        );
     }
 
     @Override
-    public void setFilterObject(Object o) {
-
+    public void setFilterObject(Object filterObject) {
+        this.filterObject = filterObject;
     }
 
     @Override
     public Object getFilterObject() {
-        return null;
+        return filterObject;
     }
 
     @Override
-    public void setReturnObject(Object o) {
-
+    public void setReturnObject(Object returnObject) {
+        this.returnObject = returnObject;
     }
 
     @Override
     public Object getReturnObject() {
-        return null;
+        return returnObject;
     }
 
     @Override
