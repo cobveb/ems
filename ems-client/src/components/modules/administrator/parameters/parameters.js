@@ -24,33 +24,28 @@ class Parameters extends Component {
         headCells: [
             {
                 id: 'category',
-                numeric: false,
                 label: constants.PARAMETERS_TABLE_HEAD_ROW_CATEGORY,
-                boolean: false,
+                type: 'text',
             },
             {
                 id: 'section',
-                numeric: false,
                 label: constants.PARAMETERS_TABLE_HEAD_ROW_SECTION,
-                boolean: false,
+                type: 'text',
             },
             {
                 id: 'code',
-                numeric: false,
                 label: constants.PARAMETERS_TABLE_HEAD_ROW_CODE,
-                boolean: false,
+                type: 'text',
             },
             {
                 id: 'name',
-                numeric: false,
                 label: constants.PARAMETERS_TABLE_HEAD_ROW_NAME,
-                boolean: false,
+                type: 'text'
             },
             {
                 id: 'value',
-                numeric: false,
                 label: constants.PARAMETERS_TABLE_HEAD_ROW_VALUE,
-                boolean: false,
+                type: 'text',
             },
 
         ],

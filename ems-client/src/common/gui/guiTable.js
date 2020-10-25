@@ -6,6 +6,8 @@ import { FirstPage, LastPage, KeyboardArrowLeft, KeyboardArrowRight } from '@mat
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { grey } from '@material-ui/core/colors/';
 import { Checkbox } from 'common/gui';
+import format from "date-fns/format";
+import { pl } from 'date-fns/locale';
 
 const tablePagination = makeStyles(theme => ({
     root: {
@@ -124,20 +126,52 @@ const styles = theme => ({
 class ContainedTable extends Component {
     state = {
         curPage: 0,
-        rowsPerPage: 10,
+        rowsPerPage: 50,
         selected: '',
         order: 'asc',
         orderBy: '',
+        cellType: 'text',
     };
 
     desc(a, b, orderBy) {
-        if (b[orderBy] < a[orderBy]) {
-            return -1;
+        switch(this.state.cellType){
+            case 'object' :
+                if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] < a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
+                    return -1;
+                }
+                if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] > a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
+                    return 1;
+                }
+                break;
+            case 'text':
+            case 'numeric':
+            case 'boolean':
+                if (b[orderBy] < a[orderBy]) {
+                    return -1;
+                } else if (b[orderBy] > a[orderBy]) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+
+            case 'date':
+                if (b[orderBy] !== null && a[orderBy] !== null){
+                    if(b[orderBy] < a[orderBy]){
+                        return -1;
+                    } else if(b[orderBy] > a[orderBy]){
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                } else if (b[orderBy] !== null && a[orderBy] === null ) {
+                    return 1;
+                } else if (b[orderBy] === null && a[orderBy] !== null){
+                    return -1;
+                }
+                break;
+            default:
+                return 0;
         }
-        if (b[orderBy] > a[orderBy]) {
-            return 1;
-        }
-        return 0;
     };
 
     getSorting(order, orderBy) {
@@ -155,8 +189,9 @@ class ContainedTable extends Component {
         return stabilizedThis.map(el => el[0]);
     };
 
-    createSortHandler = property => event => {
-        this.handleRequestSort(event, property);
+    createSortHandler = row => event => {
+        this.setState({cellType: row.type});
+        this.handleRequestSort(event, row.id);
     };
 
     handleChangePage = (event, newPage) => {
@@ -185,9 +220,15 @@ class ContainedTable extends Component {
         })
     }
 
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.clearSelect === true && (this.props.clearSelect !== prevProps.clearSelect)){
+            this.setState({selected: ''});
+        }
+    }
+
     componentDidMount(){
         this.setState({
-            rows: this.state.rows,
+            rows: this.props.rows,
             orderBy: this.props.defaultOrderBy,
         });
     }
@@ -206,7 +247,7 @@ class ContainedTable extends Component {
                                         {headCells.map(row => (
                                             <StyledTableCell
                                                 key={row.id}
-                                                align={row.numeric ? 'right' : 'left'}
+                                                align={row.type === 'numeric' ? 'right' : 'left'}
                                                 padding="default"
                                                 sortDirection={orderBy === row.id ? order : false}
                                                 className={classNames(
@@ -217,7 +258,7 @@ class ContainedTable extends Component {
                                                 <TableSortLabel
                                                     active={orderBy === row.id}
                                                     direction={order}
-                                                    onClick={this.createSortHandler(row.id)}
+                                                    onClick={this.createSortHandler(row)}
                                                 >
                                                     {row.label}
                                                 </TableSortLabel>
@@ -238,17 +279,28 @@ class ContainedTable extends Component {
                                             {headCells.map((cell, key) =>
                                                 <TableCell
                                                     key={key}
-                                                    padding={cell.boolean ? "checkbox" : "default"}
-                                                    align={cell.numeric ? 'right' : cell.boolean ? 'center' : 'left'}
+                                                    padding={cell.type === 'boolean' ? "checkbox" : "default"}
+                                                    align={cell.type === 'numeric' ? 'right' : cell.boolean ? 'center' : 'left'}
                                                     classes={{ sizeSmall: classes.tableCell }}
                                                 >
-                                                    {cell.boolean ?
+                                                    {cell.type === 'boolean'
+                                                        ?
                                                             <Checkbox
                                                                 checked={row[cell.id]}
                                                                 disabled={true}
                                                             />
                                                         :
-                                                            cell.object ? (row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)]) : row[cell.id]
+                                                            cell.type === 'object' ? (row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)])
+                                                                :
+                                                                    cell.type === 'date' && row[cell.id] !== null
+                                                                        ?
+                                                                            format(
+                                                                                new Date(Date.parse(row[cell.id])),
+                                                                                cell.dateFormat !== null ? cell.dateFormat : 'dd-MM-yyyy',
+                                                                                { locale: pl }
+                                                                            )
+                                                                        :
+                                                                            row[cell.id]
                                                     }
                                                 </TableCell>
                                             )}
@@ -287,6 +339,7 @@ class ContainedTable extends Component {
 ContainedTable.propTypes ={
     classes: PropTypes.object.isRequired,
     onSelect: PropTypes.func,
+    clearSelect: PropTypes.bool,
     defaultOrderBy: PropTypes.string,
     rows: PropTypes.array,
     headCells: PropTypes.array.isRequired,

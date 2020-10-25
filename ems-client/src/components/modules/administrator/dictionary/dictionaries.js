@@ -6,7 +6,7 @@ import Spinner from 'common/spinner';
 import * as constants from 'constants/uiNames';
 import { SearchField, Button, Table } from 'common/gui';
 import { LibraryBooks } from '@material-ui/icons/';
-import Dictionary from 'components/modules/administrator/dictionary';
+import DictionaryContainer from 'containers/modules/administrator/dictionaryContainer';
 
 const styles = theme => ({
     root: {
@@ -16,7 +16,7 @@ const styles = theme => ({
         marginLeft: theme.spacing(1),
     },
     tableWrapper: {
-            minHeight: `calc(100vh - ${theme.spacing(32)}px)`,
+        minHeight: `calc(100vh - ${theme.spacing(32)}px)`,
     },
 })
 
@@ -25,19 +25,17 @@ class Dictionaries extends Component {
         headCells: [
             {
                 id: 'code',
-                numeric: false,
                 label: 'Kod',
-                boolean: false,
+                type: 'text',
             },
             {
                 id: 'name',
-                numeric: false,
                 label: 'Nazwa',
-                boolean: false,
+                type: 'text',
             },
         ],
         selected: '',
-        filter: [],
+        rows: this.props.initialValues,
         openDictionary: false,
     };
 
@@ -49,8 +47,12 @@ class Dictionaries extends Component {
         this.setState({openDictionary: true})
     }
 
-    handleClose = () => {
-        this.setState({openDictionary: false})
+    handleClose = (dictionary) => {
+        this.setState(state => ({
+            openDictionary: !state.openDictionary,
+            selected: '',
+            rows: this.props.onClose(dictionary),
+        }));
     }
 
     handleCloseDialog = () =>{
@@ -71,26 +73,33 @@ class Dictionaries extends Component {
         });
 
         this.setState({
-            filter: updateList,
+            rows: updateList,
+            selected: null,
         });
     }
 
     componentDidUpdate(prevProps){
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
-                filter: this.props.initialValues,
+                rows: this.props.initialValues,
             });
         }
     }
 
     render(){
         const { classes, isLoading, error} = this.props;
-        const { filter, selected, headCells, openDictionary  } = this.state;
+        const { rows, selected, headCells, openDictionary  } = this.state;
         return(
             <>
-                <Dictionary dictionary={selected} open={openDictionary} onClose={this.handleClose}/>
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
+                {openDictionary &&
+                    <DictionaryContainer
+                        initialValues={selected}
+                        open={openDictionary}
+                        onClose={this.handleClose}
+                    />
+                }
                 <div className={classes.root}>
                     <Grid
                         container
@@ -101,15 +110,19 @@ class Dictionaries extends Component {
                         <Divider />
                         <Grid item xs={12}>
                             <SearchField
+                                label={constants.DICTIONARIES_SEARCH_CODE_NAME}
+                                placeholder={constants.DICTIONARIES_SEARCH_CODE_NAME}
                                 onChange={this.filter}
                             />
                         </Grid>
                         <Grid item xs={12}>
                             <Table
-                                rows={filter}
+                                rows={rows}
                                 headCells={headCells}
                                 onSelect={this.handleSelect}
+                                clearSelect={!selected}
                                 className={classes.tableWrapper}
+                                rowKey="code"
                             />
                         </Grid>
                         <Grid

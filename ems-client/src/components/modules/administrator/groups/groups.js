@@ -20,15 +20,13 @@ class Groups extends Component {
         headCells: [
             {
                 id: 'code',
-                numeric: false,
                 label: constants.GROUPS_TABLE_HEAD_ROW_CODE,
-                boolean: false,
+                type: 'text',
             },
             {
                 id: 'name',
-                numeric: false,
                 label: constants.GROUPS_TABLE_HEAD_ROW_NAME,
-                boolean: false,
+                type: 'text',
             },
         ],
         selected: '',
