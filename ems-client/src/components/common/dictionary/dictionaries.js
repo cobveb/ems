@@ -6,7 +6,7 @@ import Spinner from 'common/spinner';
 import * as constants from 'constants/uiNames';
 import { SearchField, Button, Table } from 'common/gui';
 import { LibraryBooks } from '@material-ui/icons/';
-import DictionaryContainer from 'containers/modules/administrator/dictionaryContainer';
+import DictionaryContainer from 'containers/common/dictionary/dictionaryContainer';
 
 const styles = theme => ({
     root: {

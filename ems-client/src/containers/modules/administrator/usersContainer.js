@@ -4,7 +4,8 @@ import Users from 'components/modules/administrator/users/users';
 import UsersApi from 'api/modules/administrator/usersApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
-import {updateOnCloseDetails} from 'utils'
+import {updateOnCloseDetails} from 'utils';
+
 class UsersContainer extends Component {
     state = {
         initData: [],

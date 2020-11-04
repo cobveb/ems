@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import Dictionaries from 'components/modules/administrator/dictionaries';
+import Dictionaries from 'components/common/dictionary/dictionaries';
 import DictionaryApi from 'api/common/dictionaryApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
+import {updateOnCloseDetails} from 'utils';
 
 class DictionariesContainer extends Component {
     state = {
@@ -22,6 +23,11 @@ class DictionariesContainer extends Component {
         .catch(error => {});
     }
 
+    handleUpdateOnClose = (dictionary) => {
+        let dictionaries = this.state.initData;
+        return updateOnCloseDetails(dictionaries, dictionary, 'code');
+    }
+
     componentDidMount() {
         this.handleAll();
     }
@@ -35,6 +41,7 @@ class DictionariesContainer extends Component {
                 isLoading = {isLoading}
                 error = {error}
                 clearError={clearError}
+                onClose={this.handleUpdateOnClose}
             />
         )
     }

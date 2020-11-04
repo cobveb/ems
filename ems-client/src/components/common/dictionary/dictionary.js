@@ -6,7 +6,7 @@ import Spinner from 'common/spinner';
 import * as constants from 'constants/uiNames';
 import { SearchField, Button, Table } from 'common/gui';
 import { Add, Close, Delete, Edit, Visibility } from '@material-ui/icons/';
-import DictionaryItemDetails from 'components/modules/administrator/dictionary/dictionaryItemDetails';
+import DictionaryItemDetails from 'components/common/dictionary/dictionaryItemDetails';
 
 
 const styles = theme => ({

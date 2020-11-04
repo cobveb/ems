@@ -93,22 +93,27 @@ DROP TABLE emsarch.dictionary_items CASCADE CONSTRAINTS PURGE;
 /
 CREATE TABLE emsarch.dictionary_items
 (
+    id NUMBER(19,0) NOT NULL,
     code VARCHAR2(10) NOT NULL ,
 	name VARCHAR2(120) NOT NULL ,
+	is_active NUMBER(1) DEFAULT 1 NOT NULL,
 	dictionary_code VARCHAR2(10) NOT NULL,
-	CONSTRAINT dictionary_items_pk PRIMARY KEY (code),
+	CONSTRAINT dictionary_items_pk PRIMARY KEY (id),
+	CONSTRAINT dictionary_items_unq UNIQUE (code, dictionary_code),
 	CONSTRAINT dictionary_items_fk FOREIGN KEY (dictionary_code) REFERENCES emsarch.dictionaries(code)
 )
 TABLESPACE ems_dictionaries;
 
 --- Add comments to the columns
 
+COMMENT on COLUMN dictionary_items.id is 'Dictionary item ID in database';
 COMMENT on COLUMN dictionary_items.code is 'Dictionary item code';
 COMMENT on COLUMN dictionary_items.name is 'Dictionary item name';
+COMMENT on COLUMN dictionary_items.is_active is 'Is dictionary item active. 1 - active, 0 - non active';
 COMMENT on COLUMN dictionary_items.dictionary_code is 'Dictionary code foregin key';
 /
 /*Grant permissions on table dictionaries for the user sysadm*/
-GRANT SELECT, INSERT, UPDATE, DELETE ON emsarch.dictionary_items TO emsadm;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON emsarch.dictionary_items TO emsadm;
 
 -- Create the table of application parameter
 DROP TABLE emsarch.parameters CASCADE CONSTRAINTS PURGE;
@@ -199,8 +204,16 @@ CREATE SEQUENCE groups_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 /
 GRANT SELECT ON emsarch.groups_seq TO emsadm;
 /
+-- Create sequence of dictionary item
+DROP SEQUENCE dict_item_seq;
+/
+CREATE SEQUENCE dict_item_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+/
+GRANT SELECT ON emsarch.dict_item_seq TO emsadm;
+/
+
 /*---------------------------------------------------------------------------------------------------------------------*/
-/*                                                   TRIGGERS                                            				   */
+/*                                                   TRIGGERS                                            			    */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
 -- Trigger responsible for postponing information about the user's last password change.

@@ -30,19 +30,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DictionaryControllerTest {
     @Autowired
-    private WebApplicationContext context;
+    WebApplicationContext context;
 
     @MockBean
-    private DictionaryService dictionaryService;
+    DictionaryService dictionaryService;
 
     private MockMvc mvc;
-    private Dictionary asort = new Dictionary("asort", "Asortyment", 'S', null);
-    private Dictionary test = new Dictionary("test", "Test", 'U', new HashSet<DictionaryItem>());
-    private Dictionary user = new Dictionary("user", "Użytkownik", 'A',new HashSet<DictionaryItem>());
-    private DictionaryItem item = new DictionaryItem("test", "test item", asort);
+    final private Dictionary asort = new Dictionary("asort", "Asortyment", 'S', null);
+    final private Dictionary test = new Dictionary("test", "Test", 'U', new HashSet<>());
+    final private Dictionary user = new Dictionary("user", "Użytkownik", 'A', new HashSet<>());
+    final private DictionaryItem item = new DictionaryItem((long)1, "test", "test item", true, asort, new HashSet<>());
 
-    private List<Dictionary> all = Arrays.asList(asort, test, user);
-    private Set<DictionaryItem> items = new HashSet<DictionaryItem>();
+    final private List<Dictionary> all = Arrays.asList(asort, test, user);
+    final private Set<DictionaryItem> items = new HashSet<>();
     @BeforeEach
     public void setup() {
         mvc = MockMvcBuilders
@@ -72,7 +72,7 @@ class DictionaryControllerTest {
     @DisplayName("Dictionary - Controller - getDictionaryById")
     @Test
     void getDictionary() throws Exception{
-        given(dictionaryService.findById("asort")).willReturn(java.util.Optional.ofNullable(asort));
+        given(dictionaryService.findById("asort")).willReturn(java.util.Optional.of(asort));
 
         mvc.perform(get("/api/dict/getDict/asort")
                 .contentType(MediaType.APPLICATION_JSON))
