@@ -14,6 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
+import pl.viola.ems.model.modules.applicant.Application;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 
@@ -207,7 +208,9 @@ public class OrganizationUnitControllerTest {
                 true,
                 false,
                 null,
-                new HashSet<User>()
+                new HashSet<User>(),
+                new HashSet<Application>(),
+                new HashSet<Application>()
         );
 
         mvc.perform(put("/api/ou/add")

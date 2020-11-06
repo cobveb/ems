@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withStyles, Grid, TextField, FormControl, IconButton, Input, InputLabel, InputAdornment, } from '@material-ui/core/';
 import PropTypes from 'prop-types';
 import { Button } from 'common/gui';
-import { Visibility, Send, VisibilityOff }from '@material-ui/icons/';
+import { Visibility, LockOpenOutlined, VisibilityOff }from '@material-ui/icons/';
 import { withRouter } from 'react-router-dom';
 import Notification from 'common/notification';
 import ChangePasswordFormContainer from 'containers/login/changePasswordFormContainer';
@@ -16,10 +16,6 @@ const styles = theme => ({
 	formControl: {
 		marginBottom: theme.spacing(3),
 	},
-
-    rightIcon: {
-        marginLeft: theme.spacing(1),
-    },
 });
 
 class LoginForm extends Component {
@@ -155,7 +151,7 @@ class LoginForm extends Component {
 						</FormControl>
                         <Button
                             label={constants.BUTTON_LOGIN}
-                            icon=<Send className={classes.rightIcon}/>
+                            icon=<LockOpenOutlined/>
                             iconAlign="right"
                             type='submit'
                             variant="submit"

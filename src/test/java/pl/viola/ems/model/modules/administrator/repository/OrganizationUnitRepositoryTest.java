@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.TestPropertySource;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
+import pl.viola.ems.model.modules.applicant.Application;
 
 import java.util.HashSet;
 
@@ -34,17 +35,19 @@ public class OrganizationUnitRepositoryTest {
             "UCK",
             "1234567891",
             "123456789",
-            "Katowice",
-            "40 - 514",
-            "Ceglana",
-            "35",
-            "+48 (32) 123 12 12",
-            "+48 (32) 123 12 12",
-            "uck@uck.katowice.pl",
-            true,
-            false,
-            null,
-            new HashSet<User>()
+                "Katowice",
+                "40 - 514",
+                "Ceglana",
+                "35",
+                "+48 (32) 123 12 12",
+                "+48 (32) 123 12 12",
+                "uck@uck.katowice.pl",
+                true,
+                false,
+                null,
+                new HashSet<User>(),
+                new HashSet<Application>(),
+                new HashSet<Application>()
         );
         entityManager.persist(ou);
         OrganizationUnit it = new OrganizationUnit(
@@ -77,7 +80,9 @@ public class OrganizationUnitRepositoryTest {
                 true,
                 false,
                 null,
-        new HashSet<User>()
+                new HashSet<User>(),
+                new HashSet<Application>(),
+                new HashSet<Application>()
         ));
     }
 }

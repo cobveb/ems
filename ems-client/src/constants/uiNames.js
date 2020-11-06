@@ -109,6 +109,21 @@ export const GROUP_PERMISSIONS_TABLE_PRIVILEGES_HEAD_ROW_NAME = 'Nazwa';
 export const GROUP_PERMISSIONS_TABLE_OBJECTS_LABEL = 'Lista obiektów:';
 export const GROUP_PERMISSIONS_TABLE_OBJECTS_HEAD_ROW_NAME = 'Nazwa';
 export const GROUP_CONFIRM_DELETE_MESSAGE = 'Grupa zostanie usunięta. Czy kontynuować?';
+/* components/modules/administrator/dictionaries.js */
+export const DICTIONARIES_SEARCH_CODE_NAME = 'Kod / Nazwa';
+/* components/modules/administrator/dictionary.js */
+export const DICTIONARY_TITLE = 'Elementy słownika: ';
+export const DICTIONARY_TABLE_HEAD_ROW_CODE = 'Kod';
+export const DICTIONARY_TABLE_HEAD_ROW_NAME = 'Nazwa';
+export const DICTIONARY_TABLE_HEAD_ROW_ACTIVE = 'Aktywna';
+export const DICTIONARY_CONFIRM_DELETE_MESSAGE = 'Pozycja zostanie usunięta. Czy kontynuować?';
+/* components/modules/administrator/dictionaryItemDetails.js */
+export const DICTIONARY_ITEM_DETAILS_ADD_TITLE = 'Nowa pozycja';
+export const DICTIONARY_ITEM_DETAILS_EDIT_TITLE = 'Szczegóły pozycji: ';
+/* components/modules/administrator/dictionaryItemForm.js */
+export const DICTIONARY_ITEM_FORM_CODE = 'Kod';
+export const DICTIONARY_ITEM_FORM_NAME = 'Nazwa';
+export const DICTIONARY_ITEM_FORM_IS_ACTIVE = 'Aktywna';
 /* components/modules/administrator/parameters.js */
 export const PARAMETERS_SEARCH_CODE = 'Kod / Nazwa';
 export const PARAMETERS_SEARCH_CATEGORY = 'Kategoria';
@@ -130,16 +145,9 @@ export const PARAMETER_VALUE = 'Wartość';
 /* components/modules/applicant.js */
 export const MENU_APPLICATION = 'Wnioski';
 export const SUBMENU_APPLICATIONS = 'Wnioski';
-/* components/modules/applicant/applications/applications.js */
-export const APPLICATION_CONFIRM_DELETE_MESSAGE = 'Wniosek zostanie usunięty. Czy kontynuować?';
-export const APPLICATIONS_SEARCH_NUMBER = 'Numer wniosku';
-export const APPLICATIONS_SEARCH_STATUS = 'Status';
-export const APPLICATIONS_SEARCH_DATE_FROM = 'Data od';
-export const APPLICATIONS_SEARCH_DATE_TO = 'Data do';
-export const APPLICATIONS_TABLE_HEAD_ROW_NUMBER = 'Numer';
-export const APPLICATIONS_TABLE_HEAD_ROW_STATUS = 'Status';
+/* containers/modules/applicant/applicationsContainer.js */
 export const APPLICATIONS_APPLICATION_STATUS_SAVED = 'Zapisany';
-export const APPLICATIONS_APPLICATION_STATUS_SEND = 'Wysłany';
+export const APPLICATIONS_APPLICATION_STATUS_SENT = 'Wysłany';
 export const APPLICATIONS_APPLICATION_STATUS_CONSIDERED = 'Rozpatrywany';
 export const APPLICATIONS_APPLICATION_STATUS_PARTIALLY_APPROVED = 'Częściowo zatwierdzony';
 export const APPLICATIONS_APPLICATION_STATUS_APPROVED = 'Zatwierdzony';
@@ -149,18 +157,69 @@ export const APPLICATIONS_APPLICATION_STATUS_PARTIALLY_EXECUTED = 'Częściowo z
 export const APPLICATIONS_APPLICATION_STATUS_EXECUTED = 'Zrealizowany';
 export const APPLICATIONS_APPLICATION_STATUS_PARTIALLY_REJECTED = 'Częściowo odrzucony';
 export const APPLICATIONS_APPLICATION_STATUS_REJECTED = 'Odrzucony';
+/* components/modules/applicant/applications/applications.js */
+export const APPLICATIONS_CONFIRM_DELETE_MESSAGE = 'Wniosek zostanie usunięty. Czy kontynuować?';
+export const APPLICATIONS_CONFIRM_WITHDRAW_MESSAGE = 'Wniosek zostanie wycofany. Czy kontynuować?';
+export const APPLICATIONS_SEARCH_NUMBER = 'Numer wniosku';
+export const APPLICATIONS_SEARCH_STATUS = 'Status';
+export const APPLICATIONS_SEARCH_DATE_FROM = 'Data wysłania od';
+export const APPLICATIONS_SEARCH_DATE_TO = 'Data wysłania do';
+export const APPLICATIONS_TABLE_HEAD_ROW_NUMBER = 'Numer wniosku';
+export const APPLICATIONS_TABLE_HEAD_ROW_STATUS = 'Status';
+export const APPLICATIONS_TABLE_HEAD_ROW_COORDINATOR = 'Koordynator';
+export const APPLICATIONS_TABLE_HEAD_ROW_SEND_DATE = 'Data wysłania';
+/* containers/modules/applicant/applicationContainer.js */
+export const APPLICATIONS_APPLICATION_POSITION_STATUS_ADDED = 'Dodana';
+export const APPLICATIONS_APPLICATION_POSITION_STATUS_SAVED = 'Zapisana';
+export const APPLICATIONS_APPLICATION_POSITION_STATUS_SENT = 'Wysłana';
+export const APPLICATIONS_APPLICATION_POSITION_STATUS_CONSIDERED = 'Rozpatrywana';
+export const APPLICATIONS_APPLICATION_POSITION_STATUS_APPROVED = 'Zatwierdzona';
+export const APPLICATIONS_APPLICATION_POSITION_STATUS_REALIZED= 'Realizowana';
+export const APPLICATIONS_APPLICATION_POSITION_STATUS_EXECUTED= 'Zrealizowana';
+export const APPLICATIONS_APPLICATION_POSITION_STATUS_REJECTED= 'Odrzucona';
 /* components/modules/applicant/applications/application.js */
 export const APPLICATION_CREATE_NEW_APPLICATION_TITLE = 'Nowy wniosek'
-export const APPLICATION_EDIT_APPLICATION_TITLE = 'Edycja wniosku '
+export const APPLICATION_EDIT_APPLICATION_TITLE = 'Edycja wniosku nr: '
+export const APPLICATION_VIEW_APPLICATION_TITLE = 'Podgląd wniosku nr: '
 /*components/modules/applicant/applications/forms/applicationForm.js*/
 export const HEADING = 'Naglówek';
 export const HEADING_NUMBER = 'Numer';
 export const HEADING_STATUS = 'Status';
 export const HEADING_CREATE_DATE = 'Data utworzenia';
 export const HEADING_SEND_DATE = 'Data wysłania';
+export const HEADING_COORDINATOR = 'Koordynator';
 export const POSITIONS = 'Pozycje';
+export const POSITIONS_TABLE_HEAD_ROW_NAME = 'Nazwa';
+export const POSITIONS_TABLE_HEAD_ROW_QUANTITY = 'Ilość';
+export const POSITIONS_TABLE_HEAD_ROW_UNIT = 'Jednostka';
+export const POSITIONS_TABLE_HEAD_ROW_STATUS = 'Status';
+export const APPLICATION_CONFIRM_DELETE_POSITION_MESSAGE = 'Pozycja zostanie usunięta. Czy kontynuować?';
+/*components/modules/applicant/applications/forms/applicationPositionForm.js*/
+export const APPLICATION_POSITION_DETAILS_TITLE = 'Szczegóły pozycji wniosku';
+export const APPLICATION_POSITION_DETAILS_POSITION_ID = 'Numer';
+export const APPLICATION_POSITION_DETAILS_POSITION_NAME = 'Nazwa';
+export const APPLICATION_POSITION_DETAILS_QUANTITY = 'Ilość';
+export const APPLICATION_POSITION_DETAILS_UNIT = 'Jednostka';
+export const APPLICATION_POSITION_DETAILS_STATUS = 'Status';
+export const APPLICATION_POSITION_DETAILS_DESCRIPTION = 'Opis / uzasadnienie';
+export const APPLICATION_POSITION_DETAILS_REJECTION_REASON = 'Powód odrzucenia';
 /* components/modules/coordinator/coordinator.js */
 export const COORDINATOR = "Koordynator";
+export const COORDINATOR_MENU_APPLICATIONS = 'Obsługa wniosków';
+export const COORDINATOR_SUBMENU_APPLICATIONS = 'Wnioski';
+export const COORDINATOR_MENU_PLANS = 'Plany';
+export const COORDINATOR_SUBMENU_PLANS_FINANCIAL = 'Plany finansowe';
+export const COORDINATOR_MENU_DICTIONARIES = 'Słowniki';
+export const COORDINATOR_SUBMENU_DICTIONARIES = 'Słowniki';
+/* components/modules/accountant/accountant.js */
+export const ACCOUNTANT = "Księgowy";
+export const ACCOUNTANT_MENU_DICTIONARIES = 'Słowniki';
+export const ACCOUNTANT_SUBMENU_DICTIONARIES_COST_TYPES = 'Rodzaje kosztów';
+/* components/modules/accountant/costsTypes.js */
+export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NUMBER = 'Numer';
+export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NAME = 'Nazwa';
+export const ACCOUNTANT_COSTS_TYPES_CONFIRM_DELETE_MESSAGE = 'Rodzaj kosztu zostanie usunięty. Czy kontynuować?';
+export const ACCOUNTANT_COSTS_TYPES_SEARCH_CODE_NAME = 'Kod / Nazwa';
 /* Commons sections */
 export const BUTTON_SAVE = 'Zapisz';
 export const BUTTON_CANCEL = 'Anuluj';
@@ -174,6 +233,8 @@ export const BUTTON_ADD = 'Dodaj';
 export const BUTTON_PREVIEW = 'Podgląd';
 export const BUTTON_POSITIONS = 'Pozycje';
 export const BUTTON_SELECT = 'Wybierz';
+export const BUTTON_WITHDRAW = 'Wycofaj';
+export const BUTTON_SEND = 'Wyślij';
 export const TEXTFIELD_SEARCH = 'Szukaj';
 export const DRAWER_MENU_SHOW = 'Pokaż';
 export const DRAWER_MENU_HIDE = 'Ukryj';
@@ -214,3 +275,4 @@ export const FORM_ERROR_MSG_INVALID_ZIP_CODE = 'Nieprawidłowy kod pocztowy';
 export const FORM_ERROR_MSG_INVALID_PHONE_NUMBER = 'Nieprawidłowy numer telefonu';
 export const FORM_ERROR_MSG_INVALID_FAX_NUMBER = 'Nieprawidłowy numer fax';
 export const FORM_ERROR_MSG_INVALID_DATE = 'Nieprawidłowa data';
+export const FORM_ERROR_MSG_INVALID_VALUE = 'Nieprawidłowa wartość';

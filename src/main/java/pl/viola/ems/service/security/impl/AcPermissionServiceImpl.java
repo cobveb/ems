@@ -59,7 +59,6 @@ public class AcPermissionServiceImpl implements AcPermissionService {
                     permission.getAcPrivilege().getName()
             );
             acPermissions.add(acPermissionDetails);
-            System.out.println(permission);
         });
 
         return acPermissions;

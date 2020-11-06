@@ -31,7 +31,9 @@
 /ems-client/coverage/
 /ems-client/node_modules/
 /ems-client/build/
+/ems/ems-client/package-lock.json
 /src/ems-client/
+
 /ems.txt
 /ems-client/public/
 /ems-client/src/common/__tests__/__snapshots__/
@@ -42,3 +44,9 @@
 /ems-client/src/components/modules/modules/__tests__/__snapshots__/
 /ems-client/src/containers/login/__tests__/__snapshots__/
 /ems-client/src/containers/modules/administrator/__tests__/__snapshots__/
+
+### APP ###
+/ems/src/main/resources/application.properties
+/package-lock.json
+/src/main/resources/application.properties
+/ems-client/package-lock.json

@@ -2,6 +2,7 @@ package pl.viola.ems.model.modules.administrator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import pl.viola.ems.model.modules.applicant.Application;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -55,25 +56,33 @@ public class OrganizationUnit {
 	private String email;
 	@NotNull
 	@NonNull
-	private Boolean active;
-	@NotNull
-	@NonNull
-	private Boolean coordinator;
-	@Size(max = 10, message = "{valid.maxSize}")
-	private String parent;
-	@JsonIgnore
-	@OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.PERSIST)
-	private Set<User> users = new HashSet<User>();
+    private Boolean active;
+    @NotNull
+    @NonNull
+    private Boolean coordinator;
+    @Size(max = 10, message = "{valid.maxSize}")
+    private String parent;
+    @JsonIgnore
+    @OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.PERSIST)
+    private Set<User> users = new HashSet<User>();
 
-	public OrganizationUnit(String code){
-		this.code = code;
-	}
+    @JsonIgnore
+    @OneToMany(mappedBy = "coordinator", cascade = CascadeType.ALL)
+    private Set<Application> coordinators = new HashSet<Application>();
 
-	public OrganizationUnit(String code, String name, String shortName, String email, Boolean active, Boolean coordinator, String parent){
-		this.code = code;
-		this.name = name;
-		this.shortName = shortName;
-		this.email = email;
+    @JsonIgnore
+    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL)
+    private Set<Application> applicants = new HashSet<Application>();
+
+    public OrganizationUnit(String code) {
+        this.code = code;
+    }
+
+    public OrganizationUnit(String code, String name, String shortName, String email, Boolean active, Boolean coordinator, String parent) {
+        this.code = code;
+        this.name = name;
+        this.shortName = shortName;
+        this.email = email;
 		this.active = active;
 		this.coordinator = coordinator;
 		this.parent = parent;

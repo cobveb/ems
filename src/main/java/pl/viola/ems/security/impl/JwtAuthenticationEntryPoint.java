@@ -7,7 +7,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import pl.viola.ems.exception.ErrorDetails;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,8 +24,7 @@ import java.io.OutputStream;
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	public void commence(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException authException) throws IOException, ServletException {
-//		System.out.println(authException);
+						 AuthenticationException authException) throws IOException {
 		ErrorDetails errorDetails = new ErrorDetails(HttpStatus.UNAUTHORIZED, authException.getMessage(),
 				authException, request.getRequestURI());
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

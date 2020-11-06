@@ -20,4 +20,8 @@ public interface OrganizationUnitService {
 
     List<OrganizationUnit> findCoordinators();
 
+    Optional<OrganizationUnit> findCoordinatorByCode(String code);
+
+    List<OrganizationUnit> findByParent(String parent);
+
 }

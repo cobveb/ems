@@ -13,6 +13,10 @@ class OrganizationUnitsApi {
         return Axios.get(`/api/ou/getActive`)
     }
 
+    static getCoordinators(){
+        return Axios.get(`/api/ou/getCoordinators`)
+    }
+
     static getOu(code){
         return Axios.get(`/api/ou/getOu/${code}`)
     }

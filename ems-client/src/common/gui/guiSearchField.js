@@ -4,7 +4,7 @@ import * as constants from 'constants/uiNames';
 import PropTypes from 'prop-types';
 import { Search } from '@material-ui/icons/';
 import MaskedInput from 'react-text-mask';
-import {numberMask, digitsAndNumberMask} from 'utils/';
+import {digitsAndNumberMask} from 'utils/';
 
 const searchField = theme => ({
     field: {

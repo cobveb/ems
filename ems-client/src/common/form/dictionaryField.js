@@ -218,6 +218,7 @@ export default function DictionaryField({classes, inputProps, labelWidth, disabl
     const onSelect = (value) =>{
         setOpenDictionary(!openDictionary)
         setValue(value);
+        setAction('blur');
     }
 
     return(

@@ -36,7 +36,6 @@ class UserForm extends Component {
 
     render(){
         const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, action, ous, initialValues, onClose } = this.props
-        console.log(initialValues)
         return(
             <>
                 <form onSubmit={handleSubmit}>
@@ -69,7 +68,7 @@ class UserForm extends Component {
                                 <Grid item xs={12} sm={12}>
                                     <FormSelectField
                                         name="unit"
-                                        value={ous.filter(ou => ou.code === initialValues.unit).length === 1 ? initialValues.unit : ""}
+                                        value={initialValues !== undefined ? initialValues.unit : ""}
                                         label={constants.USER_BASIC_INFORMATION_OU}
                                         isRequired={true}
                                         options={ous}

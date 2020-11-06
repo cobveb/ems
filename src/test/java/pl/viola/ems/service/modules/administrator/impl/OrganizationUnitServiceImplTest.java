@@ -13,6 +13,7 @@ import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.administrator.repository.OrganizationUnitRepository;
+import pl.viola.ems.model.modules.applicant.Application;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 
 import java.util.*;
@@ -43,28 +44,76 @@ public class OrganizationUnitServiceImplTest {
 
     private Throwable thrown;
 
+    private OrganizationUnit it = new OrganizationUnit("it", "IT", "IT", "IT@uck.katowice.pl", true, true);
+
+    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private OrganizationUnit activeOu = new OrganizationUnit("active", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+
+    private OrganizationUnit child = new OrganizationUnit(
+            "test",
+            "Uniwersyteckie Centrum",
+            "UCK SUM",
+            "1111111111",
+            "123456789",
+            "Katowice",
+            "40 - 514",
+            "Ceglana",
+            "35",
+            "+48 (32) 123 12 34",
+            "+48 (32) 123 12 34",
+            "uck@uck.it",
+            true,
+            false,
+            ou.getCode(),
+            new HashSet<User>(),
+            new HashSet<Application>(),
+            new HashSet<Application>()
+    );
+    private OrganizationUnit subChild = new OrganizationUnit(
+            "test",
+            "Uniwersyteckie Centrum",
+            "UCK SUM",
+            "1111111111",
+            "123456789",
+            "Katowice",
+            "40 - 514",
+            "Ceglana",
+            "35",
+            "+48 (32) 123 12 34",
+            "+48 (32) 123 12 34",
+            "uck@uck.it",
+            true,
+            false,
+            child.getCode(),
+            new HashSet<User>(),
+            new HashSet<Application>(),
+            new HashSet<Application>()
+    );
+
+    private List<OrganizationUnit> units = new ArrayList<OrganizationUnit>();
+    private List<OrganizationUnit> active = new ArrayList<OrganizationUnit>();
+    private List<OrganizationUnit> coordinators = new ArrayList<OrganizationUnit>();
+    private List<OrganizationUnit> childes = new ArrayList<OrganizationUnit>();
+
     @BeforeEach
     void setUp() {
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
-        OrganizationUnit activeOu = new OrganizationUnit("active", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
-        OrganizationUnit it = new OrganizationUnit("it", "IT", "IT", "IT@uck.katowice.pl", true, true);
 
-        List<OrganizationUnit> units = new ArrayList<OrganizationUnit>();
         units.add(ou);
         units.add(it);
 
-        List<OrganizationUnit> active = new ArrayList<OrganizationUnit>();
         active.add(activeOu);
 
-
-        List<OrganizationUnit> coordinators = new ArrayList<OrganizationUnit>();
         coordinators.add(it);
+
+        childes.add(child);
 
         Mockito.when(organizationUnitRepository.findAll()).thenReturn(units);
         Mockito.when(organizationUnitRepository.findByActiveTrueAndParentIsNotNullOrderByName()).thenReturn(active);
         Mockito.when(organizationUnitRepository.findByActiveTrueAndCoordinatorTrue()).thenReturn(coordinators);
         Mockito.when(organizationUnitRepository.findMainOu()).thenReturn(ou);
         Mockito.when(organizationUnitRepository.findById("it")).thenReturn(Optional.of(it));
+        Mockito.when(organizationUnitRepository.findByCodeAndActiveTrueAndCoordinatorTrue("it")).thenReturn(Optional.of(it));
+        Mockito.when(organizationUnitRepository.findByParentAndActiveTrue("uck")).thenReturn(childes);
         Mockito.when(organizationUnitRepository.existsById("uck")).thenReturn(true);
     }
 
@@ -145,9 +194,28 @@ public class OrganizationUnitServiceImplTest {
         assertEquals("Nie znaleziono głównej jednostki organizacyjnej.", thrown.getMessage());
     }
 
+    @DisplayName("findCoordinatorByCode")
+    @Test
+    void findCoordinatorByCode() {
+        Optional<OrganizationUnit> coordinator = organizationUnitService.findCoordinatorByCode("it");
+        assertThat(coordinator.get()).isEqualTo(it);
+    }
+
+
+    @DisplayName("findByParent")
+    @Test
+    void findByParent() {
+        List<OrganizationUnit> ous = organizationUnitService.findByParent("uck");
+
+        assertThat(ous).isNotEmpty();
+        assertThat(ous.size()).isGreaterThanOrEqualTo(1);
+        assertThat(ous.size()).isEqualTo(childes.size());
+        assertThat(ous.get(0).getCode()).isEqualTo("test");
+    }
+
     @DisplayName("saveOuOnAdd")
     @Test
-    void saveOrganizationUnitOnAdd(){
+    void saveOrganizationUnitOnAdd() {
         OrganizationUnit ou = new OrganizationUnit(
                 "test",
                 "Uniwersyteckie Centrum",
@@ -164,7 +232,9 @@ public class OrganizationUnitServiceImplTest {
                 true,
                 false,
                 null,
-                new HashSet<User>()
+                new HashSet<User>(),
+                new HashSet<Application>(),
+                new HashSet<Application>()
         );
 
         organizationUnitService.saveOu("add", ou);
@@ -191,7 +261,9 @@ public class OrganizationUnitServiceImplTest {
                 true,
                 false,
                 null,
-                new HashSet<User>()
+                new HashSet<User>(),
+                new HashSet<Application>(),
+                new HashSet<Application>()
         );
 
         thrown = assertThrows(AppException.class, () -> {
@@ -221,7 +293,9 @@ public class OrganizationUnitServiceImplTest {
                 true,
                 false,
                 null,
-                new HashSet<User>()
+                new HashSet<User>(),
+                new HashSet<Application>(),
+                new HashSet<Application>()
         );
 
         organizationUnitService.saveOu("edit", ou);

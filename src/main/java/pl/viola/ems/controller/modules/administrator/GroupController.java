@@ -41,7 +41,6 @@ public class GroupController {
 
     @PutMapping("saveGroupBasic")
     public ApiResponse saveGroupBasic(@Valid @RequestBody Group group){
-        System.out.println(group);
         groupService.saveGroup(group);
         return new ApiResponse(HttpStatus.CREATED, group);
     }

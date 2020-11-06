@@ -22,9 +22,9 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
     @Override
     public List<OrganizationUnit> findAll() {
-        if(organizationUnitRepository.findAll().isEmpty()) {
+        if (organizationUnitRepository.findAll().isEmpty()) {
             throw new AppException("Administrator.organizationUnits.notFound", HttpStatus.NOT_FOUND);
-        } else if (organizationUnitRepository.findMainOu() == null){
+        } else if (organizationUnitRepository.findMainOu() == null) {
             throw new AppException("Administrator.organizationUnit.mainNotFound", HttpStatus.NOT_FOUND);
         }
 
@@ -34,8 +34,8 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
     @Override
     public OrganizationUnit findMainOu() {
 
-        if(organizationUnitRepository.findMainOu() == null) {
-            if(organizationUnitRepository.count()> 0){
+        if (organizationUnitRepository.findMainOu() == null) {
+            if (organizationUnitRepository.count() > 0) {
                 throw new AppException("Administrator.organizationUnit.mainNotFound", HttpStatus.NOT_FOUND);
             }
         }
@@ -45,14 +45,14 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
     @Override
     public OrganizationUnit saveOu(final String action, final OrganizationUnit ou) {
-        if(action.toLowerCase().equals("add")){
-            if(!organizationUnitRepository.existsById(ou.getCode())){
-                return  organizationUnitRepository.saveAndFlush(ou);
+        if (action.toLowerCase().equals("add")) {
+            if (!organizationUnitRepository.existsById(ou.getCode())) {
+                return organizationUnitRepository.saveAndFlush(ou);
             } else {
                 throw new AppException("Administrator.organizationUnit.exists", HttpStatus.BAD_REQUEST);
             }
         } else if (action.toLowerCase().equals("edit")) {
-            return  organizationUnitRepository.saveAndFlush(ou);
+            return organizationUnitRepository.saveAndFlush(ou);
         } else {
             throw new AppException("Administrator.organizationUnit.invalidAction", HttpStatus.BAD_REQUEST);
         }
@@ -64,8 +64,8 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
     }
 
     @Override
-    public String deleteById(String code){
-        if(!organizationUnitRepository.findById(code).get().getUsers().isEmpty()){
+    public String deleteById(String code) {
+        if (!organizationUnitRepository.findById(code).get().getUsers().isEmpty()) {
             throw new AppException("Administrator.organizationUnits.deleteOu.userFound", HttpStatus.BAD_REQUEST);
         } else {
             organizationUnitRepository.deleteById(code);
@@ -81,5 +81,15 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
     @Override
     public List<OrganizationUnit> findCoordinators() {
         return organizationUnitRepository.findByActiveTrueAndCoordinatorTrue();
+    }
+
+    @Override
+    public Optional<OrganizationUnit> findCoordinatorByCode(String code) {
+        return organizationUnitRepository.findByCodeAndActiveTrueAndCoordinatorTrue(code);
+    }
+
+    @Override
+    public List<OrganizationUnit> findByParent(String parent) {
+        return organizationUnitRepository.findByParentAndActiveTrue(parent);
     }
 }
