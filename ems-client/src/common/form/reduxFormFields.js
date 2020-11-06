@@ -62,6 +62,7 @@ export function RenderDigitsField({ label, input, meta: { touched, invalid, erro
                 }}
                 onChange={(event) => input.onChange(event.target.value === '' ? '' : parseInt(event.target.value, 10))}
                 onBlur={(event) => input.onBlur(value)}
+                disabled={custom.disabled}
             />
         </>
     );

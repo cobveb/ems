@@ -68,7 +68,10 @@ function DatePicker(props) {
                         classes: {outlined: classes.inputLabel}
                     }}
                     value={selectedDate}
-                    onChange={handleDateChange}
+                    onChange={value => {
+                        handleDateChange(value);
+                        onChange(value);
+                    }}
                     KeyboardButtonProps={{
                         'aria-label': 'change date',
                     }}

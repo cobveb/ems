@@ -4,7 +4,7 @@ import * as constants from 'constants/uiNames';
 import PropTypes from 'prop-types';
 import { Search } from '@material-ui/icons/';
 import MaskedInput from 'react-text-mask';
-import {digitsAndNumberMask} from 'utils/';
+import {numberMask, digitsAndNumberMask} from 'utils/';
 
 const searchField = theme => ({
     field: {
@@ -18,8 +18,8 @@ const searchField = theme => ({
     },
 });
 
-function TextMaskCustom(props) {
-    const { inputRef, ...other } = props;
+function TextMaskCustom(props){
+    const { inputRef, valueType, ...other } = props;
 
     return (
         <MaskedInput
@@ -40,7 +40,7 @@ TextMaskCustom.propTypes = {
 
 function SearchField(props){
 
-    const { classes, onChange, valueType, ...custom } = props;
+    const { classes, input, onChange, valueType, ...custom } = props;
     return(
         <TextField
             type="search"
@@ -55,7 +55,7 @@ function SearchField(props){
                 classes: {outlined: classes.inputLabel}
             }}
             InputProps={{
-                inputComponent: TextMaskCustom,
+                inputComponent: valueType !== "all" ? TextMaskCustom : undefined,
                 classes: {input: classes.input},
                 endAdornment: <InputAdornment position="end"><Search /></InputAdornment>
             }}
@@ -66,7 +66,7 @@ function SearchField(props){
 
 SearchField.propTypes = {
 	classes: PropTypes.object.isRequired,
-	valueType: PropTypes.oneOf(['numbers', 'digits']),
+	valueType: PropTypes.oneOf(['numbers', 'digits', 'all']),
 };
 
 export default withStyles(searchField)(SearchField)
