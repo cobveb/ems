@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import Application from 'components/modules/applicant/applications/application';
 import ApplicationsApi from 'api/modules/applicant/applicationsApi';
+import {findCoordinator} from 'utils';
 
 class ApplicationContainer extends Component {
     state = {
@@ -65,15 +66,7 @@ class ApplicationContainer extends Component {
             })
         ))
 
-        return positions
-    }
-
-
-    handleFindCoordinator = (coordinatorCode) =>{
-        return this.props.coordinators.find(coordinator => {
-            return coordinator.code === coordinatorCode
-        });
-
+        return positions;
     }
 
     handleGetApplicationPositions(){
@@ -83,7 +76,7 @@ class ApplicationContainer extends Component {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
                 Object.assign(initData, this.props.initialValues)
-                initData.coordinator = this.handleFindCoordinator(this.props.initialValues.coordinator.code);
+                initData.coordinator = findCoordinator(this.props.coordinators, this.props.initialValues.coordinator.code);
                 initData.positions = this.handleUpdatePositions(response.data.data);
                 return {initData};
             });

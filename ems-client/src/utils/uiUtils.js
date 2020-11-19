@@ -157,3 +157,9 @@ export function updateOnCloseDetails(objects, object, prop){
     }
     return objects;
 };
+
+export function findCoordinator(allCoordinators, coordinatorCode){
+    return allCoordinators.find(coordinator => {
+        return coordinator.code === coordinatorCode
+    });
+};
