@@ -9,8 +9,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.TestPropertySource;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
-import pl.viola.ems.model.modules.administrator.User;
-import pl.viola.ems.model.modules.applicant.Application;
 
 import java.util.HashSet;
 
@@ -45,9 +43,11 @@ public class OrganizationUnitRepositoryTest {
                 true,
                 false,
                 null,
-                new HashSet<User>(),
-                new HashSet<Application>(),
-                new HashSet<Application>()
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>()
+
         );
         entityManager.persist(ou);
         OrganizationUnit it = new OrganizationUnit(
@@ -80,9 +80,10 @@ public class OrganizationUnitRepositoryTest {
                 true,
                 false,
                 null,
-                new HashSet<User>(),
-                new HashSet<Application>(),
-                new HashSet<Application>()
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>()
         ));
     }
 }

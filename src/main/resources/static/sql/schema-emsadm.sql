@@ -2,6 +2,8 @@
 /*                                                   TABLES                                            				   */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
+/*-----------------------------------------Tables Module ADMINISTRATOR-------------------------------------------------*/
+
 /*Create the table of organization units*/
 DROP TABLE emsadm.organization_units CASCADE CONSTRAINTS PURGE;
 /
@@ -47,6 +49,8 @@ COMMENT on COLUMN organization_units.parent is 'Unit parent organization unit';
 /*Grant permissions on table organization_units for the user emsarch*/
 GRANT SELECT, REFERENCES ON emsadm.organization_units TO emsarch;
 /
+
+/*-----------------------------------------Tables Module APPLICANT----------------------------------------------------*/
 
 /*Create the table of Application on module Applicant*/
 DROP TABLE emsadm.application CASCADE CONSTRAINTS PURGE;
@@ -101,22 +105,96 @@ COMMENT on COLUMN application_positions.status is 'Application position status';
 COMMENT on COLUMN application_positions.description is 'Application position description';
 COMMENT on COLUMN application_positions.rejection_reason is 'Application position rejection reason';
 
+/*-----------------------------------------Tables Module ACCOUNTANT----------------------------------------------------*/
+
+/*Create the table of CostsType on module Accountant*/
+DROP TABLE emsadm.acc_costs_type CASCADE CONSTRAINTS PURGE;
+/
+
+CREATE TABLE emsadm.acc_costs_type (
+    id NUMBER(19,0) NOT NULL,
+    cost_number VARCHAR(12) NOT NULL,
+    name VARCHAR(120) NOT NULL,
+    active NUMBER(1) DEFAULT 1 NOT NULL,
+	CONSTRAINT acc_costs_type_pk PRIMARY KEY(id),
+    CONSTRAINT acc_costs_type_number_unq UNIQUE(cost_number)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN acc_costs_type.id is 'Cost Type ID';
+COMMENT on COLUMN acc_costs_type.cost_number is 'Cost Type uniq number';
+COMMENT on COLUMN acc_costs_type.name is 'Cost Type name';
+COMMENT on COLUMN acc_costs_type.active is 'Cost Type status 1 - active 0 - inactive';
+
+/*Create the table of CostsType on module Accountant*/
+DROP TABLE emsadm.acc_cost_years CASCADE CONSTRAINTS PURGE;
+/
+
+CREATE TABLE emsadm.acc_cost_years (
+    id NUMBER(19,0) NOT NULL,
+    year NUMBER(4) NOT NULL,
+    cost_type_id NUMBER(19,0) NOT NULL,
+	CONSTRAINT acc_cost_years_pk PRIMARY KEY(id),
+	CONSTRAINT acc_cost_years_unq UNIQUE(year, cost_type_id),
+	CONSTRAINT acc_cost_type_fk FOREIGN KEY (cost_type_id) REFERENCES acc_costs_type(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN acc_cost_years.id is 'Cost Year ID';
+COMMENT on COLUMN acc_cost_years.year is 'Number representing full year';
+COMMENT on COLUMN acc_cost_years.cost_type_id is 'Cost Type ID';
+
+/*Create the table of Costs Year Coordinators on module Accountant*/
+DROP TABLE emsadm.acc_cost_years_coordinators CASCADE CONSTRAINTS PURGE;
+/
+
+CREATE TABLE emsadm.acc_cost_years_coordinators (
+    cost_year_id NUMBER(19,0) NOT NULL,
+    coordinator_id VARCHAR2(10) NOT NULL,
+    CONSTRAINT acc_cost_years_coordinators_pk PRIMARY KEY(cost_year_id, coordinator_id),
+    CONSTRAINT acc_cost_years_year_fk FOREIGN KEY (cost_year_id) REFERENCES acc_cost_years(id),
+    CONSTRAINT acc_cost_years_coordinator_fk FOREIGN KEY (coordinator_id) REFERENCES organization_units(code)
+
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN acc_cost_years_coordinators.cost_year_id is 'Cost Year ID';
+COMMENT on COLUMN acc_cost_years_coordinators.coordinator_id is 'Organization Units Coordinator ID';
+
 /*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   SEQUENCE                                            			    */
-/*-------------------------------------------------------------------------------------------------------------------- */
+/*---------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------Sequence Module APPLICANT---------------------------------------------------*/
+
 -- Create sequence of table application
 DROP SEQUENCE application_seq;
 /
 CREATE SEQUENCE application_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 /
 
+-- Create sequence of table application positions
 DROP SEQUENCE application_pos_seq;
 /
 CREATE SEQUENCE application_pos_seq START WITH 2 INCREMENT BY 1 NOMAXVALUE;
 /
 
+/*-----------------------------------------Sequence Module ACCOUNTANT--------------------------------------------------*/
+
+-- Create sequence of table costs type
+DROP SEQUENCE acc_costs_type_seq;
+/
+CREATE SEQUENCE acc_costs_type_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+/
+
+-- Create sequence of table cost year
+DROP SEQUENCE acc_cost_years_seq;
+/
+CREATE SEQUENCE acc_cost_years_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+/
+
 /*---------------------------------------------------------------------------------------------------------------------*/
-/*                                                   PACKAGES                                            			    */
+/*                                                   PACKAGES                                           			    */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
 /* Create package Application management*/

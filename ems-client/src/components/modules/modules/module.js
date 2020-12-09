@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles, Button  } from '@material-ui/core/';
-import {purple, green, amber, teal} from '@material-ui/core/colors/';
-import { Settings, DescriptionOutlined, AccountBalanceOutlined, HowToReg } from '@material-ui/icons/';
+import {purple, green, amber, teal, cyan} from '@material-ui/core/colors/';
+import { Settings, DescriptionOutlined, AccountBalanceOutlined, HowToReg, People } from '@material-ui/icons/';
 
 const variantIcon = {
+    hr: People,
     accountant: AccountBalanceOutlined,
     coordinator: HowToReg,
     applicant: DescriptionOutlined,
@@ -46,6 +47,12 @@ const styles = theme => ({
         backgroundColor: teal[500],
         '&:hover': {
             backgroundColor: teal[800],
+        },
+    },
+    hr: {
+        backgroundColor: cyan[500],
+        '&:hover': {
+            backgroundColor: cyan[800],
         },
     },
     icon: {

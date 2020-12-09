@@ -6,8 +6,8 @@ import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
-import FinancialPlansContainer from 'containers/modules/coordinator/plans/financialPlansContainer';
-import DictionariesContainer from 'containers/modules/coordinator/dictionariesContainer';
+import FinancialPlansContainer from 'containers/modules/accountant/dictionary/costsTypesContainer';
+import DictionariesContainer from 'containers/modules/accountant/dictionary/costsTypesContainer';
 
 const styles = theme => ({
     root: {

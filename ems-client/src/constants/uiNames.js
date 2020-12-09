@@ -229,9 +229,10 @@ export const ACCOUNTANT_COST_TYPE_NUMBER = 'Numer';
 export const ACCOUNTANT_COST_TYPE_NAME = 'Nazwa';
 export const ACCOUNTANT_COST_TYPE_ACTIVE = 'Aktywny';
 export const ACCOUNTANT_COST_TYPE_YEARS_VALIDITY = 'Okresy obowiązywania:';
-export const ACCOUNTANT_COST_TYPE_YEARS_VALIDITY_COORDINATOR = 'Koordynator';
 export const ACCOUNTANT_COST_TYPE_YEARS_VALIDITY_YEAR = 'Rok';
-export const ACCOUNTANT_CONFIRM_DELETE_YEAR_MESSAGE = 'Rodzaj Kosztu w danym roku dla przypisanych Koordynatorów zostanie usunięty. Czy kontynuować?';
+export const ACCOUNTANT_CONFIRM_DELETE_YEAR_MESSAGE = 'Okres obowiązywania dla Rodzaju Kosztu zostanie usunięty. Czy kontynuować?';
+/*components/modules/accountant/dictionary/forms/costTypeFormValid.js*/
+export const ACCOUNTANT_COST_TYPE_CODE_EXISTS = 'Podany numer już istnieje';
 /*components/modules/accountant/dictionary/forms/costYearForm.js*/
 export const ACCOUNTANT_COST_TYPE_YEAR_DETAILS_TITLE = 'Rok obowiązywania - szczegoły';
 export const ACCOUNTANT_COST_TYPE_YEAR = 'Rok obowiązywania';

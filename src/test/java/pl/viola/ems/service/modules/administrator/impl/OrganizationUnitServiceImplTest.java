@@ -13,7 +13,6 @@ import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.administrator.repository.OrganizationUnitRepository;
-import pl.viola.ems.model.modules.applicant.Application;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 
 import java.util.*;
@@ -26,6 +25,7 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 public class OrganizationUnitServiceImplTest {
+
 
     @TestConfiguration
     static class OrganizationUnitServiceImplTestContextConfiguration{
@@ -44,12 +44,12 @@ public class OrganizationUnitServiceImplTest {
 
     private Throwable thrown;
 
-    private OrganizationUnit it = new OrganizationUnit("it", "IT", "IT", "IT@uck.katowice.pl", true, true);
+    private final OrganizationUnit it = new OrganizationUnit("it", "IT", "IT", "IT@uck.katowice.pl", true, true);
 
-    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
-    private OrganizationUnit activeOu = new OrganizationUnit("active", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private final OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private final OrganizationUnit activeOu = new OrganizationUnit("active", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
 
-    private OrganizationUnit child = new OrganizationUnit(
+    private final OrganizationUnit child = new OrganizationUnit(
             "test",
             "Uniwersyteckie Centrum",
             "UCK SUM",
@@ -65,11 +65,12 @@ public class OrganizationUnitServiceImplTest {
             true,
             false,
             ou.getCode(),
-            new HashSet<User>(),
-            new HashSet<Application>(),
-            new HashSet<Application>()
+            new HashSet<>(),
+            new HashSet<>(),
+            new HashSet<>(),
+            new HashSet<>()
     );
-    private OrganizationUnit subChild = new OrganizationUnit(
+    private final OrganizationUnit subChild = new OrganizationUnit(
             "test",
             "Uniwersyteckie Centrum",
             "UCK SUM",
@@ -85,15 +86,16 @@ public class OrganizationUnitServiceImplTest {
             true,
             false,
             child.getCode(),
-            new HashSet<User>(),
-            new HashSet<Application>(),
-            new HashSet<Application>()
+            new HashSet<>(),
+            new HashSet<>(),
+            new HashSet<>(),
+            new HashSet<>()
     );
 
-    private List<OrganizationUnit> units = new ArrayList<OrganizationUnit>();
-    private List<OrganizationUnit> active = new ArrayList<OrganizationUnit>();
-    private List<OrganizationUnit> coordinators = new ArrayList<OrganizationUnit>();
-    private List<OrganizationUnit> childes = new ArrayList<OrganizationUnit>();
+    private final List<OrganizationUnit> units = new ArrayList<>();
+    private final List<OrganizationUnit> active = new ArrayList<>();
+    private final List<OrganizationUnit> coordinators = new ArrayList<>();
+    private final List<OrganizationUnit> childes = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -150,12 +152,10 @@ public class OrganizationUnitServiceImplTest {
     @DisplayName("findAll - Exception NOT FOUND")
     @Test
     void findAllNotFoundException(){
-        List<OrganizationUnit> findAll = new ArrayList<OrganizationUnit>();
+        List<OrganizationUnit> findAll = new ArrayList<>();
 
         Mockito.when(organizationUnitRepository.findAll()).thenReturn(findAll);
-        thrown = assertThrows(AppException.class, () -> {
-            organizationUnitService.findAll();
-        });
+        thrown = assertThrows(AppException.class, () -> organizationUnitService.findAll());
 
         assertEquals("Nie znaleziono jednostek organizacyjnych.", thrown.getMessage());
     }
@@ -165,9 +165,7 @@ public class OrganizationUnitServiceImplTest {
     void findAllMainNotFoundException(){
 
         Mockito.when(organizationUnitRepository.findMainOu()).thenReturn(null);
-        thrown = assertThrows(AppException.class, () -> {
-            organizationUnitService.findAll();
-        });
+        thrown = assertThrows(AppException.class, () -> organizationUnitService.findAll());
 
         assertEquals("Nie znaleziono głównej jednostki organizacyjnej.", thrown.getMessage());
     }
@@ -187,9 +185,7 @@ public class OrganizationUnitServiceImplTest {
 
         Mockito.when(organizationUnitRepository.findMainOu()).thenReturn(null);
         Mockito.when(organizationUnitRepository.count()).thenReturn((long) 1);
-        thrown = assertThrows(AppException.class, () -> {
-            organizationUnitService.findMainOu();
-        });
+        thrown = assertThrows(AppException.class, () -> organizationUnitService.findMainOu());
 
         assertEquals("Nie znaleziono głównej jednostki organizacyjnej.", thrown.getMessage());
     }
@@ -198,7 +194,7 @@ public class OrganizationUnitServiceImplTest {
     @Test
     void findCoordinatorByCode() {
         Optional<OrganizationUnit> coordinator = organizationUnitService.findCoordinatorByCode("it");
-        assertThat(coordinator.get()).isEqualTo(it);
+        assertThat(coordinator.orElse(null)).isEqualTo(it);
     }
 
 
@@ -232,9 +228,10 @@ public class OrganizationUnitServiceImplTest {
                 true,
                 false,
                 null,
-                new HashSet<User>(),
-                new HashSet<Application>(),
-                new HashSet<Application>()
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>()
         );
 
         organizationUnitService.saveOu("add", ou);
@@ -261,14 +258,13 @@ public class OrganizationUnitServiceImplTest {
                 true,
                 false,
                 null,
-                new HashSet<User>(),
-                new HashSet<Application>(),
-                new HashSet<Application>()
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>()
         );
 
-        thrown = assertThrows(AppException.class, () -> {
-            organizationUnitService.saveOu("add", ou);
-        });
+        thrown = assertThrows(AppException.class, () -> organizationUnitService.saveOu("add", ou));
 
         assertEquals("Jednostka organizacyjna o podanym kodzie już istnieje.", thrown.getMessage());
 
@@ -293,9 +289,10 @@ public class OrganizationUnitServiceImplTest {
                 true,
                 false,
                 null,
-                new HashSet<User>(),
-                new HashSet<Application>(),
-                new HashSet<Application>()
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>()
         );
 
         organizationUnitService.saveOu("edit", ou);
@@ -308,9 +305,7 @@ public class OrganizationUnitServiceImplTest {
     void saveOuBadActionException(){
         OrganizationUnit ou = new OrganizationUnit();
 
-        thrown = assertThrows(AppException.class, () -> {
-            organizationUnitService.saveOu("test", ou);
-        });
+        thrown = assertThrows(AppException.class, () -> organizationUnitService.saveOu("test", ou));
 
         assertEquals("Niepoprawna akcja. Dozwolone akcje to add lub edit.", thrown.getMessage());
 
@@ -340,14 +335,12 @@ public class OrganizationUnitServiceImplTest {
         OrganizationUnit test = new OrganizationUnit("test", "IT", "IT", "IT@uck.katowice.pl", true, false);
         User user =  new User("user", "passwd","user","user", true, false,false,false, test);
 
-        Set<User> users = new HashSet<User>();
+        Set<User> users = new HashSet<>();
         users.add(user);
         test.setUsers(users);
         Mockito.when(organizationUnitRepository.findById("test")).thenReturn(Optional.of(test));
 
-        thrown = assertThrows(AppException.class, () -> {
-            organizationUnitService.deleteById("test");
-        });
+        thrown = assertThrows(AppException.class, () -> organizationUnitService.deleteById("test"));
 
         assertEquals("Nie można usunąć jednostki organizacyjnej. Jednostka organizacyjna posiada przypisanych użytkowników.", thrown.getMessage());
 

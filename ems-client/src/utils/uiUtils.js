@@ -163,3 +163,14 @@ export function findCoordinator(allCoordinators, coordinatorCode){
         return coordinator.code === coordinatorCode
     });
 };
+
+//TODO: Zmienić loklana funkcję findIndex komponentu Application na poniższą
+export function findIndexElement(searchedElement, allElements, tmpId){
+    return searchedElement.id ?
+        allElements.findIndex(element => element.id === searchedElement.id) :
+            tmpId ?
+                searchedElement[tmpId]  ? // element not saved yet
+                    allElements.findIndex(element => element[tmpId] === searchedElement[tmpId])
+                        : null
+            : null
+};

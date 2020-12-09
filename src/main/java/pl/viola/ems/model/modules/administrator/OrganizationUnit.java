@@ -2,6 +2,7 @@ package pl.viola.ems.model.modules.administrator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import pl.viola.ems.model.modules.accountant.CostYear;
 import pl.viola.ems.model.modules.applicant.Application;
 
 import javax.persistence.*;
@@ -47,42 +48,49 @@ public class OrganizationUnit {
 	private String building;
 	@Pattern(regexp="^$|^\\+48\\s\\(\\d{2}\\)\\s\\d{3}\\s\\d{2}\\s\\d{2}$", message="{valid.phone}")
 	private String phone;
-	@Pattern(regexp="^$|^\\+48\\s\\(\\d{2}\\)\\s\\d{3}\\s\\d{2}\\s\\d{2}$", message="{valid.fax}")
+	@Pattern(regexp = "^$|^\\+48\\s\\(\\d{2}\\)\\s\\d{3}\\s\\d{2}\\s\\d{2}$", message = "{valid.fax}")
 	private String fax;
 	@NonNull
 	@NotBlank(message = "{valid.notBlank}")
-	@Email(message="{valid.email}")
+	@Email(message = "{valid.email}")
 	@Size(max = 50, message = "{valid.maxSize}")
 	private String email;
 	@NotNull
 	@NonNull
-    private Boolean active;
-    @NotNull
-    @NonNull
-    private Boolean coordinator;
-    @Size(max = 10, message = "{valid.maxSize}")
-    private String parent;
-    @JsonIgnore
-    @OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.PERSIST)
-    private Set<User> users = new HashSet<User>();
+	private Boolean active;
+	@NotNull
+	@NonNull
+	private Boolean coordinator;
+	@Size(max = 10, message = "{valid.maxSize}")
+	private String parent;
+	@JsonIgnore
+	@OneToMany(mappedBy = "organizationUnit", cascade = CascadeType.PERSIST)
+	private Set<User> users = new HashSet<>();
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "coordinator", cascade = CascadeType.ALL)
-    private Set<Application> coordinators = new HashSet<Application>();
+	@JsonIgnore
+	@OneToMany(mappedBy = "coordinator", cascade = CascadeType.ALL)
+	private Set<Application> coordinators = new HashSet<>();
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL)
-    private Set<Application> applicants = new HashSet<Application>();
+	@JsonIgnore
+	@OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL)
+	private Set<Application> applicants = new HashSet<>();
 
-    public OrganizationUnit(String code) {
-        this.code = code;
-    }
+	@JsonIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "acc_cost_years_coordinators", schema = "emsadm",
+			joinColumns = @JoinColumn(name = "coordinator_id", referencedColumnName = "code"),
+			inverseJoinColumns = @JoinColumn(name = "cost_year_id", referencedColumnName = "id"))
+	private Set<CostYear> costTypeYears = new HashSet<>();
 
-    public OrganizationUnit(String code, String name, String shortName, String email, Boolean active, Boolean coordinator, String parent) {
-        this.code = code;
-        this.name = name;
-        this.shortName = shortName;
-        this.email = email;
+	public OrganizationUnit(String code) {
+		this.code = code;
+	}
+
+	public OrganizationUnit(String code, String name, String shortName, String email, Boolean active, Boolean coordinator, String parent) {
+		this.code = code;
+		this.name = name;
+		this.shortName = shortName;
+		this.email = email;
 		this.active = active;
 		this.coordinator = coordinator;
 		this.parent = parent;
