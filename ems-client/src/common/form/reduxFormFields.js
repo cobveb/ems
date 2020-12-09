@@ -162,7 +162,7 @@ export function RenderFormTable({fields, head, allRows, checkedRows, ...custom})
     )
 }
 
-export function renderDateField({meta: { submitting, error, invalid }, input: { value, ...inputProps }, name, label, ...others}){
+export function renderDateField({meta: { submitting, error, invalid, touched }, input, input: { value, ...inputProps }, name, label, ...others}){
 
     class LocalizedUtils extends DateFnsUtils {
         getCalendarHeaderText(date) {
@@ -173,7 +173,6 @@ export function renderDateField({meta: { submitting, error, invalid }, input: { 
     const onChange = date => {
         Date.parse(date) ? inputProps.onChange(date.toISOString()) : inputProps.onChange(date);
     };
-
     return(
         <MuiPickersUtilsProvider utils={LocalizedUtils} locale={pl}>
             <KeyboardDatePicker
@@ -183,14 +182,15 @@ export function renderDateField({meta: { submitting, error, invalid }, input: { 
                 disableToolbar
                 fullWidth
                 inputVariant="outlined"
-                format="dd-MM-yyyy"
-                mask = "__-__-____"
+                mask = {others.mask ? others.mask : "__-__-____"}
                 label={label}
                 value={value ? new Date(value) : null}
                 keyboardIcon = {others.disabled && null}
                 disabled={submitting}
                 onChange={onChange}
-                error={error && invalid}
+                error={error && touched}
+                helperText={touched && error}
+                onBlur={(event) => input.onBlur(event)}
                 {...others}
             />
         </MuiPickersUtilsProvider>

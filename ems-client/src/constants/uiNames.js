@@ -215,11 +215,30 @@ export const COORDINATOR_SUBMENU_DICTIONARIES = 'Słowniki';
 export const ACCOUNTANT = "Księgowy";
 export const ACCOUNTANT_MENU_DICTIONARIES = 'Słowniki';
 export const ACCOUNTANT_SUBMENU_DICTIONARIES_COST_TYPES = 'Rodzaje kosztów';
-/* components/modules/accountant/costsTypes.js */
+/* components/modules/accountant/dictionary/costsTypes.js */
 export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NUMBER = 'Numer';
 export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NAME = 'Nazwa';
 export const ACCOUNTANT_COSTS_TYPES_CONFIRM_DELETE_MESSAGE = 'Rodzaj kosztu zostanie usunięty. Czy kontynuować?';
-export const ACCOUNTANT_COSTS_TYPES_SEARCH_CODE_NAME = 'Kod / Nazwa';
+export const ACCOUNTANT_COSTS_TYPES_SEARCH_NUMBER_NAME = 'Numer / Nazwa';
+/* components/modules/accountant/dictionary/costType.js */
+export const ACCOUNTANT_CREATE_COST_TYPE_TITLE = 'Nowy rodzaj kosztu';
+export const ACCOUNTANT_EDIT_COST_TYPE_TITLE = 'Edycja rodzaju kosztu:';
+/*components/modules/accountant/dictionary/forms/costTypeForm.js*/
+export const ACCOUNTANT_COST_TYPE_BASIC_INFORMATION = 'Dane podstawowe';
+export const ACCOUNTANT_COST_TYPE_NUMBER = 'Numer';
+export const ACCOUNTANT_COST_TYPE_NAME = 'Nazwa';
+export const ACCOUNTANT_COST_TYPE_ACTIVE = 'Aktywny';
+export const ACCOUNTANT_COST_TYPE_YEARS_VALIDITY = 'Okresy obowiązywania:';
+export const ACCOUNTANT_COST_TYPE_YEARS_VALIDITY_COORDINATOR = 'Koordynator';
+export const ACCOUNTANT_COST_TYPE_YEARS_VALIDITY_YEAR = 'Rok';
+export const ACCOUNTANT_CONFIRM_DELETE_YEAR_MESSAGE = 'Rodzaj Kosztu w danym roku dla przypisanych Koordynatorów zostanie usunięty. Czy kontynuować?';
+/*components/modules/accountant/dictionary/forms/costYearForm.js*/
+export const ACCOUNTANT_COST_TYPE_YEAR_DETAILS_TITLE = 'Rok obowiązywania - szczegoły';
+export const ACCOUNTANT_COST_TYPE_YEAR = 'Rok obowiązywania';
+export const ACCOUNTANT_COST_TYPE_ALL_COORDINATORS = 'Koordynatorzy: ';
+export const ACCOUNTANT_COST_TYPE_YEAR_COORDINATORS = 'Przypisani koordynatorzy: ';
+/*components/modules/accountant/dictionary/forms/costYearFormValid.js*/
+export const ACCOUNTANT_COST_TYPE_YEAR_EXISTS = 'Podany okres obowiązywania istnieje';
 /* Commons sections */
 export const BUTTON_SAVE = 'Zapisz';
 export const BUTTON_CANCEL = 'Anuluj';

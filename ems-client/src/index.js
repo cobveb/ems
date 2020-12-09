@@ -9,7 +9,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import blue from '@material-ui/core/colors/blue';
 import { BrowserRouter as Router } from 'react-router-dom';
 import {setStore} from 'utils/apiUtils';
-import 'typeface-roboto';
+import 'fontsource-roboto';
 
 const theme = createMuiTheme({
 	palette: {

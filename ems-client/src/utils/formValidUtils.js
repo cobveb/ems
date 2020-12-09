@@ -88,11 +88,15 @@ export function isValidPhoneFaxNumber(number, type){
 
 export function isValidDate(date) {
     const curDate = Date.parse(date);
-    const maxDate = Date.parse('01-01-2100')
-    const minDate = Date.parse('01-01-1900')
+    const maxDate = new Date(2100,0,1)
+    const minDate = new Date(1900,0,1)
 
-    if (!curDate || curDate < minDate || curDate > maxDate){
+    if (!curDate){
         return constants.FORM_ERROR_MSG_INVALID_DATE;
+    } else if (curDate < minDate) {
+        return constants.DATE_PICKER_MIN_DATE_MESSAGE;
+    } else if(curDate > maxDate){
+        return constants.DATE_PICKER_MAX_DATE_MESSAGE;
     }
     return null;
 }

@@ -4,14 +4,14 @@ import {Grid, Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel, 
 import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { Button, Checkbox } from 'common/gui';
-
+import classNames from 'classnames';
 
 const useStyles = makeStyles(theme => ({
     root: {
         margin: 0,
         padding: 0,
         maxWidth: "100%",
-        height: `calc(100vh - ${theme.spacing(35)}px)`,
+        height: "100%",
     },
     paper: {
         minWidth: '100%',
@@ -157,8 +157,7 @@ const useTableStyles = makeStyles(theme => ({
 }));
 
 function EnhancedTable(props) {
-
-    const { headCells, rows, checked, setChecked, defaultOrderBy } = props;
+    const { className, headCells, rows, checked, setChecked, defaultOrderBy } = props;
     const classes = useTableStyles();
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState(defaultOrderBy);
@@ -205,7 +204,7 @@ function EnhancedTable(props) {
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                <div className={classes.tableWrapper}>
+                <div className={classNames(classes.tableWrapper, className)}>
                     <Table
                         className={classes.table}
                         aria-labelledby="tableTitle"
@@ -266,7 +265,7 @@ function EnhancedTable(props) {
 }
 
 
-export default function TableTransferList({ fields, head, leftSide, rightSide, leftSideLabel, rightSideLabel, ...custom}, ) {
+function TableTransferList({ fields, head, leftSide, rightSide, leftSideLabel, rightSideLabel, ...custom}, ) {
     const classes = useStyles();
     const [checked, setChecked] = React.useState([]);
     const [left, setLeft] = React.useState(setUniqueAll(leftSide, rightSide));
@@ -340,7 +339,7 @@ export default function TableTransferList({ fields, head, leftSide, rightSide, l
                 >
                     {leftSideLabel}
                 </Typography>
-                <EnhancedTable headCells={head} rows={left} checked={leftChecked} setChecked={handleToggle} defaultOrderBy={custom.orderBy !== null ? custom.orderBy : ''} />
+                <EnhancedTable className={custom.className} headCells={head} rows={left} checked={leftChecked} setChecked={handleToggle} defaultOrderBy={custom.orderBy !== null ? custom.orderBy : ''} />
             </Grid>
             <Grid item xs={2} sm={2}>
                 <Grid container
@@ -387,8 +386,19 @@ export default function TableTransferList({ fields, head, leftSide, rightSide, l
                 >
                     {rightSideLabel}
                 </Typography>
-                <EnhancedTable headCells={head} rows={right} checked={rightChecked} setChecked={handleToggle} defaultOrderBy={custom.orderBy !== null ? custom.orderBy : ''}  />
+                <EnhancedTable className={custom.className} headCells={head} rows={right} checked={rightChecked} setChecked={handleToggle} defaultOrderBy={custom.orderBy !== null ? custom.orderBy : ''}  />
             </Grid>
         </Grid>
     );
 }
+
+TableTransferList.propTypes = {
+	fields: PropTypes.object,
+	head: PropTypes.array,
+	leftSide: PropTypes.array,
+	rightSide: PropTypes.array,
+	leftSideLabel: PropTypes.string,
+	rightSideLabel: PropTypes.string,
+}
+
+export default TableTransferList

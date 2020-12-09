@@ -7,6 +7,8 @@ import { Checkbox } from 'common/gui';
 import {AddCircle, Edit, Delete} from '@material-ui/icons';
 import * as constants from 'constants/uiNames';
 import { Button } from 'common/gui';
+import format from "date-fns/format";
+import { pl } from 'date-fns/locale';
 
 
 const useStyles = makeStyles(theme => ({
@@ -100,16 +102,46 @@ EnhancedTableToolbar.defaultProps = {
   isAddDisabled: false,
 };
 
+function desc(a, b, orderBy, cellType) {
 
+    switch(cellType){
+        case 'object' :
+            if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] < a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
+                return -1;
+            }
+            if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] > a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
+                return 1;
+            }
+            break;
+        case 'text':
+        case 'numeric':
+        case 'boolean':
+            if (b[orderBy] < a[orderBy]) {
+                return -1;
+            } else if (b[orderBy] > a[orderBy]) {
+                return 1;
+            } else {
+                return 0;
+            }
 
-function desc(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
+        case 'date':
+            if (b[orderBy] !== null && a[orderBy] !== null){
+                if(b[orderBy] < a[orderBy]){
+                    return -1;
+                } else if(b[orderBy] > a[orderBy]){
+                    return 1;
+                } else {
+                    return 0;
+                }
+            } else if (b[orderBy] !== null && a[orderBy] === null ) {
+                return 1;
+            } else if (b[orderBy] === null && a[orderBy] !== null){
+                return -1;
+            }
+            break;
+        default:
+            return 0;
     }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
 }
 
 function stableSort(array, cmp) {
@@ -122,8 +154,9 @@ function stableSort(array, cmp) {
     return stabilizedThis.map(el => el[0]);
 }
 
-function getSorting(order, orderBy) {
-    return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
+function getSorting(order, orderBy, row) {
+
+    return order === 'desc' ? (a, b) => desc(a, b, orderBy, row) : (a, b) => -desc(a, b, orderBy, row);
 }
 
 function setValues (fields, values) {
@@ -159,10 +192,11 @@ EnhancedTableHeadCheckedColumn.propTypes = {
 
 
 function EnhancedTableHead(props) {
-    const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells, disableCheckAll, checkedColumnFirst } = props;
+    const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells, disableCheckAll, checkedColumnFirst, setCellType } = props;
 
-    const createSortHandler = property => event => {
-        onRequestSort(event, property);
+    const createSortHandler = row => event => {
+        onRequestSort(event, row.id);
+        setCellType(row.type);
     };
     return (
         <TableHead>
@@ -176,25 +210,20 @@ function EnhancedTableHead(props) {
                         onChange={onSelectAllClick}
                     />
                 }
-            {headCells.map(headCell => (
+            {headCells.map(row => (
                 <TableCell
-                    key={headCell.id}
-                    align={headCell.numeric ? 'right' : 'left'}
-                    padding={checkedColumnFirst ? "none" : "checkbox"}
+                    key={row.id}
+                    align={row.type === 'numeric' ? 'right' : 'left'}
+                    padding={checkedColumnFirst ? "default" : "checkbox"}
                     size="small"
                     className={classes.head}
                 >
                     <TableSortLabel
-                        active={orderBy === headCell.id}
+                        active={orderBy === row.id}
                         direction={order}
-                        onClick={createSortHandler(headCell.id)}
+                        onClick={createSortHandler(row)}
                     >
-                        {headCell.label}
-                        {orderBy === headCell.id ? (
-                            <span className={classes.visuallyHidden}>
-                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                            </span>
-                        ) : null}
+                        {row.label}
                     </TableSortLabel>
                 </TableCell>
             ))}
@@ -237,6 +266,9 @@ const useTableStyles = makeStyles(theme => ({
         overflow: 'auto',
         height: `calc(100vh - ${theme.spacing(33)}px)`,
     },
+    tableCell:{
+        padding: `${theme.spacing(1.25)}px ${theme.spacing(2)}px`,
+    },
     visuallyHidden: {
         border: 0,
         clip: 'rect(0 0 0 0)',
@@ -259,8 +291,8 @@ function EnhancedTable(props) {
     const classes = useTableStyles();
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState(defaultOrderBy);
-    const [allSelect, setAllSelect] = React.useState(rows.length === checked.length && checked.length !== 0)
-
+    const [allSelect, setAllSelect] = React.useState(rows.length === checked.length && checked.length !== 0);
+    const [cellType, setCellType] = React.useState('text');
 
     const handleRequestSort = (event, property) => {
         const isDesc = orderBy === property && order === 'desc';
@@ -301,7 +333,7 @@ function EnhancedTable(props) {
                 );
             }
         }
-        setChecked(stableSort(newSelected, getSorting(order, orderBy)))
+        setChecked(stableSort(newSelected, getSorting(order, orderBy, cellType)))
     };
 
 
@@ -328,10 +360,11 @@ function EnhancedTable(props) {
                             allSelect={allSelect}
                             disableCheckAll={!multiChecked}
                             checkedColumnFirst={checkedColumnFirst}
+                            setCellType={setCellType}
                         />
                         <TableBody>
 
-                            {stableSort(rows, getSorting(order, orderBy)).map((row, index) => {
+                            {stableSort(rows, getSorting(order, orderBy, cellType)).map((row, index) => {
                                 const isItemSelected = isSelected(row);
                                 const labelId = `enhanced-table-checkbox-${index}`;
                                 return (
@@ -352,14 +385,32 @@ function EnhancedTable(props) {
                                                 />
                                             </TableCell>
                                         }
-                                        {headCells.map((rowCell, key) =>
+                                        {headCells.map((cell, key) =>
                                             <TableCell
                                                 key={key}
-                                                padding={checkedColumnFirst ? "none" : "checkbox"}
+                                                padding={cell.type === 'boolean' ? "checkbox" : "default"}
                                                 size="small"
-                                                align={rowCell.numeric ? 'right' : 'left'}
+                                                align={cell.type === 'numeric' ? 'right' : cell.boolean ? 'center' : 'left'}
+                                                classes={{ sizeSmall: classes.tableCell }}
                                             >
-                                                {rowCell.object ? (row[rowCell.id.substring(0, rowCell.id.indexOf('.'))][rowCell.id.substring(rowCell.id.indexOf('.') +1)]) : row[rowCell.id]}
+                                                {
+                                                    cell.type === 'boolean'
+                                                        ?
+                                                            <Checkbox
+                                                                checked={row[cell.id]}
+                                                                disabled={true}
+                                                            />
+                                                        :
+                                                            cell.type === 'date' && row[cell.id] !== null
+                                                                ?
+                                                                    format(
+                                                                       new Date(Date.parse(row[cell.id])),
+                                                                       cell.dateFormat !== null ? cell.dateFormat : 'dd-MM-yyyy',
+                                                                       { locale: pl }
+                                                                    )
+                                                                :
+                                                                    cell.type==='object' ? (row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)]) : row[cell.id]
+                                                }
                                             </TableCell>
                                         )}
                                         { !checkedColumnFirst &&
@@ -457,6 +508,10 @@ export default function TableForm({ fields, head, allRows, checkedRows, toolbar,
 }
 
 TableForm.propTypes = {
+    fields: PropTypes.object,
+    head: PropTypes.array,
+    allRows: PropTypes.array,
+    checkedRows: PropTypes.array,
     toolbar: PropTypes.bool,
     addButtonProps: PropTypes.object,
     editButtonProps: PropTypes.object,

@@ -15,12 +15,15 @@ const styles = theme => ({
     input: {
         padding: theme.spacing(1.5),
     },
+    inputRequired: {
+        backgroundColor: '#faffbd',
+    },
 });
 
 
 
 function FormDateField(props){
-    const { classes, name, label, inputProps, ...others } = props;
+    const { classes, name, label, isRequired, inputProps, ...others } = props;
 
     return(
         <Field
@@ -28,11 +31,13 @@ function FormDateField(props){
             component={renderDateField}
             label={label}
             placeholder={label}
-            invalidDateMessage = {constants.DATE_PICKER_INVALID_DATE_MESSAGE}
             maxDateMessage = {constants.DATE_PICKER_MAX_DATE_MESSAGE}
             minDateMessage = {constants.DATE_PICKER_MIN_DATE_MESSAGE}
             InputProps={{
-                classes: {input: classes.input},
+                classes: {
+                    input: classes.input,
+                    root: isRequired && classes.inputRequired,
+                },
             }}
             InputLabelProps={{
                 classes: {outlined: classes.inputLabel}
@@ -43,5 +48,9 @@ function FormDateField(props){
 }
 FormDateField.propTypes = {
 	classes: PropTypes.object.isRequired,
+	name: PropTypes.string,
+	label: PropTypes.string,
+	isRequired: PropTypes.bool,
+	inputProps: PropTypes.object,
 }
 export default withStyles(styles)(FormDateField)

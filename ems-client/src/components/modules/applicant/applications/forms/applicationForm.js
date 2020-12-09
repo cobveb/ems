@@ -37,10 +37,10 @@ const styles = theme => ({
 });
 
 const headPositions = [
-    { id: 'name', numeric: false, disablePadding: false, label: constants.POSITIONS_TABLE_HEAD_ROW_NAME },
-    { id: 'unit.name', numeric: false, object: true, disablePadding: false, label: constants.POSITIONS_TABLE_HEAD_ROW_UNIT },
-    { id: 'quantity', numeric: false, disablePadding: false, label: constants.POSITIONS_TABLE_HEAD_ROW_QUANTITY },
-    { id: 'status.name', numeric: false, object: true, disablePadding: false, label: constants.POSITIONS_TABLE_HEAD_ROW_STATUS },
+    { id: 'name', type: 'text', label: constants.POSITIONS_TABLE_HEAD_ROW_NAME },
+    { id: 'unit.name', type: 'object', label: constants.POSITIONS_TABLE_HEAD_ROW_UNIT },
+    { id: 'quantity', type: 'text', label: constants.POSITIONS_TABLE_HEAD_ROW_QUANTITY },
+    { id: 'status.name', type: 'object', label: constants.POSITIONS_TABLE_HEAD_ROW_STATUS },
 
 ]
 
@@ -74,6 +74,7 @@ class ApplicationForm extends Component {
         switch(this.state.positionAction){
             case 'add':
                 values.positionId = this.state.nextValPosition;
+                //TODO: Zmienić wartość name na wartość z uiNames
                 values.status = {code: 'DO', name: 'Dodana'};
                 this.setState( prevState => {
                     const positions = [...prevState.positions];
