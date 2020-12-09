@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
-import {findCoordinator} from 'utils';
 import CostType from 'components/modules/accountant/dictionary/costType'
 
 
@@ -10,22 +9,40 @@ const response = {
     data: {
         data: [
             {
-                coordinator: {
-                    code: 'it',
-                },
-                year: 2020,
+                "id": 1,
+                "year": new Date(2019,0,1).toJSON(),
+                "coordinators": [
+                    { "code": "it",
+                      "name": "Dział Informatyki",
+                      "shortName": "Dział Informatyki",
+                      "nip": null,
+                      "regon": null,
+                      "city": null,
+                      "zipCode": null,
+                      "street": null,
+                      "building": null,
+                      "phone": null,
+                      "fax": null,
+                      "email": "it@uck.katowice.pl",
+                      "active": true,
+                      "coordinator": true,
+                      "parent": "uck"
+                    },
+                ],
             },
             {
-                coordinator: {
-                    code: 'adm',
-                },
-                year: 2020,
+                "id": 2,
+                "year": new Date(2020,0,1).toJSON(),
+                "coordinators": [
+                    { "code": 'adm' },
+                ]
             },
             {
-                coordinator: {
-                    code: 'lab',
-                },
-                year: 2020,
+                "id":3,
+                "year": new Date(2021,0,1).toJSON(),
+                "coordinators": [
+                    { "code": 'lab' },
+                ]
             },
         ],
     },
@@ -46,21 +63,12 @@ class CostTypeContainer extends Component {
         this.props.onClose(this.state.initData)
     }
 
-    handleSetupYears = (years) => {
-        years.map(year => (
-            Object.assign(year, {
-                coordinator: year.coordinator = findCoordinator(this.props.coordinators, year.coordinator.code)
-            })
-        ))
-
-        return years;
-    }
-
     handleGetYearsValidity = () => {
         this.setState(prevState => {
             let initData = {...prevState.initData};
             Object.assign(initData, this.props.initialValues)
-            initData.years =  this.handleSetupYears(response.data.data);
+            //TODO : Pobranie okresów obowiązywania z API
+            initData.years =  response.data.data;
             return {initData};
         });
     }
@@ -73,12 +81,13 @@ class CostTypeContainer extends Component {
 
 
     render(){
-        const {isLoading, error, clearError, action} = this.props;
+        const {isLoading, error, clearError, action, coordinators} = this.props;
         const {initData} = this.state;
         return(
             <CostType
                 isLoading = {isLoading}
                 initialValues = {initData}
+                coordinators = {coordinators}
                 action={action}
                 error = {error}
                 clearError = {clearError}
@@ -102,6 +111,5 @@ function mapDispatchToProps (dispatch) {
         clearError : bindActionCreators(setError, dispatch),
     }
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(CostTypeContainer);
