@@ -207,10 +207,63 @@ export const APPLICATION_POSITION_DETAILS_REJECTION_REASON = 'Powód odrzucenia'
 export const COORDINATOR = "Koordynator";
 export const COORDINATOR_MENU_APPLICATIONS = 'Obsługa wniosków';
 export const COORDINATOR_SUBMENU_APPLICATIONS = 'Wnioski';
-export const COORDINATOR_MENU_PLANS = 'Plany';
-export const COORDINATOR_SUBMENU_PLANS_FINANCIAL = 'Plany finansowe';
+export const COORDINATOR_MENU_PLANS = 'Obsługa planów';
+export const COORDINATOR_SUBMENU_PLANS = 'Plany';
 export const COORDINATOR_MENU_DICTIONARIES = 'Słowniki';
 export const COORDINATOR_SUBMENU_DICTIONARIES = 'Słowniki';
+/* containers/modules/coordinators/plans/planContainer.js */
+export const COORDINATOR_PLAN_STATUS = 'Status';
+export const COORDINATOR_PLAN_STATUS_SAVED = 'Zapisany';
+export const COORDINATOR_PLAN_STATUS_SENT = 'Wysłany';
+export const COORDINATOR_PLAN_STATUS_ADOPTED = 'Przyjęty';
+export const COORDINATOR_PLAN_STATUS_ACCEPTED= 'Zaakceptowany';
+export const COORDINATOR_PLAN_TYPE= 'Rodzaj';
+export const COORDINATOR_PLAN_TYPE_FINANCIAL= 'Finansowy';
+export const COORDINATOR_PLAN_TYPE_INVESTMENT= 'Inwestycyjny';
+export const COORDINATOR_PLAN_TYPE_PUBLIC_PROCUREMENT= 'Zamówień publicznych';
+/* components/modules/coordinator/plans/plans.js */
+export const COORDINATOR_PLANS_TITLE = 'Plany';
+export const COORDINATOR_PLANS_TABLE_HEAD_ROW_NUMBER = 'Numer';
+export const COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR = 'Rok';
+export const COORDINATOR_PLANS_TABLE_HEAD_ROW_TYPE = 'Rodzaj';
+export const COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS = 'Status';
+/* components/modules/coordinator/plans/plan.js */
+export const COORDINATOR_PLAN_CREATE_NEW_PLAN_TITLE = 'Nowy plan';
+export const COORDINATOR_PLAN_EDIT_PLAN_TITLE = 'Edycja planu: ';
+export const COORDINATOR_PLAN_BASIC_INFORMATION = 'Dane podstawowe';
+export const COORDINATOR_PLAN_POSITIONS = 'Pozycje planu';
+/* components/modules/coordinator/plans/forms/planBasicForm.js */
+export const COORDINATOR_PLAN_FORM_TYPE = 'Rodzaj planu';
+export const COORDINATOR_PLAN_POSITIONS_HEAD_COSTS_TYPE = 'Rodzaje kosztu';
+export const COORDINATOR_PLAN_POSITIONS_HEAD_COST_TYPE = 'Rodzaj kosztu';
+export const COORDINATOR_PLAN_POSITIONS_HEAD_TASKS = 'Zadania';
+export const COORDINATOR_PLAN_POSITIONS_HEAD_TASK = 'Zadanie';
+export const COORDINATOR_PLAN_POSITIONS_HEAD_CATEGORY = 'Kategoria';
+/* components/modules/coordinator/plans/forms/planPositionsForm.js */
+export const COORDINATOR_PLAN_POSITIONS_CONFIRM_DELETE_POSITION_MESSAGE = 'Pozycja zostanie usunięta. Czy kontynuować?';
+export const COORDINATOR_PLAN_POSITIONS_FINANCIAL_HEAD_NAME = 'Nazwa';
+/* components/modules/coordinator/plans/forms/planPositionForm.js */
+export const COORDINATOR_PLAN_POSITION_CREATE_DETAILS_TITLE = "Nowa pozycja planu"
+export const COORDINATOR_PLAN_POSITION_EDIT_DETAILS_TITLE = "Edycja pozycji planu: "
+export const COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_NET = 'Kwota szacowana Netto';
+export const COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS = 'Kwota szacowana Brutto';
+export const COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_NET = 'Kwota przyznana Netto';
+export const COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS = 'Kwota przyznana Brutto';
+export const COORDINATOR_PLAN_POSITION_VAT = 'VAT';
+/* components/modules/coordinator/plans/forms/PlanFinancialContentPosition.js */
+export const COORDINATOR_PLAN_POSITION_FINANCIAL_COST_TYPES = 'Rodzaj kosztu';
+export const COORDINATOR_PLAN_POSITION_FINANCIAL_DESCRIPTION = 'Opis / Uwagi';
+/* components/modules/coordinator/plans/forms/PlanInvestmentContentPosition.js */
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_CATEGORY = 'Kategoria';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_APPLICATION = 'Zastosowanie';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_SUBSTANTIATION = 'Uzasadnienie';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_FUNDING_SOURCES = 'Źródła finansowania';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_SOURCES = 'Źródło finansowania';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_NET = 'Kwota w planie Netto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS = 'Kwota w planie Brutto';
+/* components/modules/coordinator/plans/forms/PlanFoundingSourcesForm.js */
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_CREATE_SOURCES_DETAILS_TITLE = "Nowe źródło finansowania";
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_EDIT_SOURCES_DETAILS_TITLE = "Edycja źródła finansowania: ";
 /* components/modules/accountant/accountant.js */
 export const ACCOUNTANT = "Księgowy";
 export const ACCOUNTANT_MENU_DICTIONARIES = 'Słowniki';
@@ -239,6 +292,47 @@ export const ACCOUNTANT_COST_TYPE_ALL_COORDINATORS = 'Koordynatorzy: ';
 export const ACCOUNTANT_COST_TYPE_YEAR_COORDINATORS = 'Przypisani koordynatorzy: ';
 /*components/modules/accountant/dictionary/forms/costYearFormValid.js*/
 export const ACCOUNTANT_COST_TYPE_YEAR_EXISTS = 'Podany okres obowiązywania istnieje';
+/*components/modules/hr/humanResources.js*/
+export const HR_MENU_STAFF = 'Personel';
+export const HR_MENU_STAFF_WORKERS = 'Pracownicy';
+/*components/modules/hr/staff/workers.js*/
+export const WORKERS_TABLE_HEAD_ROW_ID = 'Id';
+export const WORKERS_TABLE_HEAD_ROW_NAME = 'Imię';
+export const WORKERS_TABLE_HEAD_ROW_SURNAME = 'Nazwisko';
+export const WORKERS_SEARCH_NAME = 'Imię';
+export const WORKERS_SEARCH_SURNAME = 'Nazwisko';
+/*components/modules/hr/staff/worker.js*/
+export const WORKER_CREATE_NEW_WORKER_TITLE = 'Nowy pracownik';
+export const WORKER_EDIT_WORKER_TITLE = 'Edycja pracownika: ';
+export const WORKER_BASIC_INFORMATION = 'Dane podstawowe';
+export const WORKER_EMPLOYMENTS = 'Zatrudnienie';
+export const WORKER_FUNCTION = 'Funkcje';
+/*components/modules/hr/staff/forms/workerBasicInfoForm.js*/
+export const WORKER_BASIC_INFORMATION_ID = 'Id';
+export const WORKER_BASIC_INFORMATION_NAME = 'Imię';
+export const WORKER_BASIC_INFORMATION_SURNAME = 'Nazwisko';
+export const WORKER_BASIC_INFORMATION_OU = 'Jednostka organizacyjna';
+/*components/modules/hr/staff/forms/workerEmploymentsForm.js*/
+export const WORKER_EMPLOYMENTS_PERIODS = 'Okresy zatrudnienia:';
+export const WORKER_EMPLOYMENTS_TABLE_HEAD_ROW_POSITION = 'Stanowisko';
+export const WORKER_EMPLOYMENTS_TABLE_HEAD_ROW_OU = 'Jednostka';
+export const WORKER_EMPLOYMENTS_TABLE_HEAD_ROW_DATE_FROM = 'Okres od';
+export const WORKER_EMPLOYMENTS_TABLE_HEAD_ROW_DATE_TO = 'Okres do';
+/*components/modules/hr/staff/forms/workerFunctionsForm.js*/
+export const WORKER_FUNCTIONS = 'Pełnione funkcje:';
+export const WORKER_FUNCTIONS_TABLE_HEAD_ROW_COMMISSION = 'Funkcja';
+export const WORKER_FUNCTIONS_TABLE_HEAD_ROW_FUNCTION = 'Rola';
+export const WORKER_FUNCTIONS_TABLE_HEAD_ROW_DATE_FROM = 'Data od';
+export const WORKER_FUNCTIONS_TABLE_HEAD_ROW_DATE_TO = 'Data do';
+/*components/modules/hr/staff/forms/employmentForm.js*/
+export const WORKER_EMPLOYMENT_DETAILS_TITLE = 'Zatrudnienie - szczegóły pozycji';
+export const WORKER_EMPLOYMENT_DETAILS_NUMBER = 'Numer';
+export const WORKER_EMPLOYMENT_DETAILS_FORM = 'Forma zatrudnienia';
+export const WORKER_EMPLOYMENT_DETAILS_OU = 'Jednostka organizacyjna';
+/*components/modules/hr/staff/forms/functionForm.js*/
+export const WORKER_FUNCTION_DETAILS_TITLE = 'Funkcja - szczegóły pozycji';
+export const WORKER_FUNCTION_DETAILS_NUMBER = 'Numer';
+export const WORKER_FUNCTION_DETAILS_COMMENTS = 'Uwagi';
 /* Commons sections */
 export const BUTTON_SAVE = 'Zapisz';
 export const BUTTON_CANCEL = 'Anuluj';

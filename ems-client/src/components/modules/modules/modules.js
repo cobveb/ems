@@ -9,6 +9,7 @@ import Administrator from 'components/modules/administrator/administrator';
 import Applicant from 'components/modules/applicant/applicant';
 import Coordinator from 'components/modules/coordinator/coordinator';
 import Accountant from 'components/modules/accountant/accountant';
+import HumanResources from 'components/modules/hr/humanResources';
 
 const styles = theme => ({
     root: {
@@ -36,6 +37,7 @@ class Modules extends Component {
                             <PrivateRoute path='/modules/accountant' component={Accountant}/>
                             <PrivateRoute path='/modules/applicant' component={Applicant}/>
                             <PrivateRoute path='/modules/coordinator' component={Coordinator}/>
+                            <PrivateRoute path='/modules/hr' component={HumanResources}/>
                         </Switch>
                     </main>
                 </div>
