@@ -8,6 +8,7 @@ import { grey } from '@material-ui/core/colors/';
 import { Checkbox } from 'common/gui';
 import format from "date-fns/format";
 import { pl } from 'date-fns/locale';
+import { numberWithSpaces } from 'utils/';
 
 const tablePagination = makeStyles(theme => ({
     root: {
@@ -146,6 +147,7 @@ class ContainedTable extends Component {
             case 'text':
             case 'numeric':
             case 'boolean':
+            case 'amount':
                 if (b[orderBy] < a[orderBy]) {
                     return -1;
                 } else if (b[orderBy] > a[orderBy]) {
@@ -300,7 +302,11 @@ class ContainedTable extends Component {
                                                                                 { locale: pl }
                                                                             )
                                                                         :
-                                                                            row[cell.id]
+                                                                            cell.type==='amount' && row[cell.id] !== null
+                                                                                ?
+                                                                                    numberWithSpaces(row[cell.id])
+                                                                                :
+                                                                                    row[cell.id]
                                                     }
                                                 </TableCell>
                                             )}

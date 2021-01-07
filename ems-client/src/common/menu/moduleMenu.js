@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles, Typography, List, Icon  } from '@material-ui/core/';
-import MuiExpansionPanel from '@material-ui/core/ExpansionPanel';
-import MuiExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import MuiExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import MuiAccordionPanel from '@material-ui/core/Accordion';
+import MuiAccordionPanelSummary from '@material-ui/core/AccordionSummary';
+import MuiAccordionPanelDetails from '@material-ui/core/AccordionDetails';
 import ModuleMenuItem from 'common/menu/moduleMenuItem';
 
 
@@ -29,7 +29,7 @@ const styles = theme => ({
     },
 })
 
-const ExpansionPanel = withStyles({
+const AccordionPanel = withStyles({
     root: {
         border: '1px solid rgba(0,0,0,.125)',
         boxShadow: 'none',
@@ -46,9 +46,9 @@ const ExpansionPanel = withStyles({
     expanded: {
         margin: 0,
     },
-})(MuiExpansionPanel);
+})(MuiAccordionPanel);
 
-const ExpansionPanelSummary = withStyles({
+const AccordionPanelSummary = withStyles({
     root: {
         backgroundColor: 'rgba(0,0,0,.03)',
         borderBottom: '1px solid rgba(0,0,0,.125)',
@@ -68,16 +68,16 @@ const ExpansionPanelSummary = withStyles({
     expanded: {
         margin: 0,
     },
-})(props => <MuiExpansionPanelSummary {...props} />);
+})(props => <MuiAccordionPanelSummary {...props} />);
 
-ExpansionPanelSummary.muiName = 'ExpansionPanelSummary';
+AccordionPanelSummary.muiName = 'AccordionPanelSummary';
 
-const ExpansionPanelDetails = withStyles(theme => ({
+const AccordionPanelDetails = withStyles(theme => ({
     root: {
         padding: 0,
         margin: 0,
     },
-}))(MuiExpansionPanelDetails);
+}))(MuiAccordionPanelDetails);
 
 
 class ModuleMenu extends Component {
@@ -93,20 +93,20 @@ class ModuleMenu extends Component {
         const {classes, name, menuItems, icon, open} = this.props;
         const { expanded }= this.state;
         return(
-            <ExpansionPanel
+            <AccordionPanel
                 square
                 expanded={expanded}
                 onChange={this.handleChange}
             >
-                <ExpansionPanelSummary
+                <AccordionPanelSummary
                     classes={{
                         content: classNames(classes.expansionPanelClose),
                     }}
                 >
                     <Icon className={classes.subheaderIcon}>{icon}</Icon>
                     <Typography>{name}</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
+                </AccordionPanelSummary>
+                <AccordionPanelDetails>
                     <List className={classes.list}>
                         {menuItems.map((item, index) => (
                             <ModuleMenuItem
@@ -116,8 +116,8 @@ class ModuleMenu extends Component {
                             />
                         ))}
                     </List>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionPanelDetails>
+            </AccordionPanel>
         )
     }
 }

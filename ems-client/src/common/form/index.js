@@ -7,6 +7,7 @@ import FormTableField from 'common/form/formTableField';
 import FormDateField from 'common/form/formDateField';
 import FormDictionaryField from 'common/form/formDictionaryField';
 import FormDigitsField from 'common/form/formDigitsField';
+import FormAmountField from 'common/form/formAmountField';
 
 
 export * from 'common/form/reduxFormFields';
@@ -20,4 +21,5 @@ export {
     FormDateField,
     FormDictionaryField,
     FormDigitsField,
+    FormAmountField,
 };

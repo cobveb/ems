@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Description, LibraryBooks, EventNote, AccountBalanceWallet } from '@material-ui/icons/';
+import { Description, LibraryBooks, EventNote, Timeline } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames'
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
-import FinancialPlansContainer from 'containers/modules/coordinator/plans/financialPlansContainer';
+import PlansContainer from 'containers/modules/coordinator/plans/plansContainer';
 import DictionariesContainer from 'containers/modules/coordinator/dictionariesContainer';
 
 const styles = theme => ({
@@ -53,10 +53,10 @@ class Coordinator extends Component {
                 defaultExpanded: true,
                 items: [
                     {
-                        code: 'financialPlans',
-                        name: constants.COORDINATOR_SUBMENU_PLANS_FINANCIAL,
-                        path: '/modules/coordinator/plans/financial',
-                        icon: <AccountBalanceWallet />
+                        code: 'plans',
+                        name: constants.COORDINATOR_SUBMENU_PLANS,
+                        path: '/modules/coordinator/plans/plans',
+                        icon: <Timeline />
                     },
                 ],
             },
@@ -88,8 +88,8 @@ class Coordinator extends Component {
                         <Card className={classes.card}>
                             <CardContent>
                                 <Switch>
-                                    <PrivateRoute exact path='/modules/coordinator/' component={FinancialPlansContainer}/>
-                                    <PrivateRoute exact path='/modules/coordinator/plans/financial' component={FinancialPlansContainer}/>
+                                    <PrivateRoute exact path='/modules/coordinator/' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/coordinator/plans/plans' component={PlansContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/dictionaries' component={DictionariesContainer}/>
                                 </Switch>
                             </CardContent>

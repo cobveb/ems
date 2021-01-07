@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import {Grid, Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel, Typography, Paper, Toolbar, Divider, ButtonGroup } from '@material-ui/core/';
+import { numberWithSpaces } from 'utils/';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'common/gui';
 import {AddCircle, Edit, Delete} from '@material-ui/icons';
@@ -116,6 +117,7 @@ function desc(a, b, orderBy, cellType) {
         case 'text':
         case 'numeric':
         case 'boolean':
+        case 'amount':
             if (b[orderBy] < a[orderBy]) {
                 return -1;
             } else if (b[orderBy] > a[orderBy]) {
@@ -409,7 +411,15 @@ function EnhancedTable(props) {
                                                                        { locale: pl }
                                                                     )
                                                                 :
-                                                                    cell.type==='object' ? (row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)]) : row[cell.id]
+                                                                    cell.type==='object'
+                                                                        ?
+                                                                            (row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)])
+                                                                        :
+                                                                            cell.type==='amount' && row[cell.id] !== null
+                                                                                ?
+                                                                                    numberWithSpaces(row[cell.id])
+                                                                                :
+                                                                                    row[cell.id]
                                                 }
                                             </TableCell>
                                         )}
