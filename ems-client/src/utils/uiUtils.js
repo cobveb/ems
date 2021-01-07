@@ -158,8 +158,15 @@ export function updateOnCloseDetails(objects, object, prop){
     return objects;
 };
 
-export function findCoordinator(allCoordinators, coordinatorCode){
-    return allCoordinators.find(coordinator => {
-        return coordinator.code === coordinatorCode
+export function findSelectFieldPosition(options, searched){
+    return options.find(option => {
+        return option.code === searched
     });
 };
+
+export function numberWithSpaces(number){
+    let parts = ((Math.round(number * 100) / 100).toFixed(2)).toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/gs, " ");
+    return parts.join(".");
+}
+
