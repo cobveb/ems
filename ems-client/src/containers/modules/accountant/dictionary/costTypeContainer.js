@@ -1,76 +1,73 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
-import { loading, setError } from 'actions/';
+import { loading } from 'actions/';
 import CostType from 'components/modules/accountant/dictionary/costType'
-
-
-const response = {
-    data: {
-        data: [
-            {
-                "id": 1,
-                "year": new Date(2019,0,1).toJSON(),
-                "coordinators": [
-                    { "code": "it",
-                      "name": "Dział Informatyki",
-                      "shortName": "Dział Informatyki",
-                      "nip": null,
-                      "regon": null,
-                      "city": null,
-                      "zipCode": null,
-                      "street": null,
-                      "building": null,
-                      "phone": null,
-                      "fax": null,
-                      "email": "it@uck.katowice.pl",
-                      "active": true,
-                      "coordinator": true,
-                      "parent": "uck"
-                    },
-                ],
-            },
-            {
-                "id": 2,
-                "year": new Date(2020,0,1).toJSON(),
-                "coordinators": [
-                    { "code": 'adm' },
-                ]
-            },
-            {
-                "id":3,
-                "year": new Date(2021,0,1).toJSON(),
-                "coordinators": [
-                    { "code": 'lab' },
-                ]
-            },
-        ],
-    },
-};
+import CostTypeApi from 'api/modules/accountant/costTypeApi';
 
 class CostTypeContainer extends Component {
     state = {
         initData: {
+            active: false,
             years:[],
         },
+        error:false,
+    }
+
+    parseCostYearsYearToJson = (years) => {
+        years.map(year => {
+           return Object.assign(year, {year: new Date(`${year.year}`,0,1).toJSON()})
+        })
+        return years
     }
 
     handleSubmit = (values) => {
-        console.log(values);
+        this.props.loading(true)
+        const payload = JSON.parse(JSON.stringify(values));
+        if(payload.years.length > 0 ){
+            payload.years.map(year => {
+               return Object.assign(year, {year: new Date(year.year).getFullYear()})
+            })
+        }
+        CostTypeApi.saveCostType(payload)
+        .then(response => {
+            this.props.changeAction("edit");
+            this.setState(prevState => {
+                let initData = {...prevState.initData};
+                let error = {...prevState.error};
+                Object.assign(initData, response.data.data);
+                initData.years.length > 0 && this.parseCostYearsYearToJson(initData.years);
+                error = false;
+                return {initData, error};
+            });
+            this.props.loading(false)
+        })
+        .catch(error => {
+            this.setState({
+                initData: values,
+                error: true,
+            });
+            this.props.loading(false)
+        });
     }
 
     handleClose = () => {
-        this.props.onClose(this.state.initData)
+        this.props.onClose(this.state.error===false ? this.state.initData : this.props.initialValues)
     }
 
     handleGetYearsValidity = () => {
-        this.setState(prevState => {
-            let initData = {...prevState.initData};
-            Object.assign(initData, this.props.initialValues)
-            //TODO : Pobranie okresów obowiązywania z API
-            initData.years =  response.data.data;
-            return {initData};
-        });
+        this.props.loading(true);
+        CostTypeApi.getYearsByCostType(this.props.initialValues.id)
+        .then(response => {
+            this.setState(prevState => {
+                let initData = {...prevState.initData};
+                Object.assign(initData, this.props.initialValues)
+                initData.years =  (response.data.data.length > 0 ? this.parseCostYearsYearToJson(response.data.data) : response.data.data);
+                return {initData};
+            });
+            this.props.loading(false)
+        })
+        .catch(error => {});
     }
 
     componentDidMount(){
@@ -81,7 +78,7 @@ class CostTypeContainer extends Component {
 
 
     render(){
-        const {isLoading, error, clearError, action, coordinators} = this.props;
+        const {isLoading, action, coordinators, allCosts} = this.props;
         const {initData} = this.state;
         return(
             <CostType
@@ -89,10 +86,9 @@ class CostTypeContainer extends Component {
                 initialValues = {initData}
                 coordinators = {coordinators}
                 action={action}
-                error = {error}
-                clearError = {clearError}
-                onSubmit={this.handleSubmit}
+                handleSubmit={this.handleSubmit}
                 onClose={this.handleClose}
+                allCosts={allCosts}
             />
         );
     };
@@ -101,14 +97,12 @@ class CostTypeContainer extends Component {
 const mapStateToProps = (state) => {
 	return {
 		isLoading: state.ui.loading,
-		error: state.ui.error,
 	}
 };
 
 function mapDispatchToProps (dispatch) {
     return {
         loading : bindActionCreators(loading, dispatch),
-        clearError : bindActionCreators(setError, dispatch),
     }
 };
 

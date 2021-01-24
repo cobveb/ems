@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@ToString(exclude = {"applicant", "coordinator", "positions", "createDate"})
-@EqualsAndHashCode(exclude = {"applicant", "coordinator", "positions", "createDate"})
+@ToString(exclude = {"applicant", "coordinator", "positions"})
+@EqualsAndHashCode(exclude = {"applicant", "coordinator", "positions"})
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ import java.util.Set;
                 }
         )
 })
-@DynamicUpdate(true)
+@DynamicUpdate()
 public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "applicationSequence")
@@ -64,6 +64,6 @@ public class Application {
     private Date sendDate;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "application", cascade = {CascadeType.ALL})
-    private Set<ApplicationPosition> positions = new HashSet<ApplicationPosition>();
+    private Set<ApplicationPosition> positions = new HashSet<>();
 
 }

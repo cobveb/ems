@@ -182,7 +182,7 @@ class ApplicationControllerTest {
     @WithUserDetails
     void deleteApplication() throws Exception {
         ApiResponse response = new ApiResponse(HttpStatus.ACCEPTED, applicationService.deleteApplication((long) 1));
-        mvc.perform(delete("/api/application/applicant/deleteApplication/1")
+        mvc.perform(delete("/api/application/applicant/deleteApplication/2")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect((jsonPath("$.status").value("ACCEPTED")))
                 .andExpect((jsonPath("$.data").value(response.getData())));

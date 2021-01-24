@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import CostsTypes from 'components/modules/accountant/dictionary/costsTypes';
-import DictionaryApi from 'api/common/dictionaryApi';
+import CostTypeApi from 'api/modules/accountant/costTypeApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import {updateOnCloseDetails} from 'utils';
@@ -10,29 +10,16 @@ import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi
 
 class CostsTypesContainer extends Component {
     state = {
-        costsTypes: [
-            {
-                id: 1,
-                number: '402-1-25-004',
-                name: 'Pozostałe usługi niemedyczne KUP',
-                active: true,
-            },
-            {
-                id: 2,
-                number: '402-2-04-001',
-                name: 'Zakup usług TK ',
-                active: true,
-            }
-        ],
+        costsTypes: [],
         coordinators: [],
     }
 
     handleGetCostsTypes(){
         this.props.loading(true);
-        DictionaryApi.getDictionaries()
+        CostTypeApi.getCostTypeAll()
         .then(response => {
             this.setState({
-                initData: response.data.data,
+                costsTypes: response.data.data,
             })
             this.props.loading(false)
         })
@@ -42,11 +29,9 @@ class CostsTypesContainer extends Component {
     handleGetCoordinators(){
         return OrganizationUnitsApi.getCoordinators()
         .then(response => {
-            this.setState(prevState => {
-                let coordinators = [...prevState.coordinators];
-                coordinators =  coordinators.concat(response.data.data);
-                return {coordinators};
-            });
+            this.setState({
+                coordinators: response.data.data,
+            })
             this.props.loading(false)
         })
         .catch(error => {});
@@ -57,9 +42,22 @@ class CostsTypesContainer extends Component {
         return updateOnCloseDetails(costs, cost);
     }
 
+    handleDelete = (costId) => {
+        this.props.loading(true);
+        CostTypeApi.deleteCostType(costId)
+        .then(response => {
+            let costs = this.state.costsTypes;
+            costs = costs.filter(cost => cost.id !== costId)
+            this.setState({
+                costsTypes: costs,
+            })
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
     componentDidMount() {
-        //TODO : Odkomentować w momencie udostepnienia API getCostTypes
-        //this.handleGetCostsTypes();
+        this.handleGetCostsTypes();
         this.handleGetCoordinators();
     }
 
@@ -74,7 +72,7 @@ class CostsTypesContainer extends Component {
                 error = {error}
                 clearError={clearError}
                 onClose={this.handleUpdateOnClose}
-
+                onDelete={this.handleDelete}
             />
         )
     }

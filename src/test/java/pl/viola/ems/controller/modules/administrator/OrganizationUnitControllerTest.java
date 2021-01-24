@@ -1,4 +1,5 @@
 package pl.viola.ems.controller.modules.administrator;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,12 +14,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
-import pl.viola.ems.model.modules.administrator.User;
-import pl.viola.ems.model.modules.applicant.Application;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -38,13 +38,13 @@ public class OrganizationUnitControllerTest {
 
     private MockMvc mvc;
 
-    private OrganizationUnit main = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
-    private OrganizationUnit it = new OrganizationUnit("it", "IT", "It", "it@uck.katowice.pl", true, true);
-    private OrganizationUnit activeOu = new OrganizationUnit("active", "IT", "It", "it@uck.katowice.pl", true, false);
+    private final OrganizationUnit main = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private final OrganizationUnit it = new OrganizationUnit("it", "IT", "It", "it@uck.katowice.pl", true, true);
+    private final OrganizationUnit activeOu = new OrganizationUnit("active", "IT", "It", "it@uck.katowice.pl", true, false);
 
-    private List<OrganizationUnit> all = Arrays.asList(main, it);
-    private List<OrganizationUnit> active = Arrays.asList(activeOu);
-    private List<OrganizationUnit> coordinators = Arrays.asList(it);
+    private final List<OrganizationUnit> all = Arrays.asList(main, it);
+    private final List<OrganizationUnit> active = Collections.singletonList(activeOu);
+    private final List<OrganizationUnit> coordinators = Collections.singletonList(it);
 
     @MockBean
     private OrganizationUnitService organizationUnitService;
@@ -55,12 +55,10 @@ public class OrganizationUnitControllerTest {
                 .webAppContextSetup(context)
                 .build();
 
-        given(organizationUnitService.saveOu("add", main)).willReturn(main);
-        given(organizationUnitService.saveOu("edit", main)).willReturn(main);
         when(organizationUnitService.saveOu("save", main)).thenThrow(new AppException("Administrator.organizationUnit.invalidAction", HttpStatus.BAD_REQUEST));
     }
 
-    @WithMockUser("user")
+    @WithMockUser()
     @DisplayName("Controller - getAllOrganizationUnits")
     @Test
     void getAllOrganizationUnits() throws Exception{
@@ -71,11 +69,11 @@ public class OrganizationUnitControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(2)))
-                .andExpect(jsonPath("$.data[1]").value(it));
+                .andExpect(jsonPath("$.data[1].code").value(it.getCode()));
 
     }
 
-    @WithMockUser("user")
+    @WithMockUser()
     @DisplayName("Controller - getActiveOrganizationUnits")
     @Test
     void getActiveOrganizationUnits() throws Exception{
@@ -86,11 +84,11 @@ public class OrganizationUnitControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(1)))
-                .andExpect(jsonPath("$.data[0]").value(activeOu));
+                .andExpect(jsonPath("$.data[0].code").value(activeOu.getCode()));
 
     }
 
-    @WithMockUser("user")
+    @WithMockUser()
     @DisplayName("Controller - getCoordinators")
     @Test
     void getCoordinators() throws Exception{
@@ -101,10 +99,10 @@ public class OrganizationUnitControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data", hasSize(1)))
-                .andExpect(jsonPath("$.data[0]").value(it));
+                .andExpect(jsonPath("$.data[0].code").value(it.getCode()));
     }
 
-    @WithMockUser("user")
+    @WithMockUser()
     @DisplayName("Controller - getMainOrganizationUnit")
     @Test
     void getMainOrganizationUnit() throws Exception{
@@ -112,25 +110,25 @@ public class OrganizationUnitControllerTest {
         given(organizationUnitService.findMainOu()).willReturn(main);
 
         mvc.perform(get("/api/ou/getMainOu")
-            .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(main));
+                .andExpect(jsonPath("$.data.code").value(main.getCode()));
     }
 
-    @WithMockUser("user")
+    @WithMockUser()
     @DisplayName("Controller - getOrganizationUnitById")
     @Test
     void getOrganizationUnitById() throws Exception{
 
-        given(organizationUnitService.findById("uck")).willReturn(java.util.Optional.ofNullable(main));
+        given(organizationUnitService.findById("uck")).willReturn(java.util.Optional.of(main));
 
         mvc.perform(get("/api/ou/getOu/uck")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(main));
+                .andExpect(jsonPath("$.data.code").value(main.getCode()));
     }
 
-    @WithMockUser("user")
+    @WithMockUser()
     @DisplayName("Controller - getOrganizationIsNull")
     @Test
     void getOrganizationUnitIsNull() throws Exception{
@@ -141,7 +139,7 @@ public class OrganizationUnitControllerTest {
                 .andExpect(jsonPath("$.data").doesNotExist());
     }
 
-    @WithMockUser("user")
+    @WithMockUser()
     @DisplayName("Controller - saveOrganizationUnitOnAdd")
     @Test()
     void saveOrganizationUnitOnAdd() throws Exception {
@@ -149,7 +147,8 @@ public class OrganizationUnitControllerTest {
         OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
 
 
-        ApiResponse response = new ApiResponse(HttpStatus.CREATED, ou);
+        ApiResponse response = new ApiResponse(HttpStatus.CREATED, organizationUnitService.saveOu("add", main));
+
 
         mvc.perform(put("/api/ou/add")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +157,7 @@ public class OrganizationUnitControllerTest {
                 .andExpect((jsonPath("$.data").value(response.getData())));
     }
 
-    @WithMockUser("user")
+    @WithMockUser()
     @DisplayName("Controller - saveOrganizationUnitBadActionException")
     @Test()
     void saveOrganizationUnitBadActionException() throws Exception {
@@ -171,15 +170,15 @@ public class OrganizationUnitControllerTest {
                 .andExpect((jsonPath("$.message").value("Niepoprawna akcja. Dozwolone akcje to add lub edit.")));
     }
 
-    @WithMockUser("user")
+    @WithMockUser()
     @DisplayName("Controller - saveOrganizationUnitOnEdit")
     @Test()
     void saveOrganizationUnitOnEdit() throws Exception {
 
         OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
 
+        ApiResponse response = new ApiResponse(HttpStatus.CREATED, organizationUnitService.saveOu("edit", main));
 
-        ApiResponse response = new ApiResponse(HttpStatus.CREATED, ou);
 
         mvc.perform(put("/api/ou/edit")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -208,9 +207,10 @@ public class OrganizationUnitControllerTest {
                 true,
                 false,
                 null,
-                new HashSet<User>(),
-                new HashSet<Application>(),
-                new HashSet<Application>()
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>(),
+                new HashSet<>()
         );
 
         mvc.perform(put("/api/ou/add")

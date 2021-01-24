@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { withStyles, Grid, Typography, Divider, Toolbar}  from '@material-ui/core/';
 import PropTypes from 'prop-types';
-import Spinner from 'common/spinner';
 import { Button } from 'common/gui';
-import ModalDialog from 'common/modalDialog';
+import { ModalDialog} from 'common/';
 import * as constants from 'constants/uiNames';
 import { Save, Cancel, Description, DateRangeRounded, Edit } from '@material-ui/icons/';
 import { FormTextField, FormCheckBox, FormTableField } from 'common/form';
 import CostYearFormContainer from 'containers/modules/accountant/dictionary/forms/costYearFormContainer';
+import {findIndexElement} from 'utils/';
 
 const styles = theme => ({
     content: {
@@ -43,10 +43,12 @@ class CostTypeForm extends Component {
                 dateFormat: 'yyyy',
             }
         ],
-        rows: this.props.initialValues.years,
-        selected: null,
+        allCoordinators: [...this.props.coordinators],
+        years: this.props.initialValues.years,
+        selected: [],
         openCostYearDetails: '',
         costYearAction: '',
+        nextYearTmpId: this.props.initialValues.years.length+1,
     }
 
     handleSelect = (id) => {
@@ -58,24 +60,55 @@ class CostTypeForm extends Component {
     };
 
     handleCloseCostYearDetails = () => {
-            this.setState({openCostYearDetails: !this.state.openCostYearDetails, selected: null});
-        };
+        this.setState({openCostYearDetails: !this.state.openCostYearDetails, selected: []});
+    };
+
+    handleSubmitYear = (values) => {
+        switch(this.state.costYearAction){
+            case 'add':
+                values.positionId = this.state.nextYearTmpId;
+                this.setState(prevState => {
+                    const years = [...prevState.years];
+                    const selected = [...prevState.selected];
+                    let nextYearTmpId = {...prevState.nextYearTmpId};
+                    let costYearAction = {...prevState.positionAction};
+                    years.push(values);
+                    selected[0] = values;
+                    nextYearTmpId = this.state.nextYearTmpId + 1;
+                    costYearAction = 'edit';
+                    return {nextYearTmpId, years, selected, costYearAction};
+                })
+                break;
+            case 'edit':
+                const index = findIndexElement(values, this.state.years, "positionId")
+                if (index !== null){
+                    this.setState( prevState => {
+                        const years = [...prevState.years];
+                        const selected = [...prevState.selected];
+                        years.splice(index, 1, values);
+                        selected.splice(0, 1, values);
+                        return {years, selected};
+                    });
+                }
+                break;
+            default:
+                return null;
+        }
+    };
 
     handleConfirmDelete = () => {
-        /*const index = this.findIndex(this.state.selected[0], this.state.positions);
+        const index = findIndexElement(this.state.selected[0], this.state.years, "positionId");
         if (index !== null){
             this.setState( prevState => {
-                const positions = [...prevState.positions];
+                const years = [...prevState.years];
                 let selected = [...prevState.selected];
-                let positionAction = [...prevState.positionAction];
-                positions.splice(index, 1);
+                let costYearAction = [...prevState.costYearAction];
+                years.splice(index, 1);
                 selected = []
-                positionAction = ''
-                this.props.handlePositions(positions);
-                return {positions, selected, positionAction};
+                costYearAction = ''
+                return {years, selected, costYearAction};
             });
-        }*/
-        console.log("confirm delete")
+        }
     }
 
     handleCancelDelete = () => {
@@ -86,20 +119,25 @@ class CostTypeForm extends Component {
         this.setState(state => ({ costYearAction: action}));
     }
 
-    componentDidUpdate(prevProps){
+    componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues.years !== prevProps.initialValues.years){
             this.setState({
-                rows: this.props.initialValues.years,
+                years: this.props.initialValues.years,
             });
+        }
+        else if(JSON.stringify(this.state.allCoordinators) !== JSON.stringify(this.props.coordinators)){
+            if(this.state.allCoordinators === prevState.allCoordinators){
+                this.setState({
+                    allCoordinators: [...this.props.coordinators],
+                });
+            }
         }
     }
     render(){
-        const {classes, error, onSubmit, pristine, submitting, invalid, submitSucceeded, onClose, action, coordinators} = this.props;
-        const {selected, tableHead, rows, costYearAction, openCostYearDetails} = this.state;
-
+        const {handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, onClose, action} = this.props;
+        const {selected, tableHead, years, costYearAction, openCostYearDetails, allCoordinators} = this.state;
         return(
             <>
-                {error && <ModalDialog message={error} variant="error"/>}
                 { costYearAction === "delete" &&
                     <ModalDialog
                         message={constants.ACCOUNTANT_CONFIRM_DELETE_YEAR_MESSAGE}
@@ -111,16 +149,15 @@ class CostTypeForm extends Component {
                 { openCostYearDetails &&
                     <CostYearFormContainer
                         initialValues={costYearAction==="add" ? {}: selected[0]}
-                        coordinators={coordinators}
-                        years={rows}
+                        coordinators={allCoordinators}
+                        years={years}
                         action={costYearAction}
                         open={openCostYearDetails}
                         onClose={this.handleCloseCostYearDetails}
                         onSubmit={this.handleSubmitYear}
                     />
                 }
-                <form onSubmit={onSubmit}>
-                    {submitting && <Spinner />}
+                <form onSubmit={handleSubmit}>
                     <div className={classes.content}>
                         <div className={classes.section}>
                             <Toolbar className={classes.toolbar}>
@@ -138,20 +175,19 @@ class CostTypeForm extends Component {
                             <Grid container spacing={1} justify="center" className={classes.container}>
                                 <Grid item xs={12} sm={3}>
                                     <FormTextField
-                                        name="number"
+                                        name="code"
                                         label={constants.ACCOUNTANT_COST_TYPE_NUMBER}
                                         isRequired={true}
                                         disabled={action === "edit" ? true : false}
                                         inputProps={{ maxLength: 12 }}
                                     />
                                 </Grid>
-                                {/*TODO: Ustwić maksymalną ilosc znaków dla pola Nazwa*/}
                                 <Grid item xs={12} sm={9}>
                                     <FormTextField
                                         name="name"
                                         label={constants.ACCOUNTANT_COST_TYPE_NAME}
                                         isRequired={true}
-                                        inputProps={{ maxLength: 30 }}
+                                        inputProps={{ maxLength: 120 }}
                                     />
                                 </Grid>
                             </Grid>
@@ -169,9 +205,10 @@ class CostTypeForm extends Component {
                                         className={classes.tableWrapper}
                                         name="years"
                                         head={tableHead}
-                                        allRows={rows}
+                                        allRows={years}
                                         checkedRows={selected ? selected : []}
                                         toolbar={true}
+                                        orderBy="year"
                                         editButtonProps={{
                                             label :constants.BUTTON_EDIT,
                                             icon : <Edit/>,
@@ -214,7 +251,6 @@ class CostTypeForm extends Component {
                         </Grid>
                     </div>
                 </form>
-
             </>
         );
     };

@@ -81,6 +81,7 @@ class ApplicationServiceImplTest {
             applicant.getCode(),
             new HashSet<>(),
             new HashSet<>(),
+            new HashSet<>(),
             new HashSet<>()
     );
 
@@ -136,10 +137,9 @@ class ApplicationServiceImplTest {
 
     private final List<ApplicationPosition> positions = Arrays.asList(position1, position2);
 
-
     @BeforeEach
     void setUp() {
-
+        application.setPositions(new HashSet<>(Arrays.asList(position1, position2)));
         List<OrganizationUnit> childes = Collections.singletonList(child);
         List<OrganizationUnit> childesCoor = new ArrayList<>();
 
@@ -234,7 +234,7 @@ class ApplicationServiceImplTest {
         Application updated = applicationService.updateApplicationStatus((long) 1, "WY");
 
         verify(applicationRepository, times(1)).save(updated);
-        assertThat(application).isEqualTo(updated);
+        assertThat(application.getStatus()).isEqualTo(updated.getStatus());
     }
 
     @Test

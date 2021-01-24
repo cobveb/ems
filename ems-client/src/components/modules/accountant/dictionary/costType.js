@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
-import ModalDialog from 'common/modalDialog';
 import Spinner from 'common/spinner';
 import * as constants from 'constants/uiNames';
 import PropTypes from 'prop-types';
@@ -18,7 +17,7 @@ const styles = theme => ({
 class CostType extends Component {
 
     handleSubmit = (values) => {
-        this.props.onSubmit(values);
+        this.props.handleSubmit(values);
     }
 
     handleClose = () =>{
@@ -26,11 +25,10 @@ class CostType extends Component {
     }
 
     render(){
-        const { isLoading, classes, error, action, initialValues, coordinators } = this.props;
+        const { isLoading, classes, action, initialValues, coordinators, allCosts } = this.props;
         return(
             <>
                 {isLoading && <Spinner />}
-                {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
                 <Grid container spacing={0} direction="column">
                     <div className={classes.root}>
                         <Typography variant="h6">
@@ -46,6 +44,7 @@ class CostType extends Component {
                             onSubmit={this.handleSubmit}
                             onClose={this.handleClose}
                             action={action}
+                            allCosts={allCosts}
                         />
                     </div>
                 </Grid>
@@ -58,7 +57,6 @@ class CostType extends Component {
 CostType.propType = {
     classes: PropTypes.func.isRequired,
     isLoading: PropTypes.bool.isLoading,
-    error: PropTypes.string,
     initialValues: PropTypes.object.isRequired,
     action: PropTypes.oneOf(['add', 'edit']).isRequired,
     coordinators: PropTypes.array,

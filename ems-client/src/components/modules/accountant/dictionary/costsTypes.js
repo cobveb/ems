@@ -18,7 +18,7 @@ class CostsTypes extends Component {
     state = {
         headCells: [
             {
-                id: 'number',
+                id: 'code',
                 label: constants.ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NUMBER,
                 type: 'text',
             },
@@ -38,7 +38,7 @@ class CostsTypes extends Component {
     filter = () => {
         let costs = this.props.initialValues;
         return costs.filter((cost) => {
-            return cost.number.toLowerCase().search(
+            return cost.code.toLowerCase().search(
                 this.state.codeNameSearch.toLowerCase()) !== -1 ||
                 cost.name.toLowerCase().search(
                 this.state.codeNameSearch.toLowerCase()) !== -1
@@ -66,6 +66,28 @@ class CostsTypes extends Component {
         this.setState(state => ({isDetailsVisible: !state.isDetailsVisible, action: action}));
     }
 
+    handleChangeAction = (action) => {
+        this.setState({
+            action: action,
+        });
+    }
+
+    handleCloseDialog = () => {
+        this.props.clearError(null);
+    }
+
+    handleDelete = (event, action) => {
+        this.setState(state => ({ action: action}));
+    }
+
+    handleConfirmDelete = () => {
+        this.props.onDelete(this.state.selected.id);
+        this.setState({
+            action: '',
+            selected: {},
+        });
+    }
+
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
@@ -79,7 +101,7 @@ class CostsTypes extends Component {
     }
 
     render(){
-        const { classes, isLoading, error, coordinators } = this.props;
+        const { classes, isLoading, error, coordinators, initialValues } = this.props;
         const { headCells, rows, selected, action } = this.state;
         return(
             <>
@@ -89,7 +111,7 @@ class CostsTypes extends Component {
                         message={constants.ACCOUNTANT_COSTS_TYPES_CONFIRM_DELETE_MESSAGE}
                         variant="confirm"
                         onConfirm={this.handleConfirmDelete}
-                        onClose={this.handleCancelDelete}
+                        onClose={this.handleCloseDialog}
                     />
                 }
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
@@ -100,7 +122,9 @@ class CostsTypes extends Component {
                             coordinators={coordinators}
                             changeVisibleDetails={this.handleChangeVisibleDetails}
                             action={action}
+                            changeAction={this.handleChangeAction}
                             onClose={this.handleClose}
+                            allCosts={initialValues}
                         />
                     :
                         <>
@@ -118,6 +142,7 @@ class CostsTypes extends Component {
                                             onChange={this.handleChangeSearch}
                                             label={constants.ACCOUNTANT_COSTS_TYPES_SEARCH_NUMBER_NAME}
                                             placeholder={constants.ACCOUNTANT_COSTS_TYPES_SEARCH_NUMBER_NAME}
+                                            valueType='all'
                                         />
                                     </Grid>
                                 </Grid>
@@ -126,7 +151,7 @@ class CostsTypes extends Component {
                                     rows={rows}
                                     headCells={headCells}
                                     onSelect={this.handleSelect}
-                                    defaultOrderBy="number"
+                                    defaultOrderBy="code"
                                     rowKey="id"
                                 />
                             </Grid>
@@ -158,7 +183,7 @@ class CostsTypes extends Component {
                                     icon=<Delete className={classes.icon}/>
                                     iconAlign="right"
                                     disabled={Object.keys(selected).length === 0}
-                                    onClick = {(event) => this.handleDeleteGroup(event, 'delete', )}
+                                    onClick = {(event) => this.handleDelete(event, 'delete', )}
                                     variant="delete"
                                 />
                             </Grid>
