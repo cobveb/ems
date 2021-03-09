@@ -68,6 +68,7 @@ public class OrganizationUnitServiceImplTest {
             new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
+            new HashSet<>(),
             new HashSet<>()
     );
     private final OrganizationUnit subChild = new OrganizationUnit(
@@ -86,6 +87,7 @@ public class OrganizationUnitServiceImplTest {
             true,
             false,
             child.getCode(),
+            new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
@@ -231,6 +233,7 @@ public class OrganizationUnitServiceImplTest {
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
+                new HashSet<>(),
                 new HashSet<>()
         );
 
@@ -258,6 +261,7 @@ public class OrganizationUnitServiceImplTest {
                 true,
                 false,
                 null,
+                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
@@ -292,7 +296,9 @@ public class OrganizationUnitServiceImplTest {
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
+                new HashSet<>(),
                 new HashSet<>()
+
         );
 
         organizationUnitService.saveOu("edit", ou);

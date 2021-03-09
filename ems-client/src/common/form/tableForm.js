@@ -20,9 +20,8 @@ const useStyles = makeStyles(theme => ({
         height: '100%',
     },
     paper: {
-        minWidth: '100%',
-        width: '100%',
-        overflow: 'auto',
+
+        overflowX: "auto",
     },
     button: {
         margin: theme.spacing(0.5, 0),
@@ -282,9 +281,9 @@ const useTableStyles = makeStyles(theme => ({
         top: 20,
         width: 1,
     },
-    head: {
-        lineHeight: theme.spacing(0),
-    }
+//    head: {
+//        lineHeight: theme.spacing(0),
+//    }
 }));
 
 function EnhancedTable(props) {
@@ -415,9 +414,9 @@ function EnhancedTable(props) {
                                                                         ?
                                                                             (row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)])
                                                                         :
-                                                                            cell.type==='amount' && row[cell.id] !== null
+                                                                            cell.type==='amount' && row[cell.id] !== undefined
                                                                                 ?
-                                                                                    numberWithSpaces(row[cell.id])
+                                                                                   row[cell.id] !== null && `${numberWithSpaces(row[cell.id])}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
                                                                                 :
                                                                                     row[cell.id]
                                                 }

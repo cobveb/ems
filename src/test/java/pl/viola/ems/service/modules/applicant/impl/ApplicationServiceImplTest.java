@@ -82,6 +82,7 @@ class ApplicationServiceImplTest {
             new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
+            new HashSet<>(),
             new HashSet<>()
     );
 
@@ -130,7 +131,7 @@ class ApplicationServiceImplTest {
     );
 
     private final pl.viola.ems.model.common.Dictionary test = new Dictionary("test", "Test", 'U', new HashSet<>());
-    private final DictionaryItem item = new DictionaryItem((long) 1, "test", "test item", true, test, new HashSet<>());
+    private final DictionaryItem item = new DictionaryItem((long) 1, "test", "test item", true, test, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
 
     private final ApplicationPosition position1 = new ApplicationPosition((long) 1, "Test", (long) 5, item, "ZA", null, null, application);
     private final ApplicationPosition position2 = new ApplicationPosition((long) 2, "Test2", (long) 4, item, "ZA", null, null, application);

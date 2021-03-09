@@ -1,12 +1,30 @@
-import { reduxForm } from 'redux-form';
+import { reduxForm, getFormValues, getFormInitialValues,} from 'redux-form';
+import { connect } from 'react-redux';
 import PlanBasicInfoForm from 'components/modules/coordinator/plans/forms/planBasicInfoForm';
 import {validate} from 'components/modules/coordinator/plans/forms/planBasicInfoFormValid';
 
 
 let PlanBasicInfoFormContainer = reduxForm({
     form: 'PlanBasicInfoForm',
+    touchOnChange: true,
     validate,
     enableReinitialize: true,
 }) (PlanBasicInfoForm)
+
+
+PlanBasicInfoFormContainer = connect(state => {
+        const formFinancialValues = getFormValues('PlanFinancialContentPositionForm')(state)
+        const formFinancialInitialValues = getFormInitialValues('PlanFinancialContentPositionForm')(state)
+        const formPublicProcurementValues = getFormValues('PlanPublicProcurementContentPositionForm')(state)
+        const formPublicProcurementInitialValues = getFormInitialValues('PlanPublicProcurementContentPositionForm')(state)
+
+        return{
+            formFinancialValues,
+            formFinancialInitialValues,
+            formPublicProcurementValues,
+            formPublicProcurementInitialValues,
+        }
+    }
+)(PlanBasicInfoFormContainer)
 
 export default PlanBasicInfoFormContainer

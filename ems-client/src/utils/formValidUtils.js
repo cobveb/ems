@@ -100,3 +100,13 @@ export function isValidDate(date) {
     }
     return null;
 }
+
+export const zipCodeMask = [/\d/, /\d/, ' ', '-', ' ', /\d/, /\d/, /\d/,];
+
+export const euroExchangeRateMask = [/\d/, '.', /\d/, /\d/, /\d/, /\d/,];
+
+export function isValidEuroExchangeRate(euro){
+    if (!/^\d{1}\.\d{4}$/i.test(euro)){
+        return constants.FORM_ERROR_MSG_INVALID_VALUE
+    }
+};

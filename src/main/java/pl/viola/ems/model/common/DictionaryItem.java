@@ -3,6 +3,9 @@ package pl.viola.ems.model.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.viola.ems.model.modules.applicant.ApplicationPosition;
+import pl.viola.ems.model.modules.coordinator.FinancialSubPosition;
+import pl.viola.ems.model.modules.coordinator.PublicProcurementPosition;
+import pl.viola.ems.model.modules.coordinator.PublicProcurementSubPosition;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -11,8 +14,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@ToString(exclude = {"dictionary", "applicationPositions"})
-@EqualsAndHashCode(exclude = {"dictionary", "applicationPositions"})
+@ToString(exclude = {"dictionary", "applicationPositions", "assortmentGroups", "modes", "financialSubPositions"})
+@EqualsAndHashCode(exclude = {"dictionary", "applicationPositions", "assortmentGroups", "modes", "financialSubPositions"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -37,10 +40,22 @@ public class DictionaryItem {
 
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="dictionary_code")
+    @JoinColumn(name = "dictionary_code")
     private Dictionary dictionary;
 
     @JsonIgnore
     @OneToMany(mappedBy = "unit", cascade = CascadeType.MERGE)
-    private Set<ApplicationPosition> applicationPositions = new HashSet<ApplicationPosition>();
+    private Set<ApplicationPosition> applicationPositions = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "unit", cascade = CascadeType.MERGE)
+    private Set<FinancialSubPosition> financialSubPositions = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "assortmentGroup", cascade = CascadeType.MERGE)
+    private Set<PublicProcurementPosition> assortmentGroups = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "mode", cascade = CascadeType.MERGE)
+    private Set<PublicProcurementSubPosition> modes = new HashSet<>();
 }

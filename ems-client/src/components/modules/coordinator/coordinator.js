@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Description, LibraryBooks, EventNote, Timeline } from '@material-ui/icons/';
+import { Description, LibraryBooks, EventNote, Timeline, ViewList, ListAlt } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames'
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
 import PlansContainer from 'containers/modules/coordinator/plans/plansContainer';
+import PublicProcurementContainer from 'containers/modules/coordinator/registers/publicProcurement/publicProcurementContainer';
 import DictionariesContainer from 'containers/modules/coordinator/dictionariesContainer';
 
 const styles = theme => ({
@@ -61,6 +62,18 @@ class Coordinator extends Component {
                 ],
             },
             {
+                name: constants.COORDINATOR_MENU_REGISTERS,
+                icon: <ViewList />,
+                items: [
+                    {
+                        code: 'registers',
+                        name: constants.COORDINATOR_SUBMENU_REGISTER_ZP,
+                        path: '/modules/coordinator/registers/zp',
+                        icon: <ListAlt />
+                    },
+                ],
+            },
+            {
                 name: constants.COORDINATOR_MENU_DICTIONARIES,
                 icon: <LibraryBooks />,
                 items: [
@@ -90,6 +103,7 @@ class Coordinator extends Component {
                                 <Switch>
                                     <PrivateRoute exact path='/modules/coordinator/' component={PlansContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/plans/plans' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/coordinator/registers/zp' component={PublicProcurementContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/dictionaries' component={DictionariesContainer}/>
                                 </Switch>
                             </CardContent>

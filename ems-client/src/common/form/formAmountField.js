@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import {RenderAmountField} from 'common/form';
 import { Field } from 'redux-form';
 import NumberFormat from 'react-number-format';
-import {withStyles} from '@material-ui/core/';
+import {withStyles, InputAdornment } from '@material-ui/core/';
 import { numberWithSpaces } from 'utils/';
+import * as constants from 'constants/uiNames';
 
 const styles = theme => ({
     inputLabel: {
@@ -13,8 +14,7 @@ const styles = theme => ({
     input: {
         padding: theme.spacing(1.5),
     },
-    inputRequired: {
-        padding: theme.spacing(1.5),
+    inputRequired:{
         backgroundColor: '#faffbd',
     },
     disabled: {
@@ -22,20 +22,21 @@ const styles = theme => ({
     }
 });
 
-const amount = value => value && parseFloat(value.replace(/\s+/g, ''));
+const amount = value => value && parseFloat(value.replace(/,/g, '.').replace(/\s+/g, ''));
 
-function NumberFormatCustom(props) {
-  const { inputRef, value,  ...other } = props;
+function NumberFormatCustom(props){
+    const { inputRef, value,  ...other } = props;
 
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={inputRef}
-      decimalScale={2}
-      thousandSeparator=" "
-      value={numberWithSpaces(value)}
-    />
-  );
+    return (
+        <NumberFormat
+            {...other}
+            getInputRef={inputRef}
+            decimalScale={2}
+            allowedDecimalSeparators={[".",","]}
+            thousandSeparator=' '
+            value={numberWithSpaces(value)}
+        />
+    );
 }
 
 NumberFormatCustom.propTypes = {
@@ -45,21 +46,24 @@ NumberFormatCustom.propTypes = {
 };
 
 function FormAmountField(props){
-    const { classes, name, label, isRequired, inputProps, ...other } = props;
+    const { classes, name, label, suffix, isRequired, inputProps, ...other } = props;
     return(
         <Field
             name={name}
             component={RenderAmountField}
             label={label}
             placeholder={label}
+
             InputLabelProps={{
                 classes: {outlined: classes.inputLabel}
             }}
             InputProps={{
                 inputComponent: NumberFormatCustom,
                 inputProps: inputProps,
+                endAdornment: props.value !== ''  ? <InputAdornment position="end">{suffix !== undefined ? suffix : constants.FORM_AMOUNT_FIELD_DEFAULT_SUFFIX}</InputAdornment> : null,
                 classes: {
-                    input: isRequired ? classes.inputRequired : other.multiline ? classes.inputMultiline : classes.input,
+                    root: isRequired && classes.inputRequired,
+                    input: classes.input,
                     disabled: classes.disabled,
                 },
                 readOnly: other.readOnly && true,

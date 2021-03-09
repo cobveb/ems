@@ -79,6 +79,7 @@ class CostYearForm extends Component {
                                     name="year"
                                     label={constants.ACCOUNTANT_COST_TYPE_YEAR}
                                     isRequired={true}
+                                    dateFormat="yyyy"
                                     mask="____"
                                     views={["year"]}
                                 />

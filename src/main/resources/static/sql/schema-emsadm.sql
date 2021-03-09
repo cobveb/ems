@@ -161,8 +161,196 @@ TABLESPACE ems_data;
 COMMENT on COLUMN acc_cost_years_coordinators.cost_year_id is 'Cost Year ID';
 COMMENT on COLUMN acc_cost_years_coordinators.coordinator_id is 'Organization Units Coordinator ID';
 
+/*-----------------------------------------Tables Module COORDINATOR----------------------------------------------------*/
+
+/*Create the table of Plans on module Coordinator*/
+DROP TABLE emsadm.cor_plans CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.cor_plans(
+    id NUMBER(19,0) NOT NULL,
+    year INTEGER NULL,
+    status VARCHAR(2) NOT NULL,
+    plan_type VARCHAR(3) NOT NULL,
+    create_date DATE NOT NULL,
+    send_date DATE,
+    coordinator_id VARCHAR2(10) NOT NULL,
+	CONSTRAINT cor_plan_pk PRIMARY KEY(id),
+	CONSTRAINT cor_plan_coordinator_fk FOREIGN KEY (coordinator_id) REFERENCES organization_units(code),
+    CONSTRAINT cor_plan_year_type_cor_unq UNIQUE(year, plan_type, coordinator_id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_plans.id is 'Plan ID';
+COMMENT on COLUMN cor_plans.year is 'Year of the plan validity';
+COMMENT on COLUMN cor_plans.status is 'Plan status';
+COMMENT on COLUMN cor_plans.plan_type is 'Plan type in (FIN, INW, PZP)';
+COMMENT on COLUMN cor_plans.create_date is 'Plan create date';
+COMMENT on COLUMN cor_plans.send_date is 'Plan send date';
+COMMENT on COLUMN cor_plans.coordinator_id is 'Coordinator ID (Organization Unit)';
+
+
+/*Create the table of Plans Positions on module Coordinator*/
+DROP TABLE emsadm.cor_plan_positions CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.cor_plan_positions(
+    id NUMBER(19,0) NOT NULL,
+    status VARCHAR(2) NOT NULL,
+    am_req_net NUMBER(20,5),
+    am_awa_net NUMBER(20,5),
+    am_rea_net NUMBER(20,5),
+    vat NUMBER(3,2) NOT NULL,
+    plan_id NUMBER(19,0) NOT NULL,
+	CONSTRAINT cor_plan_pos_pk PRIMARY KEY(id),
+	CONSTRAINT cor_plan_pos_fk FOREIGN KEY (plan_id) REFERENCES emsadm.cor_plans(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_plan_positions.id is 'Position ID';
+COMMENT on COLUMN cor_plan_positions.status is 'Position status in (ZP,WY,ZA,PR,RE,ZR)';
+COMMENT on COLUMN cor_plan_positions.am_req_net is 'Position amount requested net';
+COMMENT on COLUMN cor_plan_positions.am_awa_net is 'Position amount awared net';
+COMMENT on COLUMN cor_plan_positions.am_rea_net is 'Position amount realized net';
+COMMENT on COLUMN cor_plan_positions.plan_id is 'Plan ID foregin key cor_plans';
+
+/*Create the table of Plans Positions Financial on module Coordinator*/
+DROP TABLE emsadm.cor_financial_positions CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.cor_financial_positions(
+    id NUMBER(19,0) NOT NULL,
+    cost_type_id NUMBER(19,0) NOT NULL,
+	CONSTRAINT cor_fin_pos_pk PRIMARY KEY(id),
+	CONSTRAINT cor_pos_fk FOREIGN KEY (id) REFERENCES emsadm.cor_plan_positions(id),
+	CONSTRAINT cor_fin_pos_cost_fk FOREIGN KEY (cost_type_id) REFERENCES emsadm.acc_costs_type(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_financial_positions.id is 'Financial position ID PK and FK';
+COMMENT on COLUMN cor_financial_positions.cost_type_id is 'Position Cost Type ID';
+/
+
+/*Create the table of Plans Positions Public Procurement on module Coordinator*/
+DROP TABLE emsadm.cor_pub_procurement_positions CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.cor_pub_procurement_positions(
+    id NUMBER(19,0) NOT NULL,
+    order_type VARCHAR(3) NOT NULL,
+    initiation_term VARCHAR(20) NOT NULL,
+    assortment_id NUMBER(19,0) NOT NULL,
+	CONSTRAINT cor_pub_proc_pos_pk PRIMARY KEY(id),
+	CONSTRAINT cor_pub_proc_pos_fk FOREIGN KEY (id) REFERENCES emsadm.cor_plan_positions(id),
+	CONSTRAINT cor_pub_proc_assort_gr_fk FOREIGN KEY (assortment_id) REFERENCES emsarch.dictionary_items(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_pub_procurement_positions.id is 'Financial position ID PK and FK';
+COMMENT on COLUMN cor_pub_procurement_positions.order_type is 'Position order type';
+COMMENT on COLUMN cor_pub_procurement_positions.initiation_term is 'Position initiation term';
+COMMENT on COLUMN cor_pub_procurement_positions.assortment_id is 'Position assortment group (FK -> slAsortGr)';
+/
+
+
+/*Create the table of Plans Positions Investment on module Coordinator*/
+DROP TABLE emsadm.cor_investment_positions CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.cor_investment_positions(
+    id NUMBER(19,0) NOT NULL,
+    task VARCHAR(120) NOT NULL,
+    application VARCHAR(200),
+    substantiation VARCHAR(200),
+	CONSTRAINT cor_inv_pos_pk PRIMARY KEY(id),
+	CONSTRAINT cor_inv_fk FOREIGN KEY (id) REFERENCES emsadm.cor_plan_positions(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_investment_positions.id is 'Investment position ID PK and FK';
+COMMENT on COLUMN cor_investment_positions.task is 'Position task name';
+COMMENT on COLUMN cor_investment_positions.application is 'Position application';
+COMMENT on COLUMN cor_investment_positions.substantiation is 'Position substantiation';
+
+/*Create the table of Plans Sub Positions on module Coordinator*/
+DROP TABLE emsadm.cor_plan_sub_positions CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.cor_plan_sub_positions(
+    id NUMBER(19,0) NOT NULL,
+    name VARCHAR(120) NOT NULL,
+    am_net NUMBER(20,5) NOT NULL,
+    am_rea_net NUMBER(20,5),
+    comments VARCHAR(200),
+    plan_position_id NUMBER(19,0) NOT NULL,
+	CONSTRAINT cor_plan_sub_pos_pk PRIMARY KEY(id),
+	CONSTRAINT cor_plan_sub_pos_fk FOREIGN KEY (plan_position_id) REFERENCES emsadm.cor_plan_positions(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_plan_sub_positions.id is 'Sub Position ID PK and FK';
+COMMENT on COLUMN cor_plan_sub_positions.am_net is 'Position amount requested net';
+COMMENT on COLUMN cor_plan_sub_positions.am_rea_net is 'Position amount realized net';
+COMMENT on COLUMN cor_plan_sub_positions.comments is 'Position comments';
+COMMENT on COLUMN cor_plan_sub_positions.plan_position_id is 'Plan Position ID foregin key -> cor_plan_position';
+
+/*Create the table of Plans Positions Financial on module Coordinator*/
+DROP TABLE emsadm.cor_financial_sub_positions CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.cor_financial_sub_positions(
+    id NUMBER(19,0) NOT NULL,
+    quantity NUMBER(8,0) NOT NULL,
+    unit_price NUMBER(20,5) NOT NULL,
+    unit_id NUMBER(19,0) NOT NULL,
+	CONSTRAINT cor_fin_sub_pos_pk PRIMARY KEY(id),
+	CONSTRAINT cor_fin_sub_pos_fk FOREIGN KEY (id) REFERENCES emsadm.cor_plan_sub_positions(id),
+	CONSTRAINT cor_fin_sub_pos_unit_fk FOREIGN KEY (unit_id) REFERENCES emsarch.dictionary_items(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_financial_sub_positions.id is 'Financial position ID PK and FK';
+COMMENT on COLUMN cor_financial_sub_positions.quantity is 'Position quantity';
+COMMENT on COLUMN cor_financial_sub_positions.unit_price is 'Position unit price';
+COMMENT on COLUMN cor_financial_sub_positions.unit_id is 'Position quantity Unit ID';
+/
+
+/*Create the table of Plans Positions Public Procurement on module Coordinator*/
+DROP TABLE emsadm.cor_pub_sub_proc_positions CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.cor_pub_sub_proc_positions(
+    id NUMBER(19,0) NOT NULL,
+    estimation_type VARCHAR(5) NOT NULL,
+    euro_ex_rate NUMBER(5,4),
+    mode_id NUMBER(19,0) NOT NULL,
+	CONSTRAINT cor_pub_proc_sub_pos_pk PRIMARY KEY(id),
+	CONSTRAINT cor_pub_proc_mode_fk FOREIGN KEY (mode_id) REFERENCES emsarch.dictionary_items(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_pub_sub_proc_positions.id is 'Financial position ID PK and FK';
+COMMENT on COLUMN cor_pub_sub_proc_positions.estimation_type is 'Position estimation type';
+COMMENT on COLUMN cor_pub_sub_proc_positions.euro_ex_rate is 'Position euro exchange rate';
+COMMENT on COLUMN cor_pub_sub_proc_positions.mode_id is 'Position order mode (FK -> slTrybUdzZp)';
+/
+
+
+/*Create the table of Plans Positions Investment Founding Source */
+DROP TABLE emsadm.cor_inv_founding_source CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.cor_inv_founding_source(
+    id NUMBER(19,0) NOT NULL,
+    so_am_awa_net NUMBER(20,5) NOT NULL,
+    so_ex_plan_net NUMBER(20,5) NOT NULL,
+    type_id NUMBER(19,0) NOT NULL,
+    position_id NUMBER(19,0) NOT NULL,
+	CONSTRAINT cor_inv_pos_source_pk PRIMARY KEY(id),
+	CONSTRAINT cor_inv_pos_source_typ_fk FOREIGN KEY (type_id) REFERENCES emsarch.dictionary_items(id),
+	CONSTRAINT cor_inv_pos_fk FOREIGN KEY (position_id) REFERENCES emsadm.cor_investment_positions(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_inv_founding_source.id is 'Founding source PK';
+COMMENT on COLUMN cor_inv_founding_source.so_am_awa_net is 'Founding source amount requested net';
+COMMENT on COLUMN cor_inv_founding_source.so_ex_plan_net is 'Founding source expenses plan net';
+COMMENT on COLUMN cor_inv_founding_source.type_id is 'Type ID FK from dictionary dicFunSour';
+COMMENT on COLUMN cor_inv_founding_source.position_id is 'Position ID FK cor_investment_positions';
+
 /*---------------------------------------------------------------------------------------------------------------------*/
-/*                                                   SEQUENCE                                            			    */
+/*                                                   SEQUENCE                                            			   */
 /*---------------------------------------------------------------------------------------------------------------------*/
 
 /*-----------------------------------------Sequence Module APPLICANT---------------------------------------------------*/
@@ -193,8 +381,30 @@ DROP SEQUENCE acc_cost_years_seq;
 CREATE SEQUENCE acc_cost_years_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 /
 
+/*-----------------------------------------Sequence Module COORDINATOR-------------------------------------------------*/
+
+-- Create sequence of table coordinator plan
+DROP SEQUENCE cor_plan_seq;
+/
+CREATE SEQUENCE cor_plan_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+/
+
+-- Create sequence of table coordinator plan position
+DROP SEQUENCE cor_plan_pos_seq;
+/
+CREATE SEQUENCE cor_plan_pos_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+
+---- Create sequence of table coordinator plan position
+--DROP SEQUENCE cor_pos_inv_source_seq;
+/
+--CREATE SEQUENCE cor_pos_inv_source_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+
+-- Create sequence of table coordinator plan sub position
+DROP SEQUENCE cor_plan_sub_pos_seq;
+/
+CREATE SEQUENCE cor_plan_sub_pos_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 /*---------------------------------------------------------------------------------------------------------------------*/
-/*                                                   PACKAGES                                           			    */
+/*                                                   PACKAGES                                           		       */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
 /* Create package Application management*/

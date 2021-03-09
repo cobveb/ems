@@ -31,20 +31,15 @@ class PlanFoundingSourcesForm extends Component {
     };
 
     componentDidUpdate(prevProps){
-        if(this.props.vat !== prevProps.vat && prevProps.vat !== undefined){
-            this.props.dispatch(change('PlanFoundingSourcesForm', 'amountRequestedGross', parseFloat((Math.round((this.props.amountRequestedNet * this.props.vat.code) * 100) / 100).toFixed(2))));
-            this.props.dispatch(change('PlanFoundingSourcesForm', 'expensesPlanGross', parseFloat((Math.round((this.props.expensesPlanNet * this.props.vat.code) * 100) / 100).toFixed(2))));
-        } else if (this.props.amountRequestedNet !== prevProps.amountRequestedNet && prevProps.amountRequestedNet !== undefined){
-            this.props.dispatch(change('PlanFoundingSourcesForm', 'amountRequestedGross', parseFloat((Math.round((this.props.amountRequestedNet * this.props.vat.code) * 100) / 100).toFixed(2))));
-        } else if(this.props.expensesPlanNet !== prevProps.expensesPlanNet && prevProps.expensesPlanNet !== undefined){
-            this.props.dispatch(change('PlanFoundingSourcesForm', 'expensesPlanGross', parseFloat((Math.round((this.props.expensesPlanNet * this.props.vat.code) * 100) / 100).toFixed(2))));
+        if (this.props.sourceAmountRequestedNet !== prevProps.sourceAmountRequestedNet && prevProps.sourceAmountRequestedNet !== undefined){
+            this.props.dispatch(change('PlanFoundingSourcesForm', 'sourceAmountRequestedGross', parseFloat((Math.round((this.props.sourceAmountRequestedNet * this.props.vat.code) * 100) / 100).toFixed(2))));
+        } else if(this.props.sourceExpensesPlanNet !== prevProps.sourceExpensesPlanNet && prevProps.sourceExpensesPlanNet !== undefined){
+            this.props.dispatch(change('PlanFoundingSourcesForm', 'sourceExpensesPlanGross', parseFloat((Math.round((this.props.sourceExpensesPlanNet * this.props.vat.code) * 100) / 100).toFixed(2))));
         }
     }
 
     render(){
-
-        const {classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, foundingSources, action, planStatus, positionInfo, vats} = this.props;
-
+        const {classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, foundingSources, action, planStatus, positionName} = this.props;
         return(
             <>
                 <Dialog
@@ -67,7 +62,7 @@ class PlanFoundingSourcesForm extends Component {
                                     <Typography variant='h6'>
                                         { action === "add" ?
                                             constants.COORDINATOR_PLAN_INVESTMENTS_POSITION_CREATE_SOURCES_DETAILS_TITLE
-                                                :  constants.COORDINATOR_PLAN_INVESTMENTS_POSITION_EDIT_SOURCES_DETAILS_TITLE + `${positionInfo.name} - ${initialValues.foundingSource.name}`
+                                                :  constants.COORDINATOR_PLAN_INVESTMENTS_POSITION_EDIT_SOURCES_DETAILS_TITLE + `${positionName} - ${initialValues.type.name}`
                                         }
                                     </Typography>
                                     <IconButton aria-label="Close"
@@ -86,34 +81,26 @@ class PlanFoundingSourcesForm extends Component {
                             <Grid container spacing={1}>
                                 <Grid item xs={12} >
                                     <FormSelectField
-                                        name="foundingSource"
+                                        name="type"
                                         label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_SOURCES}
                                         isRequired={true}
                                         value={initialValues.source !== undefined ? initialValues.source : ""}
                                         options={foundingSources}
+                                        disabled={planStatus!=='ZP' && true}
                                     />
                                 </Grid>
-                                <Grid item xs={5}>
+                                <Grid item xs={6}>
                                     <FormAmountField
                                         isRequired={true}
-                                        name="amountRequestedNet"
+                                        name="sourceAmountRequestedNet"
                                         label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_NET}
                                         disabled={planStatus!=='ZP' && true}
                                     />
                                 </Grid>
-                                <Grid item xs={2}>
-                                    <FormSelectField
-                                        isRequired={true}
-                                        name="vat"
-                                        label={constants.COORDINATOR_PLAN_POSITION_VAT}
-                                        value={initialValues.vat !== undefined ? initialValues.vat : ""}
-                                        options={vats}
-                                        disabled={planStatus!=='ZP' && true}
-                                    />
-                                </Grid>
-                                <Grid item xs={5}>
+
+                                <Grid item xs={6}>
                                     <FormAmountField
-                                        name="amountRequestedGross"
+                                        name="sourceAmountRequestedGross"
                                         label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS}
                                         disabled
                                     />
@@ -121,14 +108,14 @@ class PlanFoundingSourcesForm extends Component {
                                 <Grid item xs={6}>
                                     <FormAmountField
                                         isRequired={true}
-                                        name="expensesPlanNet"
+                                        name="sourceExpensesPlanNet"
                                         label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_NET}
                                         disabled={planStatus!=='ZP' && true}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
                                     <FormAmountField
-                                        name="expensesPlanGross"
+                                        name="sourceExpensesPlanGross"
                                         label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS}
                                         disabled
                                     />

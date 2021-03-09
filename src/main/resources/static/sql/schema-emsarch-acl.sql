@@ -86,21 +86,6 @@ COMMENT on COLUMN ac_permissions.ac_privilege_id is 'Access control Privilege ID
 GRANT SELECT, INSERT, UPDATE, DELETE ON emsarch.ac_permissions TO emsadm;
 /
 
--- Create sequence of table ac_privileges
-DROP SEQUENCE ac_privilege_seq;
-/
-CREATE SEQUENCE ac_privilege_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
-/
-GRANT SELECT ON emsarch.ac_privilege_seq TO emsadm;
-/
-
--- Create sequence of table access control object
-DROP SEQUENCE ac_objects_seq;
-/
-CREATE SEQUENCE ac_objects_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
-/
-GRANT SELECT ON emsarch.ac_objects_seq TO emsadm;
-
 -- Create sequence of table access control permissions
 DROP SEQUENCE ac_permissions_seq;
 /

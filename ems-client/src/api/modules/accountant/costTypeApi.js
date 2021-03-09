@@ -10,6 +10,10 @@ class CostTypeApi {
         return Axios.get(`/api/accountant/costType/getYears/${costId}`)
     }
 
+    static getCostTypeByCoordinatorAndYear(year, coordinatorCode){
+        return Axios.get(`/api/accountant/costType/getByCoordinator/${year}/${coordinatorCode}`)
+    }
+
     static saveCostType(data){
         return Axios.put(`/api/accountant/costType/saveCostType`, data)
     }

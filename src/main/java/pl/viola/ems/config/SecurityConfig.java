@@ -43,13 +43,13 @@ import pl.viola.ems.security.impl.JwtAuthenticationFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
-    private UserDetailsService userDetailsService;
-	
-	@Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+	UserDetailsService userDetailsService;
 
 	@Autowired
-	private JwtAccessDeniedHandler accessDeniedHandler;
+	JwtAuthenticationEntryPoint unauthorizedHandler;
+
+	@Autowired
+	JwtAccessDeniedHandler accessDeniedHandler;
 
 	@Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -90,14 +90,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
 	      	.authorizeRequests()
 	      		.antMatchers("/",
-	      			"/favicon.ico",
-	      			"/**/*.png",
-	      			"/**/*.gif",
-	      			"/**/*.svg",
-	      			"/**/*.jpg",
-	      			"/**/*.html",
-                    "/**/*.css",
-                    "/**/*.js")
+						"/favicon.ico",
+						"/**/*.png",
+						"/**/*.gif",
+						"/**/*.svg",
+						"/**/*.jpg",
+						"/**/*.html",
+						"/**/*.css",
+						"/**/*.woff2",
+						"/**/*.woff",
+						"/**/*.js")
 	      			.permitAll()
 	      		.antMatchers("/api/auth/login",
 					"/api/auth/token/refresh",

@@ -96,6 +96,13 @@ const styles = theme => ({
         padding: `${theme.spacing(1)}px ${theme.spacing(0.1)}px 0 ${theme.spacing(0.1)}px`,
 
     },
+    paper:{
+        overflowX: "auto",
+    },
+    //TODO: Długość tabeli
+//    table:{
+//        width: 2000,
+//    },
     tableBody: {
         height: `calc(100vh - ${theme.spacing(43)}px)`,
         overflow: 'auto',
@@ -241,9 +248,9 @@ class ContainedTable extends Component {
         return(
             <>
                 <div className={classes.content}>
-                    <Paper>
+                    <Paper className={classes.paper}>
                         <div className={classNames(classes.tableBody, this.props.className)}>
-                            <Table size='small' stickyHeader>
+                            <Table size='small' stickyHeader  className={classes.table} >
                                 <TableHead>
                                     <TableRow>
                                         {headCells.map(row => (
@@ -304,7 +311,7 @@ class ContainedTable extends Component {
                                                                         :
                                                                             cell.type==='amount' && row[cell.id] !== null
                                                                                 ?
-                                                                                    numberWithSpaces(row[cell.id])
+                                                                                    `${numberWithSpaces(row[cell.id])}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
                                                                                 :
                                                                                     row[cell.id]
                                                     }

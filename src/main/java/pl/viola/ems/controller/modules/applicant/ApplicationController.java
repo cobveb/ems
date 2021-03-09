@@ -3,15 +3,11 @@ package pl.viola.ems.controller.modules.applicant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import pl.viola.ems.exception.AppException;
-import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.applicant.Application;
 import pl.viola.ems.payload.api.ApiResponse;
-import pl.viola.ems.security.impl.UserPrincipal;
-import pl.viola.ems.service.modules.administrator.UserService;
 import pl.viola.ems.service.modules.applicant.ApplicationService;
+import pl.viola.ems.utils.Utils;
 
 import javax.validation.Valid;
 
@@ -21,14 +17,13 @@ public class ApplicationController {
     @Autowired
     private ApplicationService applicationService;
 
-    @Autowired
-    private UserService userService;
+
 
     @GetMapping("/applicant/getApplications")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1001')")
     public ApiResponse getApplicationsByApplicant() {
 
-        return new ApiResponse(HttpStatus.FOUND, applicationService.findByApplicant(getCurrentUser()));
+        return new ApiResponse(HttpStatus.FOUND, applicationService.findByApplicant(Utils.getCurrentUser()));
     }
 
     @GetMapping("/coordinator/getApplications")
@@ -36,7 +31,7 @@ public class ApplicationController {
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1001')")
     public ApiResponse getApplicationsByCoordinator() {
 
-        return new ApiResponse(HttpStatus.FOUND, applicationService.findByCoordinator(getCurrentUser()));
+        return new ApiResponse(HttpStatus.FOUND, applicationService.findByCoordinator(Utils.getCurrentUser()));
     }
 
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1001')")
@@ -48,7 +43,7 @@ public class ApplicationController {
     @PutMapping("/{action}/saveApplication")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('2001')")
     public ApiResponse saveApplication(@RequestBody @Valid Application application, @PathVariable String action) {
-        return new ApiResponse(HttpStatus.CREATED, applicationService.saveApplication(application, action, getCurrentUser()));
+        return new ApiResponse(HttpStatus.CREATED, applicationService.saveApplication(application, action, Utils.getCurrentUser()));
     }
 
     @PutMapping("/applicant/send/{applicationId}")
@@ -68,11 +63,4 @@ public class ApplicationController {
     public ApiResponse deleteApplication(@PathVariable Long applicationId) {
         return new ApiResponse(HttpStatus.ACCEPTED, applicationService.deleteApplication(applicationId));
     }
-
-    private User getCurrentUser() {
-        UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userService.findByUsername(principal.getUsername())
-                .orElseThrow(() -> new AppException("Administrator.user.notFound", HttpStatus.NOT_FOUND));
-    }
-
 }
