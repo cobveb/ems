@@ -10,17 +10,17 @@ let PlanFoundingSourcesFormContainer = reduxForm({
     enableReinitialize: true,
 }) (PlanFoundingSourcesForm)
 
-const selector = formValueSelector('PlanFoundingSourcesForm') // <-- same as form name
+const selectorFoundingSources = formValueSelector('PlanFoundingSourcesForm') // <-- same as form name
+const selectorPlanPosition = formValueSelector('PlanPositionForm') // <-- same as form name
 PlanFoundingSourcesFormContainer = connect(
     state => {
         // can select values individually
-        const amountRequestedNet = selector(state, 'amountRequestedNet')
-        const expensesPlanNet = selector(state, 'expensesPlanNet')
-        const vat = selector(state,'vat')
-
+        const sourceAmountRequestedNet = selectorFoundingSources(state, 'sourceAmountRequestedNet')
+        const sourceExpensesPlanNet = selectorFoundingSources(state, 'sourceExpensesPlanNet')
+        const vat = selectorPlanPosition(state, 'vat')
         return {
-            amountRequestedNet,
-            expensesPlanNet,
+            sourceAmountRequestedNet,
+            sourceExpensesPlanNet,
             vat,
         }
     }

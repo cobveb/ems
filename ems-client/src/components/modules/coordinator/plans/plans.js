@@ -3,9 +3,10 @@ import { withStyles, Grid, Typography, Divider} from '@material-ui/core/';
 import * as constants from 'constants/uiNames';
 import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
-import { Table, Button, SearchField, SelectField, DatePicker } from 'common/gui';
-import { Delete, Add, Edit } from '@material-ui/icons/';
+import { Table, Button, SelectField, DatePicker } from 'common/gui';
+import { Delete, Add, Edit, Undo, Visibility } from '@material-ui/icons/';
 import PlanContainer from 'containers/modules/coordinator/plans/planContainer';
+
 const styles = theme => ({
     root: {
         flexGrow: 1,
@@ -35,11 +36,6 @@ class Plans extends Component {
         rows: [],
         headCells: [
             {
-                id: 'number',
-                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_NUMBER,
-                type:'text',
-            },
-            {
                 id: 'year',
                 label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR,
                 type:'date',
@@ -59,7 +55,6 @@ class Plans extends Component {
         selected: {},
         isDetailsVisible: false,
         action: null,
-        number: '',
         type:'',
         status: '',
         year: null,
@@ -92,7 +87,50 @@ class Plans extends Component {
 
     filter = () => {
         let plans = this.props.initialValues;
-        return plans;
+        return plans.filter((plan) => {
+            return plan.status.code.toLowerCase().search(
+                    this.state.status.toLowerCase()) !== -1 &&
+                plan.type.code.toLowerCase().search(
+                    this.state.type.toLowerCase()) !== -1 &&
+                (
+                    this.state.year === null ?
+                        plan :
+                            plan.year === new Date(this.state.year.getFullYear(),0,1).toJSON()
+                )
+        })
+    }
+
+    handleDelete = (event, action) => {
+        this.setState(state => ({ action: action}));
+    }
+
+    handleConfirmDelete = () => {
+        this.props.onDelete(this.state.selected.id);
+        this.setState({
+            action: '',
+            selected: {},
+        });
+    }
+
+    handleWithdraw = (event, action) => {
+        this.setState(state => ({ action: action}));
+    }
+
+    handleConfirmWithdraw = () => {
+        this.props.onWithdraw(this.state.selected.id);
+        this.setState({ action: '' });
+    }
+
+    handleCancelWithdraw = () => {
+        this.setState({ action: '' });
+    }
+
+    handleCloseDialog = () => {
+        this.props.clearError(null);
+    }
+
+    handleChangeAction = (action) => {
+        this.setState({ action: action });
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -100,16 +138,52 @@ class Plans extends Component {
             this.setState({
                 rows: this.filter(),
             });
+        } else if (this.state.year !== prevState.year ||
+            this.state.status !== prevState.status ||
+            this.state.type !== prevState.type)
+        {
+            this.setState({
+                rows: this.filter(),
+            })
+        } else if(this.state.action !== prevState.action){
+            this.setState({
+                rows: this.filter(),
+            })
         }
     }
     render(){
-        const { classes, isLoading, error, loading, clearError, statuses, types, costsTypes, foundingSources, categories } = this.props;
+        const { classes, initialValues, isLoading, error, statuses, types, modes, onSubmitPlan } = this.props;
         const { headCells, rows, selected, isDetailsVisible, action, year, type, status } = this.state;
-
         return(
             <>
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
+                {
+                    (() => {
+                        switch(action){
+                            case "delete":
+                                return (
+                                    <ModalDialog
+                                        message={constants.COORDINATOR_PLANS_CONFIRM_DELETE_MESSAGE}
+                                        variant="warning"
+                                        onConfirm={this.handleConfirmDelete}
+                                        onClose={this.handleCloseDialog}
+                                    />
+                                )
+                            case "withdraw":
+                                return (
+                                    <ModalDialog
+                                        message={constants.COORDINATOR_PLANS_CONFIRM_WITHDRAW_MESSAGE}
+                                        variant="confirm"
+                                        onConfirm={this.handleConfirmWithdraw}
+                                        onClose={this.handleCloseDialog}
+                                    />
+                                )
+                            default:
+                                return null;
+                        }
+                    })()
+                }
                 <div>
                     { isDetailsVisible ?
                         <PlanContainer
@@ -119,14 +193,10 @@ class Plans extends Component {
                             changeAction={this.handleChangeAction}
                             handleClose={this.handleClose}
                             types={types}
-                            costsTypes={costsTypes}
-                            foundingSources={foundingSources}
-                            categories={categories}
-                            //TODO: Sprawdzić czy zadziała w dzieciach bez ponownego podłączenia do Redux
-                            error={error}
-                            clearError={clearError}
-                            isLoading={isLoading}
-                            loading={loading}
+                            statuses={statuses}
+                            modes={modes}
+                            plans={initialValues}
+                            onSubmitPlan={onSubmitPlan}
                         />
                     :
                         <>
@@ -140,15 +210,6 @@ class Plans extends Component {
                                 <div className={classes.content}>
                                     <Grid container spacing={0} direction="row" justify="center" className={classes.container}>
                                         <Grid item xs={3} className={classes.item}>
-                                            <SearchField
-                                                name="number"
-                                                onChange={this.handleSearch}
-                                                label={constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_NUMBER}
-                                                placeholder={constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_NUMBER}
-                                                valueType="all"
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3} className={classes.item}>
                                             <DatePicker
                                                 id="year"
                                                 onChange={this.handleDataChange('year')}
@@ -160,7 +221,7 @@ class Plans extends Component {
                                                 views={["year"]}
                                             />
                                         </Grid>
-                                        <Grid item xs={3} className={classes.item}>
+                                        <Grid item xs={4} className={classes.item}>
                                             <SelectField
                                                 name="type"
                                                 onChange={this.handleSearch}
@@ -169,7 +230,7 @@ class Plans extends Component {
                                                 value={type}
                                             />
                                         </Grid>
-                                        <Grid item xs={3} >
+                                        <Grid item xs={5} >
                                             <SelectField
                                                 name="status"
                                                 onChange={this.handleSearch}
@@ -198,7 +259,7 @@ class Plans extends Component {
                                 alignItems="flex-start"
                                 className={classes.container}
                             >
-                                <Grid item xs={12}>
+                                <Grid item xs={10}>
                                     <Grid
                                         container
                                         direction="row"
@@ -214,11 +275,11 @@ class Plans extends Component {
                                             data-action="add"
                                         />
                                         <Button
-                                            label={constants.BUTTON_EDIT}
-                                            icon=<Edit/>
+                                            label={Object.keys(selected).length !== 0  && selected.status.code !== 'ZP' ? constants.BUTTON_PREVIEW : constants.BUTTON_EDIT}
+                                            icon={Object.keys(selected).length !== 0 && selected.status.code !== 'ZP'? <Visibility/> : <Edit/>}
                                             iconAlign="right"
                                             disabled={Object.keys(selected).length === 0}
-                                            variant="edit"
+                                            variant={Object.keys(selected).length !== 0 && selected.status.code !== 'ZP' ? "cancel" : "edit"}
                                             onClick = { (event) => this.handleChangeVisibleDetails(event, 'edit', )}
                                             data-action="edit"
                                         />
@@ -226,9 +287,26 @@ class Plans extends Component {
                                             label={constants.BUTTON_DELETE}
                                             icon=<Delete/>
                                             iconAlign="right"
-                                            disabled={ Object.keys(selected).length === 0 }
+                                            disabled={Object.keys(selected).length === 0 || selected.status.code !== 'ZP'}
                                             onClick = {(event) => this.handleDelete(event, 'delete', )}
                                             variant="delete"
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justify="flex-start"
+                                        alignItems="flex-start"
+                                    >
+                                        <Button
+                                            label={constants.BUTTON_WITHDRAW}
+                                            icon=<Undo/>
+                                            iconAlign="left"
+                                            disabled={Object.keys(selected).length === 0 || selected.status.code !== 'WY'}
+                                            onClick = {(event) => this.handleWithdraw(event, 'withdraw', )}
+                                            variant="cancel"
                                         />
                                     </Grid>
                                 </Grid>

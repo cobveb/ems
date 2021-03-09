@@ -178,7 +178,7 @@ export function RenderFormTable({fields, head, allRows, checkedRows, ...custom})
     )
 }
 
-export function renderDateField({meta: { submitting, error, invalid, touched }, input, input: { value, ...inputProps }, name, label, dateFormat, ...others}){
+export function renderDateField({meta: { submitting, error, invalid, touched, visited }, input, input: { value, ...inputProps }, name, label, dateFormat,  ...others}){
 
     class LocalizedUtils extends DateFnsUtils {
         getCalendarHeaderText(date) {
@@ -202,12 +202,11 @@ export function renderDateField({meta: { submitting, error, invalid, touched }, 
                 mask = {others.mask ? others.mask : "__-__-____"}
                 label={label}
                 value={value ? new Date(value) : null}
-                keyboardIcon = {others.disabled && null}
-                disabled={submitting}
+                keyboardIcon={others.disabled ? false : others.icon}
+                disabled={submitting || others.disabled}
                 onChange={onChange}
                 error={error && touched}
                 helperText={touched && error}
-                onBlur={(event) => input.onBlur(event)}
                 {...others}
             />
         </MuiPickersUtilsProvider>

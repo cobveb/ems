@@ -4,6 +4,7 @@ import { Field } from 'redux-form';
 import { withStyles }  from '@material-ui/core/';
 import {renderDateField} from 'common/form';
 import * as constants from 'constants/uiNames';
+import { Event } from '@material-ui/icons/';
 
 const styles = theme => ({
     field: {
@@ -23,7 +24,7 @@ const styles = theme => ({
 
 
 function FormDateField(props){
-    const { classes, name, label, isRequired, inputProps, ...others } = props;
+    const { classes, name, label, isRequired, inputProps,  ...others } = props;
 
     return(
         <Field
@@ -42,6 +43,7 @@ function FormDateField(props){
             InputLabelProps={{
                 classes: {outlined: classes.inputLabel}
             }}
+            icon={<Event/>}
             {...others}
         />
     );

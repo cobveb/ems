@@ -6,107 +6,14 @@ import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
 import {updateOnCloseDetails} from 'utils';
 import {findSelectFieldPosition} from 'utils';
-import CostTypeApi from 'api/modules/accountant/costTypeApi';
-
-const response = {
-    data: {
-        data: [
-            {
-                "id": 1,
-                "number": "1/fin/it/2019",
-                "year": new Date(2019,0,1).toJSON(),
-                "status": "ZP",
-                "type": "FIN",
-                "coordinator": {
-                    "code": "it",
-                    "name": "Dział Informatyki",
-                    "shortName": "Dział Informatyki",
-                    "nip": null,
-                    "regon": null,
-                    "city": null,
-                    "zipCode": null,
-                    "street": null,
-                    "building": null,
-                    "phone": null,
-                    "fax": null,
-                    "email": "it@uck.katowice.pl",
-                    "active": true,
-                    "coordinator": true,
-                    "parent": "uck"
-                },
-            },
-            {
-                "id": 2,
-                "number": "1/inw/it/2019",
-                "year": new Date(2019,0,1).toJSON(),
-                "status": "ZP",
-                "type": "INW",
-                "coordinator": {
-                    "code": "it",
-                    "name": "Dział Informatyki",
-                    "shortName": "Dział Informatyki",
-                    "nip": null,
-                    "regon": null,
-                    "city": null,
-                    "zipCode": null,
-                    "street": null,
-                    "building": null,
-                    "phone": null,
-                    "fax": null,
-                    "email": "it@uck.katowice.pl",
-                    "active": true,
-                    "coordinator": true,
-                    "parent": "uck"
-                },
-            },
-        ],
-    },
-};
-
-const dicFunSour = {
-    data:{
-        data: [
-            {
-                "code": "ue",
-                "name": "UE",
-            },
-            {
-                "code": "wlasne",
-                "name": "Własne",
-            },
-            {
-                "code": "inne",
-                "name": "Inne",
-            },
-        ],
-    },
-};
-
-const dicCatSum = {
-    data:{
-        data: [
-            {
-                "code": "cat1",
-                "name": "Kategoria SUM 1",
-            },
-            {
-                "code": "cat2",
-                "name": "Kategoria SUM 2",
-            },
-            {
-                "code": "cat3",
-                "name": "Kategoria SUM 3",
-            },
-        ],
-    },
-};
-
+import PlansApi from 'api/modules/coordinator/plansApi';
+import DictionaryApi from 'api/common/dictionaryApi';
 
 
 class PlansContainer extends Component {
     state = {
         plans: [],
-        costsTypes:[],
+        modes:[],
         statuses:[
             {
                 code: '',
@@ -147,8 +54,69 @@ class PlansContainer extends Component {
                 name: constants.COORDINATOR_PLAN_TYPE_PUBLIC_PROCUREMENT,
             },
         ],
-        foundingSources:[],
-        categories:[],
+    }
+
+    handleGetDictionaryModes(){
+       return DictionaryApi.getDictionary('slTryUdzZp')
+        .then(response => {
+            this.setState({
+                modes: response.data.data.items,
+            })
+        })
+        .catch(error => {});
+    };
+
+     handleGetPlans(){
+        this.props.loading(true);
+        PlansApi.getPlans()
+        .then(response =>{
+            this.setState(prevState => {
+                let plans = [...prevState.plans];
+                plans = response.data.data;
+                plans.map(plan => (
+                    Object.assign(plan,
+                        {
+                            year: plan.year = new Date(plan.year,0,1).toJSON(),
+                            status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
+                            type: plan.type = findSelectFieldPosition( this.state.types, plan.type),
+                        }
+                    )
+                ))
+                return {plans};
+            });
+            this.props.loading(false)
+        })
+        .catch(error =>{});
+    }
+
+    handleWithdraw = (planId) => {
+        this.props.loading(true);
+        PlansApi.withdrawPlan(planId)
+        .then(response => {
+            this.setState(prevState => {
+                const plans = [...prevState.plans];
+                const index = plans.findIndex(plan => plan.id === response.data.data.id);
+                plans[index].status = findSelectFieldPosition(this.state.statuses, response.data.data.status);
+                plans[index].sendDate = response.data.data.sendDate;
+                return {plans};
+            });
+            this.props.loading(false)
+        })
+        .catch(error =>{});
+    }
+
+    handleDelete = (planId) => {
+        this.props.loading(true);
+        PlansApi.deletePlan(planId)
+        .then(response => {
+            let plans = this.state.plans;
+            plans = plans.filter(plan => plan.id !== planId)
+            this.setState({
+                plans: plans,
+            })
+            this.props.loading(false);
+        })
+        .catch(error => {});
     }
 
     handleUpdateOnCloseDetails = (plan) => {
@@ -156,71 +124,27 @@ class PlansContainer extends Component {
         return updateOnCloseDetails(plans, plan);
     }
 
-    handleGetPlans(){
-        this.setState(prevState => {
-            let plans = [...prevState.plans];
-            plans = response.data.data;
-            plans.map(plan => (
-                Object.assign(plan,
-                    {
-                        status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
-                        type: plan.type = findSelectFieldPosition( this.state.types, plan.type),
-                    }
-                )
-            ))
-            return {plans};
-        });
-    }
-
-    handleGetCostsTypes(){
-        CostTypeApi.getCostTypeAll()
-        .then(response => {
-            this.setState({
-                costsTypes: response.data.data,
-            })
-        })
-        .catch(error => {});
-    };
-
-    handleGetFoundingSource(){
-        this.props.loading(true);
-//        ApplicationsApi.getApplications()
-//        .then(response =>{
-            this.setState({
-                foundingSources: dicFunSour.data.data,
-            });
-//        })
-//        .catch(error =>{});
-    }
-    handleGetCategory(){
-        this.props.loading(true);
-//        ApplicationsApi.getApplications()
-//        .then(response =>{
-            this.setState({
-                categories: dicCatSum.data.data,
-            });
-//        })
-//        .catch(error =>{});
-    }
-
     componentDidMount() {
         this.handleGetPlans();
-        this.handleGetCostsTypes();
-        this.handleGetFoundingSource();
-        this.handleGetCategory();
+        this.handleGetDictionaryModes();
     }
 
     render(){
-        const { types, statuses, plans, costsTypes, foundingSources, categories } = this.state;
+        const {isLoading, loading, error, clearError} = this.props;
+        const { types, statuses, plans, modes } = this.state;
         return(
             <Plans
                 initialValues={plans}
                 types={types}
                 statuses={statuses}
-                costsTypes={costsTypes}
-                foundingSources={foundingSources}
-                categories={categories}
+                modes={modes}
+                isLoading={isLoading}
+                loading={loading}
+                error={error}
+                clearError={clearError}
                 onClose={this.handleUpdateOnCloseDetails}
+                onWithdraw={this.handleWithdraw}
+                onDelete={this.handleDelete}
             />
         )
     }

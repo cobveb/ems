@@ -16,7 +16,10 @@ Insert into EMSARCH.USER_ROLES (USER_ID,ROLE_ID) values ('1','1');
 REM INSERTING into EMSARCH.DICTIONARIES
 SET DEFINE OFF;
 Insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('jedMiar', 'Jednostki miary', 'A');
-REM INSERTING into EMSARCH.DICTIONARY_ITEMS
+Insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('dicFunSour', 'Źródła finansowania', 'U');
+Insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slAsortGr', 'Grupy Asortymentowe', 'U');
+Insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slTryUdzZp', 'Tryb udzielenia zamówienia', 'U');
+REM INSERTING into jedMiar - EMSARCH.DICTIONARY_ITEMS
 SET DEFINE OFF;
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'szt', 'sztuka', 1, 'jedMiar');
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'opa', 'opakowanie', 1, 'jedMiar');
@@ -29,8 +32,13 @@ Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) va
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'l', 'litr', 1, 'jedMiar');
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'dm3', 'dm3', 1, 'jedMiar');
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'m3', 'm3', 1, 'jedMiar');
-Insert into EMSARCH.DICTIONARY_ITEMS (ID.CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'cm2', 'cm2', 1, 'jedMiar');
+Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'cm2', 'cm2', 1, 'jedMiar');
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'m2', 'm2', 1, 'jedMiar');
+REM INSERTING into dicFunSour - EMSARCH.DICTIONARY_ITEMS
+SET DEFINE OFF;
+Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'ue', 'UE', 1, 'dicFunSour');
+Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'wlasne', 'Własne', 1, 'dicFunSour');
+Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'inne', 'Inne', 1, 'dicFunSour');
 REM INSERTING into EMSARCH.PARAMETERS
 SET DEFINE OFF;
 Insert into EMSARCH.PARAMETERS (CODE,CATEGORY,SECTION,NAME,DESCRIPTION,VALUE_TYPE,VALUE) values ('minDigits','System','Password','Minimalna liczba cyfr w ha�le','Minimalna liczba cyfr w ha�le. Domyslna wartosc: 1','N','');

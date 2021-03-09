@@ -5,6 +5,7 @@ import {validate} from 'components/modules/coordinator/plans/forms/planBasicInfo
 
 let PlanBasicInfoFormContainer = reduxForm({
     form: 'PlanBasicInfoForm',
+    touchOnChange: true,
     validate,
     enableReinitialize: true,
 }) (PlanBasicInfoForm)

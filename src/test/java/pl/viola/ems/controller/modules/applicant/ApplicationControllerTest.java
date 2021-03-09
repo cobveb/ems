@@ -57,7 +57,7 @@ class ApplicationControllerTest {
     private final Application application1 = new Application((long) 2, "01/app/2020", coordinator, applicant, "ZA", new Date(), null, new HashSet<>());
 
     private final Dictionary test = new Dictionary("test", "Test", 'U', new HashSet<>());
-    private final DictionaryItem item = new DictionaryItem((long) 1, "test", "test item", true, test, new HashSet<>());
+    private final DictionaryItem item = new DictionaryItem((long) 1, "test", "test item", true, test, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
 
     private final ApplicationPosition position1 = new ApplicationPosition((long) 1, "Test", (long) 5, item, "ZA", null, null, application);
     private final ApplicationPosition posSend = new ApplicationPosition((long) 1, "Test", (long) 5, item, "WY", null, null, application);

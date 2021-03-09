@@ -39,7 +39,7 @@ class DictionaryControllerTest {
     final private Dictionary asort = new Dictionary("asort", "Asortyment", 'S', null);
     final private Dictionary test = new Dictionary("test", "Test", 'U', new HashSet<>());
     final private Dictionary user = new Dictionary("user", "Użytkownik", 'A', new HashSet<>());
-    final private DictionaryItem item = new DictionaryItem((long)1, "test", "test item", true, asort, new HashSet<>());
+    final private DictionaryItem item = new DictionaryItem((long) 1, "test", "test item", true, asort, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
 
     final private List<Dictionary> all = Arrays.asList(asort, test, user);
     final private Set<DictionaryItem> items = new HashSet<>();

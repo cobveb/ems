@@ -4,21 +4,24 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.viola.ems.model.modules.accountant.CostYear;
 import pl.viola.ems.model.modules.applicant.Application;
+import pl.viola.ems.model.modules.coordinator.CoordinatorPlan;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@ToString(exclude = {"coordinators", "applicants", "coordinatorsPlans"})
+@EqualsAndHashCode(exclude = {"coordinators", "applicants", "coordinatorsPlans"})
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "organization_units", uniqueConstraints = {
-		@UniqueConstraint(columnNames = {
-				"code"
-		})
+        @UniqueConstraint(columnNames = {
+                "code"
+        })
 })
 public class OrganizationUnit {
 	@Id
@@ -81,6 +84,10 @@ public class OrganizationUnit {
             joinColumns = @JoinColumn(name = "coordinator_id", referencedColumnName = "code"),
             inverseJoinColumns = @JoinColumn(name = "cost_year_id", referencedColumnName = "id"))
     private Set<CostYear> costTypeYears = new HashSet<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "coordinator", cascade = CascadeType.ALL)
+    private Set<CoordinatorPlan> coordinatorsPlans = new HashSet<>();
 
     public OrganizationUnit(String code) {
         this.code = code;

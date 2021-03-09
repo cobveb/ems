@@ -4,6 +4,7 @@ import {validate} from 'components/modules/accountant/dictionary/forms/costYearF
 
 let CostYearFormContainer = reduxForm({
     form: 'CostYearForm',
+    touchOnChange: true,
     validate,
     enableReinitialize: true,
 }) (CostYearForm)
