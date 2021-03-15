@@ -122,6 +122,10 @@ public class PlanServiceImpl implements PlanService {
         }
 
 
+    public CoordinatorPlanPosition savePlanPosition(CoordinatorPlanPosition position, final String action, final User principal) {
+        if (!position.getSubPositions().isEmpty()) {
+            position.getSubPositions().forEach(posi -> posi.setPlanPosition(position));
+        }
         return position.getPlan().getType().name().equals("FIN") ?
                 financialPositionRepository.save((FinancialPosition) position) :
                 position.getPlan().getType().name().equals("PZP") ?
