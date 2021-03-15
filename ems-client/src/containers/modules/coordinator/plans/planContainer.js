@@ -277,6 +277,9 @@ class PlanContainer extends Component {
         this.props.loading(true);
         const indexPosition = findIndexElement(position, this.state.initData.positions);
         if (indexPosition !== null){
+            if(this.state.initData.type.code){
+                 subPosition.estimationType = subPosition.estimationType.code;
+            }
             PlansApi.deletePlanSubPosition(position.id, subPosition)
             .then(response =>{
                 this.setState( prevState => {

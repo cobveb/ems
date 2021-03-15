@@ -242,7 +242,7 @@ class PlanBasicInfoForm extends Component {
                         orderTypes={orderTypes}
                         estimationTypes={estimationTypes}
                         onSubmitPlanSubPosition={this.handleSubmitSubPosition}
-                        onDeletePlanSubPosition={this.onDeletePlanSubPosition}
+                        onDeletePlanSubPosition={this.handleDeleteSubPosition}
                         onClose={this.handleCloseDetails}
                         onSubmit={this.handleSubmitPosition}
                     />
