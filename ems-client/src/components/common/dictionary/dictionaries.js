@@ -43,6 +43,13 @@ class Dictionaries extends Component {
         this.setState({selected: id});
     }
 
+    handleDoubleClick = (row) => {
+        this.setState({
+            selected: row,
+            openDictionary: true,
+        });
+    }
+
     handleOpen = () => {
         this.setState({openDictionary: true})
     }
@@ -122,6 +129,7 @@ class Dictionaries extends Component {
                                 onSelect={this.handleSelect}
                                 clearSelect={!selected}
                                 className={classes.tableWrapper}
+                                onDoubleClick={this.handleDoubleClick}
                                 rowKey="code"
                             />
                         </Grid>

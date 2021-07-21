@@ -9,9 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import pl.viola.ems.model.common.Dictionary;
-import pl.viola.ems.model.common.DictionaryItem;
-import pl.viola.ems.model.common.repository.DictionaryRepository;
+import pl.viola.ems.model.common.dictionary.Dictionary;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
+import pl.viola.ems.model.common.dictionary.repository.DictionaryRepository;
 import pl.viola.ems.service.common.DictionaryService;
 
 import java.util.ArrayList;

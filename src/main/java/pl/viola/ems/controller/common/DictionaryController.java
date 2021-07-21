@@ -17,13 +17,18 @@ public class DictionaryController {
     DictionaryService dictionaryService;
 
     @GetMapping("getAll")
-    public ApiResponse getAllDictionaries(){
+    public ApiResponse getAllDictionaries() {
         return new ApiResponse(HttpStatus.FOUND, dictionaryService.findAll());
     }
 
     @GetMapping("/getDict/{code}")
-    public ApiResponse getDictionary(@PathVariable String code){
+    public ApiResponse getDictionary(@PathVariable String code) {
         return new ApiResponse(HttpStatus.FOUND, dictionaryService.findById(code));
+    }
+
+    @GetMapping("/getDictModule/{module}")
+    public ApiResponse getDictionaryByModule(@PathVariable String module) {
+        return new ApiResponse(HttpStatus.FOUND, dictionaryService.findByModule(module));
     }
 }
 
