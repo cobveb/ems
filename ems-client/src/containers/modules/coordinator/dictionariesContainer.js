@@ -13,7 +13,7 @@ class DictionariesContainer extends Component {
 
     handleAll(){
         this.props.loading(true);
-        DictionaryApi.getDictionaries()
+        DictionaryApi.getDictionaryByModule("coordinator")
         .then(response => {
             this.setState({
                 initData: response.data.data,

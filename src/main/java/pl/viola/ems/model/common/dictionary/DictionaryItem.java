@@ -1,11 +1,10 @@
-package pl.viola.ems.model.common;
+package pl.viola.ems.model.common.dictionary;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.viola.ems.model.modules.applicant.ApplicationPosition;
-import pl.viola.ems.model.modules.coordinator.FinancialSubPosition;
-import pl.viola.ems.model.modules.coordinator.PublicProcurementPosition;
-import pl.viola.ems.model.modules.coordinator.PublicProcurementSubPosition;
+import pl.viola.ems.model.modules.coordinator.plans.FinancialSubPosition;
+import pl.viola.ems.model.modules.coordinator.plans.PublicProcurementPosition;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -57,5 +56,5 @@ public class DictionaryItem {
 
     @JsonIgnore
     @OneToMany(mappedBy = "mode", cascade = CascadeType.MERGE)
-    private Set<PublicProcurementSubPosition> modes = new HashSet<>();
+    private Set<PublicProcurementPosition> modes = new HashSet<>();
 }

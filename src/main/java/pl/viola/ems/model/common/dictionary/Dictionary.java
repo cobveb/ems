@@ -1,4 +1,4 @@
-package pl.viola.ems.model.common;
+package pl.viola.ems.model.common.dictionary;
 
 import lombok.*;
 

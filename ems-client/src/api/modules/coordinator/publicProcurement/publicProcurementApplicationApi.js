@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-class PublicProcurementApi {
+class PublicProcurementApplicationApi {
 
     static getPlanPositions(){
         return Axios.get(`/api/coordinator/publicProcurement/application/getPlanPositions`)
@@ -46,6 +46,14 @@ class PublicProcurementApi {
         return Axios.put(`/api/coordinator/publicProcurement/application/send/${applicationId}`)
     }
 
+    static withdrawApplication(applicationId){
+        return Axios.put(`/api/coordinator/publicProcurement/application/withdraw/${applicationId}`)
+    }
+
+    static deleteApplication(applicationId){
+        return Axios.delete(`/api/coordinator/publicProcurement/application/delete/${applicationId}`)
+    }
+
     static exportApplicationsToExcel(exportType, data){
         return Axios.put(`/api/coordinator/publicProcurement/application/export/${exportType}`, data, {responseType: 'blob'})
     }
@@ -53,8 +61,6 @@ class PublicProcurementApi {
     static printApplication(applicationId){
         return Axios.get(`/api/coordinator/publicProcurement/application/print/${applicationId}`, {responseType: 'blob'})
     }
-
-
 }
 
-export default PublicProcurementApi;
+export default PublicProcurementApplicationApi;

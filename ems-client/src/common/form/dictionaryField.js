@@ -4,14 +4,15 @@ import { OutlinedInput, InputAdornment, IconButton, Dialog, DialogTitle, DialogC
 import { SearchField, Button, Table } from 'common/gui';
 import {Check, Close, Cancel, LibraryBooks} from '@material-ui/icons';
 import * as constants from 'constants/uiNames';
+import {escapeSpecialCharacters} from 'utils/';
 
 const filter = (value, items) => {
-
+    const searchValue = escapeSpecialCharacters(value)
     return items.filter((item) => {
         return item.name.toLowerCase().search(
-            value.toLowerCase()) !== -1 ||
+            searchValue.toLowerCase()) !== -1 ||
             item.code.toLowerCase().search(
-            value.toLowerCase()) !== -1;
+            searchValue.toLowerCase()) !== -1;
     });
 }
 
@@ -79,6 +80,10 @@ function DictionaryView(props){
         setPositions(filter(event.target.value, rows))
     }
 
+    const onDouble = (row) => {
+        onSelectValue(row)
+    }
+
     return(
         <div>
             <Dialog
@@ -125,6 +130,7 @@ function DictionaryView(props){
                                 rows={positions}
                                 headCells={headRows}
                                 onSelect={onSelect}
+                                onDoubleClick={onDouble}
                                 clearSelect={!selected}
                                 rowKey='code'
                             />

@@ -344,6 +344,11 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_SAVE = 'Zapisany'
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_TITLE = 'Wnioski o udzielenie zamówień publicznych';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_ORDER_VALUE_NET = 'Wartość wniosku netto';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER = 'Numer wniosku';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_CONFIRM_DELETE_MSG = 'Wniosek zostanie usunięty. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_CONFIRM_WITHDRAW_MSG = 'Wniosek zostanie wycofany. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_CONFIRM_WITHDRAW_REALISATION_MSG = 'Realizacja wniosku zostanie anulowana. Modyfikacja wniosku będzie niemożliwa. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WITHDRAW = 'Wycofaj';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WITHDRAW_REALISATION = 'Wycofaj realizację';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationForm.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_HEAD_TABLE_PART_NAME = 'Nazwa';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_HEAD_TABLE_PART_NET = 'Kwota netto';

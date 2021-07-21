@@ -72,6 +72,13 @@ class Dictionary extends Component {
         this.setState({selected: id});
     }
 
+    handleDoubleClick = (row) => {
+        this.setState({
+            selected: row,
+            itemDetails: !this.state.itemDetails,
+            action: 'edit',
+        });
+    }
 
     filter = (event) => {
         let searchValue ='';
@@ -191,6 +198,7 @@ class Dictionary extends Component {
                                     rows={rows}
                                     headCells={headRows}
                                     onSelect={this.handleSelect}
+                                    onDoubleClick={this.handleDoubleClick}
                                     clearSelect={!selected}
                                     rowKey='code'
                                 />
