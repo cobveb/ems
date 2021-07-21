@@ -4,6 +4,7 @@ import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface OrganizationUnitService {
     List<OrganizationUnit> findAll();
@@ -19,6 +20,16 @@ public interface OrganizationUnitService {
     List<OrganizationUnit> findActive();
 
     List<OrganizationUnit> findCoordinators();
+
+    List<OrganizationUnit> findCoordinatorsPublicProcurementApplication();
+
+    List<OrganizationUnit> findUnassignedCoordinators();
+
+    Set<OrganizationUnit> addDirectorCoordinators(String directorCode, List<OrganizationUnit> coordinators);
+
+    Set<OrganizationUnit> removeDirectorCoordinators(String directorCode, OrganizationUnit coordinator);
+
+    List<OrganizationUnit> findCoordinatorsByDirector(String code);
 
     Optional<OrganizationUnit> findCoordinatorByCode(String code);
 

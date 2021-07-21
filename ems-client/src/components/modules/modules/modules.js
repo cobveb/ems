@@ -9,7 +9,9 @@ import Administrator from 'components/modules/administrator/administrator';
 import Applicant from 'components/modules/applicant/applicant';
 import Coordinator from 'components/modules/coordinator/coordinator';
 import Accountant from 'components/modules/accountant/accountant';
+import Director from 'components/modules/director/director';
 import HumanResources from 'components/modules/hr/humanResources';
+import PublicProcurement from 'components/modules/publicProcurement/publicProcurement';
 
 const styles = theme => ({
     root: {
@@ -34,10 +36,12 @@ class Modules extends Component {
                         <Switch>
                             <PrivateRoute exact path='/modules' component={ModuleListContainer}/>
                             <PrivateRoute path='/modules/administrator' component={Administrator}/>
+                            <PrivateRoute path='/modules/director' component={Director}/>
                             <PrivateRoute path='/modules/accountant' component={Accountant}/>
                             <PrivateRoute path='/modules/applicant' component={Applicant}/>
                             <PrivateRoute path='/modules/coordinator' component={Coordinator}/>
                             <PrivateRoute path='/modules/hr' component={HumanResources}/>
+                            <PrivateRoute path='/modules/public' component={PublicProcurement}/>
                         </Switch>
                     </main>
                 </div>

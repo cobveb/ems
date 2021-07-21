@@ -13,8 +13,8 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import pl.viola.ems.model.common.Dictionary;
-import pl.viola.ems.model.common.DictionaryItem;
+import pl.viola.ems.model.common.dictionary.Dictionary;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.applicant.Application;
@@ -48,8 +48,8 @@ class ApplicationControllerTest {
     @MockBean
     UserService userService;
 
-    private final OrganizationUnit applicant = new OrganizationUnit("app", "Applicant", "Uck", "uck@uck.katowice.pl", true, false);
-    private final OrganizationUnit coordinator = new OrganizationUnit("cor", "Coordinator", "Uck", "uck@uck.katowice.pl", true, false);
+    private final OrganizationUnit applicant = new OrganizationUnit("app", "Applicant", "Uck", "uck@uck.katowice.pl", true);
+    private final OrganizationUnit coordinator = new OrganizationUnit("cor", "Coordinator", "Uck", "uck@uck.katowice.pl", true);
 
     private final Application application = new Application((long) 1, "01/app/2020", applicant, coordinator, "ZA", new Date(), null, new HashSet<>());
     private final Application send = new Application((long) 1, "01/app/2020", applicant, coordinator, "WY", new Date(), null, new HashSet<>());

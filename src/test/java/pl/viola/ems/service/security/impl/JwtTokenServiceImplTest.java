@@ -65,7 +65,7 @@ class JwtTokenServiceImplTest {
     @DisplayName("findById")
     @Test
     void findById() {
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
         JwtRefreshToken token = new JwtRefreshToken("Token");
         User user = new User((long)1,"user", "userPass", new Date(), "UserName", "UserSurname",true,false,false,false, ou, new HashSet<AcPermission>(), new HashSet<Group>());
         token.setUser(user);
@@ -81,8 +81,8 @@ class JwtTokenServiceImplTest {
     @DisplayName("refresh token")
     @Test
     void saveRefreshToken() {
-        UserPrincipal principal = new UserPrincipal((long)0,"UserName", "UserSurname", "user", true,false, false,false,"passwd", new HashSet<GrantedAuthority>(), new HashSet<String>());
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+        UserPrincipal principal = new UserPrincipal((long) 0, "UserName", "UserSurname", "user", true, false, false, false, "passwd", new HashSet<GrantedAuthority>(), new HashSet<String>());
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
         JwtRefreshToken newToken = new JwtRefreshToken("TokenNew");
         User user = new User((long)1,"user", "userPass", new Date(), "UserName", "UserSurname",true, false,false,false, ou, new HashSet<AcPermission>(), new HashSet<Group>());
         newToken.setUser(user);

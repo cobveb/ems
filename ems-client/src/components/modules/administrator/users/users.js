@@ -130,7 +130,7 @@ class Users extends Component {
     }
 
     render(){
-        const { classes, isLoading, error } = this.props;
+        const { classes, ous, isLoading, error } = this.props;
         const { headCells, rows, selected, action, isDetailsVisible } = this.state;
         return(
             <>
@@ -148,6 +148,7 @@ class Users extends Component {
                     { isDetailsVisible ?
                         <UserContainer
                             initialValues={action === "add" ? {} : selected}
+                            ous={ous}
                             changeVisibleDetails={this.handleChangeVisibleDetails}
                             action={action}
                             handleClose={this.handleClose}

@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { loading } from 'actions/';
 import CostType from 'components/modules/accountant/dictionary/costType'
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
+import {generateExportLink} from 'utils';
 
 class CostTypeContainer extends Component {
     state = {
@@ -70,6 +71,16 @@ class CostTypeContainer extends Component {
         .catch(error => {});
     }
 
+    handleExcelExport = (exportType, headRow) =>{
+        this.props.loading(true);
+        CostTypeApi.exportExportCostTypeYearsToExcel(exportType, this.props.initialValues.id, headRow)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
     componentDidMount(){
         if(this.props.action === "edit"){
             this.handleGetYearsValidity();
@@ -88,6 +99,7 @@ class CostTypeContainer extends Component {
                 action={action}
                 handleSubmit={this.handleSubmit}
                 onClose={this.handleClose}
+                onExcelExport={this.handleExcelExport}
                 allCosts={allCosts}
             />
         );

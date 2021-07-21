@@ -17,6 +17,18 @@ class OrganizationUnitsApi {
         return Axios.get(`/api/ou/getCoordinators`)
     }
 
+    static getUnassignedCoordinators(){
+        return Axios.get(`/api/ou/getUnassignedCoordinators`)
+    }
+
+    static addDirectorCoordinators(directorCode, data){
+        return Axios.put(`/api/ou/${directorCode}/addDirectorCoordinators`, data)
+    }
+
+    static removeDirectorCoordinators(directorCode, data){
+        return Axios.put(`/api/ou/${directorCode}/removeDirectorCoordinators`, data)
+    }
+
     static getOu(code){
         return Axios.get(`/api/ou/getOu/${code}`)
     }

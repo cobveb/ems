@@ -4,7 +4,7 @@ import CostsTypes from 'components/modules/accountant/dictionary/costsTypes';
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
-import {updateOnCloseDetails} from 'utils';
+import {updateOnCloseDetails, generateExportLink} from 'utils';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 
 
@@ -56,6 +56,16 @@ class CostsTypesContainer extends Component {
         .catch(error => {});
     }
 
+    handleExcelExport = (exportType, headRow) =>{
+        this.props.loading(true);
+        CostTypeApi.exportExportCostTypesToExcel(exportType, headRow)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
     componentDidMount() {
         this.handleGetCostsTypes();
         this.handleGetCoordinators();
@@ -73,6 +83,7 @@ class CostsTypesContainer extends Component {
                 clearError={clearError}
                 onClose={this.handleUpdateOnClose}
                 onDelete={this.handleDelete}
+                onExcelExport={this.handleExcelExport}
             />
         )
     }

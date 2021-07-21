@@ -1,11 +1,13 @@
 
 REM INSERTING into EMSARCH.MODULES
 SET DEFINE OFF;
-Insert into EMSARCH.MODULES (ID,CODE,NAME) values (module_seq.nextval,'accountant','Ksi�gowy');
-Insert into EMSARCH.MODULES (ID,CODE,NAME) values (module_seq.nextval,'coordinator','Koordynator');
-Insert into EMSARCH.MODULES (ID,CODE,NAME) values (module_seq.nextval,'applicant','Wnioskodawca');
-Insert into EMSARCH.MODULES (ID,CODE,NAME) values (module_seq.nextval,'administrator','Administrator');
-Insert into EMSARCH.MODULES (ID,CODE,NAME) values (module_seq.nextval,'hr','Kadry');
+Insert into EMSARCH.MODULES (ID,CODE,NAME) values (1,'director','Dyrektor');
+Insert into EMSARCH.MODULES (ID,CODE,NAME) values (2,'accountant','Ksi�gowy');
+Insert into EMSARCH.MODULES (ID,CODE,NAME) values (3,'publicProcurement','Zamówienia publiczne');
+Insert into EMSARCH.MODULES (ID,CODE,NAME) values (4,'coordinator','Koordynator');
+Insert into EMSARCH.MODULES (ID,CODE,NAME) values (5,'applicant','Wnioskodawca');
+Insert into EMSARCH.MODULES (ID,CODE,NAME) values (6,'hr','Kadry');
+Insert into EMSARCH.MODULES (ID,CODE,NAME) values (7,'administrator','Administrator');
 REM INSERTING into EMSARCH.USERS
 SET DEFINE OFF;
 Insert into EMSARCH.USERS (ID,CREATED_AT,UPDATED_AT,CREATED_BY,UPDATED_BY,NAME,PASSWORD,SURNAME,USERNAME) values (user_seq.nextval,to_timestamp('19/05/01 04:12:16,588344000','RR/MM/DD HH24:MI:SSXFF'),to_timestamp('19/05/01 04:12:16,588344000','RR/MM/DD HH24:MI:SSXFF'),null,null,'User','$2a$10$/ymH1SVrQkQ78TJl.s0ShuwvawFQGJ0fGNksn4kE2/wVHzSK5SXd2','Name','user');
@@ -34,6 +36,7 @@ Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) va
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'m3', 'm3', 1, 'jedMiar');
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'cm2', 'cm2', 1, 'jedMiar');
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'m2', 'm2', 1, 'jedMiar');
+Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'kpl', 'komplet', 1, 'jedMiar');
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'ustawa', 'poza ustawą', 1, 'slTryUdzZp');
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE,ID) values (dict_item_seq.nextval,'strona','ogłoszenie na stronie','1','slTryUdzZp');
 Insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE,ID) values (dict_item_seq.nextval,'przetarg','przetarg nieograniczony','1','slTryUdzZp');

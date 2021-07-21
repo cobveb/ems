@@ -34,7 +34,7 @@ class OrganizationUnit extends Component {
     }
 
     render(){
-        const { classes, initialValues, isLoading, error, title, edit, onClose } = this.props;
+        const { classes, initialValues, isLoading, error, title, edit, ous, onClose, unassignedCoordinators, onRemoveDirectorCoordinator, onAddDirectorCoordinator } = this.props;
         const { isError} = this.state;
         return(
             <>
@@ -47,7 +47,11 @@ class OrganizationUnit extends Component {
                         <OrganizationUnitFormContainer
                             onSubmit={this.handleSubmit}
                             initialValues={initialValues}
+                            ous={ous}
+                            unassignedCoordinators={unassignedCoordinators}
                             edit={edit}
+                            onAddDirectorCoordinator={onAddDirectorCoordinator}
+                            onRemoveDirectorCoordinator={onRemoveDirectorCoordinator}
                             onClose={() => onClose(isError === true ? null : initialValues)}
                         />
                     </div>

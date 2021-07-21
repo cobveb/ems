@@ -7,6 +7,7 @@ import * as constants from 'constants/uiNames';
 import { Table, Button, SearchField } from 'common/gui';
 import { Delete, Add, Edit } from '@material-ui/icons/';
 import CostTypeContainer from 'containers/modules/accountant/dictionary/costTypeContainer';
+import {escapeSpecialCharacters} from 'utils/';
 
 const styles = theme => ({
     tableWrapper: {
@@ -37,11 +38,12 @@ class CostsTypes extends Component {
 
     filter = () => {
         let costs = this.props.initialValues;
+        const codeNameSearch = escapeSpecialCharacters(this.state.codeNameSearch)
         return costs.filter((cost) => {
             return cost.code.toLowerCase().search(
-                this.state.codeNameSearch.toLowerCase()) !== -1 ||
+                codeNameSearch.toLowerCase()) !== -1 ||
                 cost.name.toLowerCase().search(
-                this.state.codeNameSearch.toLowerCase()) !== -1
+                codeNameSearch.toLowerCase()) !== -1
         });
     }
 
@@ -51,6 +53,18 @@ class CostsTypes extends Component {
 
     handleSelect = (id) => {
         this.setState({selected: id});
+    }
+
+    handleDoubleClick = (row) => {
+        this.setState({
+            selected: row,
+            isDetailsVisible: !this.state.isDetailsVisible,
+            action: 'edit',
+        });
+    }
+
+    handleExcelExport = (exportType) => {
+        this.props.onExcelExport(exportType, this.state.headCells)
     }
 
     handleClose = (cost) => {
@@ -151,6 +165,8 @@ class CostsTypes extends Component {
                                     rows={rows}
                                     headCells={headCells}
                                     onSelect={this.handleSelect}
+                                    onDoubleClick={this.handleDoubleClick}
+                                    onExcelExport={this.handleExcelExport}
                                     defaultOrderBy="code"
                                     rowKey="id"
                                 />

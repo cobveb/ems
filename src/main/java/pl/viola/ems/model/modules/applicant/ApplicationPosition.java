@@ -2,7 +2,7 @@ package pl.viola.ems.model.modules.applicant;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import pl.viola.ems.model.common.DictionaryItem;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

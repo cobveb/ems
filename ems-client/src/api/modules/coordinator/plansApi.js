@@ -38,6 +38,21 @@ class PlansApi {
         return Axios.delete(`/api/coordinator/plan/deletePlan/${planId}`)
     }
 
+    static exportPlansToExcel(exportType, data){
+        return Axios.put(`/api/coordinator/export/plans/${exportType}`, data, {responseType: 'blob'})
+    }
+
+    static exportPlanPositionsToExcel(exportType, planType, planId, data){
+        return Axios.put(`/api/coordinator/export/planPositions/${planType}/${planId}/${exportType}`, data, {responseType: 'blob'})
+    }
+
+    static exportPlanPositionSubPositionsToExcel(exportType, planType, positionId, data){
+        return Axios.put(`/api/coordinator/export/planPositionSubPositions/${planType}/${positionId}/${exportType}`, data, {responseType: 'blob'})
+    }
+
+    static printPlan(planId){
+        return Axios.get(`/api/coordinator/plan/print/${planId}`, {responseType: 'blob'})
+    }
 }
 
 export default PlansApi;

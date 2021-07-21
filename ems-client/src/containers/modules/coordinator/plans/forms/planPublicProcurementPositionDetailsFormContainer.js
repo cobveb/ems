@@ -18,14 +18,10 @@ PlanPublicProcurementPositionDetailsFormContainer = connect(
         // can select values individually
         const amountNet = selectorPlanPublicProcurementPositionDetailsForm(state, 'amountNet')
         const amountGross = selectorPlanPublicProcurementPositionDetailsForm(state, 'amountGross')
-        const estimationType = selectorPlanPublicProcurementPositionDetailsForm(state, 'estimationType')
-        const euroExchangeRate = selectorPlanPublicProcurementPositionDetailsForm(state, 'euroExchangeRate')
         const vat = selectorPlanPublicProcurementContentPositionForm(state, 'vat')
         return {
             amountNet,
             amountGross,
-            estimationType,
-            euroExchangeRate,
             vat,
         }
     }

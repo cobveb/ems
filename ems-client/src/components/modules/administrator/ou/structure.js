@@ -153,7 +153,7 @@ class Structure extends Component {
     }
 
     render(){
-        const { classes, isLoading, error, } = this.props;
+        const { initialValues, classes, isLoading, error, } = this.props;
         const {filter, selected, action, message, inactive, isDetailsVisible } = this.state;
         return(
             <>
@@ -173,6 +173,7 @@ class Structure extends Component {
                             initialValues={action === "add" ? {parent: selected.code} : selected}
                             changeVisibleDetails={this.handleChangeVisibleDetails}
                             action={action}
+                            ous={initialValues}
                             handleClose={this.handleClose}
                         />
                     :

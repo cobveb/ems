@@ -6,7 +6,7 @@ import {renderCheckbox} from 'common/form';
 
 
 function FormCheckbox(props) {
-    const { name, label, labelPlacement, ...other } = props;
+    const { name, disabled, label, labelPlacement, ...other } = props;
     return(
         <FormControlLabel
             control={
@@ -14,6 +14,7 @@ function FormCheckbox(props) {
                     name={name}
                     component={renderCheckbox}
                     label={label}
+                    disabled={disabled}
                     {...other}
                 />
             }

@@ -55,6 +55,22 @@ class CostTypeForm extends Component {
         this.setState({selected: id});
     }
 
+    handleDoubleClick = (row) => {
+        this.setState(prevState =>{
+            const selected = [...prevState.selected];
+            let openCostYearDetails = {...prevState.openPositionDetails};
+            let costYearAction = {...prevState.positionAction};
+            selected[0] = row;
+            openCostYearDetails = !this.state.openCostYearDetails;
+            costYearAction = 'edit'
+            return {selected, openCostYearDetails, costYearAction}
+        });
+    }
+
+    handleExcelExport = (exportType) => {
+        this.props.onExcelExport(exportType, this.state.tableHead)
+    }
+
     handleOpenCostYearDetails = (event, action) => {
         this.setState({openCostYearDetails: !this.state.openCostYearDetails, costYearAction: action});
     };
@@ -220,6 +236,8 @@ class CostTypeForm extends Component {
                                         multiChecked={false}
                                         checkedColumnFirst={true}
                                         onSelect={this.handleSelect}
+                                        onDoubleClick={this.handleDoubleClick}
+                                        onExcelExport={this.handleExcelExport}
                                     />
                                 </Grid>
                             </Grid>

@@ -13,10 +13,11 @@ class OrganizationUnitContainer extends Component {
             active: false,
             coordinator: false,
         },
+        unassignedCoordinators: [],
         isEdit: false,
     }
 
-    handelSubmitSucceeded = (data) => {
+    handleSubmitSucceeded = (data) => {
         if(this.props.action === "add"){
             data.parent = this.props.initialValues.parent;
         }
@@ -34,6 +35,47 @@ class OrganizationUnitContainer extends Component {
         });
     };
 
+    handleUnassignedCoordinators = () =>{
+        this.props.loading(true);
+        OrganizationUnitsApi.getUnassignedCoordinators()
+        .then(response => {
+            this.setState({
+                unassignedCoordinators: response.data.data,
+            })
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
+    handleAddDirectorCoordinator = (coordinators) =>{
+        this.props.loading(true);
+        OrganizationUnitsApi.addDirectorCoordinators(this.state.initData.code, coordinators)
+        .then(response => {
+            console.log(response.data.data)
+            this.setState(prevState => {
+                let initData = {...prevState.initData};
+                initData.directorCoordinators = response.data.data;
+                return {initData}
+            })
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
+    handleRemoveDirectorCoordinator = (coordinator) =>{
+        this.props.loading(true);
+        OrganizationUnitsApi.removeDirectorCoordinators(this.state.initData.code, coordinator)
+        .then(response => {
+            this.setState(prevState => {
+                let initData = {...prevState.initData};
+                initData.directorCoordinators = response.data.data;
+                return {initData}
+            })
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
     componentDidMount() {
         if(this.props.action === "edit"){
             this.setState({
@@ -41,21 +83,27 @@ class OrganizationUnitContainer extends Component {
                 initData: this.props.initialValues,
             });
         }
+        if(this.props.initialValues.role === 'DIRECTOR'){
+            this.handleUnassignedCoordinators();
+        }
     }
 
     render(){
-        const {isLoading, initialValues, action, error, clearError, handleClose} = this.props;
-        const {isEdit, initData} = this.state;
-
+        const {isLoading, initialValues, action, error, clearError, ous, handleClose} = this.props;
+        const {isEdit, initData, unassignedCoordinators} = this.state;
         return(
             <OrganizationUnit
                 initialValues={initData}
                 isLoading={isLoading}
                 error={error}
-                submitSucceeded={this.handelSubmitSucceeded}
+                submitSucceeded={this.handleSubmitSucceeded}
                 title={action === "edit" ? constants.ORGANIZATION_UNIT_TITLE_EDIT + " " + initialValues.code : constants.ORGANIZATION_UNIT_TITLE_ADD}
                 edit={isEdit}
+                ous={ous}
+                unassignedCoordinators={unassignedCoordinators}
                 clearError={clearError}
+                onAddDirectorCoordinator={this.handleAddDirectorCoordinator}
+                onRemoveDirectorCoordinator={this.handleRemoveDirectorCoordinator}
                 onClose={handleClose}
             />
         )

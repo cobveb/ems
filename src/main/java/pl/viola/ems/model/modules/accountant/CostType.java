@@ -1,6 +1,5 @@
 package pl.viola.ems.model.modules.accountant;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -38,7 +37,7 @@ public class CostType {
     @NonNull
     private Boolean active;
 
-    @JsonIgnore
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "costType", cascade = {CascadeType.ALL})
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

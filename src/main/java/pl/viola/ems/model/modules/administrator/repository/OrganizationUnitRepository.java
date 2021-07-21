@@ -17,9 +17,15 @@ public interface OrganizationUnitRepository extends JpaRepository<OrganizationUn
 
     Optional<OrganizationUnit> findByCode(String code);
 
-    List<OrganizationUnit> findByActiveTrueAndCoordinatorTrue();
+    List<OrganizationUnit> findByActiveTrueAndRole(OrganizationUnit.Role role);
 
-    Optional<OrganizationUnit> findByCodeAndActiveTrueAndCoordinatorTrue(String code);
+    List<OrganizationUnit> findByActiveTrueAndRoleAndCodeNot(OrganizationUnit.Role role, String code);
+
+    Optional<OrganizationUnit> findByCodeAndActiveTrueAndRole(String code, OrganizationUnit.Role role);
 
     List<OrganizationUnit> findByParentAndActiveTrue(String parent);
+
+    List<OrganizationUnit> findByDirectorAndRole(OrganizationUnit director, OrganizationUnit.Role role);
+
+    List<OrganizationUnit> findByDirectorIsNullAndActiveTrueAndRole(OrganizationUnit.Role role);
 }

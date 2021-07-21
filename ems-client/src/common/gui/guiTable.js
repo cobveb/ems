@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { withStyles, Paper, Table, TableHead, TableRow, TableCell, TableSortLabel, TableBody, TablePagination, TableFooter, IconButton } from '@material-ui/core/';
-import { FirstPage, LastPage, KeyboardArrowLeft, KeyboardArrowRight } from '@material-ui/icons/';
+import { withStyles, Paper, Table, TableHead, TableRow, TableCell, TableSortLabel, TableBody, TablePagination,
+        TableFooter, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core/';
+import { FirstPage, LastPage, KeyboardArrowLeft, KeyboardArrowRight, GetApp } from '@material-ui/icons/';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { grey } from '@material-ui/core/colors/';
 import { Checkbox } from 'common/gui';
@@ -139,6 +140,11 @@ class ContainedTable extends Component {
         order: 'asc',
         orderBy: '',
         cellType: 'text',
+        initialContextState:{
+            mouseX: null,
+            mouseY: null,
+            open: false,
+        },
     };
 
     desc(a, b, orderBy) {
@@ -221,6 +227,36 @@ class ContainedTable extends Component {
         }
     }
 
+    handleDoubleClick = (event, row) =>{
+        this.props.onDoubleClick(row);
+    }
+
+    handleContextClick = (event) =>{
+        const { clientX, clientY } = event;
+
+        event.preventDefault();
+        this.setState(prevState =>{
+            const initialContextState = {...prevState.initialContextState};
+            initialContextState.open = !initialContextState.open;
+            initialContextState.mouseX = clientX - 2;
+            initialContextState.mouseY = clientY - 4;
+            return {initialContextState};
+        });
+    }
+
+    handleContextClose = (event, exportType) =>{
+        this.setState(prevState =>{
+            const initialContextState = {...prevState.initialContextState};
+            initialContextState.mouseX = null;
+            initialContextState.mouseY = null;
+            initialContextState.open = false;
+            return {initialContextState};
+        });
+        if(exportType !== undefined){
+            this.props.onExcelExport(exportType);
+        }
+    }
+
     handleRequestSort = (event, property) => {
         const isDesc = this.state.orderBy === property && this.state.order === 'desc';
         this.setState({
@@ -244,13 +280,13 @@ class ContainedTable extends Component {
 
     render(){
         const { classes, rows, headCells, rowKey } = this.props;
-        const { curPage, rowsPerPage, selected, order, orderBy  } = this.state;
+        const { curPage, rowsPerPage, selected, order, orderBy, initialContextState } = this.state;
         return(
             <>
                 <div className={classes.content}>
                     <Paper className={classes.paper}>
-                        <div className={classNames(classes.tableBody, this.props.className)}>
-                            <Table size='small' stickyHeader  className={classes.table} >
+                        <div className={classNames(classes.tableBody, this.props.className)} onContextMenu={event => this.handleContextClick(event)} style={{ cursor: 'context-menu' }}>
+                            <Table size='small' stickyHeader  className={classes.table}>
                                 <TableHead>
                                     <TableRow>
                                         {headCells.map(row => (
@@ -283,6 +319,7 @@ class ContainedTable extends Component {
                                             hover
                                             key={key}
                                             onClick={event => this.handleClick(event, row)}
+                                            onDoubleClick ={event => this.handleDoubleClick(event, row)}
                                             selected={selected === row[rowKey] ? true : false}
                                         >
                                             {headCells.map((cell, key) =>
@@ -299,7 +336,7 @@ class ContainedTable extends Component {
                                                                 disabled={true}
                                                             />
                                                         :
-                                                            cell.type === 'object' ? (row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)])
+                                                            cell.type === 'object' ? row[cell.id.substring(0, cell.id.indexOf('.'))] !== undefined ?row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)] : null
                                                                 :
                                                                     cell.type === 'date' && row[cell.id] !== null
                                                                         ?
@@ -311,7 +348,7 @@ class ContainedTable extends Component {
                                                                         :
                                                                             cell.type==='amount' && row[cell.id] !== null
                                                                                 ?
-                                                                                    `${numberWithSpaces(row[cell.id])}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
+                                                                                    !isNaN(numberWithSpaces(row[cell.id])) && `${numberWithSpaces(row[cell.id])}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
                                                                                 :
                                                                                     row[cell.id]
                                                     }
@@ -321,6 +358,22 @@ class ContainedTable extends Component {
                                     ))}
                                 </TableBody>
                             </Table>
+                            <Menu
+                                keepMounted
+                                open={initialContextState.open === true}
+                                onClose={event => this.handleContextClose(event)}
+                                anchorReference="anchorPosition"
+                                anchorPosition={
+                                    initialContextState.open === true
+                                        ? { top: initialContextState.mouseY, left: initialContextState.mouseX }
+                                    : undefined
+                                }
+                            >
+                                <MenuItem onClick={event => this.handleContextClose(event, "XLSX")}>
+                                    <ListItemIcon><GetApp fontSize="small" /></ListItemIcon>
+                                    <ListItemText primary="Export do xlsx" />
+                                </MenuItem>
+                            </Menu>
                         </div>
                         <div>
                             <Table>
@@ -362,6 +415,8 @@ ContainedTable.propTypes ={
 ContainedTable.defaultProps = {
     rowKey: 'code',
     defaultOrderBy: 'code',
+    onDoubleClick: () => {},
+    onExcelExport: () => {},
 };
 
 export default withStyles(styles)(ContainedTable);

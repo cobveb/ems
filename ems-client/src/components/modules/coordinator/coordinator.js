@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Description, LibraryBooks, EventNote, Timeline, ViewList, ListAlt } from '@material-ui/icons/';
+import { Description, LibraryBooks, EventNote, Timeline, EuroSymbol, ListAlt, EventAvailable } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames'
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
 import PlansContainer from 'containers/modules/coordinator/plans/plansContainer';
-import PublicProcurementContainer from 'containers/modules/coordinator/registers/publicProcurement/publicProcurementContainer';
+import PublicProcurementRegisterContainer from 'containers/modules/coordinator/publicProcurement/register/registerContainer';
+import PublicProcurementApplicationsContainer from 'containers/modules/coordinator/publicProcurement/applications/applicationsContainer';
 import DictionariesContainer from 'containers/modules/coordinator/dictionariesContainer';
 
 const styles = theme => ({
@@ -36,18 +37,21 @@ const styles = theme => ({
 class Coordinator extends Component {
     state = {
         menus: [
-            {
-                name: constants.COORDINATOR_MENU_APPLICATIONS,
-                icon: <Description />,
-                items:  [
-                    {
-                        code: 'applications',
-                        name: constants.COORDINATOR_SUBMENU_APPLICATIONS,
-                        path: '/modules/coordinator/applications',
-                        icon: <Description />
-                    },
-                ],
-            },
+            /*
+                TODO: Rezygnacja z funkcjonalności
+                {
+                    name: constants.COORDINATOR_MENU_APPLICATIONS,
+                    icon: <Description />,
+                    items:  [
+                        {
+                            code: 'applications',
+                            name: constants.COORDINATOR_SUBMENU_APPLICATIONS,
+                            path: '/modules/coordinator/applications',
+                            icon: <Description />
+                        },
+                    ],
+                },
+            */
             {
                 name: constants.COORDINATOR_MENU_PLANS,
                 icon: <EventNote />,
@@ -56,20 +60,32 @@ class Coordinator extends Component {
                     {
                         code: 'plans',
                         name: constants.COORDINATOR_SUBMENU_PLANS,
-                        path: '/modules/coordinator/plans/plans',
+                        path: '/modules/coordinator/plans',
                         icon: <Timeline />
                     },
                 ],
             },
             {
-                name: constants.COORDINATOR_MENU_REGISTERS,
-                icon: <ViewList />,
+                name: constants.COORDINATOR_MENU_PUBLIC_PROCUREMENT,
+                icon: <EuroSymbol />,
                 items: [
                     {
-                        code: 'registers',
-                        name: constants.COORDINATOR_SUBMENU_REGISTER_ZP,
-                        path: '/modules/coordinator/registers/zp',
+                        code: 'applications',
+                        name: constants.COORDINATOR_SUBMENU_PUBLIC_APPLICATION,
+                        path: '/modules/coordinator/public/applications',
+                        icon: <Description />
+                    },
+                    {
+                        code: 'register',
+                        name: constants.COORDINATOR_SUBMENU_PUBLIC_REGISTER,
+                        path: '/modules/coordinator/public/register',
                         icon: <ListAlt />
+                    },
+                    {
+                        code: 'realization',
+                        name: constants.COORDINATOR_SUBMENU_PUBLIC_REALIZATION,
+                        path: '/modules/coordinator/public/realization',
+                        icon: <EventAvailable />
                     },
                 ],
             },
@@ -102,8 +118,10 @@ class Coordinator extends Component {
                             <CardContent>
                                 <Switch>
                                     <PrivateRoute exact path='/modules/coordinator/' component={PlansContainer}/>
-                                    <PrivateRoute exact path='/modules/coordinator/plans/plans' component={PlansContainer}/>
-                                    <PrivateRoute exact path='/modules/coordinator/registers/zp' component={PublicProcurementContainer}/>
+                                    <PrivateRoute exact path='/modules/coordinator/plans' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/coordinator/public/applications' component={PublicProcurementApplicationsContainer}/>
+                                    <PrivateRoute exact path='/modules/coordinator/public/register' component={PublicProcurementRegisterContainer}/>
+                                    <PrivateRoute exact path='/modules/coordinator/public/realization' component={PublicProcurementRegisterContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/dictionaries' component={DictionariesContainer}/>
                                 </Switch>
                             </CardContent>

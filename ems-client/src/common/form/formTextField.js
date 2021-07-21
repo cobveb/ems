@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Field } from 'redux-form';
-import { withStyles }  from '@material-ui/core/';
+import { withStyles, InputAdornment }  from '@material-ui/core/';
 import {renderTextField} from 'common/form';
 import {TextMask, TextMaskCustom} from 'utils/';
 
@@ -16,8 +16,15 @@ const stylesFormTextField = theme => ({
     inputMultiline:{
         padding: theme.spacing(0),
     },
+    inputMultilineRequired:{
+        padding: theme.spacing(0),
+        backgroundColor: '#faffbd',
+    },
     inputRequired: {
         padding: theme.spacing(1.5),
+        backgroundColor: '#faffbd',
+    },
+    inputRequiredSuffix: {
         backgroundColor: '#faffbd',
     },
     disabled: {
@@ -26,7 +33,7 @@ const stylesFormTextField = theme => ({
 });
 
 function FormTextField(props) {
-    const { classes, name, label, isRequired, mask, valueType, inputProps, ...other } = props;
+    const { classes, name, label, isRequired, mask, valueType, suffix, inputProps, ...other } = props;
     return(
         <Field
             name={name}
@@ -40,10 +47,13 @@ function FormTextField(props) {
                 inputComponent: mask ? TextMask(mask) : valueType === "numbers" ? TextMaskCustom(valueType) : valueType === "digits" ? TextMaskCustom(valueType) : undefined,
                 inputProps: inputProps,
                 classes: {
-                    input: isRequired ? classes.inputRequired : other.multiline ? classes.inputMultiline : classes.input,
+                    root: (isRequired && suffix !== undefined) &&  classes.inputRequiredSuffix,
+                    input: isRequired && other.multiline !== true ? classes.inputRequired : classes.input,
+                    multiline: isRequired ? classes.inputMultilineRequired : classes.inputMultiline,
                     disabled: classes.disabled,
                 },
                 readOnly: other.readOnly && true,
+                endAdornment: suffix !== undefined  ? <InputAdornment position="end">{suffix}</InputAdornment> : null,
             }}
             rows={other.multiline && other.rows}
             rowsMax={other.multiline && other.rowsMax}

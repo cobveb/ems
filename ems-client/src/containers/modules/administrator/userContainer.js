@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import User from 'components/modules/administrator/users/user';
 import AccessControlApi from 'api/modules/administrator/accessControlApi';
-import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import GroupsApi from 'api/modules/administrator/groupsApi';
 import UsersApi from 'api/modules/administrator/usersApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
-
+import { findSelectFieldPosition } from 'utils/';
 class UserContainer extends Component {
     state = {
         initData: {
@@ -18,13 +17,6 @@ class UserContainer extends Component {
             isExpired: false,
             unit: "",
         },
-        ous:[
-            {
-                code: "",
-                name: constants.USER_BASIC_INFORMATION_OU,
-                state: true
-            }
-        ],
         acObjects: [],
         permissions: {
             acObject : [],
@@ -34,28 +26,15 @@ class UserContainer extends Component {
         userGroups: [],
     }
 
-    handleGetOus(){
-        this.props.loading(true);
-        return OrganizationUnitsApi.getActiveOu()
-        .then(response => {
-            this.setState({
-                ous: this.state.ous.concat(response.data.data),
-            });
-            this.props.loading(false)
-        })
-        .catch(error => {});
-    }
-
     handleGetUser(){
         this.props.loading(true);
         UsersApi.getUser(this.props.initialValues.id)
         .then(response => {
-            response.data.data.unit = this.state.ous.find(ou => {
-                return ou.code === response.data.data.unit.code
-            });
-            this.setState(previousState => ({
+            response.data.data.unit = findSelectFieldPosition(this.props.ous, response.data.data.unit.code)
+            this.setState({
                 initData: response.data.data,
-            }));
+            });
+            this.props.loading(false);
         })
         .catch(error => {});
     }
@@ -72,9 +51,9 @@ class UserContainer extends Component {
             }));
         })
         .catch(error => {
-            this.setState(previousState => ({
+            this.setState({
                 initData: data,
-            }));
+            });
         });
     }
 
@@ -157,17 +136,14 @@ class UserContainer extends Component {
     }
 
     componentDidMount() {
-        this.handleGetOus();
         if(this.props.action === "edit"){
             this.handleGetUser();
         }
     }
 
     render(){
-        const {isLoading, error, clearError, action, handleClose } = this.props;
-        const {initData, ous, acObjects, permissions, userGroups, allGroups} = this.state;
-        console.log(ous)
-        console.log(initData)
+        const {isLoading, error, clearError, action, ous, handleClose } = this.props;
+        const {initData, acObjects, permissions, userGroups, allGroups} = this.state;
         return(
             <User
                 isLoading = {isLoading}

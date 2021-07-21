@@ -8,14 +8,28 @@ import { FormTextField, FormDictionaryField, FormSelectField, FormAmountField, F
 import { Save, Cancel, Edit, Visibility, LibraryBooks } from '@material-ui/icons/';
 import { withStyles, Grid, Divider, Typography, Toolbar } from '@material-ui/core/';
 import PlanPublicProcurementPositionDetailsFormContainer from 'containers/modules/coordinator/plans/forms/planPublicProcurementPositionDetailsFormContainer';
+import { euroExchangeRateMask } from 'utils/';
 
 const styles = theme => ({
+    content: {
+        height: `calc(100vh - ${theme.spacing(18.2)}px)`,
+        overflow: 'auto',
+        padding: 0,
+    },
     container: {
         width: '100%',
     },
+    empty: {
+        marginBottom: theme.spacing(2),
+       padding: theme.spacing(2),
+    },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(49.5)}px)`,
+        height: `calc(100vh - ${theme.spacing(55.5)}px)`,
+    },
+    tableEuroWrapper: {
+        overflow: 'auto',
+        height: `calc(100vh - ${theme.spacing(62.5)}px)`,
     },
     toolbar: {
         minHeight: theme.spacing(6),
@@ -25,6 +39,7 @@ const styles = theme => ({
     },
     section: {
         marginBottom: theme.spacing(0),
+        height: '100%',
     },
 });
 
@@ -44,8 +59,8 @@ class PlanPublicProcurementContentPosition extends Component {
                 type: 'amount',
             },
             {
-                id: 'amountRealizedNet',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_NET,
+                id: 'amountGross',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -81,6 +96,22 @@ class PlanPublicProcurementContentPosition extends Component {
         this.setState({selected: id});
     }
 
+    handleDoubleClick = (row) => {
+        this.setState(prevState =>{
+            const selected = [...prevState.selected];
+            let openPositionDetails = {...prevState.openPositionDetails};
+            let positionAction = {...prevState.positionAction};
+            selected[0] = row;
+            openPositionDetails =  !this.state.openPositionDetails;
+            positionAction = 'edit';
+            return {selected, openPositionDetails, positionAction}
+        });
+    }
+
+    handleExcelExport = (exportType) =>{
+        this.props.onExcelExport(exportType, "subPositions", this.state.head, this.props.initialValues.id)
+    }
+
     handleSubmitPosition = (values) => {
         if(this.state.positionAction === 'add'){
             values.status = {code: 'DO', name: constants.COORDINATOR_PLAN_POSITION_STATUS_ADDED};
@@ -112,6 +143,7 @@ class PlanPublicProcurementContentPosition extends Component {
     }
 
     componentDidUpdate(prevProps){
+        const {amountRequestedNet, estimationType, euroExchangeRate, action } = this.props;
 
         //Update subPosition after submit
         if(this.props.initialValues.subPositions !== prevProps.initialValues.subPositions){
@@ -119,18 +151,55 @@ class PlanPublicProcurementContentPosition extends Component {
                 positions: this.props.initialValues.subPositions,
             })
         }
+        //Changed Vat
         if(this.props.vat !== prevProps.vat && prevProps.vat !== undefined){
-            this.props.subPositions.map((position) => {
-                return Object.assign(position,
+            if(this.props.initialValues.subPositions !== undefined){
+                this.props.subPositions.map((position) => {
+                    return Object.assign(position,
+                    {
+                         amountGross: position.amountGross = parseFloat((Math.round((position.amountNet * this.props.vat.code) * 100) / 100).toFixed(2)),
+                    })
+                });
+                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', `subPositions`, this.props.subPositions))
+                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedGross', parseFloat((Math.round((this.props.amountRequestedNet * this.props.vat.code) * 100) / 100).toFixed(2))));
+                this.setState({
+                    positions: this.props.subPositions,
+                });
+            }
+        }
+        //Change estimationType on update amountRequestedNet
+        if(amountRequestedNet !== prevProps.amountRequestedNet && (estimationType.code !== 'WR' && estimationType.code !== 'COVID')){
+            if(amountRequestedNet <= 50000){
+                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'estimationType', this.props.estimationTypes[0]))
+            } else if (amountRequestedNet > 50000 && amountRequestedNet <= 130000){
+                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'estimationType', this.props.estimationTypes[1]))
+            } else if(amountRequestedNet > 130000 && amountRequestedNet <= 593432){
+                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'estimationType', this.props.estimationTypes[2]))
+            } else {
+                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'estimationType', this.props.estimationTypes[3]))
+            }
+        }
+        //Mode type UE
+        switch (action){
+            case "add" :
+                if(amountRequestedNet !== undefined && euroExchangeRate !== null && estimationType !== undefined && estimationType.code === 'UE139'){
+                    this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedEuroNet', parseFloat((amountRequestedNet / euroExchangeRate).toFixed(2))));
+                }
+                break;
+            case "edit":
+                if((euroExchangeRate !== null && prevProps.estimationType !== "UE139" && estimationType.code === 'UE139') ||
+                   (estimationType.code === 'UE139' && euroExchangeRate !== prevProps.euroExchangeRate))
                 {
-                     amountGross: position.amountGross = parseFloat((Math.round((position.amountNet * this.props.vat.code) * 100) / 100).toFixed(2)),
-                })
-            });
-            this.props.dispatch(change('PlanPublicProcurementContentPositionForm', `subPositions`, this.props.subPositions))
-            this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedGross', parseFloat((Math.round((this.props.amountRequestedNet * this.props.vat.code) * 100) / 100).toFixed(2))));
-            this.setState({
-                positions: this.props.subPositions,
-            });
+                    this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedEuroNet', parseFloat((amountRequestedNet / euroExchangeRate).toFixed(2))));
+                }
+                break;
+            default:
+                return null;
+        }
+        //Remove UE mode
+        if (prevProps.estimationType !== undefined && prevProps.estimationType.code === 'UE139' && estimationType.code !== 'UE139'){
+            this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedEuroNet', null));
+            this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'euroExchangeRate', null));
         }
     }
 
@@ -144,7 +213,8 @@ class PlanPublicProcurementContentPosition extends Component {
     }
 
     render(){
-        const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, action, planStatus, modes, vats, assortmentGroups, units, orderTypes, estimationTypes } = this.props;
+        const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, action, planStatus,
+        modes, vats, assortmentGroups, orderTypes, estimationTypes, estimationType } = this.props;
         const {head, selected, openPositionDetails, positionAction, positions, formChanged } = this.state;
         return(
             <>
@@ -162,7 +232,6 @@ class PlanPublicProcurementContentPosition extends Component {
                         action={positionAction}
                         planStatus={planStatus}
                         modes={modes}
-                        units={units}
                         estimationTypes={estimationTypes}
                         open={openPositionDetails}
                         onSubmit={this.handleSubmitPosition}
@@ -227,6 +296,26 @@ class PlanPublicProcurementContentPosition extends Component {
                                         disabled={planStatus!=='ZP' && true}
                                     />
                                 </Grid>
+                                <Grid item xs={6}>
+                                    <FormSelectField
+                                        isRequired={true}
+                                        name="mode"
+                                        label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_PROCEDURE_MODE}
+                                        value={initialValues.mode !== undefined ? initialValues.mode : ""}
+                                        options={modes}
+                                        disabled={planStatus!=='ZP' && true}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormSelectField
+                                        isRequired={true}
+                                        name="estimationType"
+                                        label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_ESTIMATION_TYPE}
+                                        value={initialValues.estimationType !== undefined ? initialValues.estimationType : ""}
+                                        options={estimationTypes}
+                                        disabled={planStatus!=='ZP' && true}
+                                    />
+                                </Grid>
                                 <Grid item xs={2}>
                                     <FormSelectField
                                         isRequired={true}
@@ -247,22 +336,43 @@ class PlanPublicProcurementContentPosition extends Component {
                                 </Grid>
                                 <Grid item xs={5}>
                                     <FormAmountField
-                                        name="amountRequestedGross"
-                                        label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_GROSS}
+                                        name="amountRealizedNet"
+                                        label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_NET}
                                         disabled
                                     />
                                 </Grid>
+                                { (estimationType !== undefined && estimationType.code === 'UE139')
+                                    &&
+                                        <>
+                                        <Grid item xs={12} sm={3}>
+                                            <FormTextField
+                                                isRequired={(estimationType!== undefined && estimationType.code === 'UE139') && true}
+                                                name="euroExchangeRate"
+                                                label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_EURO_EXCHANGE_RATE}
+                                                mask={euroExchangeRateMask}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={9}>
+                                            <FormAmountField
+                                                name="amountRequestedEuroNet"
+                                                label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_EURO_VALUE_NET}
+                                                suffix='€'
+                                                disabled
+                                            />
+                                        </Grid>
+                                        </>
+                                }
                             </Grid>
-                            <Grid item xs={12} >
+                            <Grid item xs={12}>
                                 <div className={classes.section}>
                                     <Toolbar className={classes.toolbar}>
                                         <LibraryBooks className={classes.toolbarHeaderIcon} fontSize="small" />
                                         <Typography variant="subtitle1" >
-                                            {constants.COORDINATOR_PLAN_POSITIONS}
+                                            {constants.COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP_POSITIONS}
                                         </Typography>
                                     </Toolbar>
                                     <FormTableField
-                                        className={classes.tableWrapper}
+                                        className={estimationType !== undefined && estimationType.code === 'UE139' ? classes.tableEuroWrapper : classes.tableWrapper}
                                         name="subPositions"
                                         head={head}
                                         allRows={positions}
@@ -285,6 +395,9 @@ class PlanPublicProcurementContentPosition extends Component {
                                         multiChecked={false}
                                         checkedColumnFirst={true}
                                         onSelect={this.handleSelect}
+                                        onDoubleClick={this.handleDoubleClick}
+                                        onExcelExport={this.handleExcelExport}
+                                        orderBy="id"
                                     />
                                 </div>
                             </Grid>

@@ -10,8 +10,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import pl.viola.ems.exception.AppException;
-import pl.viola.ems.model.common.Dictionary;
-import pl.viola.ems.model.common.DictionaryItem;
+import pl.viola.ems.model.common.dictionary.Dictionary;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.applicant.Application;
@@ -61,12 +61,13 @@ class ApplicationServiceImplTest {
 
     private Throwable thrown;
 
-    private final OrganizationUnit applicant = new OrganizationUnit("uck", "applicant", "Uck", "uck@uck.katowice.pl", true, false);
+    private final OrganizationUnit applicant = new OrganizationUnit("uck", "applicant", "Uck", "uck@uck.katowice.pl", true);
 
     private final OrganizationUnit child = new OrganizationUnit(
             "test",
             "Uniwersyteckie Centrum",
             "UCK SUM",
+            null,
             "1111111111",
             "123456789",
             "Katowice",
@@ -77,8 +78,9 @@ class ApplicationServiceImplTest {
             "+48 (32) 123 12 34",
             "uck@uck.it",
             true,
-            false,
             applicant.getCode(),
+            null,
+            new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
@@ -86,7 +88,7 @@ class ApplicationServiceImplTest {
             new HashSet<>()
     );
 
-    private final OrganizationUnit coordinator = new OrganizationUnit("coor", "coordinator", "Uck", "uck@uck.katowice.pl", true, true);
+    private final OrganizationUnit coordinator = new OrganizationUnit("coor", "coordinator", "Uck", "uck@uck.katowice.pl", true, OrganizationUnit.Role.COORDINATOR, null);
 
     private final List<OrganizationUnit> organizationUnits = Arrays.asList(applicant, child);
     private final List<OrganizationUnit> coordinatorUnits = Collections.singletonList(coordinator);
@@ -130,7 +132,7 @@ class ApplicationServiceImplTest {
             new HashSet<>()
     );
 
-    private final pl.viola.ems.model.common.Dictionary test = new Dictionary("test", "Test", 'U', new HashSet<>());
+    private final Dictionary test = new Dictionary("test", "Test", 'U', new HashSet<>());
     private final DictionaryItem item = new DictionaryItem((long) 1, "test", "test item", true, test, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
 
     private final ApplicationPosition position1 = new ApplicationPosition((long) 1, "Test", (long) 5, item, "ZA", null, null, application);

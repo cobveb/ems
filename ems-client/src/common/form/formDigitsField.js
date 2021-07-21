@@ -36,10 +36,9 @@ function FormDigitsField(props) {
             }}
             InputProps={{
                 inputProps: inputProps,
+                inputComponent: TextMaskCustom("numbers"),
                 classes: {
-                    inputComponent: TextMaskCustom("numbers"),
                     input: isRequired ? classes.inputRequired : classes.input,
-                    classes: {input: classes.input},
                     disabled: classes.disabled,
                 },
                 readOnly: other.readOnly && true,

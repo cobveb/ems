@@ -5,11 +5,10 @@ import { loading, setError } from 'actions/';
 import PropTypes from 'prop-types';
 import Plan from 'components/modules/coordinator/plans/plan';
 import DictionaryApi from 'api/common/dictionaryApi';
-import {findSelectFieldPosition} from 'utils';
 import PlansApi from 'api/modules/coordinator/plansApi';
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
 import * as constants from 'constants/uiNames';
-import {findIndexElement} from 'utils/';
+import {findIndexElement, publicProcurementEstimationTypes, findSelectFieldPosition, generateExportLink} from 'utils/';
 
 class PlanContainer extends Component {
     state = {
@@ -40,32 +39,7 @@ class PlanContainer extends Component {
                 name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_SERVICE,
             }
         ],
-        estimationTypes: [
-            {
-                code: 'DO50',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_DO50,
-            },
-            {
-                code: 'D0130',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_D0130,
-            },
-            {
-                code: 'PO130',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_PO130,
-            },
-            {
-                code: 'UE139',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_UE139,
-            },
-            {
-                code: 'WR',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_WR,
-            },
-            {
-                code: 'COVID',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_COVID,
-            }
-        ],
+        estimationTypes: publicProcurementEstimationTypes(),
         statuses:[
             {
                 code: 'DO',
@@ -80,12 +54,12 @@ class PlanContainer extends Component {
                 name: constants.COORDINATOR_PLAN_POSITION_STATUS_SENT,
             },
             {
-                code: 'PR',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_EXCEEDED,
+                code: 'ZA',
+                name: constants.COORDINATOR_PLAN_POSITION_STATUS_ACCEPT,
             },
             {
-                code: 'ZA',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_APPROVED,
+                code: 'SK',
+                name: constants.COORDINATOR_PLAN_POSITION_STATUS_CORRECT,
             },
             {
                 code: 'RE',
@@ -105,7 +79,7 @@ class PlanContainer extends Component {
     }
 
     handleGetCostsTypes(){
-        CostTypeApi.getCostTypeAll()
+        return CostTypeApi.getCostTypeByCoordinatorAndYear(new Date(this.state.initData.year).getFullYear(), this.state.initData.coordinator.code)
         .then(response => {
             this.setState({
                 costsTypes: response.data.data,
@@ -148,7 +122,7 @@ class PlanContainer extends Component {
                             Object.assign(position,
                                 {
                                     vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
-                                    status: position.status = findSelectFieldPosition(this.state.statuses, position.status)
+                                    status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
                                 }
                             )
                         ))
@@ -162,20 +136,16 @@ class PlanContainer extends Component {
                         let initData = {...prevState.initData};
                         Object.assign(initData, this.props.initialValues);
                         initData.positions = response.data.data;
-                        initData["positions"].map(position => ((
+                        initData["positions"].map(position => (
                             Object.assign(position,
                             {
                                 vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
                                 orderType: position.orderType = findSelectFieldPosition(this.state.orderTypes, position.orderType),
-                                status: position.status = findSelectFieldPosition(this.state.statuses, position.status)
-                            }),
-                            position.subPositions.map(subPosition => (
-                                Object.assign(subPosition,{
-                                    mode: subPosition.mode = findSelectFieldPosition(this.props.modes, subPosition.mode.code),
-                                    estimationType: subPosition.estimationType = findSelectFieldPosition(this.state.estimationTypes, subPosition.estimationType),
-                                })
-                            ))
-                        )));
+                                status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                                mode: position.mode = findSelectFieldPosition(this.props.modes, position.mode.code),
+                                estimationType: position.estimationType = findSelectFieldPosition(this.state.estimationTypes, position.estimationType),
+                            }
+                        )))
                         return {initData};
                     });
                     this.handleGetDictionaryAssortmentGroups();
@@ -187,6 +157,23 @@ class PlanContainer extends Component {
         })
         .catch(error =>{});
     };
+
+    setUpPlanValueOnSubmitPosition = (values, initData, tmp, action) =>{
+        if(action ==='add'){
+            initData.positions.push(tmp);
+            initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet + tmp.amountRequestedNet).toFixed(2))
+            initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross + tmp.amountRequestedGross).toFixed(2))
+        } else {
+            const index = findIndexElement(values, initData.positions, "positionId");
+            if(index !== null){
+                initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet - initData.positions[index].amountRequestedNet).toFixed(2))
+                initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross - initData.positions[index].amountRequestedGross).toFixed(2))
+                initData.positions.splice(index, 1, tmp);
+                initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet + tmp.amountRequestedNet).toFixed(2))
+                initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross + tmp.amountRequestedGross).toFixed(2))
+            }
+        }
+    }
 
     handleSubmitPlanPosition = (values, action) => {
         this.props.loading(true);
@@ -204,15 +191,8 @@ class PlanContainer extends Component {
         payload.type = this.state.initData.type.code.toLowerCase();
         if(payload.type === 'pzp'){
             payload.orderType = payload.orderType.code;
-            if(action === 'edit'){
-                payload.subPositions.map(subPosition => (
-                    Object.assign(subPosition,{
-                        estimationType: subPosition.estimationType = subPosition.estimationType.code,
-                    })
-                ));
-            }
+            payload.estimationType = payload.estimationType.code;
         }
-
         PlansApi.savePlanPosition(this.state.initData.id, action, payload)
         .then(response => {
             switch(this.state.initData.type.code){
@@ -223,15 +203,9 @@ class PlanContainer extends Component {
                         const tmp =  response.data.data;
                         tmp.vat = findSelectFieldPosition(this.state.vats, tmp.vat);
                         tmp.status = findSelectFieldPosition(this.state.statuses, tmp.status);
-                        if(action ==='add'){
-                            initData.positions.push(tmp);
-                            newPosition = tmp;
-                        } else {
-                            const index = findIndexElement(values, initData.positions, "positionId");
-                            if(index !== null){
-                                initData.positions.splice(index, 1, tmp);
-                            }
-                        }
+                        tmp.costType = findSelectFieldPosition(this.state.costsTypes, tmp.costType.code);
+                        newPosition = tmp;
+                        this.setUpPlanValueOnSubmitPosition(values, initData, tmp, action);
                         return {initData, newPosition};
                     });
                 break;
@@ -243,21 +217,11 @@ class PlanContainer extends Component {
                         tmp.vat = findSelectFieldPosition(this.state.vats, tmp.vat);
                         tmp.orderType = findSelectFieldPosition(this.state.orderTypes, tmp.orderType);
                         tmp.status = findSelectFieldPosition(this.state.statuses, tmp.status);
-                        tmp.subPositions.map(subPosition => (
-                            Object.assign(subPosition,{
-                                mode: subPosition.mode = findSelectFieldPosition(this.props.modes, subPosition.mode.code),
-                                estimationType: subPosition.estimationType = findSelectFieldPosition(this.state.estimationTypes, subPosition.estimationType),
-                            })
-                        ));
-                        if(action ==='add'){
-                            initData.positions.push(tmp);
-                            newPosition = tmp;
-                        } else {
-                            const index = findIndexElement(values, initData.positions, "positionId");
-                            if(index !== null){
-                                initData.positions.splice(index, 1, tmp);
-                            }
-                        }
+                        tmp.assortmentGroup = findSelectFieldPosition(this.state.assortmentGroups, tmp.assortmentGroup.code);
+                        tmp.mode = findSelectFieldPosition(this.props.modes, tmp.mode.code);
+                        tmp.estimationType = findSelectFieldPosition(this.state.estimationTypes, tmp.estimationType);
+                        newPosition = tmp;
+                        this.setUpPlanValueOnSubmitPosition(values, initData, tmp, action);
                         return {initData, newPosition};
                     });
                 break;
@@ -277,16 +241,21 @@ class PlanContainer extends Component {
         this.props.loading(true);
         const indexPosition = findIndexElement(position, this.state.initData.positions);
         if (indexPosition !== null){
-            if(this.state.initData.type.code){
-                 subPosition.estimationType = subPosition.estimationType.code;
-            }
             PlansApi.deletePlanSubPosition(position.id, subPosition)
             .then(response =>{
                 this.setState( prevState => {
-                    const positions = {...prevState.initData.positions};
-                    position.vat = findSelectFieldPosition(this.state.vats, position.vat.code);
-                    this.state.initData.positions.splice(indexPosition, 1, position);
-                    return {positions};
+                    const initData = {...prevState.initData};
+                    response.data.data.vat = findSelectFieldPosition(this.state.vats,  response.data.data.vat);
+                    response.data.data.status = findSelectFieldPosition(this.state.statuses, response.data.data.status);
+                    if(this.state.initData.type.code === 'PZP'){
+                        response.data.data.estimationType = findSelectFieldPosition(this.state.estimationTypes, response.data.data.estimationType)
+                        response.data.data.orderType = findSelectFieldPosition(this.state.orderTypes, response.data.data.orderType)
+                        response.data.data.mode = findSelectFieldPosition(this.props.modes, response.data.data.mode.code)
+                    }
+                    initData.positions.splice(indexPosition, 1, response.data.data);
+                    initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet - subPosition.amountNet).toFixed(2))
+                    initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross - subPosition.amountGross).toFixed(2))
+                    return {initData};
                 });
                 this.props.loading(false);
             })
@@ -302,6 +271,8 @@ class PlanContainer extends Component {
                 this.setState( prevState => {
                     const initData = {...prevState.initData};
                     initData.positions.splice(index, 1);
+                    initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet - position.amountRequestedNet).toFixed(2))
+                    initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross - position.amountRequestedGross).toFixed(2))
                     return {initData};
                 });
             })
@@ -347,10 +318,8 @@ class PlanContainer extends Component {
         .then(response => {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
-                Object.assign(initData, response.data.data);
-                initData.year = new Date(initData.year,0,1).toJSON();
-                initData.status = findSelectFieldPosition(this.props.statuses, initData.status);
-                initData.type = findSelectFieldPosition( this.props.types, initData.type);
+                initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
+                initData.sendUser = response.data.data.sendUser;
                 return {initData};
             });
             this.props.loading(false);
@@ -358,7 +327,37 @@ class PlanContainer extends Component {
         .catch(error =>{});
     }
 
-    componentDidUpdate(prevProps){
+    handleExcelExport = (exportType, headRow, level, positionId) =>{
+        this.props.loading(true);
+        if(level === "position"){
+            PlansApi.exportPlanPositionsToExcel(exportType, this.state.initData.type.code, this.state.initData.id, headRow)
+            .then(response => {
+                generateExportLink(response);
+                this.props.loading(false);
+            })
+            .catch(error => {});
+        } else if (level === "subPositions") {
+            PlansApi.exportPlanPositionSubPositionsToExcel(exportType, this.state.initData.type.code, positionId, headRow)
+            .then(response => {
+                generateExportLink(response);
+                this.props.loading(false);
+            })
+            .catch(error => {});
+        }
+    }
+
+    handlePrintPlan = () =>{
+        this.props.loading(true);
+        PlansApi.printPlan(this.state.initData.id)
+        .then(response => {
+            console.log(response)
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
+    componentDidUpdate(prevProps, prevState){
         //Add mode load dictionary values
         if(this.props.action === 'edit' && prevProps.action ==='add'){
             if(this.state.initData.type.code === 'FIN'){
@@ -370,7 +369,7 @@ class PlanContainer extends Component {
         }
     }
 
-    componentDidMount() {
+    componentDidMount(prevState) {
         if (this.props.action !== 'add'){
             this.handleGetPlanPositions();
         }
@@ -394,6 +393,8 @@ class PlanContainer extends Component {
                 onDeletePlanSubPosition={this.handleDeletePlanSubPosition}
                 onSubmitPlan={this.handleSubmitPlan}
                 onSendPlan={this.handleSendPlan}
+                onPrintPlan={this.handlePrintPlan}
+                onExcelExport={this.handleExcelExport}
                 onClose={handleClose}
                 units={units}
                 costsTypes={costsTypes}

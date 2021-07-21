@@ -4,10 +4,9 @@ import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { Button } from 'common/gui';
 import {Spinner, ModalDialog } from 'common/';
-import { FormTextField, FormSelectField, FormAmountField } from 'common/form';
+import { FormTextField, FormAmountField } from 'common/form';
 import { Save, Cancel, Close } from '@material-ui/icons/';
 import { withStyles, Grid, Divider, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Typography } from '@material-ui/core/';
-import { euroExchangeRateMask } from 'utils/';
 
 const styles = theme => ({
     dialog: {
@@ -54,38 +53,25 @@ class PlanPublicProcurementContentPosition extends Component {
     }
 
     componentDidUpdate(prevProps){
-        const {amountRequestedNet, amountRequestedGross, amountNet, amountGross, vat, estimationType, euroExchangeRate, action } = this.props;
+        const {amountRequestedNet, amountRequestedGross, amountNet, amountGross, vat, action } = this.props;
         switch (action){
             case "add" :
                 if(amountNet !== undefined && amountNet !== prevProps.amountNet){
                     this.calculateValuesAmount(amountRequestedNet, amountRequestedGross, amountNet, amountGross, vat, action)
-                }
-                // Mode type UE
-                if(amountNet !== undefined && euroExchangeRate !== null && estimationType !== undefined && estimationType.code === 'UE139'){
-                    this.props.dispatch(change('PlanPublicProcurementPositionDetailsForm', 'amountRequestedEuroNet', parseFloat((amountNet / euroExchangeRate).toFixed(2))));
                 }
                 break;
             case "edit":
                 if (amountNet !== prevProps.amountNet && prevProps.amountNet !== undefined){
                     this.calculateValuesAmount(amountRequestedNet, amountRequestedGross, amountNet, amountGross, vat, action)
                 }
-                // Mode type UE
-                if((euroExchangeRate !== null && prevProps.estimationType !== "UE139" && estimationType.code === 'UE139') ||
-                   (estimationType.code === 'UE139' && euroExchangeRate !== prevProps.euroExchangeRate))
-                {
-                    this.props.dispatch(change('PlanPublicProcurementPositionDetailsForm', 'amountRequestedEuroNet', parseFloat((amountNet / euroExchangeRate).toFixed(2))));
-                }
                 break;
             default:
                 return null;
         }
-        if (prevProps.estimationType !== undefined && prevProps.estimationType.code === 'UE139' && estimationType.code !== 'UE139'){
-            this.props.dispatch(change('PlanPublicProcurementPositionDetailsForm', 'amountRequestedEuroNet', null));
-        }
     }
 
     render(){
-        const { classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, action, planStatus, modes, estimationTypes, estimationType } = this.props;
+        const { classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, action, planStatus } = this.props;
         const {formChanged} = this.state;
         return(
             <>
@@ -143,26 +129,6 @@ class PlanPublicProcurementContentPosition extends Component {
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <FormSelectField
-                                        isRequired={true}
-                                        name="mode"
-                                        label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_PROCEDURE_MODE}
-                                        value={initialValues.mode !== undefined ? initialValues.mode : ""}
-                                        options={modes}
-                                        disabled={planStatus!=='ZP' && true}
-                                    />
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <FormSelectField
-                                        isRequired={true}
-                                        name="estimationType"
-                                        label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_ESTIMATION_TYPE}
-                                        value={initialValues.estimationType !== undefined ? initialValues.estimationType : ""}
-                                        options={estimationTypes}
-                                        disabled={planStatus!=='ZP' && true}
-                                    />
-                                </Grid>
-                                <Grid item xs={3}>
                                     <FormAmountField
                                         isRequired={true}
                                         name="amountNet"
@@ -170,49 +136,13 @@ class PlanPublicProcurementContentPosition extends Component {
                                         disabled={planStatus!=='ZP' && true}
                                     />
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={6}>
                                     <FormAmountField
                                         name="amountGross"
                                         label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_GROSS}
                                         disabled
                                     />
                                 </Grid>
-                                <Grid item xs={3} >
-                                    <FormAmountField
-                                        name="amountRealizedNet"
-                                        label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_NET}
-                                        disabled
-                                        value={ Object.keys(initialValues).length !== 0 && initialValues.amountAwarded ? initialValues.amountAwarded : ''}
-                                    />
-                                </Grid>
-                                <Grid item xs={3} >
-                                    <FormAmountField
-                                        name="amountRealizedGross"
-                                        label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS}
-                                        disabled
-                                        value={ Object.keys(initialValues).length !== 0 && initialValues.amountAwarded ? initialValues.amountAwarded : ''}
-                                    />
-                                </Grid>
-                                { (estimationType !== undefined && estimationType.code === 'UE139') &&
-                                    <>
-                                    <Grid item xs={12} sm={3}>
-                                        <FormTextField
-                                            isRequired={(estimationType!== undefined && estimationType.code === 'UE139') && true}
-                                            name="euroExchangeRate"
-                                            label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_EURO_EXCHANGE_RATE}
-                                            mask={euroExchangeRateMask}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={9}>
-                                        <FormAmountField
-                                            name="amountRequestedEuroNet"
-                                            label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_EURO_VALUE_NET}
-                                            suffix='€'
-                                            disabled
-                                        />
-                                    </Grid>
-                                    </>
-                                }
                                 <Grid item xs={12} >
                                     <FormTextField
                                         name="comments"

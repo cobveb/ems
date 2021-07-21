@@ -41,7 +41,7 @@ CREATE TABLE emsarch.users
     CONSTRAINT user_organization_unit_fk FOREIGN KEY (ou) REFERENCES emsadm.organization_units(code)
 ) TABLESPACE ems_users;
 /
-GRANT SELECT, INSERT, UPDATE, DELETE ON emsarch.users TO emsadm;
+GRANT SELECT, INSERT, UPDATE, DELETE, REFERENCES ON emsarch.users TO emsadm;
 /
 
 -- Create the table of application modules
@@ -190,12 +190,13 @@ CREATE SEQUENCE user_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 /
 GRANT SELECT ON emsarch.user_seq TO emsadm;
 /
--- Create sequence of table modules
-DROP SEQUENCE module_seq;
-/
-CREATE SEQUENCE module_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
-/
-GRANT SELECT ON emsarch.module_seq TO emsadm;
+--- NOT USED, ID ADDED MANUAL
+---- Create sequence of table modules
+--DROP SEQUENCE module_seq;
+--/
+--CREATE SEQUENCE module_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+--/
+--GRANT SELECT ON emsarch.module_seq TO emsadm;
 /
 -- Create sequence of table user groups
 DROP SEQUENCE groups_seq;

@@ -49,7 +49,7 @@ public class UserControllerTest {
     private WebApplicationContext context;
 
     private MockMvc mvc;
-    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
     private User user = new User(
             (long)0,

@@ -23,8 +23,8 @@ class UserPrincipalTest {
     @Test
     void getAuthorities() {
 
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
-        AcObject acObjectKsie = new AcObject((long)1, (long)1, "Moduł Księgowy", "MODULE", new HashSet<AcPermission>(), new HashSet<AcPrivilege>());
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
+        AcObject acObjectKsie = new AcObject((long) 1, (long) 1, "Moduł Księgowy", "MODULE", new HashSet<AcPermission>(), new HashSet<AcPrivilege>());
         AcObject acObjectGroup = new AcObject((long)2, (long)2, "Moduł Księgowy", "MODULE", new HashSet<AcPermission>(), new HashSet<AcPrivilege>());
         AcPrivilege privilege = new AcPrivilege((long)1, "0001", "Przywilej testowy", new HashSet<AcObject>(),new HashSet<AcPermission>());
         Set<AcPermission> permissionsUser = new HashSet<AcPermission>();

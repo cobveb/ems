@@ -83,10 +83,6 @@ public class User extends UserDateAudit {
 	@JoinColumn(name="ou")
 	private OrganizationUnit organizationUnit;
 
-	/* Po uruchomieniu repo i serwisu ac  sprawdzić czy możliwy zapis do właściwch pól bazy
-	*  uprawnień dla usera i grupy jak nie wrócić  do table ac_user_permision
-	*/
-
 	@OneToMany(fetch = FetchType.LAZY,  mappedBy = "user")
 	private Set<AcPermission> acPermissions = new HashSet<AcPermission>();
 

@@ -38,9 +38,9 @@ public class OrganizationUnitControllerTest {
 
     private MockMvc mvc;
 
-    private final OrganizationUnit main = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
-    private final OrganizationUnit it = new OrganizationUnit("it", "IT", "It", "it@uck.katowice.pl", true, true);
-    private final OrganizationUnit activeOu = new OrganizationUnit("active", "IT", "It", "it@uck.katowice.pl", true, false);
+    private final OrganizationUnit main = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
+    private final OrganizationUnit it = new OrganizationUnit("it", "IT", "It", "it@uck.katowice.pl", true, OrganizationUnit.Role.COORDINATOR, null);
+    private final OrganizationUnit activeOu = new OrganizationUnit("active", "IT", "It", "it@uck.katowice.pl", true);
 
     private final List<OrganizationUnit> all = Arrays.asList(main, it);
     private final List<OrganizationUnit> active = Collections.singletonList(activeOu);
@@ -144,7 +144,7 @@ public class OrganizationUnitControllerTest {
     @Test()
     void saveOrganizationUnitOnAdd() throws Exception {
 
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
 
         ApiResponse response = new ApiResponse(HttpStatus.CREATED, organizationUnitService.saveOu("add", main));
@@ -175,7 +175,7 @@ public class OrganizationUnitControllerTest {
     @Test()
     void saveOrganizationUnitOnEdit() throws Exception {
 
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
         ApiResponse response = new ApiResponse(HttpStatus.CREATED, organizationUnitService.saveOu("edit", main));
 
@@ -195,6 +195,7 @@ public class OrganizationUnitControllerTest {
                 "uck",
                 "uck",
                 "uck",
+                null,
                 "1111111111",
                 "123456789",
                 "Katowice",
@@ -205,8 +206,9 @@ public class OrganizationUnitControllerTest {
                 "+48 (32) 123 12 34",
                 "uckuck.it",
                 true,
-                false,
                 null,
+                null,
+                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),

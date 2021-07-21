@@ -1,10 +1,11 @@
 import * as constants from 'constants/uiNames';
+import {isValidEuroExchangeRate} from 'utils/';
 
 export const validate =  ( values, props ) => {
     const errors = {}
 
     const requiredFields = [
-        'assortmentGroup', 'orderType', 'vat', 'initiationTerm',
+        'assortmentGroup', 'orderType', 'vat', 'initiationTerm', 'mode', 'estimationType', 'euroExchangeRate'
     ]
 
     requiredFields.forEach(field => {
@@ -19,6 +20,10 @@ export const validate =  ( values, props ) => {
             }) !== undefined){
                 errors.assortmentGroup = constants.COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP_EXISTS;
         }
+    }
+
+    if(values.euroExchangeRate){
+        errors.euroExchangeRate = isValidEuroExchangeRate(values.euroExchangeRate);
     }
     return errors
 }

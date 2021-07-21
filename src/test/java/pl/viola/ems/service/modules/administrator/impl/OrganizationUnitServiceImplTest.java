@@ -44,15 +44,16 @@ public class OrganizationUnitServiceImplTest {
 
     private Throwable thrown;
 
-    private final OrganizationUnit it = new OrganizationUnit("it", "IT", "IT", "IT@uck.katowice.pl", true, true);
+    private final OrganizationUnit it = new OrganizationUnit("it", "IT", "IT", "IT@uck.katowice.pl", true, OrganizationUnit.Role.COORDINATOR, null);
 
-    private final OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
-    private final OrganizationUnit activeOu = new OrganizationUnit("active", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private final OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
+    private final OrganizationUnit activeOu = new OrganizationUnit("active", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
     private final OrganizationUnit child = new OrganizationUnit(
             "test",
             "Uniwersyteckie Centrum",
             "UCK SUM",
+            null,
             "1111111111",
             "123456789",
             "Katowice",
@@ -63,8 +64,9 @@ public class OrganizationUnitServiceImplTest {
             "+48 (32) 123 12 34",
             "uck@uck.it",
             true,
-            false,
             ou.getCode(),
+            null,
+            new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
@@ -75,6 +77,7 @@ public class OrganizationUnitServiceImplTest {
             "test",
             "Uniwersyteckie Centrum",
             "UCK SUM",
+            null,
             "1111111111",
             "123456789",
             "Katowice",
@@ -85,8 +88,9 @@ public class OrganizationUnitServiceImplTest {
             "+48 (32) 123 12 34",
             "uck@uck.it",
             true,
-            false,
             child.getCode(),
+            null,
+            new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
@@ -113,10 +117,10 @@ public class OrganizationUnitServiceImplTest {
 
         Mockito.when(organizationUnitRepository.findAll()).thenReturn(units);
         Mockito.when(organizationUnitRepository.findByActiveTrueAndParentIsNotNullOrderByName()).thenReturn(active);
-        Mockito.when(organizationUnitRepository.findByActiveTrueAndCoordinatorTrue()).thenReturn(coordinators);
+        Mockito.when(organizationUnitRepository.findByActiveTrueAndRole(OrganizationUnit.Role.COORDINATOR)).thenReturn(coordinators);
         Mockito.when(organizationUnitRepository.findMainOu()).thenReturn(ou);
         Mockito.when(organizationUnitRepository.findById("it")).thenReturn(Optional.of(it));
-        Mockito.when(organizationUnitRepository.findByCodeAndActiveTrueAndCoordinatorTrue("it")).thenReturn(Optional.of(it));
+        Mockito.when(organizationUnitRepository.findByCodeAndActiveTrueAndRole("it", OrganizationUnit.Role.COORDINATOR)).thenReturn(Optional.of(it));
         Mockito.when(organizationUnitRepository.findByParentAndActiveTrue("uck")).thenReturn(childes);
         Mockito.when(organizationUnitRepository.existsById("uck")).thenReturn(true);
     }
@@ -218,6 +222,7 @@ public class OrganizationUnitServiceImplTest {
                 "test",
                 "Uniwersyteckie Centrum",
                 "UCK SUM",
+                null,
                 "1111111111",
                 "123456789",
                 "Katowice",
@@ -228,8 +233,9 @@ public class OrganizationUnitServiceImplTest {
                 "+48 (32) 123 12 34",
                 "uck@uck.it",
                 true,
-                false,
                 null,
+                null,
+                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
@@ -249,6 +255,7 @@ public class OrganizationUnitServiceImplTest {
                 "uck",
                 "Uniwersyteckie Centrum",
                 "UCK SUM",
+                null,
                 "1111111111",
                 "123456789",
                 "Katowice",
@@ -259,8 +266,9 @@ public class OrganizationUnitServiceImplTest {
                 "+48 (32) 123 12 34",
                 "uck@uck.it",
                 true,
-                false,
                 null,
+                null,
+                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
@@ -281,6 +289,7 @@ public class OrganizationUnitServiceImplTest {
                 "uck",
                 "Uniwersyteckie Centrum",
                 "UCK SUM",
+                null,
                 "1111111111",
                 "123456789",
                 "Katowice",
@@ -291,8 +300,9 @@ public class OrganizationUnitServiceImplTest {
                 "+48 (32) 123 12 34",
                 "uck@uck.it",
                 true,
-                false,
                 null,
+                null,
+                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
@@ -338,8 +348,8 @@ public class OrganizationUnitServiceImplTest {
     @Test
     void deleteOrganizationUnitException(){
 
-        OrganizationUnit test = new OrganizationUnit("test", "IT", "IT", "IT@uck.katowice.pl", true, false);
-        User user =  new User("user", "passwd","user","user", true, false,false,false, test);
+        OrganizationUnit test = new OrganizationUnit("test", "IT", "IT", "IT@uck.katowice.pl", true);
+        User user = new User("user", "passwd", "user", "user", true, false, false, false, test);
 
         Set<User> users = new HashSet<>();
         users.add(user);

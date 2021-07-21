@@ -54,9 +54,9 @@ class CostTypeServiceImplTest {
     @MockBean
     OrganizationUnitService organizationUnitService;
 
-    private final OrganizationUnit coordinator = new OrganizationUnit("cor", "Coordinator", "Uck", "uck@uck.katowice.pl", true, true);
-    private final OrganizationUnit coordinator1 = new OrganizationUnit("cor1", "Coordinator1", "Uck", "uck@uck.katowice.pl", true, true);
-    private final OrganizationUnit coordinator2 = new OrganizationUnit("cor2", "Coordinator2", "Uck", "uck@uck.katowice.pl", true, true);
+    private final OrganizationUnit coordinator = new OrganizationUnit("cor", "Coordinator", "Uck", "uck@uck.katowice.pl", true, OrganizationUnit.Role.COORDINATOR, null);
+    private final OrganizationUnit coordinator1 = new OrganizationUnit("cor1", "Coordinator1", "Uck", "uck@uck.katowice.pl", true, OrganizationUnit.Role.COORDINATOR, null);
+    private final OrganizationUnit coordinator2 = new OrganizationUnit("cor2", "Coordinator2", "Uck", "uck@uck.katowice.pl", true, OrganizationUnit.Role.COORDINATOR, null);
 
 
     private final Set<OrganizationUnit> coordinatorsTwo = new HashSet<>(Arrays.asList(coordinator, coordinator1));
@@ -66,9 +66,9 @@ class CostTypeServiceImplTest {
     private final CostType costType1 = new CostType((long) 2, "401-1-07-002", "Papier ksero", true, new HashSet<>());
     private final CostType costType2 = new CostType((long) 3, "401-2-02-001", "Leki do programów lekowych", true, new HashSet<>());
 
-    private final CostTypeResponse cost = new CostTypeResponse((long) 1, "401-1-02-xxx", "Materiały do remontu i konserwacji budynków", true);
-    private final CostTypeResponse cost1 = new CostTypeResponse((long) 2, "401-1-07-002", "Papier ksero", true);
-    private final CostTypeResponse cost2 = new CostTypeResponse((long) 3, "401-2-02-001", "Leki do programów lekowych", true);
+    private final CostTypeResponse cost = new CostTypeResponse((long) 1, "401-1-02-xxx", "Materiały do remontu i konserwacji budynków", true, new HashSet<>());
+    private final CostTypeResponse cost1 = new CostTypeResponse((long) 2, "401-1-07-002", "Papier ksero", true, new HashSet<>());
+    private final CostTypeResponse cost2 = new CostTypeResponse((long) 3, "401-2-02-001", "Leki do programów lekowych", true, new HashSet<>());
 
     private final CostYear year = new CostYear((long) 1, 2020, costType, coordinatorsTwo);
     private final CostYear year1 = new CostYear((long) 2, 2019, costType, coordinatorsOne);

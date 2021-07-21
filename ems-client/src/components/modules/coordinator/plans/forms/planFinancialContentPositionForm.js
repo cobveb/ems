@@ -10,12 +10,17 @@ import { withStyles, Grid, Toolbar, Typography, Divider  } from '@material-ui/co
 import PlanFinancialPositionsFormContainer from 'containers/modules/coordinator/plans/forms/planFinancialPositionsFormContainer';
 
 const styles = theme => ({
+    content: {
+        height: `calc(100vh - ${theme.spacing(18.2)}px)`,
+        overflow: 'auto',
+        padding: 0,
+    },
     container: {
         width: '100%',
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(57.2)}px)`,
+        height: `calc(100vh - ${theme.spacing(57)}px)`,
     },
     toolbar: {
         minHeight: theme.spacing(6),
@@ -38,20 +43,25 @@ class PlanFinancialContentPosition extends Component {
                 type: 'text',
             },
             {
+                id: 'quantity',
+                label: constants.APPLICATION_POSITION_DETAILS_QUANTITY,
+                type: 'text',
+            },
+            {
+                id: 'unitPrice',
+                label: constants.COORDINATOR_PLAN_POSITION_FINANCIAL_UNIT_PRICE,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountNet',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
                 id: 'amountGross',
                 label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS,
-                suffix: 'zł.',
-                type: 'amount',
-            },
-            {
-                id: 'amountCorrectedGross',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS,
-                suffix: 'zł.',
-                type: 'amount',
-            },
-            {
-                id: 'amountRealizedGross',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -85,6 +95,22 @@ class PlanFinancialContentPosition extends Component {
 
     handleSelect = (id) => {
         this.setState({selected: id});
+    }
+
+    handleDoubleClick = (row) => {
+        this.setState(prevState =>{
+            const selected = [...prevState.selected];
+            let openPositionDetails = {...prevState.openPositionDetails};
+            let positionAction = {...prevState.positionAction};
+            selected[0] = row;
+            openPositionDetails =  !this.state.openPositionDetails;
+            positionAction = 'edit';
+            return {selected, openPositionDetails, positionAction}
+        });
+    }
+
+    handleExcelExport = (exportType) =>{
+        this.props.onExcelExport(exportType, "subPositions", this.state.head, this.props.initialValues.id)
     }
 
     handleSubmitPosition = (values) => {
@@ -124,17 +150,19 @@ class PlanFinancialContentPosition extends Component {
             })
         }
         if(this.props.vat !== prevProps.vat && prevProps.vat !== undefined){
-            this.props.subPositions.map((position) => {
-                return Object.assign(position,
-                {
-                     amountGross: position.amountGross = parseFloat((Math.round((position.amountNet * this.props.vat.code) * 100) / 100).toFixed(2)),
-                })
-            });
-            this.props.dispatch(change('PlanFinancialContentPositionForm', `subPositions`, this.props.subPositions))
-            this.props.dispatch(change('PlanFinancialContentPositionForm', 'amountRequestedGross', parseFloat((Math.round((this.props.amountRequestedNet * this.props.vat.code) * 100) / 100).toFixed(2))));
-            this.setState({
-                positions: this.props.subPositions,
-            });
+            if(this.props.initialValues.subPositions !== undefined){
+                this.props.subPositions.map((position) => {
+                    return Object.assign(position,
+                    {
+                         amountGross: position.amountGross = parseFloat((Math.round((position.amountNet * this.props.vat.code) * 100) / 100).toFixed(2)),
+                    })
+                });
+                this.props.dispatch(change('PlanFinancialContentPositionForm', `subPositions`, this.props.subPositions))
+                this.props.dispatch(change('PlanFinancialContentPositionForm', 'amountRequestedGross', parseFloat((Math.round((this.props.amountRequestedNet * this.props.vat.code) * 100) / 100).toFixed(2))));
+                this.setState({
+                    positions: this.props.subPositions,
+                });
+            }
         }
     }
 
@@ -246,19 +274,19 @@ class PlanFinancialContentPosition extends Component {
                                     />
                                 </Grid>
                                 <Grid item xs={3} >
-                                    <InputField
+                                    <FormAmountField
                                         name="amountAwardedNet"
                                         label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_NET}
+                                        suffix={'zł.'}
                                         disabled
-                                        value={ Object.keys(initialValues).length !== 0 && initialValues.amountAwarded ? initialValues.amountAwarded : ''}
                                     />
                                 </Grid>
                                 <Grid item xs={3} >
-                                    <InputField
+                                    <FormAmountField
                                         name="amountAwardedGross"
                                         label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS}
+                                        suffix={'zł.'}
                                         disabled
-                                        value={ Object.keys(initialValues).length !== 0 && initialValues.amountAwarded ? initialValues.amountAwarded : ''}
                                     />
                                 </Grid>
                                 <Grid item xs={3} >
@@ -282,7 +310,7 @@ class PlanFinancialContentPosition extends Component {
                                         <Toolbar className={classes.toolbar}>
                                             <LibraryBooks className={classes.toolbarHeaderIcon} fontSize="small" />
                                             <Typography variant="subtitle1" >
-                                                {constants.COORDINATOR_PLAN_POSITIONS}
+                                                {constants.COORDINATOR_PLAN_POSITION_PUBLIC_COST_TYPE_POSITIONS}
                                             </Typography>
                                         </Toolbar>
                                         <FormTableField
@@ -309,6 +337,8 @@ class PlanFinancialContentPosition extends Component {
                                             multiChecked={false}
                                             checkedColumnFirst={true}
                                             onSelect={this.handleSelect}
+                                            onDoubleClick={this.handleDoubleClick}
+                                            onExcelExport={this.handleExcelExport}
                                         />
                                     </div>
                                 </Grid>

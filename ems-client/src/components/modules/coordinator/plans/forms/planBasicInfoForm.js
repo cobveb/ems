@@ -4,8 +4,8 @@ import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { Button, InputField } from 'common/gui';
 import * as constants from 'constants/uiNames';
-import { FormDateField, FormSelectField , FormTableField} from 'common/form';
-import { Save, Cancel, Send, Description, LibraryBooks, Edit, Visibility } from '@material-ui/icons/';
+import { FormDateField, FormSelectField , FormTableField, FormAmountField} from 'common/form';
+import { Save, Cancel, Send, Description, LibraryBooks, Edit, Visibility, CheckCircle, Print } from '@material-ui/icons/';
 import PlanFinancialContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planFinancialContentPositionFormContainer';
 import PlanInvestmentContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planInvestmentContentPositionFormContainer';
 import PlanPublicProcurementContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planPublicProcurementContentPositionFormContainer';
@@ -31,7 +31,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(41.6)}px)`,
+        height: `calc(100vh - ${theme.spacing(58.5)}px)`,
     },
 });
 
@@ -48,7 +48,6 @@ class PlanBasicInfoForm extends Component {
             {
                 id: 'costType.code',
                 label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_TYPE,
-                suffix: 'zł.',
                 type: 'object',
             },
             {
@@ -113,6 +112,11 @@ class PlanBasicInfoForm extends Component {
                 type: 'object',
             },
             {
+                id: 'estimationType.name',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_ESTIMATION_TYPE,
+                type: 'object',
+            },
+            {
                 id: 'amountRequestedNet',
                 label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_NET,
                 suffix: 'zł.',
@@ -121,7 +125,6 @@ class PlanBasicInfoForm extends Component {
             {
                 id: 'initiationTerm',
                 label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INITIATION_TERM,
-                suffix: 'zł.',
                 type: 'text',
             },
         ],
@@ -206,7 +209,7 @@ class PlanBasicInfoForm extends Component {
             case("FIN"):
                 return (
                     <PlanFinancialContentPositionFormContainer
-                        initialValues={positionAction === 'add' ? {} : selected[0]}
+                        initialValues={positionAction === 'add' ? {vat: vats[1]} : selected[0]}
                         planStatus={initialValues.status.code}
                         action={positionAction}
                         vats={vats}
@@ -214,6 +217,7 @@ class PlanBasicInfoForm extends Component {
                         costsTypes={costsTypes}
                         onSubmitPlanSubPosition={this.handleSubmitSubPosition}
                         onDeletePlanSubPosition={this.handleDeleteSubPosition}
+                        onExcelExport={this.handleExcelExport}
                         onClose={this.handleCloseDetails}
                         onSubmit={this.handleSubmitPosition}
                     />
@@ -225,6 +229,7 @@ class PlanBasicInfoForm extends Component {
                         planStatus={initialValues.status.code}
                         action={positionAction}
                         vats={vats}
+                        onExcelExport={this.handleExcelExport}
                         onClose={this.handleCloseDetails}
                         onSubmit={this.handleSubmitPosition}
                     />
@@ -232,7 +237,7 @@ class PlanBasicInfoForm extends Component {
             case("PZP"):
                 return(
                     <PlanPublicProcurementContentPositionFormContainer
-                        initialValues={positionAction === 'add' ? {} : selected[0]}
+                        initialValues={positionAction === 'add' ? {vat: vats[1]} : selected[0]}
                         planStatus={initialValues.status.code}
                         action={positionAction}
                         modes={modes}
@@ -243,6 +248,7 @@ class PlanBasicInfoForm extends Component {
                         estimationTypes={estimationTypes}
                         onSubmitPlanSubPosition={this.handleSubmitSubPosition}
                         onDeletePlanSubPosition={this.handleDeleteSubPosition}
+                        onExcelExport={this.handleExcelExport}
                         onClose={this.handleCloseDetails}
                         onSubmit={this.handleSubmitPosition}
                     />
@@ -273,6 +279,18 @@ class PlanBasicInfoForm extends Component {
         this.setState({selected: id});
     }
 
+    handleDoubleClick = (row) =>{
+        this.setState(prevState =>{
+            const selected = [...prevState.selected];
+            let openPositionDetails = {...prevState.openPositionDetails};
+            let positionAction = {...prevState.positionAction};
+            selected[0] = row;
+            openPositionDetails =  !this.state.openPositionDetails;
+            positionAction = 'edit';
+            return {selected, openPositionDetails, positionAction}
+        });
+    }
+
     handleOpenPositionDetails = (event, action) => {
         this.setState({openPositionDetails: !this.state.openPositionDetails, positionAction: action});
     };
@@ -298,6 +316,20 @@ class PlanBasicInfoForm extends Component {
         })
     }
 
+    handleExcelExport = (exportType, level, headRow, positionId) => {
+        const {headFin, headInv, headPzp} = this.state;
+        const {initialValues} = this.props;
+        let head = [];
+        if(level === "subPositions"){
+            head = headRow;
+        } else {
+           head = initialValues.type !== undefined && initialValues.type.code === "FIN" ?
+                headFin : initialValues.type !== undefined && initialValues.type.code === "INV" ? headInv :
+                    headPzp;
+        }
+        this.props.onExcelExport(exportType, head, level === undefined ? "position" : "subPositions", positionId)
+    }
+
     componentDidUpdate(prevProps){
         if(this.state.positionAction === 'add' && this.props.newPosition !== null){
             this.setState(prevState =>{
@@ -305,7 +337,6 @@ class PlanBasicInfoForm extends Component {
                 let positionAction = {...prevState.positionAction}
                 selected[0] = this.props.newPosition;
                 positionAction = 'edit';
-
                 return {selected, positionAction}
             })
         }
@@ -392,6 +423,7 @@ class PlanBasicInfoForm extends Component {
                                         mask="____"
                                         dateFormat="yyyy"
                                         views={["year"]}
+                                        disablePast
                                         isRequired={true}
                                         disabled={action ==='add' ? false :
                                             initialValues.status !== undefined && initialValues.status.code !=='ZP' ? true :
@@ -425,6 +457,85 @@ class PlanBasicInfoForm extends Component {
                                         label={constants.HEADING_STATUS}
                                         disabled={true}
                                         value={initialValues.status !== undefined ? initialValues.status.name : ''}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
+                                    <FormAmountField
+                                        name={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                            "planAmountRequestedGross" : "planAmountRequestedNet"}
+                                        label={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                            constants.COORDINATOR_PLAN_FINANCIAL_REQUESTED_VALUE : constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REQUESTED_VALUE}
+                                        suffix={'zł.'}
+                                        disabled
+                                    />
+                                </Grid>
+                                { (initialValues.type !== undefined && initialValues.type.code === 'FIN') &&
+                                    <Grid item xs={12} sm={4}>
+                                        <FormAmountField
+                                            name="planAmountAwardedGross"
+                                            label={constants.COORDINATOR_PLAN_FINANCIAL_AWARDED_VALUE}
+                                            suffix={'zł.'}
+                                            disabled
+                                        />
+                                    </Grid>
+                                }
+                                <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
+                                    <FormAmountField
+                                        name={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                            "planAmountRealizedGross" : "planAmountRealizedNet"}
+                                        label={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                            constants.COORDINATOR_PLAN_FINANCIAL_REALIZED_VALUE : constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REALIZED_VALUE}
+                                        suffix={'zł.'}
+                                        disabled
+                                    />
+                                </Grid>
+                            </Grid>
+                            <Toolbar className={classes.toolbar}>
+                                <CheckCircle className={classes.subHeaderIcon} fontSize="small" />
+                                <Typography variant="subtitle1" >
+                                    {constants.COORDINATOR_PLAN_ACCEPT_PATH}
+                                </Typography>
+                            </Toolbar>
+                            <Grid container spacing={1} justify="center" className={classes.container}>
+                                <Grid item xs={12} sm={3}>
+                                    <InputField
+                                        name="sendUser"
+                                        label={constants.COORDINATOR}
+                                        disabled={true}
+                                        value={initialValues.sendUser !== undefined && initialValues.sendUser !== null ?
+                                            `${initialValues.sendUser.name} ${initialValues.sendUser.surname}` :
+                                                ''}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <InputField
+                                        name="planAcceptUser"
+                                        label={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                            constants.ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER : constants.PUBLIC_PLAN_COORDINATOR_ACCEPT_USER}
+                                        disabled={true}
+                                        value={initialValues.planAcceptUser !== undefined && initialValues.planAcceptUser !== null ?
+                                            `${initialValues.planAcceptUser.name} ${initialValues.planAcceptUser.surname}` :
+                                                ''}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <InputField
+                                        name="directorAcceptUser"
+                                        label={constants.ACCOUNTANT_PLAN_COORDINATOR_DIRECTOR_ACCEPT_USER}
+                                        disabled={true}
+                                        value={initialValues.directorAcceptUser !== undefined && initialValues.directorAcceptUser !== null ?
+                                            `${initialValues.directorAcceptUser.name} ${initialValues.directorAcceptUser.surname}` :
+                                                ''}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={3}>
+                                    <InputField
+                                        name="chiefAcceptUser"
+                                        label={constants.ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER}
+                                        disabled={true}
+                                        value={initialValues.chiefAcceptUser !== undefined && initialValues.chiefAcceptUser !== null ?
+                                            `${initialValues.chiefAcceptUser.name} ${initialValues.chiefAcceptUser.surname}` :
+                                                ''}
                                     />
                                 </Grid>
                             </Grid>
@@ -466,10 +577,13 @@ class PlanBasicInfoForm extends Component {
                                         }}
                                         onAdd={(event) => this.handleOpenPositionDetails(event, "add")}
                                         onEdit={(event) => this.handleOpenPositionDetails(event, 'edit')}
-                                        onDelete={(event) => this.handleDeletePosition(event, 'delete', )}
+                                        onDelete={(event) => this.handleDeletePosition(event, 'delete')}
                                         multiChecked={false}
                                         checkedColumnFirst={true}
                                         onSelect={this.handleSelect}
+                                        onDoubleClick={this.handleDoubleClick}
+                                        onExcelExport={this.handleExcelExport}
+                                        orderBy="id"
                                     />
                                 </Grid>
                             </Grid>
@@ -484,33 +598,68 @@ class PlanBasicInfoForm extends Component {
                             alignItems="flex-start"
                             className={classes.container}
                         >
-                            {(Object.keys(initialValues).length === 1 || (initialValues.status !== undefined && initialValues.status.code === 'ZP')) &&
-                                <Button
-                                    label={constants.BUTTON_SAVE}
-                                    icon=<Save/>
-                                    iconAlign="left"
-                                    type='submit'
-                                    variant="submit"
-                                    disabled={pristine || submitting || invalid || submitSucceeded  }
-                                />
-                            }
-                            {(Object.keys(initialValues).length === 1 || (initialValues.status !== undefined && initialValues.status.code === 'ZP')) &&
-                                <Button
-                                    label={constants.BUTTON_SEND}
-                                    icon=<Send/>
-                                    iconAlign="left"
-                                    variant="submit"
-                                    disabled={!pristine || submitting || invalid || initialValues.positions === undefined || positions.length === 0}
-                                    onClick={this.handleSend}
-                                />
-                            }
-                            <Button
-                                label={constants.BUTTON_CLOSE}
-                                icon=<Cancel/>
-                                iconAlign="left"
-                                variant="cancel"
-                                onClick={this.handleClose}
-                            />
+                            <Grid item xs={2}>
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="center"
+                                    alignItems="flex-start"
+                                >
+                                    <Button
+                                        label={constants.BUTTON_PRINT}
+                                        icon=<Print/>
+                                        iconAlign="left"
+                                        variant="cancel"
+                                        disabled={initialValues.status !== undefined && initialValues.status.code === 'ZP'}
+                                        onClick={this.props.onPrintPlan}
+                                    />
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={8}>
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="center"
+                                    alignItems="flex-start"
+                                >
+                                    {(Object.keys(initialValues).length === 1 || (initialValues.status !== undefined && initialValues.status.code === 'ZP')) &&
+                                        <Button
+                                            label={constants.BUTTON_SAVE}
+                                            icon=<Save/>
+                                            iconAlign="left"
+                                            type='submit'
+                                            variant="submit"
+                                            disabled={pristine || submitting || invalid || submitSucceeded  }
+                                        />
+                                    }
+                                    {(Object.keys(initialValues).length === 1 || (initialValues.status !== undefined && initialValues.status.code === 'ZP')) &&
+                                        <Button
+                                            label={constants.BUTTON_SEND}
+                                            icon=<Send/>
+                                            iconAlign="left"
+                                            variant="submit"
+                                            disabled={!pristine || submitting || invalid || initialValues.positions === undefined || positions.length === 0}
+                                            onClick={this.handleSend}
+                                        />
+                                    }
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="center"
+                                    alignItems="flex-start"
+                                >
+                                    <Button
+                                        label={constants.BUTTON_CLOSE}
+                                        icon=<Cancel/>
+                                        iconAlign="left"
+                                        variant="cancel"
+                                        onClick={this.handleClose}
+                                    />
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </div>
                 </form>

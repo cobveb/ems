@@ -28,11 +28,12 @@ public class OrganizationUnitRepositoryTest {
     @Test
     public void findMainOu(){
         OrganizationUnit ou = new OrganizationUnit(
-            "uck",
-            "UCK",
-            "UCK",
-            "1234567891",
-            "123456789",
+                "uck",
+                "UCK",
+                "UCK",
+                null,
+                "1234567891",
+                "123456789",
                 "Katowice",
                 "40 - 514",
                 "Ceglana",
@@ -41,8 +42,9 @@ public class OrganizationUnitRepositoryTest {
                 "+48 (32) 123 12 12",
                 "uck@uck.katowice.pl",
                 true,
-                false,
                 null,
+                null,
+                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
@@ -57,9 +59,9 @@ public class OrganizationUnitRepositoryTest {
                 "It",
                 "it@uck.katowice.pl",
                 true,
-                false,
+                null,
                 "uck"
-                );
+        );
         entityManager.persist(it);
         entityManager.flush();
 
@@ -69,6 +71,7 @@ public class OrganizationUnitRepositoryTest {
         assertThat(mainOu).isEqualTo(new OrganizationUnit("uck",
                 "UCK",
                 "UCK",
+                null,
                 "1234567891",
                 "123456789",
                 "Katowice",
@@ -79,8 +82,9 @@ public class OrganizationUnitRepositoryTest {
                 "+48 (32) 123 12 12",
                 "uck@uck.katowice.pl",
                 true,
-                false,
                 null,
+                null,
+                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),

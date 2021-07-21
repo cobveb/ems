@@ -20,6 +20,8 @@ PlanPublicProcurementContentPositionFormContainer = connect(
         const subPositions = selector(state, 'subPositions')
         const vat = selector(state,'vat')
         const planPositions = planSelector(state, 'positions')
+        const estimationType = selector(state, 'estimationType')
+        const euroExchangeRate = selector(state, 'euroExchangeRate')
 
         return {
             amountRequestedNet,
@@ -27,6 +29,8 @@ PlanPublicProcurementContentPositionFormContainer = connect(
             subPositions,
             vat,
             planPositions,
+            estimationType,
+            euroExchangeRate,
         }
     }
 )(PlanPublicProcurementContentPositionFormContainer)

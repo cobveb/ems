@@ -62,8 +62,8 @@ public class UserServiceImplTest {
     @MockBean
     private AcPermissionService acPermissionService;
 
-    private Group test = new Group((long)3, "test", "Testowa",  new HashSet<AcPermission>(), new HashSet<User>());
-    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private Group test = new Group((long) 3, "test", "Testowa", new HashSet<AcPermission>(), new HashSet<User>());
+    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", false);
     private Throwable thrown;
 
     @BeforeEach
@@ -142,7 +142,7 @@ public class UserServiceImplTest {
     @DisplayName("findByIdIn")
     @Test
     void findByIdIn() {
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", false);
 
         User user = new User(
                 (long)0,
@@ -170,7 +170,7 @@ public class UserServiceImplTest {
     @DisplayName("findByUsername")
     @Test
     void findByUsername() {
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
         User user = new User(
                 (long)0,
@@ -248,7 +248,7 @@ public class UserServiceImplTest {
                 ou
         );
 
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
         User userTest = new User(
                 (long)0,
@@ -352,7 +352,7 @@ public class UserServiceImplTest {
                 null
         );
 
-        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+        OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
         User user = new User(
                 (long)0,
@@ -404,7 +404,7 @@ public class UserServiceImplTest {
     @DisplayName("update user - Exception Ou not found")
     @Test
     void updateUserOuNotFoundException(){
-        OrganizationUnit bad = new OrganizationUnit("bad", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+        OrganizationUnit bad = new OrganizationUnit("bad", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
         UserDetails test = new UserDetails(
                 (long)0,

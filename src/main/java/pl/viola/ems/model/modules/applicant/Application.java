@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@ToString(exclude = {"applicant", "coordinator", "positions"})
-@EqualsAndHashCode(exclude = {"applicant", "coordinator", "positions"})
+@ToString(exclude = {"applicant", "coordinator", "positions", "createDate"})
+@EqualsAndHashCode(exclude = {"applicant", "coordinator", "positions", "createDate"})
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor

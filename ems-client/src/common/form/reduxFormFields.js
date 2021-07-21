@@ -1,7 +1,7 @@
 import React from 'react';
-import { withStyles, TextField, Checkbox, InputAdornment, IconButton, Select, OutlinedInput, InputLabel, FormControl, FormHelperText }  from '@material-ui/core/';
+import { withStyles, TextField, Checkbox, InputAdornment, IconButton, Select, RadioGroup, OutlinedInput, InputLabel, FormControl, FormHelperText, FormLabel }  from '@material-ui/core/';
 import { Visibility, VisibilityOff }from '@material-ui/icons/';
-import { green } from '@material-ui/core/colors/';
+import { green, grey } from '@material-ui/core/colors/';
 import TableTransferList from 'common/form/tableTransferList';
 import TableForm from 'common/form/tableForm';
 import DictionaryField from 'common/form/dictionaryField';
@@ -15,6 +15,11 @@ const GreenCheckbox = withStyles({
     root: {
         '&$checked': {
             color: green[600],
+        },
+    },
+    disabled:{
+        '&$checked': {
+            color: grey[400],
         },
     },
     checked: {},
@@ -56,7 +61,9 @@ export function RenderDigitsField({ label, input, meta: { touched, invalid, erro
 
     React.useEffect(() => {
         if(input.value !== value){
-            setValue(input.value)
+            if(!isNaN(parseInt(input.value))){
+                setValue(parseInt(input.value, 10))
+            }
         }
     },  [value, input])
 
@@ -76,8 +83,9 @@ export function RenderDigitsField({ label, input, meta: { touched, invalid, erro
                 className={custom.classes}
                 InputProps={{
                     classes: {input: custom.InputProps.classes.input},
+                    inputProps: custom.InputProps.inputProps,
                 }}
-                onChange={(event) => input.onChange(event.target.value === '' ? '' : parseInt(event.target.value, 10))}
+                onChange={(event) => input.onChange(!event.target.value ? null : event.target.value)}
                 onBlur={(event) => input.onBlur(value)}
                 disabled={custom.disabled}
             />
@@ -144,12 +152,25 @@ export function RenderSelectField({label, input, value, meta: { touched, error }
     );
 };
 
+export function RenderRadioButtonField({ label, input, children, meta: { touched, error }, ...rest }){
+    return(
+        <FormControl className={rest.classes.root} fullWidth disabled={rest.disabled}>
+            <FormLabel component="label">{label}</FormLabel>
+            <RadioGroup {...input} {...rest}>
+                {children}
+            </RadioGroup>
+            <FormHelperText error>{touched && error}</FormHelperText>
+        </FormControl>
+    )
+}
 
-export const renderCheckbox = ({ input, label }) => (
+
+export const renderCheckbox = ({ input, label, ...custom }) => (
     <GreenCheckbox
         label={label}
         checked={input.value ? true : false}
         onChange={input.onChange}
+        disabled={custom.disabled}
     />
 );
 

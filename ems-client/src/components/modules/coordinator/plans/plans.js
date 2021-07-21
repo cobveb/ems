@@ -8,9 +8,6 @@ import { Delete, Add, Edit, Undo, Visibility } from '@material-ui/icons/';
 import PlanContainer from 'containers/modules/coordinator/plans/planContainer';
 
 const styles = theme => ({
-    root: {
-        flexGrow: 1,
-    },
     content: {
         height: `calc(100vh - ${theme.spacing(18.2)}px)`,
         overflow: 'auto',
@@ -71,6 +68,18 @@ class Plans extends Component {
 
     handleSelect = (id) => {
         this.setState({selected: id});
+    }
+
+    handleDoubleClick = (id) => {
+        this.setState({
+            selected: id,
+            isDetailsVisible: !this.state.isDetailsVisible,
+            action: 'edit',
+        });
+    }
+
+    handleExcelExport = (exportType) => {
+        this.props.onExcelExport(exportType, this.state.headCells)
     }
 
     handleSearch = (event) => {
@@ -246,8 +255,10 @@ class Plans extends Component {
                                             rows={rows}
                                             headCells={headCells}
                                             onSelect={this.handleSelect}
+                                            onDoubleClick={this.handleDoubleClick}
+                                            onExcelExport={this.handleExcelExport}
                                             rowKey="id"
-                                            defaultOrderBy="number"
+                                            defaultOrderBy="id"
                                         />
                                     </Grid>
                                 </div>

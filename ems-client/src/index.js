@@ -17,6 +17,7 @@ const theme = createMuiTheme({
 	},
 	typography: {
 		useNextVariants: true,
+		fontSize: 13,
 	},
 	overrides: {
 		MuiButton: { // Name of the component ⚛️ / style sheet

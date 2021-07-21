@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { withStyles, Button  } from '@material-ui/core/';
-import {purple, green, amber, teal, cyan} from '@material-ui/core/colors/';
-import { Settings, DescriptionOutlined, AccountBalanceOutlined, HowToReg, People } from '@material-ui/icons/';
+import { withStyles, Button, Typography  } from '@material-ui/core/';
+import {purple, green, teal, cyan} from '@material-ui/core/colors/';
+import { Settings, DescriptionOutlined, AccountBalanceOutlined, HowToReg, People, EuroSymbol, Business } from '@material-ui/icons/';
 
 const variantIcon = {
+    public: EuroSymbol,
     hr: People,
+    director: Business,
     accountant: AccountBalanceOutlined,
     coordinator: HowToReg,
     applicant: DescriptionOutlined,
@@ -17,13 +19,20 @@ const variantIcon = {
 const styles = theme => ({
     module: {
         margin: theme.spacing(4),
-        height: theme.spacing(20),
-        width: theme.spacing(20),
+        height: theme.spacing(19),
+        width: theme.spacing(19),
     },
     label: {
         flexDirection: 'column',
         textTransform: 'capitalize',
         fontSize: theme.spacing(2),
+        textAlign: 'center',
+    },
+    director: {
+        backgroundColor: green[600],
+        '&:hover': {
+            backgroundColor: green[900]
+        },
     },
     accountant: {
         backgroundColor: green[500],
@@ -32,9 +41,9 @@ const styles = theme => ({
         },
     },
     coordinator: {
-        backgroundColor: amber[500],
+        backgroundColor: teal[600],
         '&:hover': {
-            backgroundColor: amber[800],
+            backgroundColor: teal[900],
         },
     },
     administrator: {
@@ -53,6 +62,12 @@ const styles = theme => ({
         backgroundColor: cyan[500],
         '&:hover': {
             backgroundColor: cyan[800],
+        },
+    },
+    public: {
+        backgroundColor: green[400],
+        '&:hover': {
+            backgroundColor: green[700],
         },
     },
     icon: {
@@ -85,7 +100,9 @@ class Module extends Component {
                     onClick = {this.handleClick}
                 >
                     <Icon className={classNames(classes.icon)}/>
-                    {name}
+                    <Typography variant="subtitle1">
+                        {name}
+                    </Typography>
                 </Button>
             </>
         )

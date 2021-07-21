@@ -31,7 +31,9 @@ class Plan extends Component {
                     onDeletePlanPosition={this.props.onDeletePlanPosition}
                     onSubmitPlanSubPosition={this.props.onSubmitPlanPosition}
                     onDeletePlanSubPosition={this.props.onDeletePlanSubPosition}
+                    onExcelExport={this.props.onExcelExport}
                     onSendPlan={this.props.onSendPlan}
+                    onPrintPlan={this.props.onPrintPlan}
                     onSubmit={this.handleSubmitPlan}
                     submitAction={submit}
                 />

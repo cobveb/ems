@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
+import * as constants from 'constants/uiNames';
 
 export function digitsAndNumberMask(rawValue){
 /*
@@ -165,7 +166,7 @@ export function findSelectFieldPosition(options, searched){
 };
 
 export function numberWithSpaces(number){
-    let parts = ((Math.round(number * 100) / 100).toFixed(2)).toString().split(".");
+    let parts = (parseFloat(number).toFixed(2)).toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/gs, " ");
     return parts.join(".");
 }
@@ -181,3 +182,76 @@ export function findIndexElement(searchedElement, allElements, tmpId){
                         : null
             : null
 };
+
+export function escapeSpecialCharacters(strReplace){
+    return strReplace.replace(/([()[{*+.$^\\|?])/g, '\\$1');
+}
+
+export const getCoordinatorPlanTypes = () => [
+    {
+        code: 'FIN',
+        name: constants.COORDINATOR_PLAN_TYPE_FINANCIAL,
+    },
+    /*
+        TODO: Rezygnacja z funkcjonalności
+        {
+            code: 'INW',
+            name: constants.COORDINATOR_PLAN_TYPE_INVESTMENT,
+        },
+    */
+    {
+        code: 'PZP',
+        name: constants.COORDINATOR_PLAN_TYPE_PUBLIC_PROCUREMENT,
+    },
+]
+
+
+
+export const  publicProcurementEstimationTypes = () => [
+    {
+        code: 'DO50',
+        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_DO50,
+    },
+    {
+        code: 'D0130',
+        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_D0130,
+    },
+    {
+        code: 'PO130',
+        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_PO130,
+    },
+    {
+        code: 'UE139',
+        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_UE139,
+    },
+    {
+        code: 'WR',
+        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_WR,
+    },
+    {
+        code: 'COVID',
+        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_COVID,
+    }
+]
+
+
+export const getVats = () =>  [
+    {
+        code: 1.08,
+        name: "8%",
+    },
+    {
+        code: 1.23,
+        name: "23%",
+    },
+];
+
+export function generateExportLink(response){
+//    const type = response.headers['content-type']
+    const blob = new Blob([response.data])
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(blob)
+    link.download = response.headers['content-disposition'].substring(response.headers['content-disposition'].indexOf("=")+1)
+    link.click()
+
+}

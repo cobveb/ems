@@ -1,11 +1,12 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import {Grid, Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel, Typography, Paper, Toolbar, Divider, ButtonGroup } from '@material-ui/core/';
+import {Grid, Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel, Typography, Paper, Toolbar, Divider,
+        ButtonGroup, Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core/';
 import { numberWithSpaces } from 'utils/';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'common/gui';
-import {AddCircle, Edit, Delete} from '@material-ui/icons';
+import {AddCircle, Edit, Delete, GetApp} from '@material-ui/icons';
 import * as constants from 'constants/uiNames';
 import { Button } from 'common/gui';
 import format from "date-fns/format";
@@ -62,16 +63,18 @@ const EnhancedTableToolbar = props => {
                             onClick={(event) => onAdd(event, 'add')}
                             disabled={ addButtonProps && addButtonProps.disabled }
                         />
-                        <Button
-                            label={editButtonProps && editButtonProps.label ? editButtonProps.label : constants.BUTTON_EDIT}
-                            icon={editButtonProps && editButtonProps.icon ? editButtonProps.icon : <Edit />}
-                            iconAlign="left"
-                            variant={editButtonProps && editButtonProps.icon ? editButtonProps.variant : "edit"}
-                            size="small"
-                            version="text"
-                            onClick={(event) => onEdit(event, 'edit')}
-                            disabled={selected.length === 0 || (editButtonProps && editButtonProps.disabled) }
-                        />
+                        {editButtonProps.hide !== true &&
+                            <Button
+                                label={editButtonProps && editButtonProps.label ? editButtonProps.label : constants.BUTTON_EDIT}
+                                icon={editButtonProps && editButtonProps.icon ? editButtonProps.icon : <Edit />}
+                                iconAlign="left"
+                                variant={editButtonProps && editButtonProps.icon ? editButtonProps.variant : "edit"}
+                                size="small"
+                                version="text"
+                                onClick={(event) => onEdit(event, 'edit')}
+                                disabled={selected.length === 0 || (editButtonProps && editButtonProps.disabled) }
+                            />
+                        }
                         <Button
                             label={deleteButtonProps && deleteButtonProps.label ? deleteButtonProps.label : constants.BUTTON_DELETE}
                             icon={deleteButtonProps && deleteButtonProps.icon ? deleteButtonProps.icon : <Delete />}
@@ -100,6 +103,12 @@ EnhancedTableToolbar.propTypes = {
 
 EnhancedTableToolbar.defaultProps = {
   isAddDisabled: false,
+};
+
+const initialContextState = {
+    mouseX: null,
+    mouseY: null,
+    open: false,
 };
 
 function desc(a, b, orderBy, cellType) {
@@ -287,18 +296,36 @@ const useTableStyles = makeStyles(theme => ({
 }));
 
 function EnhancedTable(props) {
-
-    const { headCells, rows, checked, setChecked, multiChecked, defaultOrderBy, className, checkedColumnFirst } = props;
+    const { headCells, rows, checked, setChecked, multiChecked, defaultOrderBy, className, checkedColumnFirst, onDouble, onExcelExport } = props;
     const classes = useTableStyles();
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState(defaultOrderBy);
     const [allSelect, setAllSelect] = React.useState(rows.length === checked.length && checked.length !== 0);
     const [cellType, setCellType] = React.useState('text');
+    const [context, setContext] = React.useState(initialContextState);
 
     const handleRequestSort = (event, property) => {
         const isDesc = orderBy === property && order === 'desc';
         setOrder(isDesc ? 'asc' : 'desc');
         setOrderBy(property);
+    };
+
+    function handleContextClick(event){
+
+        const { clientX, clientY } = event;
+        event.preventDefault();
+        setContext({
+            mouseX: clientX - 2,
+            mouseY: clientY - 4,
+            open: !context.open,
+        });
+    };
+
+    function handleContextClose(event, exportType){
+        setContext(initialContextState);
+        if(exportType !== undefined){
+            onExcelExport(exportType);
+        }
     };
 
     const handleSelectAllClick = event => {
@@ -337,12 +364,15 @@ function EnhancedTable(props) {
         setChecked(stableSort(newSelected, getSorting(order, orderBy, cellType)))
     };
 
+    const handleDoubleClick = (event, row) => {
+        onDouble(row);
+    }
 
     const isSelected = row => checked.indexOf(row) !== -1;
     return (
         <div className={classes.root} >
             <Paper className={classes.paper} >
-                <div className={classNames(classes.tableWrapper, className)}>
+                <div className={classNames(classes.tableWrapper, className)} onContextMenu={event => handleContextClick(event)} style={{ cursor: 'context-menu' }}>
                     <Table
                         className={classes.table}
                         aria-labelledby="tableTitle"
@@ -372,6 +402,7 @@ function EnhancedTable(props) {
                                     <TableRow
                                         hover
                                         onClick={event => handleClick(event, row)}
+                                        onDoubleClick={event => handleDoubleClick(event, row)}
                                         role="checkbox"
                                         aria-checked={isItemSelected}
                                         tabIndex={-1}
@@ -412,7 +443,22 @@ function EnhancedTable(props) {
                                                                 :
                                                                     cell.type==='object'
                                                                         ?
-                                                                            (row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)])
+                                                                            cell.subtype === 'amount'
+                                                                                ?
+                                                                                    `${numberWithSpaces((row[cell.id.substring(0, cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.') +1)]))}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
+                                                                                :
+                                                                                    //TODO: Find a universal solution for several levels of object properties
+                                                                                    (()=>{
+                                                                                        let idx=[],i=-1;
+                                                                                        while((i=cell.id.indexOf('.',i+1)) >= 0) {
+                                                                                            idx.push(i);
+                                                                                        }
+                                                                                        if (idx.length === 1 )
+                                                                                            return row[cell.id.substring(0, cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.') +1)]
+                                                                                        else
+                                                                                            return row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1,cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.')+1)]
+                                                                                    })()
+
                                                                         :
                                                                             cell.type==='amount' && row[cell.id] !== undefined
                                                                                 ?
@@ -435,19 +481,39 @@ function EnhancedTable(props) {
                             })}
                         </TableBody>
                     </Table>
+                    <Menu
+                        keepMounted
+                        open={context.open === true}
+                        onClose={event => handleContextClose(event)}
+                        anchorReference="anchorPosition"
+                        anchorPosition={
+                            context.open === true
+                                ? { top: context.mouseY, left: context.mouseX }
+                            : undefined
+                        }
+                    >
+                        <MenuItem onClick={event => handleContextClose(event, "XLSX")}>
+                            <ListItemIcon><GetApp fontSize="small" /></ListItemIcon>
+                            <ListItemText primary="Export do xls" />
+                        </MenuItem>
+                    </Menu>
                 </div>
             </Paper>
         </div>
     );
 }
 
+EnhancedTable.defaultProps = {
+    onDouble: () => {},
+    onExcelExport: () => {},
+};
 
-export default function TableForm({ fields, head, allRows, checkedRows, toolbar, ...custom}, ) {
+
+export default function TableForm({ fields, head, allRows, checkedRows, toolbar,  ...custom}, ) {
     const classes = useStyles();
     const [checked, setChecked] = React.useState([]);
     const [rows, setRows] = React.useState(allRows);
     const [prevCheckedRows, setPrevCheckedRows] = React.useState([])
-
     React.useEffect(() => {
 
         if(toolbar === true){
@@ -475,11 +541,13 @@ export default function TableForm({ fields, head, allRows, checkedRows, toolbar,
     const handleToggle = (value) => {
         if(!toolbar || toolbar === false ){
             setChecked(setValues(fields, value));
+            if(custom.onSelect !== undefined){
+                custom.onSelect(value);
+            }
         } else if ((custom.onSelect !== undefined || typeof(custom.onSelect) !== 'function') && custom.multiChecked === false) {
             custom.onSelect(value);
         }
     };
-
     return (
         <Grid container spacing={1} className={classes.root}>
             <Grid item xs={12} sm={12}>
@@ -510,6 +578,8 @@ export default function TableForm({ fields, head, allRows, checkedRows, toolbar,
                     multiChecked={custom.multiChecked}
                     defaultOrderBy={custom.orderBy !== null ? custom.orderBy : ''}
                     checkedColumnFirst={custom.checkedColumnFirst}
+                    onDouble={custom.onDoubleClick}
+                    onExcelExport={custom.onExcelExport}
                 />
             </Grid>
         </Grid>

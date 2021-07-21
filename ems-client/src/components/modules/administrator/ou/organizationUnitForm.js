@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { withStyles, Grid, Typography, Divider, Toolbar }  from '@material-ui/core/';
-import { MyLocation, Contacts, Save, Cancel } from '@material-ui/icons/';
+import { MyLocation, Contacts, Save, Cancel, PeopleAlt } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames';
-import Spinner from 'common/spinner';
-import { FormTextField, FormCheckBox } from 'common/form';
+import { Spinner, ModalDialog } from 'common/';
+import { FormTextField, FormCheckBox, FormRadioButtonField, FormTableField } from 'common/form';
 import { Button } from 'common/gui';
+import DirectorCoordinatorsFormContainer from 'containers/modules/administrator/directorCoordinatorsFormContainer'
 
 const styles = theme => ({
     content: {
@@ -18,7 +19,7 @@ const styles = theme => ({
     section: {
         marginBottom: theme.spacing(1),
     },
-    subheaderIcon: {
+    subHeaderIcon: {
         marginRight: theme.spacing(1),
     },
     leftIcon: {
@@ -29,27 +30,109 @@ const styles = theme => ({
     },
     container: {
         maxWidth: '100%',
-    }
+    },
+    tableWrapper: {
+        overflow: 'auto',
+        height: theme.spacing(15),
+    },
 });
 
 const zipCodeMask = [/\d/, /\d/, ' ', '-', ' ', /\d/, /\d/, /\d/,];
 const phoneMask = ['+', '4','8',' ','(', /[1-9]/, /\d/,')', ' ', /\d/, /\d/, /\d/, ' ', /\d/, /\d/, ' ', /\d/, /\d/];
 
 class OrganizationUnitForm extends Component {
+    state = {
+        selected: [],
+        openDirectorCoordinators: false,
+        directorCoordinatorAction: null,
+        roles: [
+            {
+                code: "CHIEF",
+                name: constants.ORGANIZATION_UNIT_CHIEF,
+            },
+            {
+                code: "DIRECTOR",
+                name: constants.ORGANIZATION_UNIT_DIRECTOR,
+            },
+            {
+                code: "COORDINATOR",
+                name: constants.ORGANIZATION_UNIT_COORDINATOR,
+            },
+        ],
+        tableHead: [
+            {
+                id: 'code',
+                label: constants.ORGANIZATION_UNIT_COORDINATOR_CODE,
+                type: 'text',
+            },
+            {
+                id: 'name',
+                label: constants.ORGANIZATION_UNIT_COORDINATOR_NAME,
+                type: 'text',
+            },
+        ],
+    }
+
+    handleSelect = (id) => {
+        this.setState({selected: id});
+    }
+
+    handleAddDirectorCoordinators = () =>{
+        this.setState({
+            openDirectorCoordinators: !this.state.openDirectorCoordinators,
+        })
+    }
+
+    handleSubmitDirectorCoordinators = (values) =>{
+        this.props.onAddDirectorCoordinator(values.directorCoordinators);
+        this.setState({
+            openDirectorCoordinators: !this.state.openDirectorCoordinators,
+        })
+    }
+
+    handleDeleteDirectorCoordinator = (event, action) => {
+        this.setState(state => ({ directorCoordinatorAction: action}));
+    }
+
+    handleCancelDelete = () => {
+        this.setState({ directorCoordinatorAction: null, selected: [] });
+    }
+
+    handleConfirmDelete = () => {
+        this.props.onRemoveDirectorCoordinator(this.state.selected[0]);
+        this.setState(state => ({ directorCoordinatorAction: null, selected: []}));
+    }
 
     render(){
-        const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, edit, onClose } = this.props
+        const { initialValues, handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, edit, onClose, role, unassignedCoordinators } = this.props;
+        const { selected, roles, tableHead, openDirectorCoordinators, directorCoordinatorAction } = this.state;
         return (
             <>
+
+                {directorCoordinatorAction === "delete" &&
+                    <ModalDialog
+                        message={constants.ORGANIZATION_UNIT_DIRECTOR_REMOVE_COORDINATOR_MESSAGE}
+                        variant="warning"
+                        onConfirm={this.handleConfirmDelete}
+                        onClose={this.handleCancelDelete}
+                    />
+                }
+
+                { openDirectorCoordinators &&
+                    <DirectorCoordinatorsFormContainer
+                        initialValues={{directorCoordinators: initialValues.directorCoordinators}}
+                        unassignedCoordinators={unassignedCoordinators}
+                        open={openDirectorCoordinators}
+                        onSubmit={this.handleSubmitDirectorCoordinators}
+                        onClose={this.handleAddDirectorCoordinators}
+                    />
+                }
+
                 <form onSubmit={handleSubmit}>
                     { submitting && <Spinner /> }
                     <div className={classes.content}>
                         <div className={classes.section}>
                             <Grid container spacing={0} justify="flex-end"  className={classes.active}>
-                                <FormCheckBox
-                                    name="coordinator"
-                                    label={constants.ORGANIZATION_UNIT_COORDINATOR}
-                                />
                                 <FormCheckBox
                                     name="active"
                                     label={constants.ORGANIZATION_UNIT_ACTIVE}
@@ -81,12 +164,50 @@ class OrganizationUnitForm extends Component {
                                         inputProps={{ maxLength: 120 }}
                                     />
                                 </Grid>
+                                <Grid item xs={12} >
+                                    <FormRadioButtonField
+                                        name="role"
+                                        label={constants.INSTITUTION_BASIC_INFORMATION_ROLE}
+                                        row
+                                        options={roles}
+                                    />
+                                </Grid>
+                                { role === 'DIRECTOR' &&
+                                    <Grid item xs={12} sm={12} >
+                                        <Toolbar className={classes.toolbar}>
+                                            <PeopleAlt className={classes.subHeaderIcon} fontSize="small" />
+                                            <Typography variant="subtitle1" >{constants.ORGANIZATION_UNIT_COORDINATORS}</Typography>
+                                        </Toolbar>
+                                        <FormTableField
+                                            className={classes.tableWrapper}
+                                            name="directorCoordinators"
+                                            head={tableHead}
+                                            allRows={initialValues.directorCoordinators}
+                                            checkedRows={selected}
+                                            toolbar={true}
+                                            editButtonProps={{
+                                                hide: true,
+                                            }}
+                                            deleteButtonProps={{
+                                                disabled : selected.length > 0 ? false : true,
+                                            }}
+                                            onAdd={this.handleAddDirectorCoordinators}
+                                            onEdit={() => {}}
+                                            onDelete={(event) => this.handleDeleteDirectorCoordinator(event, 'delete', )}
+                                            multiChecked={false}
+                                            checkedColumnFirst={true}
+                                            onSelect={this.handleSelect}
+                                            onDoubleClick={this.handleDoubleClick}
+                                            orderBy="code"
+                                        />
+                                    </Grid>
+                                }
                             </Grid>
                         </div>
                         <div className={classes.section}>
                             <Divider />
                             <Toolbar className={classes.toolbar} >
-                                <MyLocation className={classes.subheaderIcon} fontSize="small"/>
+                                <MyLocation className={classes.subHeaderIcon} fontSize="small"/>
                                 <Typography variant="subtitle1" >
                                    {constants.INSTITUTION_ADDRESS}
                                 </Typography>
@@ -125,7 +246,7 @@ class OrganizationUnitForm extends Component {
                         <div className={classes.section}>
                             <Divider/>
                             <Toolbar className={classes.toolbar} >
-                                <Contacts className={classes.subheaderIcon} fontSize="small" />
+                                <Contacts className={classes.subHeaderIcon} fontSize="small" />
                                 <Typography variant="subtitle1" >
                                     {constants.INSTITUTION_CONTACTS}
                                 </Typography>

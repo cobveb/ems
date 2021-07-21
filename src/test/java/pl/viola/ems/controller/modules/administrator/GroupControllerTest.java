@@ -48,7 +48,7 @@ class GroupControllerTest {
     @MockBean
     AcPermissionService acPermissionService;
 
-    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
     private Group adm = new Group((long)1, "adm", "Administratorzy", new HashSet<AcPermission>(), new HashSet<User>());
     private Group user = new Group((long)2, "user", "Użytkownicy", new HashSet<AcPermission>(), new HashSet<User>());

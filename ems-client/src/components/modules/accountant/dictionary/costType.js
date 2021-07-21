@@ -43,6 +43,7 @@ class CostType extends Component {
                             coordinators={coordinators}
                             onSubmit={this.handleSubmit}
                             onClose={this.handleClose}
+                            onExcelExport={this.props.onExcelExport}
                             action={action}
                             allCosts={allCosts}
                         />

@@ -4,8 +4,7 @@ import Plans from 'components/modules/coordinator/plans/plans';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
-import {updateOnCloseDetails} from 'utils';
-import {findSelectFieldPosition} from 'utils';
+import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink, getCoordinatorPlanTypes} from 'utils';
 import PlansApi from 'api/modules/coordinator/plansApi';
 import DictionaryApi from 'api/common/dictionaryApi';
 
@@ -28,12 +27,36 @@ class PlansContainer extends Component {
                 name: constants.COORDINATOR_PLAN_STATUS_SENT,
             },
             {
-                code: 'PR',
+                code: 'RO',
                 name: constants.COORDINATOR_PLAN_STATUS_ADOPTED,
             },
             {
+                code: 'AK',
+                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_ACCOUNTANT,
+            },
+            {
+                code: 'SK',
+                name: constants.COORDINATOR_PLAN_STATUS_CORRECTED,
+            },
+            {
+                code: 'AZ',
+                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_PUBLIC_PROCUREMENT,
+            },
+            {
+                code: 'AD',
+                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_DIRECTOR,
+            },
+            {
                 code: 'ZA',
-                name: constants.COORDINATOR_PLAN_STATUS_ACCEPTED,
+                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_CHIEF,
+            },
+            {
+                code: 'RE',
+                name: constants.COORDINATOR_PLAN_STATUS_REALIZED,
+            },
+            {
+                code: 'ZR',
+                name: constants.COORDINATOR_PLAN_STATUS_EXECUTED,
             },
         ],
         types:[
@@ -41,19 +64,7 @@ class PlansContainer extends Component {
                 code: '',
                 name: constants.COORDINATOR_PLAN_TYPE,
             },
-            {
-                code: 'FIN',
-                name: constants.COORDINATOR_PLAN_TYPE_FINANCIAL,
-            },
-            {
-                code: 'INW',
-                name: constants.COORDINATOR_PLAN_TYPE_INVESTMENT,
-            },
-            {
-                code: 'PZP',
-                name: constants.COORDINATOR_PLAN_TYPE_PUBLIC_PROCUREMENT,
-            },
-        ],
+        ].concat(getCoordinatorPlanTypes()),
     }
 
     handleGetDictionaryModes(){
@@ -124,6 +135,16 @@ class PlansContainer extends Component {
         return updateOnCloseDetails(plans, plan);
     }
 
+    handleExcelExport = (exportType, headRow) =>{
+        this.props.loading(true);
+        PlansApi.exportPlansToExcel(exportType, headRow)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
     componentDidMount() {
         this.handleGetPlans();
         this.handleGetDictionaryModes();
@@ -143,6 +164,7 @@ class PlansContainer extends Component {
                 error={error}
                 clearError={clearError}
                 onClose={this.handleUpdateOnCloseDetails}
+                onExcelExport={this.handleExcelExport}
                 onWithdraw={this.handleWithdraw}
                 onDelete={this.handleDelete}
             />

@@ -22,7 +22,7 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
     @Test
     public void existsByUsername(){

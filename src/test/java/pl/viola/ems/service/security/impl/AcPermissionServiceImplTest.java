@@ -70,7 +70,7 @@ class AcPermissionServiceImplTest {
 
     private List<AcPrivilege> privileges = Arrays.asList(privilege, privilege2);
 
-    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true, false);
+    private OrganizationUnit ou = new OrganizationUnit("uck", "UCK", "Uck", "uck@uck.katowice.pl", true);
 
     private User user = new User(
             (long)0,

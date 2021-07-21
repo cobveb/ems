@@ -19,7 +19,7 @@ class StructureContainer extends Component {
             this.setState({
                 initData: response.data.data,
             })
-            this.props.loading(false)
+            this.props.loading(false);
         })
         .catch(error => {});
     }

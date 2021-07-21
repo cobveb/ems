@@ -3,6 +3,9 @@ package pl.viola.ems.payload.modules.accountant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.viola.ems.model.modules.accountant.CostYear;
+
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,4 +19,6 @@ public class CostTypeResponse {
     private String name;
 
     private Boolean active;
+
+    private Set<CostYear> years;
 }

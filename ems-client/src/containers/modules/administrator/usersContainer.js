@@ -2,13 +2,33 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import Users from 'components/modules/administrator/users/users';
 import UsersApi from 'api/modules/administrator/usersApi';
+import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import {updateOnCloseDetails} from 'utils';
+import * as constants from 'constants/uiNames';
 
 class UsersContainer extends Component {
     state = {
         initData: [],
+        ous:[
+            {
+                code: "",
+                name: constants.USER_BASIC_INFORMATION_OU,
+                state: true
+            }
+        ],
+    }
+
+    handleGetOus(){
+        return OrganizationUnitsApi.getActiveOu()
+        .then(response => {
+            this.setState({
+                ous: this.state.ous.concat(response.data.data),
+            });
+            this.props.loading(false)
+        })
+        .catch(error => {});
     }
 
     handleAll(){
@@ -18,7 +38,7 @@ class UsersContainer extends Component {
             this.setState({
                 initData: response.data.data,
             })
-            this.props.loading(false)
+            this.handleGetOus();
         })
         .catch(error => {});
     }
@@ -48,11 +68,12 @@ class UsersContainer extends Component {
 
     render(){
         const {isLoading, error, clearError} = this.props;
-        const {initData} = this.state;
+        const {initData, ous} = this.state;
         return(
             <Users
                 initialValues = {initData}
                 isLoading = {isLoading}
+                ous={ous}
                 error = {error}
                 clearError = {clearError}
                 onDelete={this.handleDelete.bind(this)}
