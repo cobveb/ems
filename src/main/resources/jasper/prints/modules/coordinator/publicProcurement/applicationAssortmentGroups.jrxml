@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="coordinatorApplicationAssortmentGroups" pageWidth="595" pageHeight="842" columnWidth="595"
+              leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0e9e3681-3af6-4fe9-94d6-05ee002b912f">
+    <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="21.162 - ems"/>
+    <property name="com.jaspersoft.studio.unit." value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+    <parameter name="APPLICATION_ID" class="java.lang.String"/>
+    <queryString language="SQL">
+        <![CDATA[select
+	gr.*,
+	(
+		select 
+			name 
+	 	from 
+	 		emsarch.dictionary_items di, 
+	 		emsadm.cor_pub_procurement_positions pos 
+ 		where 
+ 			gr.plan_position_id = pos.id 
+ 			and di.id = pos.assortment_id
+	) as group_name,
+	(
+		select 
+			ppos.am_req_net 
+	 	from 
+            emsadm.cor_plan_positions ppos,
+	 		emsadm.cor_pub_procurement_positions pos 
+ 		where 
+ 			gr.plan_position_id = ppos.id
+            and pos.id = ppos.id
+	) as group_value_net
+from
+	emsadm.cor_pub_proc_groups gr
+where
+	gr. application_id =  $P{APPLICATION_ID}]]>
+    </queryString>
+    <field name="ID" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="ID"/>
+    </field>
+    <field name="ORDER_GROUP_VALUE_NET" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="ORDER_GROUP_VALUE_NET"/>
+    </field>
+    <field name="VAT" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="VAT"/>
+    </field>
+    <field name="ORDER_GROUP_VALUE_GROSS" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="ORDER_GROUP_VALUE_GROSS"/>
+    </field>
+    <field name="ORDER_VALUE_YEAR_NET" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="ORDER_VALUE_YEAR_NET"/>
+    </field>
+    <field name="ORDER_VALUE_YEAR_GROSS" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="ORDER_VALUE_YEAR_GROSS"/>
+    </field>
+    <field name="PLAN_POSITION_ID" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="PLAN_POSITION_ID"/>
+    </field>
+    <field name="APPLICATION_ID" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="APPLICATION_ID"/>
+    </field>
+    <field name="GROUP_NAME" class="java.lang.String">
+        <property name="com.jaspersoft.studio.field.label" value="GROUP_NAME"/>
+    </field>
+    <field name="GROUP_VALUE_NET" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="GROUP_VALUE_NET"/>
+    </field>
+    <variable name="GROUPS_VALUE_YEAR_NET" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{ORDER_VALUE_YEAR_NET}]]></variableExpression>
+    </variable>
+    <variable name="GROUPS_VALUE_YEAR_GROSS" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{ORDER_VALUE_YEAR_GROSS}]]></variableExpression>
+    </variable>
+    <group name="ORDER_VALUE_YEAR_NET">
+        <groupExpression><![CDATA[$F{ORDER_VALUE_YEAR_NET}]]></groupExpression>
+    </group>
+    <group name="ORDER_VALUE_YEAR_GROSS">
+        <groupExpression><![CDATA[$F{ORDER_VALUE_YEAR_GROSS}]]></groupExpression>
+    </group>
+    <detail>
+        <band height="37" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement stretchType="ContainerHeight" x="0" y="0" width="595" height="20"
+                               uuid="3db1b4d5-1b9c-49de-aae3-2a50110777ec"/>
+                <textElement>
+                    <font fontName="PDF_fonts" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{GROUP_NAME}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤">
+                <reportElement x="227" y="21" width="368" height="16" uuid="aa7f4766-fba6-47de-bfe2-ac0817cbba40"/>
+                <textElement>
+                    <font fontName="PDF_fonts" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{GROUP_VALUE_NET}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="10" y="21" width="216" height="16" uuid="9d009d7b-c701-44f7-ab25-0a4793736e4d">
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
+                <textElement>
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <text><![CDATA[• całkowita wartość netto grupy asortymentowej: ]]></text>
+            </staticText>
+        </band>
+    </detail>
+</jasperReport>

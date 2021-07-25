@@ -228,7 +228,9 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
         Application application = publicProcurementApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new AppException("Coordinator.publicProcurement.application.notFound", HttpStatus.NOT_FOUND));
         if (newStatus.equals(Application.ApplicationStatus.WY)) {
-            application.setNumber(publicProcurementApplicationRepository.generateApplicationNumber(application.getCoordinator().getCode(), application.getMode().name()));
+            if (application.getNumber().equals(null)) {
+                application.setNumber(publicProcurementApplicationRepository.generateApplicationNumber(application.getCoordinator().getCode(), application.getMode().name()));
+            }
             application.setSendDate(new Date());
             application.setSendUser(user);
             application.getAssortmentGroups().forEach(position -> {

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="applicationParts" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0"
+              topMargin="0" bottomMargin="0" uuid="0a562bf8-5212-4270-a8ad-cf5c5e23605b">
+    <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="21.162 - ems"/>
+    <property name="com.jaspersoft.studio.unit." value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+    <parameter name="APPLICATION_ID" class="java.lang.String"/>
+    <queryString language="SQL">
+        <![CDATA[select
+	* 
+from
+	cor_pub_proc_parts pa
+where
+	pa.application_id =  $P{APPLICATION_ID} ]]>
+    </queryString>
+    <field name="ID" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="ID"/>
+    </field>
+    <field name="NAME" class="java.lang.String">
+        <property name="com.jaspersoft.studio.field.label" value="NAME"/>
+    </field>
+    <field name="AMOUNT_NET" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AMOUNT_NET"/>
+    </field>
+    <field name="VAT" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="VAT"/>
+    </field>
+    <field name="AMOUNT_GROSS" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AMOUNT_GROSS"/>
+    </field>
+    <field name="APPLICATION_ID" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="APPLICATION_ID"/>
+    </field>
+    <variable name="PART_NO" class="java.lang.Integer" incrementType="Group" incrementGroup="NAME" calculation="Sum">
+        <variableExpression><![CDATA[$V{PART_NO}]]></variableExpression>
+        <initialValueExpression><![CDATA[1]]></initialValueExpression>
+    </variable>
+    <group name="NAME">
+        <groupExpression><![CDATA[$F{NAME}]]></groupExpression>
+    </group>
+    <group name="AMOUNT_NET">
+        <groupExpression><![CDATA[$F{AMOUNT_NET}]]></groupExpression>
+    </group>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <detail>
+        <band height="20" splitType="Stretch">
+            <textField textAdjust="StretchHeight">
+                <reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="595" height="20"
+                               uuid="2f42bd2d-2bf1-40f0-81d2-fbd2a3ae213e">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+                <textElement markup="styled">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression>
+                    <![CDATA["Część nr "+ $V{PART_NO} + ":  <style isBold='true'>" +$F{NAME} +"</style> - netto: <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_NET})) + "</style> - brutto <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_GROSS})) + "</style>"]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>

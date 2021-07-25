@@ -50,3 +50,4 @@
 /package-lock.json
 /src/main/resources/application.properties
 /ems-client/package-lock.json
+/ems/src/main/resources/*.jasper
