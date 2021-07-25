@@ -648,7 +648,7 @@ class ApplicationForm extends Component {
                                         label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_JUSTIFICATION_PURCHASE}
                                         multiline
                                         isRequired={initialValues.status !== undefined ? true : null }
-                                        inputProps={{ maxLength: 256 }}
+                                        inputProps={{ maxLength: 550 }}
                                         disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
                                     />
                                 </Grid>
@@ -658,7 +658,7 @@ class ApplicationForm extends Component {
                                         label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_DESCRIPTION}
                                         multiline
                                         isRequired={initialValues.status !== undefined ? true : null }
-                                        inputProps={{ maxLength: 256 }}
+                                        inputProps={{ maxLength: 550 }}
                                         disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
                                     />
                                 </Grid>

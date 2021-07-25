@@ -87,7 +87,7 @@ class ApplicationContainer extends Component {
                     const initData = {...prevState.initData};
                     Object.assign(initData, response.data.data);
                     initData.mode = response.data.data.mode = findSelectFieldPosition(this.props.modes, response.data.data.mode);
-                    initData.status = values.status;
+                    initData.status = values.status !== undefined ? values.status : findSelectFieldPosition(this.props.statuses, response.data.data.status);
                     initData.estimationType = response.data.data.estimationType = findSelectFieldPosition(this.props.estimationTypes, response.data.data.estimationType);
                     initData.assortmentGroups = values.assortmentGroups;
                     return {initData};

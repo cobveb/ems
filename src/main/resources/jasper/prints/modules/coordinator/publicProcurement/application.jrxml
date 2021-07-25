@@ -392,7 +392,7 @@
                 <textFieldExpression>
                     <![CDATA[(!$V{IS_BZP} ?"4" : "9") +". Uzasadnienie zakupu: "]]></textFieldExpression>
             </textField>
-            <textField>
+            <textField textAdjust="StretchHeight">
                 <reportElement stretchType="ContainerHeight" x="12" y="20" width="543" height="20"
                                isRemoveLineWhenBlank="true" uuid="9f5ca47a-1fd0-49ca-a8e3-d62a330a4648"/>
                 <textElement textAlignment="Justified">
@@ -413,7 +413,7 @@
                 <textFieldExpression>
                     <![CDATA[(!$V{IS_BZP} ?"5" : "10") +". Opis przedmiotu zamówienia:"]]></textFieldExpression>
             </textField>
-            <textField>
+            <textField textAdjust="StretchHeight">
                 <reportElement stretchType="ContainerHeight" x="12" y="20" width="543" height="20"
                                isRemoveLineWhenBlank="true" uuid="76bcf8cf-044e-4293-8f3a-90169c4f6a29"/>
                 <textElement textAlignment="Justified">

@@ -466,7 +466,9 @@ export const COORDINATOR_PLAN_POSITION_PUBLIC_EURO_VALUE_NET = 'Wartość Euro n
 /* components/modules/accountant/accountant.js */
 export const ACCOUNTANT = "Księgowy";
 export const ACCOUNTANT_MENU_COORDINATOR = 'Koordynator';
+export const ACCOUNTANT_MENU_INSTITUTION = 'Instytucja';
 export const ACCOUNTANT_MENU_DICTIONARIES = 'Słowniki';
+export const ACCOUNTANT_SUBMENU_INSTITUTION_PLANS = 'Plany';
 export const ACCOUNTANT_SUBMENU_COORDINATOR_PLANS = 'Plany';
 export const ACCOUNTANT_SUBMENU_DICTIONARIES_COST_TYPES = 'Rodzaje kosztów';
 /* components/modules/accountant/coordinator/plans/plans.js */
@@ -485,6 +487,8 @@ export const ACCOUNTANT_PLAN_COORDINATOR_DIRECTOR_ACCEPT_USER = 'Zatwierdzenie D
 export const ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER = 'Zatwierdzenie Dyrektor Naczelny';
 /* components/modules/accountant/coordinator/plans/forms/planCorrectionPositionForm.js */
 export const ACCOUNTANT_PLAN_COORDINATOR_CORRECTION_POSITIONS_TITLE = 'Korekta pozycji: ';
+/* components/modules/accountant/institution/plans/plans.js */
+export const ACCOUNTANT_INSTITUTION_PLANS_TITLE = 'Plany';
 /* components/modules/accountant/dictionary/costsTypes.js */
 export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NUMBER = 'Numer';
 export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NAME = 'Nazwa';
@@ -518,6 +522,7 @@ export const DIRECTOR_COORDINATOR_PLAN_TITLE = 'Szczegóły planu: ';
 /* components/modules/publicProcurement/publicProcurement.js */
 export const PUBLIC_MENU_COORDINATOR = 'Koordynator';
 export const PUBLIC_SUBMENU_COORDINATOR_PLANS = 'Plany';
+export const PUBLIC_SUBMENU_COORDINATOR_APPLICATIONS = 'Wnioski';
 export const PUBLIC_MENU_DICTIONARIES = 'Słowniki';
 export const PUBLIC_SUBMENU_DICTIONARIES = 'Słowniki';
 /* components/modules/publicProcurement/plans/plans.js */

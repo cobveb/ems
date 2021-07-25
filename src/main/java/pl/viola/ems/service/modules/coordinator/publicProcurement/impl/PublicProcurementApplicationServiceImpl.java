@@ -160,17 +160,20 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
     public Application deleteApplicationAssortmentGroup(Long applicationAssortmentGroupId) {
         Optional<ApplicationAssortmentGroup> applicationAssortmentGroup = Optional.ofNullable(publicProcurementApplicationAssortmentGroupRepository.findById(applicationAssortmentGroupId)
                 .orElseThrow(() -> new AppException("Coordinator.publicProcurement.application.assortmentGroupNotFound", HttpStatus.NOT_FOUND)));
-
         Application application = applicationAssortmentGroup.get().getApplication();
         publicProcurementApplicationAssortmentGroupRepository.deleteById(applicationAssortmentGroupId);
+
+        application.getAssortmentGroups().remove(applicationAssortmentGroup.get());
+
         if (application.getAssortmentGroups().size() == 1) {
             application.setEstimationType(application.getAssortmentGroups().stream().findFirst().get().getPlanPosition().getEstimationType());
         } else {
             application.setEstimationType(null);
         }
-        application.setOrderValueNet(application.getAssortmentGroups().stream().map(ApplicationAssortmentGroup::getOrderGroupValueNet).reduce(BigDecimal.ZERO, BigDecimal::add));
-        return publicProcurementApplicationRepository.save(application);
 
+        application.setOrderValueNet(application.getAssortmentGroups().stream().map(ApplicationAssortmentGroup::getOrderGroupValueNet).reduce(BigDecimal.ZERO, BigDecimal::add));
+        application.setOrderValueGross(application.getAssortmentGroups().stream().map(ApplicationAssortmentGroup::getOrderGroupValueGross).reduce(BigDecimal.ZERO, BigDecimal::add));
+        return publicProcurementApplicationRepository.save(application);
     }
 
     @Transactional
@@ -228,7 +231,9 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
         Application application = publicProcurementApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new AppException("Coordinator.publicProcurement.application.notFound", HttpStatus.NOT_FOUND));
         if (newStatus.equals(Application.ApplicationStatus.WY)) {
-            application.setNumber(publicProcurementApplicationRepository.generateApplicationNumber(application.getCoordinator().getCode(), application.getMode().name()));
+            if (application.getNumber() == null) {
+                application.setNumber(publicProcurementApplicationRepository.generateApplicationNumber(application.getCoordinator().getCode(), application.getMode().name()));
+            }
             application.setSendDate(new Date());
             application.setSendUser(user);
             application.getAssortmentGroups().forEach(position -> {

@@ -85,7 +85,7 @@ public class Application {
     @Column(name = "order_value_net")
     private BigDecimal orderValueNet;
 
-    @Column(name = "orderValueGross")
+    @Column(name = "order_value_gross")
     private BigDecimal orderValueGross;
 
     @Column(name = "is_parts")
@@ -108,11 +108,11 @@ public class Application {
     @Column(name = "date_established_value")
     private Date dateEstablishedValue;
 
-    @Size(max = 256)
+    @Size(max = 600)
     @Column(name = "justification_purchase")
     private String justificationPurchase;
 
-    @Size(max = 256)
+    @Size(max = 600)
     @Column(name = "order_description")
     private String orderDescription;
 

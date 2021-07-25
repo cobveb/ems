@@ -361,11 +361,11 @@ class Applications extends Component {
                                         data-action="add"
                                     />
                                     <Button
-                                        label={Object.keys(selected).length !== 0  && selected.status.code !== 'ZP' ? constants.BUTTON_PREVIEW : constants.BUTTON_EDIT}
-                                        icon={Object.keys(selected).length !== 0 && selected.status.code !== 'ZP'? <Visibility/> : <Edit/>}
+                                        label={Object.keys(selected).length !== 0  && (selected.status !== undefined && selected.status.code !== 'ZP') ? constants.BUTTON_PREVIEW : constants.BUTTON_EDIT}
+                                        icon={Object.keys(selected).length !== 0 && (selected.status !== undefined && selected.status.code !== 'ZP')? <Visibility/> : <Edit/>}
                                         iconAlign="right"
                                         disabled={Object.keys(selected).length === 0}
-                                        variant={Object.keys(selected).length !== 0 && selected.status.code !== 'ZP' ? "cancel" : "edit"}
+                                        variant={Object.keys(selected).length !== 0 && (selected.status !== undefined && selected.status.code !== 'ZP') ? "cancel" : "edit"}
                                         onClick = { (event) => this.handleChangeVisibleDetails(event, 'edit')}
                                         data-action="edit"
                                     />
@@ -391,7 +391,7 @@ class Applications extends Component {
                                     <SplitButton
                                         options={splitOptions}
                                         variant="cancel"
-                                        disabled={Object.keys(selected).length === 0 || selected.status.code !== 'WY'}
+                                        disabled={Object.keys(selected).length === 0 || (selected.status !== undefined && selected.status.code !== 'WY')}
                                     />
                                 </Grid>
                             </Grid>
