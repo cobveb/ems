@@ -160,6 +160,7 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
     public Application deleteApplicationAssortmentGroup(Long applicationAssortmentGroupId) {
         Optional<ApplicationAssortmentGroup> applicationAssortmentGroup = Optional.ofNullable(publicProcurementApplicationAssortmentGroupRepository.findById(applicationAssortmentGroupId)
                 .orElseThrow(() -> new AppException("Coordinator.publicProcurement.application.assortmentGroupNotFound", HttpStatus.NOT_FOUND)));
+
         Application application = applicationAssortmentGroup.get().getApplication();
         publicProcurementApplicationAssortmentGroupRepository.deleteById(applicationAssortmentGroupId);
 
@@ -174,6 +175,7 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
         application.setOrderValueNet(application.getAssortmentGroups().stream().map(ApplicationAssortmentGroup::getOrderGroupValueNet).reduce(BigDecimal.ZERO, BigDecimal::add));
         application.setOrderValueGross(application.getAssortmentGroups().stream().map(ApplicationAssortmentGroup::getOrderGroupValueGross).reduce(BigDecimal.ZERO, BigDecimal::add));
         return publicProcurementApplicationRepository.save(application);
+
     }
 
     @Transactional
