@@ -195,6 +195,7 @@ class PlanContainer extends Component {
         }
         PlansApi.savePlanPosition(this.state.initData.id, action, payload)
         .then(response => {
+
             switch(this.state.initData.type.code){
                 case ("FIN"):
                     this.setState(prevState => {
@@ -202,6 +203,8 @@ class PlanContainer extends Component {
                         let newPosition = {...prevState.newPosition};
                         const tmp =  response.data.data;
                         tmp.vat = findSelectFieldPosition(this.state.vats, tmp.vat);
+                        console.log(this.state.costsTypes)
+                        console.log(tmp.costType)
                         tmp.status = findSelectFieldPosition(this.state.statuses, tmp.status);
                         tmp.costType = findSelectFieldPosition(this.state.costsTypes, tmp.costType.code);
                         newPosition = tmp;

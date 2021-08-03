@@ -190,6 +190,7 @@ class Dictionary extends Component {
                             <Grid item xs={12}>
                                 <SearchField
                                     onChange={this.filter}
+                                    valueType='all'
                                 />
                             </Grid>
                             <Grid item xs={12}>

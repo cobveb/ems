@@ -51,8 +51,8 @@ class PlanFinancialContentPosition extends Component {
 
     calculateValuesAmount = (quantity, unitPrice, vat) =>{
 
-        this.props.dispatch(change('PlanFinancialPositionsForm', 'amountNet', parseFloat((quantity * unitPrice).toFixed(2))));
-        this.props.dispatch(change('PlanFinancialPositionsForm', 'amountGross', parseFloat((Math.round(((((quantity * unitPrice)) * vat.code) + Number.EPSILON) * 100) / 100).toFixed(2))));
+        this.props.dispatch(change('PlanFinancialPositionsForm', 'amountGross', parseFloat((quantity * unitPrice).toFixed(2))));
+        this.props.dispatch(change('PlanFinancialPositionsForm', 'amountNet', parseFloat((Math.round(((((quantity * unitPrice)) / vat.code) + Number.EPSILON) * 100) / 100).toFixed(2))));
     }
 
     componentDidUpdate(prevProps){

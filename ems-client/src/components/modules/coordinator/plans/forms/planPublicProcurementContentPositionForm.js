@@ -71,11 +71,33 @@ class PlanPublicProcurementContentPosition extends Component {
         nextValPosition: 0,
         positions: [],
         formChanged : false,
+        wrongEstimationType: false,
     };
 
+    handleCheckEstimationType = () => {
+        const {amountRequestedNet, estimationType, euroExchangeRate } = this.props;
+        let wrongEstimationType = false
+
+        if(amountRequestedNet != null && (estimationType.code !== 'WR' && estimationType.code !== 'COVID')){
+            if(amountRequestedNet <= 50000 && estimationType.code !== 'DO50'){
+                wrongEstimationType = true
+            } else if (amountRequestedNet > 50000 && amountRequestedNet <= 130000 && estimationType.code !== 'D0130'){
+                wrongEstimationType = true
+            } else if(amountRequestedNet > 130000 && amountRequestedNet <= 593432 && estimationType.code !== 'PO130'){
+                wrongEstimationType = true
+            } else if (amountRequestedNet <= 593432 && estimationType.code === 'UE139'){
+                wrongEstimationType = true
+            }
+        }
+        return wrongEstimationType;
+    }
+
     handleClose = () =>{
+
         if(this.props.pristine === false){
             this.setState({formChanged: !this.state.formChanged});
+        } else if(this.handleCheckEstimationType()){
+            this.setState({wrongEstimationType: !this.state.wrongEstimationType});
         } else {
             this.props.onClose();
             this.props.reset();
@@ -167,19 +189,8 @@ class PlanPublicProcurementContentPosition extends Component {
                 });
             }
         }
-        //Change estimationType on update amountRequestedNet
-        if(amountRequestedNet !== prevProps.amountRequestedNet && (estimationType.code !== 'WR' && estimationType.code !== 'COVID')){
-            if(amountRequestedNet <= 50000){
-                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'estimationType', this.props.estimationTypes[0]))
-            } else if (amountRequestedNet > 50000 && amountRequestedNet <= 130000){
-                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'estimationType', this.props.estimationTypes[1]))
-            } else if(amountRequestedNet > 130000 && amountRequestedNet <= 593432){
-                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'estimationType', this.props.estimationTypes[2]))
-            } else {
-                this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'estimationType', this.props.estimationTypes[3]))
-            }
-        }
         //Mode type UE
+
         switch (action){
             case "add" :
                 if(amountRequestedNet !== undefined && euroExchangeRate !== null && estimationType !== undefined && estimationType.code === 'UE139'){
@@ -187,14 +198,13 @@ class PlanPublicProcurementContentPosition extends Component {
                 }
                 break;
             case "edit":
-                if((euroExchangeRate !== null && prevProps.estimationType !== "UE139" && estimationType.code === 'UE139') ||
-                   (estimationType.code === 'UE139' && euroExchangeRate !== prevProps.euroExchangeRate))
+                if( amountRequestedNet !== null && ((euroExchangeRate !== null && prevProps.estimationType !== "UE139" && estimationType.code === 'UE139') ||
+                   (estimationType.code === 'UE139' && euroExchangeRate !== prevProps.euroExchangeRate)))
                 {
                     this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedEuroNet', parseFloat((amountRequestedNet / euroExchangeRate).toFixed(2))));
                 }
                 break;
-            default:
-                return null;
+            //no default
         }
         //Remove UE mode
         if (prevProps.estimationType !== undefined && prevProps.estimationType.code === 'UE139' && estimationType.code !== 'UE139'){
@@ -215,7 +225,7 @@ class PlanPublicProcurementContentPosition extends Component {
     render(){
         const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, action, planStatus,
         modes, vats, assortmentGroups, orderTypes, estimationTypes, estimationType } = this.props;
-        const {head, selected, openPositionDetails, positionAction, positions, formChanged } = this.state;
+        const {head, selected, openPositionDetails, positionAction, positions, formChanged, wrongEstimationType } = this.state;
         return(
             <>
                 {positionAction === "delete" &&
@@ -240,9 +250,9 @@ class PlanPublicProcurementContentPosition extends Component {
                 }
                 <form onSubmit={handleSubmit}>
                     { submitting && <Spinner /> }
-                    {formChanged === true &&
+                    {(formChanged === true || wrongEstimationType === true) &&
                         <ModalDialog
-                            message={constants.MODAL_DIALOG_FORM_CHANGE_MSG}
+                            message={wrongEstimationType ? constants.COORDINATOR_PLAN_POSITION_PUBLIC_WRONG_ESTIMATION_TYPE_MSG : constants.MODAL_DIALOG_FORM_CHANGE_MSG}
                             variant="warning"
                             onConfirm={this.handleConfirmClose}
                             onClose={this.handleCancelClose}

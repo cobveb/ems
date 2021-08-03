@@ -21,7 +21,7 @@ const tablePagination = makeStyles(theme => ({
 
 const StyledTableCell = withStyles(theme => ({
     head: {
-        backgroundColor: grey[50],
+        backgroundColor: grey[200],
     },
 }))(TableCell);
 
@@ -346,9 +346,9 @@ class ContainedTable extends Component {
                                                                                 { locale: pl }
                                                                             )
                                                                         :
-                                                                            cell.type==='amount' && row[cell.id] !== null
+                                                                            cell.type==='amount' && row[cell.id] !== undefined
                                                                                 ?
-                                                                                    !isNaN(numberWithSpaces(row[cell.id])) && `${numberWithSpaces(row[cell.id])}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
+                                                                                    row[cell.id] !== null && `${numberWithSpaces(row[cell.id])}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
                                                                                 :
                                                                                     row[cell.id]
                                                     }

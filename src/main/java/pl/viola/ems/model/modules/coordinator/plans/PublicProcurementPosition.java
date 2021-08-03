@@ -64,7 +64,7 @@ public class PublicProcurementPosition extends CoordinatorPlanPosition {
     private DictionaryItem assortmentGroup;
 
     public BigDecimal getAmountRequestedEuroNet() {
-        if (euroExchangeRate != null) {
+        if (euroExchangeRate != null && super.getAmountRequestedNet() != null) {
             this.amountRequestedEuroNet = super.getAmountRequestedNet().divide(
                     euroExchangeRate, 2, RoundingMode.HALF_EVEN);
         }

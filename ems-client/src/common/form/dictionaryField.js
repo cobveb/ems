@@ -120,6 +120,7 @@ function DictionaryView(props){
                         <Grid item xs={12}>
                             <SearchField
                                 value={search}
+                                autoFocus={true}
                                 onChange={(event) => onSearch(event)}
                                 valueType="all"
                             />

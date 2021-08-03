@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import {Grid, Table, TableBody, TableCell, TableHead, TableRow, TableSortLabel, Typography, Paper, Toolbar, Divider,
         ButtonGroup, Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core/';
 import { numberWithSpaces } from 'utils/';
+import { grey } from '@material-ui/core/colors/';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'common/gui';
 import {AddCircle, Edit, Delete, GetApp} from '@material-ui/icons';
@@ -177,11 +178,18 @@ function setValues (fields, values) {
     return values;
 }
 
+const useTableHeadStyles = makeStyles(theme => ({
+    head: {
+        backgroundColor: grey[200],
+    }
+}));
+
 function EnhancedTableHeadCheckedColumn(props){
     const {checkedColumnFirst, numSelected, rowCount, disableCheckAll, onChange} = props;
+    const classesHead = useTableHeadStyles();
 
     return (
-        <TableCell padding="checkbox" size="small" align={checkedColumnFirst ? "left" : "right"}>
+        <TableCell className={classesHead.head} padding="checkbox" size="small" align={checkedColumnFirst ? "left" : "right"}>
             <Checkbox
                 onChange={onChange}
                 inputProps={{ 'aria-label': 'select all desserts' }}
@@ -203,6 +211,7 @@ EnhancedTableHeadCheckedColumn.propTypes = {
 
 function EnhancedTableHead(props) {
     const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells, disableCheckAll, checkedColumnFirst, setCellType } = props;
+    const classesHead = useTableHeadStyles();
 
     const createSortHandler = row => event => {
         onRequestSort(event, row.id);
@@ -226,7 +235,7 @@ function EnhancedTableHead(props) {
                     align={row.type === 'numeric' ? 'right' : 'left'}
                     padding={checkedColumnFirst ? "default" : "checkbox"}
                     size="small"
-                    className={classes.head}
+                    className={classNames(classes.head, classesHead.head)}
                 >
                     <TableSortLabel
                         active={orderBy === row.id}
