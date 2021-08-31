@@ -65,6 +65,7 @@ class DictionaryItemForm extends Component {
                                 label={constants.BUTTON_SAVE}
                                 icon=<Save/>
                                 iconAlign="right"
+                                type='submit'
                                 variant="submit"
                                 disabled={pristine || submitting || invalid || submitSucceeded }
                             />

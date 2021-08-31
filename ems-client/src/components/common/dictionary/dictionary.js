@@ -5,7 +5,7 @@ import ModalDialog from 'common/modalDialog';
 import Spinner from 'common/spinner';
 import * as constants from 'constants/uiNames';
 import { SearchField, Button, Table } from 'common/gui';
-import { Add, Close, Delete, Edit, Visibility } from '@material-ui/icons/';
+import { Add, Close, Delete, Edit, Visibility, Cancel } from '@material-ui/icons/';
 import DictionaryItemDetails from 'components/common/dictionary/dictionaryItemDetails';
 
 
@@ -39,6 +39,9 @@ const styles = theme => ({
     icon: {
         marginLeft: theme.spacing(1),
     },
+    buttons: {
+        paddingLeft: theme.spacing(15),
+    }
 })
 
 class Dictionary extends Component {
@@ -113,7 +116,7 @@ class Dictionary extends Component {
     }
 
     handleConfirmDelete = () => {
-        this.props.onDelete(this.state.selected.id);
+        this.props.onDelete(this.state.selected);
         this.setState({
             action: null,
             selected: null,
@@ -124,12 +127,27 @@ class Dictionary extends Component {
         this.setState({ action: null });
     }
 
+    handleOnSubmitItem = (value) =>{
+        this.props.onSubmitItem(value, this.state.action);
+        this.setState({
+            action: null,
+            selected: null,
+            itemDetails: !this.state.itemDetails,
+        });
+    }
     handleClose = (item) => {
         this.setState(state => ({
             itemDetails: !this.state.itemDetails,
             selected: null,
-            rows: this.props.initialValues.items,
         }));
+    }
+
+    componentDidUpdate(prevProps){
+        if(this.props.initialValues.items !== prevProps.initialValues.items){
+            this.setState(state => ({
+                rows: this.props.initialValues.items,
+            }))
+        }
     }
 
     render(){
@@ -149,10 +167,13 @@ class Dictionary extends Component {
                 }
                 {itemDetails &&
                     <DictionaryItemDetails
-                        itemDetails={action === 'add' ? {} : selected}
+                        itemDetails={action === 'add' ? {isActive: true} : selected}
                         action={action}
                         dictionaryType={initialValues.type}
+                        positions={rows}
                         open={itemDetails}
+                        isLoading={this.props.isLoading}
+                        onSubmitItem={this.handleOnSubmitItem}
                         onClose={this.handleClose}
                     />
                 }
@@ -191,6 +212,7 @@ class Dictionary extends Component {
                                 <SearchField
                                     onChange={this.filter}
                                     valueType='all'
+                                    autoFocus={true}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -216,39 +238,60 @@ class Dictionary extends Component {
                             direction="row"
                             justify="center"
                             alignItems="flex-end"
+                            spacing={0}
                         >
-                            { initialValues.type !== 'P' &&
+                            <Grid item xs={10}>
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="center"
+                                    alignItems="flex-start"
+                                    className={classes.buttons}
+                                >
+                                    { initialValues.type !== 'P' &&
+                                        <Button
+                                            className={classes.dialogActionButton}
+                                            label={constants.BUTTON_ADD}
+                                            icon=<Add/>
+                                            iconAlign="right"
+                                            variant="add"
+                                            onClick={ (event) => this.handleOpen(event, 'add', )}
+                                            data-action="add"
+                                        />
+                                    }
+                                    <Button
+                                        className={classes.dialogActionButton}
+                                        label={initialValues.type !== 'P' ? constants.BUTTON_EDIT : constants.BUTTON_PREVIEW}
+                                        icon={initialValues.type !== 'P' ? <Edit/> : <Visibility/>}
+                                        iconAlign="right"
+                                        variant={initialValues.type !== 'P' ?  "edit" : "cancel"}
+                                        disabled={!selected}
+                                        onClick={ (event) => this.handleOpen(event, 'edit', )}
+                                        data-action="edit"
+                                    />
+                                    { initialValues.type !== 'P' &&
+                                        <Button
+                                            className={classes.dialogActionButton}
+                                            label={constants.BUTTON_DELETE}
+                                            icon=<Delete/>
+                                            iconAlign="right"
+                                            variant="delete"
+                                            disabled={!selected}
+                                            onClick = {(event) => this.handleDelete(event, 'delete', )}
+                                        />
+                                    }
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={2}>
                                 <Button
                                     className={classes.dialogActionButton}
-                                    label={constants.BUTTON_ADD}
-                                    icon=<Add/>
+                                    label={constants.BUTTON_CLOSE}
+                                    icon={<Cancel/>}
                                     iconAlign="right"
-                                    variant="add"
-                                    onClick={ (event) => this.handleOpen(event, 'add', )}
-                                    data-action="add"
+                                    variant={"cancel"}
+                                    onClick={onClose}
                                 />
-                            }
-                            <Button
-                                className={classes.dialogActionButton}
-                                label={initialValues.type !== 'P' ? constants.BUTTON_EDIT : constants.BUTTON_PREVIEW}
-                                icon={initialValues.type !== 'P' ? <Edit/> : <Visibility/>}
-                                iconAlign="right"
-                                variant={initialValues.type !== 'P' ?  "edit" : "cancel"}
-                                disabled={!selected}
-                                onClick={ (event) => this.handleOpen(event, 'edit', )}
-                                data-action="edit"
-                            />
-                            { initialValues.type !== 'P' &&
-                                <Button
-                                    className={classes.dialogActionButton}
-                                    label={constants.BUTTON_DELETE}
-                                    icon=<Delete/>
-                                    iconAlign="right"
-                                    variant="delete"
-                                    disabled={!selected}
-                                    onClick = {(event) => this.handleDelete(event, 'delete', )}
-                                />
-                            }
+                            </Grid>
                         </Grid>
                     </DialogActions>
                 </Dialog>

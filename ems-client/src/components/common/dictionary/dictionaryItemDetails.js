@@ -36,6 +36,10 @@ class Dictionary extends Component {
         this.setState({selected: id});
     }
 
+    handleSubmit = (values) =>{
+        this.props.onSubmitItem(values)
+    }
+
     componentDidMount(){
         this.setState({
             filter: this.state.rows,
@@ -101,6 +105,8 @@ class Dictionary extends Component {
                                     initialValues={itemDetails}
                                     dictionaryType={dictionaryType}
                                     action={action}
+                                    positions={this.props.positions}
+                                    onSubmit={this.handleSubmit}
                                     onClose={onClose}
                                 />
                             </Grid>

@@ -38,7 +38,7 @@ public class DictionaryItem {
     private Boolean isActive;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "dictionary_code")
     private Dictionary dictionary;
 
