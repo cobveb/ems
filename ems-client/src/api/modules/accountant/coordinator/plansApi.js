@@ -5,6 +5,10 @@ class PlansApi {
         return Axios.get(`/api/accountant/coordinator/plans/getAll`)
     }
 
+    static getPlan(planId){
+        return Axios.get(`/api/accountant/coordinator/plans/getPlan/${planId}`)
+    }
+
     static approvePlan(planId){
         return Axios.put(`/api/accountant/coordinator/plan/${planId}/accountantApprove`)
     }

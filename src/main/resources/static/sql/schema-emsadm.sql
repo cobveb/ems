@@ -164,7 +164,99 @@ TABLESPACE ems_data;
 
 COMMENT on COLUMN acc_cost_years_coordinators.cost_year_id is 'Cost Year ID';
 COMMENT on COLUMN acc_cost_years_coordinators.coordinator_id is 'Organization Units Coordinator ID';
+/
 
+/*Create the table of Institution plans in module Accountant*/
+DROP TABLE emsadm.acc_institution_plans CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.acc_institution_plans(
+    id NUMBER(19,0) NOT NULL,
+    year INTEGER NULL,
+    status VARCHAR(2) NOT NULL,
+    plan_type VARCHAR(3) NOT NULL,
+    plan_approve_user_id NUMBER(19,0),
+    plan_correction_id NUMBER(19,0),
+    CONSTRAINT acc_institution_plan_pk PRIMARY KEY(id),
+    CONSTRAINT acc_inst_plan_approve_usr_fk FOREIGN KEY (plan_approve_user_id) REFERENCES emsarch.users(id),
+    CONSTRAINT acc_inst_correction_plan_fk FOREIGN KEY (plan_correction_id) REFERENCES emsadm.acc_institution_plans(id)
+)
+TABLESPACE ems_data;
+COMMENT on COLUMN acc_institution_plans.id is 'Plan ID';
+COMMENT on COLUMN acc_institution_plans.year is 'Year of the plan validity';
+COMMENT on COLUMN acc_institution_plans.status is 'Plan status';
+COMMENT on COLUMN acc_institution_plans.plan_type is 'Plan type in (FIN, INW)';
+COMMENT on COLUMN acc_institution_plans.plan_approve_user_id is 'Plan aprove user ID (FK -> Users)';
+COMMENT on COLUMN acc_institution_plans.plan_correction_id is 'Plan corretion ID (FK -> acc_institution_plans)';
+/
+
+/*Create the table of institution plans positions on module Accountant*/
+DROP TABLE emsadm.acc_institution_plan_positions CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.acc_institution_plan_positions(
+    id NUMBER(19,0) NOT NULL,
+    status VARCHAR(2) NOT NULL,
+    am_req_net NUMBER(20,5) NOT NULL,
+    am_req_gross NUMBER(20,5) NOT NULL,
+    am_awa_net NUMBER(20,5),
+    am_awa_gross NUMBER(20,5),
+    am_rea_net NUMBER(20,5),
+    am_rea_gross NUMBER(20,5),
+    pos_correction_id NUMBER(19,0),
+    plan_id NUMBER(19,0) NOT NULL,
+    CONSTRAINT acc_inst_plan_pos_pk PRIMARY KEY(id),
+	CONSTRAINT acc_ins_plan_fk FOREIGN KEY (plan_id) REFERENCES emsadm.acc_institution_plans(id),
+    CONSTRAINT acc_inst_correction_pos_fk FOREIGN KEY (pos_correction_id) REFERENCES emsadm.acc_institution_plan_positions(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN acc_institution_plan_positions.id is 'Position ID';
+COMMENT on COLUMN acc_institution_plan_positions.status is 'Position status in (DO,ZA,SK,RE,ZR)';
+COMMENT on COLUMN acc_institution_plan_positions.am_req_net is 'Position amount requested net';
+COMMENT on COLUMN acc_institution_plan_positions.am_req_gross is 'Position amount requested gross';
+COMMENT on COLUMN acc_institution_plan_positions.am_awa_net is 'Position amount awared net';
+COMMENT on COLUMN acc_institution_plan_positions.am_awa_gross is 'Position amount awared gross';
+COMMENT on COLUMN acc_institution_plan_positions.am_rea_net is 'Position amount realized net';
+COMMENT on COLUMN acc_institution_plan_positions.am_rea_gross is 'Position amount realized gross';
+COMMENT on COLUMN acc_institution_plan_positions.pos_correction_id is 'Position corection ID (FK -> acc_institution_plan_positions)';
+COMMENT on COLUMN acc_institution_plan_positions.plan_id is 'Plan Institution ID (FK -> acc_institution_plans)';
+/
+
+/*Create the table of Institution Plans Positions Financial on module Accountant*/
+DROP TABLE emsadm.acc_institution_plan_pos_fin CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.acc_institution_plan_pos_fin(
+    id NUMBER(19,0) NOT NULL,
+    cost_type_id NUMBER(19,0) NOT NULL,
+	CONSTRAINT acc_inst_fin_pos_pk PRIMARY KEY(id),
+	CONSTRAINT acc_inst_pos_fk FOREIGN KEY (id) REFERENCES emsadm.acc_institution_plan_positions(id),
+	CONSTRAINT acc_inst_fin_pos_cost_fk FOREIGN KEY (cost_type_id) REFERENCES emsadm.acc_costs_type(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN acc_institution_plan_pos_fin.id is 'Instituton financial position ID PK and FK';
+COMMENT on COLUMN acc_institution_plan_pos_fin.cost_type_id is 'Position Cost Type ID';
+/
+
+
+DROP TABLE emsadm.acc_institution_plan_cor_pos CASCADE CONSTRAINTS PURGE;
+/
+CREATE TABLE emsadm.acc_institution_plan_cor_pos(
+    id NUMBER(19,0) NOT NULL,
+    cor_position_id NUMBER(19,0) NOT NULL,
+    pos_correction_id NUMBER(19,0),
+    institution_position_id NUMBER(19,0),
+    CONSTRAINT acc_inst_plan_cor_pos_pk PRIMARY KEY(id),
+    CONSTRAINT acc_inst_cor_pos_fk FOREIGN KEY (cor_position_id) REFERENCES emsadm.cor_plan_positions(id),
+    CONSTRAINT acc_inst_cor_correction_pos_fk FOREIGN KEY (pos_correction_id) REFERENCES emsadm.acc_institution_plan_cor_pos(id),
+    CONSTRAINT acc_ins_plan_pos_fk FOREIGN KEY (institution_position_id) REFERENCES emsadm.acc_institution_plan_positions(id)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN acc_institution_plan_cor_pos.id is 'Institution Coordinator position ID';
+COMMENT on COLUMN acc_institution_plan_cor_pos.cor_position_id is 'Coordinstor plan position ID (FK -> cor_plan_positions)';
+COMMENT on COLUMN acc_institution_plan_cor_pos.pos_correction_id is 'Institution Coordinator plan position corection ID (FK -> acc_institution_plan_cor_pos)';
+COMMENT on COLUMN acc_institution_plan_cor_pos.institution_position_id is 'Institution position ID (FK -> acc_institution_plan_positions)';
+/
 /*-----------------------------------------Tables Module COORDINATOR----------------------------------------------------*/
 
 /*Create the table of Plans on module Coordinator*/
@@ -204,7 +296,7 @@ COMMENT on COLUMN cor_plans.send_user_id is 'Plan send user (Users)';
 COMMENT on COLUMN cor_plans.plan_accept_user_id is 'Plan accountant / procuements accept user (Users)';
 COMMENT on COLUMN cor_plans.director_accept_user_id is 'Plan director accept user (Users)';
 COMMENT on COLUMN cor_plans.chief_accept_user_id is 'Plan chief accept user (Users)';
-
+/
 
 /*Create the table of Plans Positions on module Coordinator*/
 DROP TABLE emsadm.cor_plan_positions CASCADE CONSTRAINTS PURGE;
@@ -563,8 +655,24 @@ CREATE SEQUENCE acc_costs_type_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 DROP SEQUENCE acc_cost_years_seq;
 /
 CREATE SEQUENCE acc_cost_years_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+
+/-- Create sequence of table institution plan
+DROP SEQUENCE acc_inst_plan_seq;
+/
+CREATE SEQUENCE acc_inst_plan_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 /
 
+/-- Create sequence of table institution plan positions
+DROP SEQUENCE acc_inst_plan_pos_seq;
+/
+CREATE SEQUENCE acc_inst_plan_pos_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+/
+
+/-- Create sequence of table institution plan coordinator positions
+DROP SEQUENCE acc_inst_plan_cor_pos_seq;
+/
+CREATE SEQUENCE acc_inst_plan_cor_pos_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+/
 /*-----------------------------------------Sequence Module COORDINATOR-------------------------------------------------*/
 
 -- Create sequence of table coordinator plan
@@ -578,10 +686,10 @@ DROP SEQUENCE cor_plan_pos_seq;
 /
 CREATE SEQUENCE cor_plan_pos_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 
----- Create sequence of table coordinator plan position
---DROP SEQUENCE cor_pos_inv_source_seq;
+-- Create sequence of table coordinator plan position
+DROP SEQUENCE cor_pos_inv_source_seq;
 /
---CREATE SEQUENCE cor_pos_inv_source_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+CREATE SEQUENCE cor_pos_inv_source_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 
 -- Create sequence of table coordinator plan sub position
 DROP SEQUENCE cor_plan_sub_pos_seq;

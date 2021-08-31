@@ -24,6 +24,7 @@ class Plan extends Component {
                     costsTypes={costsTypes}
                     modes={modes}
                     assortmentGroups={assortmentGroups}
+                    foundingSources={this.props.foundingSources}
                     orderTypes={orderTypes}
                     estimationTypes={estimationTypes}
                     onClose={() => onClose(initialValues)}

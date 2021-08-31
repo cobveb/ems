@@ -6,6 +6,7 @@ import pl.viola.ems.model.common.export.ExportType;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.coordinator.plans.*;
 import pl.viola.ems.payload.export.ExcelHeadRow;
+import pl.viola.ems.payload.modules.accountant.CoordinatorPlanResponse;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationProcurementPlanPosition;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,11 +21,13 @@ public interface PlanService {
 
     <T extends CoordinatorPlanPosition> List<T> findPositionsByPlan(Long planId);
 
+    <T extends CoordinatorPlanPosition> List<T> findPositionsByIdsAndPlanType(List<Long> positionIds, CoordinatorPlan.PlanType planType);
+
     List<PublicProcurementPosition> getPublicProcurementPositionByYear();
 
     Optional<PublicProcurementPosition> getPublicProcurementPositionById(Long positionId);
 
-    CoordinatorPlan findPlanById(Long planId);
+    CoordinatorPlanResponse findPlanById(Long planId);
 
     CoordinatorPlan savePlan(CoordinatorPlan plan, String action, User principal);
 

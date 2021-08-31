@@ -4,11 +4,9 @@ import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import PropTypes from 'prop-types';
 import PlanBasicInfoForm from 'containers/modules/accountant/coordinator/plans/forms/planBasicInfoFormContainer';
-import {findSelectFieldPosition, generateExportLink} from 'utils';
+import {findSelectFieldPosition, generateExportLink, findIndexElement, getVats, getCoordinatorPlanPositionsStatuses} from 'utils';
 import PlansApi from 'api/modules/accountant/coordinator/plansApi';
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
-import * as constants from 'constants/uiNames';
-import {findIndexElement} from 'utils/';
 
 class PlanContainer extends Component {
     state = {
@@ -17,46 +15,8 @@ class PlanContainer extends Component {
         },
         units: [],
         costsTypes:[],
-        vats: [
-            {
-                code: 1.08,
-                name: "8%",
-            },
-            {
-                code: 1.23,
-                name: "23%",
-            },
-        ],
-        statuses:[
-            {
-                code: 'DO',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_ADDED,
-            },
-            {
-                code: 'ZP',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_SAVED,
-            },
-            {
-                code: 'WY',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_SENT,
-            },
-            {
-                code: 'ZA',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_ACCEPT,
-            },
-            {
-                code: 'SK',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_CORRECT,
-            },
-            {
-                code: 'RE',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_REALIZED,
-            },
-            {
-                code: 'ZR',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_EXECUTED,
-            },
-        ],
+        vats: getVats(),
+        statuses: getCoordinatorPlanPositionsStatuses(),
     }
 
     handleGetCostsTypes(){
@@ -68,6 +28,32 @@ class PlanContainer extends Component {
         })
         .catch(error => {});
     };
+
+    handleGetPlan = () => {
+        this.props.loading(true);
+        PlansApi.getPlan(this.props.initialValues.planId)
+        .then(response =>{
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                initData = response.data.data;
+                initData.status = findSelectFieldPosition(this.props.statuses, initData.status)
+                initData.type = findSelectFieldPosition(this.props.types, initData.type)
+                initData["positions"].map(position => (
+                    Object.assign(position,
+                        {
+                            vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
+                            status: position.status = findSelectFieldPosition(this.state.statuses, position.status)
+                        }
+                    )
+                ))
+                return {initData};
+            });
+            this.props.loading(false)
+        })
+        .catch(error =>{
+            this.props.loading(false)
+        });
+    }
 
     handleGetPlanPositions = () => {
         this.props.loading(true);
@@ -187,17 +173,18 @@ class PlanContainer extends Component {
     }
 
     componentDidMount() {
-        if (this.props.action !== 'add'){
+        if (this.props.action === 'plan'){
+            this.handleGetPlan();
+        } else if (this.props.action !== 'add'){
             this.handleGetPlanPositions();
         }
     }
     render(){
-        const {changeVisibleDetails, action, handleClose, error, isLoading } = this.props;
+        const {action, handleClose, error, isLoading } = this.props;
         const {initData, units, vats, costsTypes } = this.state;
         return(
             <PlanBasicInfoForm
                 initialValues={initData}
-                changeVisibleDetails={changeVisibleDetails}
                 action={action}
                 error={error}
                 isLoading={isLoading}
@@ -217,7 +204,7 @@ class PlanContainer extends Component {
 PlanContainer.propTypes = {
     initialValues: PropTypes.object,
     changeVisibleDetails: PropTypes.func,
-    action: PropTypes.oneOf(['add', 'edit']).isRequired,
+    action: PropTypes.oneOf(['add', 'edit', 'plan']).isRequired,
     changeAction: PropTypes.func,
     handleClose: PropTypes.func,
     error: PropTypes.string,

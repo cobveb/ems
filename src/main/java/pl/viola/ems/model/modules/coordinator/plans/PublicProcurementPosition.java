@@ -3,6 +3,7 @@ package pl.viola.ems.model.modules.coordinator.plans;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
+import pl.viola.ems.model.modules.accountant.CostType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -71,4 +72,8 @@ public class PublicProcurementPosition extends CoordinatorPlanPosition {
         return this.amountRequestedEuroNet;
     }
 
+    @Override
+    public CostType getCostType() {
+        return null;
+    }
 }

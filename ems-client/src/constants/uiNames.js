@@ -135,6 +135,8 @@ export const DICTIONARY_ITEM_DETAILS_EDIT_TITLE = 'Szczegóły pozycji: ';
 export const DICTIONARY_ITEM_FORM_CODE = 'Kod';
 export const DICTIONARY_ITEM_FORM_NAME = 'Nazwa';
 export const DICTIONARY_ITEM_FORM_IS_ACTIVE = 'Aktywna';
+/* components/modules/administrator/dictionaryItemFormValid.js */
+export const DICTIONARY_ITEM_CODE_EXISTS = 'Pozycja o podanym kodzie istnieje';
 /* components/modules/administrator/parameters.js */
 export const PARAMETERS_SEARCH_CODE = 'Kod / Nazwa';
 export const PARAMETERS_SEARCH_CATEGORY = 'Kategoria';
@@ -311,10 +313,11 @@ export const COORDINATOR_PLAN_POSITION_PUBLIC_COST_TYPE_POSITIONS = 'Pozycje kos
 /* components/modules/coordinator/plans/forms/planFinancialPositionsForm.js */
 export const COORDINATOR_PLAN_POSITION_FINANCIAL_CREATE_POSITION_DETAILS_TITLE = "Nowa pozycja"
 export const COORDINATOR_PLAN_POSITION_FINANCIAL_EDIT_POSITION_DETAILS_TITLE = "Edycja pozycji: "
-export const COORDINATOR_PLAN_POSITION_FINANCIAL_UNIT_PRICE = 'Cena jednostkowa netto';
+export const COORDINATOR_PLAN_POSITION_FINANCIAL_UNIT_PRICE = 'Cena jednostkowa brutto';
 export const COORDINATOR_PLAN_POSITION_FINANCIAL_AMOUNT_NET = 'Kwota netto';
 export const COORDINATOR_PLAN_POSITION_FINANCIAL_AMOUNT_GROSS = 'Kwota brutto';
 /* components/modules/coordinator/plans/forms/planPublicProcurementContentPositionForm.js */
+export const COORDINATOR_PLAN_POSITION_PUBLIC_WRONG_ESTIMATION_TYPE_MSG = "Nieprawidłowy typ wartości szacunkowej? Czy kontynuować?";
 export const COORDINATOR_PLAN_POSITION_PUBLIC_ORDERED_OBJECT = 'Przedmiot zamówienia';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_ORDER_TYPE = 'Rodzaj zamówienia';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP = 'Grupa asortymentowa';
@@ -332,6 +335,10 @@ export const COORDINATOR_PLAN_POSITION_INVESTMENT_APPLICATION = 'Zastosowanie';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_SUBSTANTIATION = 'Uzasadnienie';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_FUNDING_SOURCES = 'Źródła finansowania';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_SOURCES = 'Źródło finansowania';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_REALIZATION_DATE = 'Data realizacji';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_APPLICANT = 'Jednostka wnioskująca';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_NET = 'Kwota wydatku netto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_GROSS = 'Kwota wydatku brutto';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_NET = 'Kwota w planie netto';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS = 'Kwota w planie brutto';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_REALIZED_PLAN_GROSS = 'Realizacja w planie brutto';
@@ -487,8 +494,15 @@ export const ACCOUNTANT_PLAN_COORDINATOR_DIRECTOR_ACCEPT_USER = 'Zatwierdzenie D
 export const ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER = 'Zatwierdzenie Dyrektor Naczelny';
 /* components/modules/accountant/coordinator/plans/forms/planCorrectionPositionForm.js */
 export const ACCOUNTANT_PLAN_COORDINATOR_CORRECTION_POSITIONS_TITLE = 'Korekta pozycji: ';
+export const ACCOUNTANT_PLAN_INSTITUTION_CORRECTION_POSITIONS_TITLE = 'Korekta pozycji w planie Koordynatora: ';
 /* components/modules/accountant/institution/plans/plans.js */
 export const ACCOUNTANT_INSTITUTION_PLANS_TITLE = 'Plany';
+/* components/modules/accountant/institution/plans/plan.js */
+export const ACCOUNTANT_INSTITUTION_POSITION_SEARCH_COST_TYPE = 'Rodzaj kosztu / Nazwa rodzaju kosztu';
+/* components/modules/accountant/institution/plans//forms/planPositionsForm.js */
+export const ACCOUNTANT_INSTITUTION_PLAN_POSITIONS_TITLE = 'Pozycja planu: ';
+export const ACCOUNTANT_INSTITUTION_PLAN_COORDINATOR_POSITIONS = 'Pozycje w planach Koordynatorów: ';
+export const ACCOUNTANT_INSTITUTION_PLAN_COORDINATOR_POSITIONS_BUTTON_PLAN = "Plan";
 /* components/modules/accountant/dictionary/costsTypes.js */
 export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NUMBER = 'Numer';
 export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NAME = 'Nazwa';

@@ -5,7 +5,7 @@ import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { Button, InputField } from 'common/gui';
 import * as constants from 'constants/uiNames';
-import { FormTableField } from 'common/form';
+import { FormTableField, FormAmountField } from 'common/form';
 import { Cancel, Description, LibraryBooks, Edit, Done, DoneAll, CheckCircle } from '@material-ui/icons/';
 import PlanCorrectionPositionFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planCorrectionPositionFormContainer.js'
 
@@ -29,7 +29,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(48.5)}px)`,
+        height: `calc(100vh - ${theme.spacing(54.5)}px)`,
     },
 });
 
@@ -148,7 +148,6 @@ class PlanBasicInfoForm extends Component {
     handleConfirmAccept = () => {
         this.props.onAcceptPlanPositions(this.state.selected);
         this.setState({
-            formChanged: true,
             selected: [],
             planAction: null,
         });
@@ -157,7 +156,6 @@ class PlanBasicInfoForm extends Component {
     handleCorrectPosition = (values) =>{
         this.props.onCorrectPlanPosition(values);
         this.setState({
-            formChanged: true,
             selected: [],
             planAction: null,
         });
@@ -178,6 +176,7 @@ class PlanBasicInfoForm extends Component {
         });
     };
 
+    //Remove to Institution Plan
     handleApprove = () => {
         this.setState({ planAction: 'approve'});
     }
@@ -236,11 +235,12 @@ class PlanBasicInfoForm extends Component {
     }
 
     render(){
-        const { handleSubmit, submitting, classes, initialValues } = this.props
+        const { handleSubmit, submitting, classes, initialValues, isLoading } = this.props
         const { headFin, headInv, selected, positions, planAction } = this.state;
 
         return(
             <>
+                {(submitting || isLoading) && <Spinner /> }
                 {planAction && this.renderDialog(initialValues.status)}
                 <form onSubmit={handleSubmit}>
                     { submitting && <Spinner /> }
@@ -286,6 +286,33 @@ class PlanBasicInfoForm extends Component {
                                         value={initialValues.status !== undefined ? initialValues.status.name : ''}
                                     />
                                 </Grid>
+
+                                <Grid item xs={12} sm={4}>
+                                    <FormAmountField
+                                        name={"planAmountRequestedGross"}
+                                        label={constants.COORDINATOR_PLAN_FINANCIAL_REQUESTED_VALUE}
+                                        suffix={'zł.'}
+                                        disabled
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <FormAmountField
+                                        name="planAmountAwardedGross"
+                                        label={constants.COORDINATOR_PLAN_FINANCIAL_AWARDED_VALUE}
+                                        suffix={'zł.'}
+                                        disabled
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <FormAmountField
+                                        name={"planAmountRealizedGross"}
+                                        label={constants.COORDINATOR_PLAN_FINANCIAL_REALIZED_VALUE}
+                                        suffix={'zł.'}
+                                        disabled
+                                    />
+                                </Grid>
+
+
                             </Grid>
                             <Toolbar className={classes.toolbar}>
                                 <CheckCircle className={classes.subHeaderIcon} fontSize="small" />
@@ -393,16 +420,18 @@ class PlanBasicInfoForm extends Component {
                                     onClick={this.handleCorrect}
                                 />
                             }
-                            {initialValues.status !== undefined && initialValues.status.code === 'RO' &&
-                                <Button
-                                    label={constants.BUTTON_APPROVE}
-                                    icon=<DoneAll/>
-                                    iconAlign="left"
-                                    variant="submit"
-                                    disabled={selected.length > 0 }
-                                    onClick={this.handleApprove}
-                                />
-                            }
+                            {/* Remove to institution plan
+//                            {initialValues.status !== undefined && initialValues.status.code === 'RO' &&
+//                                <Button
+//                                    label={constants.BUTTON_APPROVE}
+//                                    icon=<DoneAll/>
+//                                    iconAlign="left"
+//                                    variant="submit"
+//                                    disabled={selected.length > 0 }
+//                                    onClick={this.handleApprove}
+//                                />
+//                            }
+                            */}
                             <Button
                                 label={constants.BUTTON_CLOSE}
                                 icon=<Cancel/>

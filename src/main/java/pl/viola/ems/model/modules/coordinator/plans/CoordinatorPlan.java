@@ -7,6 +7,7 @@ import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
@@ -40,7 +41,7 @@ public class CoordinatorPlan {
     @SequenceGenerator(name = "coordinatorPlanSequence", sequenceName = "cor_plan_seq", schema = "emsadm", allocationSize = 1)
     private Long id;
 
-    @NonNull
+    @NotNull
     private int year;
 
     @Enumerated(EnumType.STRING)

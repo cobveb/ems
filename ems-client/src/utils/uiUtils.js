@@ -192,13 +192,10 @@ export const getCoordinatorPlanTypes = () => [
         code: 'FIN',
         name: constants.COORDINATOR_PLAN_TYPE_FINANCIAL,
     },
-    /*
-        TODO: Rezygnacja z funkcjonalności
-        {
-            code: 'INW',
-            name: constants.COORDINATOR_PLAN_TYPE_INVESTMENT,
-        },
-    */
+    {
+        code: 'INW',
+        name: constants.COORDINATOR_PLAN_TYPE_INVESTMENT,
+    },
     {
         code: 'PZP',
         name: constants.COORDINATOR_PLAN_TYPE_PUBLIC_PROCUREMENT,
@@ -233,6 +230,74 @@ export const  publicProcurementEstimationTypes = () => [
         name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_COVID,
     }
 ]
+
+
+export const getCoordinatorPlanStatuses = () => [
+    {
+        code: 'WY',
+        name: constants.COORDINATOR_PLAN_STATUS_SENT,
+    },
+    {
+        code: 'RO',
+        name: constants.COORDINATOR_PLAN_STATUS_ADOPTED,
+    },
+    {
+        code: 'AK',
+        name: constants.COORDINATOR_PLAN_STATUS_APPROVED_ACCOUNTANT,
+    },
+    {
+        code: 'AD',
+        name: constants.COORDINATOR_PLAN_STATUS_APPROVED_DIRECTOR,
+    },
+    {
+        code: 'ZA',
+        name: constants.COORDINATOR_PLAN_STATUS_APPROVED_CHIEF,
+    },
+    {
+        code: 'SK',
+        name: constants.COORDINATOR_PLAN_STATUS_CORRECTED,
+    },
+    {
+        code: 'RE',
+        name: constants.COORDINATOR_PLAN_STATUS_REALIZED,
+    },
+    {
+        code: 'ZR',
+        name: constants.COORDINATOR_PLAN_STATUS_EXECUTED,
+    },
+
+];
+
+export const getCoordinatorPlanPositionsStatuses = () => [
+    {
+        code: 'DO',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_ADDED,
+    },
+    {
+        code: 'ZP',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_SAVED,
+    },
+    {
+        code: 'WY',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_SENT,
+    },
+    {
+        code: 'ZA',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_ACCEPT,
+    },
+    {
+        code: 'SK',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_CORRECT,
+    },
+    {
+        code: 'RE',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_REALIZED,
+    },
+    {
+        code: 'ZR',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_EXECUTED,
+    },
+];
 
 
 export const getVats = () =>  [

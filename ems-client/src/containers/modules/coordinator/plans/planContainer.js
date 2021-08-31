@@ -8,7 +8,7 @@ import DictionaryApi from 'api/common/dictionaryApi';
 import PlansApi from 'api/modules/coordinator/plansApi';
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
 import * as constants from 'constants/uiNames';
-import {findIndexElement, publicProcurementEstimationTypes, findSelectFieldPosition, generateExportLink} from 'utils/';
+import {findIndexElement, publicProcurementEstimationTypes, findSelectFieldPosition, generateExportLink, getCoordinatorPlanPositionsStatuses} from 'utils/';
 
 class PlanContainer extends Component {
     state = {
@@ -19,6 +19,7 @@ class PlanContainer extends Component {
         units: [],
         costsTypes:[],
         assortmentGroups:[],
+        foundingSources:[],
         vats: [
             {
                 code: 1.08,
@@ -40,36 +41,7 @@ class PlanContainer extends Component {
             }
         ],
         estimationTypes: publicProcurementEstimationTypes(),
-        statuses:[
-            {
-                code: 'DO',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_ADDED,
-            },
-            {
-                code: 'ZP',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_SAVED,
-            },
-            {
-                code: 'WY',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_SENT,
-            },
-            {
-                code: 'ZA',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_ACCEPT,
-            },
-            {
-                code: 'SK',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_CORRECT,
-            },
-            {
-                code: 'RE',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_REALIZED,
-            },
-            {
-                code: 'ZR',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_EXECUTED,
-            },
-        ],
+        statuses: getCoordinatorPlanPositionsStatuses(),
     }
 
     setNewPositionToNull = () =>{
@@ -103,6 +75,16 @@ class PlanContainer extends Component {
         .then(response => {
             this.setState({
                 assortmentGroups: response.data.data.items,
+            })
+        })
+        .catch(error => {});
+    };
+
+    handleGetDictionaryFoundingSources(){
+       return DictionaryApi.getDictionary('dicFunSour')
+        .then(response => {
+            this.setState({
+                foundingSources: response.data.data.items,
             })
         })
         .catch(error => {});
@@ -150,8 +132,24 @@ class PlanContainer extends Component {
                     });
                     this.handleGetDictionaryAssortmentGroups();
                 break;
-                default:
-                    return null;
+                case('INW'):
+                    this.setState( prevState => {
+                        let initData = {...prevState.initData};
+                        Object.assign(initData, this.props.initialValues);
+                        initData.positions = response.data.data;
+                        initData["positions"].map(position => (
+                            Object.assign(position,
+                                {
+                                    vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
+                                    status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                                }
+                            )
+                        ))
+                        return {initData};
+                    });
+                    this.handleGetDictionaryFoundingSources();
+                break;
+                // no default
             }
         this.props.loading(false)
         })
@@ -379,7 +377,7 @@ class PlanContainer extends Component {
     }
     render(){
         const {changeVisibleDetails, plans, action, handleClose, types, modes, error, isLoading } = this.props;
-        const {initData, newPosition, units, vats, costsTypes, assortmentGroups, orderTypes, estimationTypes} = this.state;
+        const {initData, newPosition, units, vats, costsTypes, assortmentGroups, orderTypes, estimationTypes, foundingSources} = this.state;
         return(
             <Plan
                 initialValues={initData}
@@ -405,6 +403,7 @@ class PlanContainer extends Component {
                 vats={vats}
                 modes={modes}
                 assortmentGroups={assortmentGroups}
+                foundingSources={foundingSources}
                 orderTypes={orderTypes}
                 estimationTypes={estimationTypes}
                 isSubmit={this.handleIsSubmit}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { LibraryBooks, Style, Timeline, HowToReg} from '@material-ui/icons/';
+import { LibraryBooks, Style, Timeline, HowToReg, LocationCity} from '@material-ui/icons/';
 import * as constants from 'constants/uiNames';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
@@ -7,6 +7,7 @@ import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
 import CostsTypesContainer from 'containers/modules/accountant/dictionary/costsTypesContainer';
 import PlansContainer from 'containers/modules/accountant/coordinator/plans/plansContainer';
+import InstitutionPlansContainer from 'containers/modules/accountant/institution/plans/plansContainer';
 import PropTypes from 'prop-types';
 
 const styles = theme => ({
@@ -37,12 +38,25 @@ class Accountant extends Component {
             {
                 name: constants.ACCOUNTANT_MENU_COORDINATOR,
                 icon: <HowToReg />,
-                defaultExpanded: true,
+                defaultExpanded: false,
                 items:  [
                     {
                         code: 'plans',
                         name: constants.ACCOUNTANT_SUBMENU_COORDINATOR_PLANS,
                         path: '/modules/accountant/coordinator/plans',
+                        icon: <Timeline />
+                    },
+                ],
+            },
+            {
+                name: constants.ACCOUNTANT_MENU_INSTITUTION,
+                icon: <LocationCity />,
+                defaultExpanded: true,
+                items:  [
+                    {
+                        code: 'plans',
+                        name: constants.ACCOUNTANT_SUBMENU_INSTITUTION_PLANS,
+                        path: '/modules/accountant/institution/plans',
                         icon: <Timeline />
                     },
                 ],
@@ -73,8 +87,9 @@ class Accountant extends Component {
                         <Card className={classes.card}>
                             <CardContent>
                                 <Switch>
-                                    <PrivateRoute exact path='/modules/accountant/' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/accountant/' component={InstitutionPlansContainer}/>
                                     <PrivateRoute exact path='/modules/accountant/coordinator/plans' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/accountant/institution/plans' component={InstitutionPlansContainer}/>
                                     <PrivateRoute path='/modules/accountant/dictionaries/costs' component={CostsTypesContainer}/>
                                 </Switch>
                             </CardContent>

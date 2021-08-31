@@ -53,7 +53,7 @@ class PlanCorrectionPositionForm extends Component {
 
     componentDidUpdate(prevProps){
         const { amountAwardedGross, initialValues } = this.props;
-        if (amountAwardedGross !== prevProps.amountAwardedGross){
+        if (prevProps.amountAwardedGross !== undefined && amountAwardedGross !== prevProps.amountAwardedGross){
             this.calculateValuesAmount(amountAwardedGross, initialValues.vat.code);
         }
     }
@@ -61,7 +61,6 @@ class PlanCorrectionPositionForm extends Component {
     render(){
         const { classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues } = this.props;
         const { formChanged } = this.state;
-        console.log(initialValues)
         return(
             <>
                 <Dialog
@@ -90,7 +89,9 @@ class PlanCorrectionPositionForm extends Component {
                         >
                             <Grid item xs={12} >
                                 <Typography variant='h6'>
-                                    {constants.ACCOUNTANT_PLAN_COORDINATOR_CORRECTION_POSITIONS_TITLE + `${initialValues.costType.name}`}
+                                    {`${initialValues.costType !== undefined ?
+                                        constants.ACCOUNTANT_PLAN_COORDINATOR_CORRECTION_POSITIONS_TITLE + initialValues.costType.name
+                                            :  initialValues.coordinatorName}`}
                                 </Typography>
                                 <IconButton aria-label="Close"
                                     className={classes.closeButton}
@@ -108,15 +109,13 @@ class PlanCorrectionPositionForm extends Component {
                         <Grid container spacing={1} className={classes.container}>
                             <Grid item xs={6}>
                                 <FormAmountField
-                                    isRequired={true}
                                     name="amountRequestedNet"
-                                    label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_NET}
+                                    label={constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_AMOUNT_REQUESTED_GROSS}
                                     disabled
                                 />
                             </Grid>
                             <Grid item xs={6}>
                                 <FormAmountField
-                                    isRequired={true}
                                     name="amountRequestedGross"
                                     label={constants.ACCOUNTANT_COORDINATOR_PLANS_TABLE_HEAD_ROW_AMOUNT_REQUESTED_GROSS}
                                     disabled
@@ -124,15 +123,13 @@ class PlanCorrectionPositionForm extends Component {
                             </Grid>
                             <Grid item xs={5}>
                                 <FormAmountField
-                                    isRequired={true}
                                     name="amountAwardedNet"
-                                    label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_NET}
+                                    label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_NET}
                                     disabled
                                 />
                             </Grid>
                             <Grid item xs={2}>
                                 <InputField
-                                    isRequired={true}
                                     name="vat"
                                     label={constants.VAT}
                                     value={initialValues.vat.name}

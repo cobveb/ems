@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
+import pl.viola.ems.payload.auth.UserSummary;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -28,6 +29,14 @@ public class CoordinatorPlanResponse {
     private CoordinatorPlan.PlanType type;
 
     private OrganizationUnit coordinator;
+
+    private UserSummary sendUser;
+
+    private UserSummary planAcceptUser;
+
+    private UserSummary directorAcceptUser;
+
+    private UserSummary chiefAcceptUser;
 
     private BigDecimal planAmountRequestedNet;
 

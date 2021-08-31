@@ -183,7 +183,7 @@ class Plans extends Component {
         }
     }
     render(){
-        const { classes, initialValues, isLoading, error, coordinators, statuses, modes, onSubmitPlan } = this.props;
+        const { classes, initialValues, isLoading, error, coordinators, statuses, onSubmitPlan } = this.props;
         const { headCells, rows, selected, isDetailsVisible, action, year, coordinator, status } = this.state;
         return(
             <>
@@ -206,7 +206,6 @@ class Plans extends Component {
                             changeAction={this.handleChangeAction}
                             handleClose={this.handleClose}
                             statuses={statuses}
-                            modes={modes}
                             plans={initialValues}
                             onSubmitPlan={onSubmitPlan}
                         />

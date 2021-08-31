@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
+import pl.viola.ems.model.modules.accountant.CostType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -84,4 +85,6 @@ public abstract class CoordinatorPlanPosition implements Serializable {
     public void removeSubPosition(CoordinatorPlanSubPosition subPosition) {
         subPositions.remove(subPosition);
     }
+
+    public abstract CostType getCostType();
 }

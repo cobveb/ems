@@ -42,12 +42,6 @@ public class PlanController {
         return new ApiResponse(HttpStatus.FOUND, planService.findPositionsByPlan(planId));
     }
 
-//    @GetMapping("/plan/getPositions")
-//    @PreAuthorize("hasGroup('admin') or hasPrivilege('1022')")
-//    public ApiResponse getPositions() {
-//        return new ApiResponse(HttpStatus.FOUND, planService.findPositions());
-//    }
-
     @PutMapping("/plan/{action}/savePlan")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('2022')")
     public ApiResponse savePlan(@RequestBody @Valid CoordinatorPlan plan, @PathVariable String action) {

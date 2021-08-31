@@ -17,9 +17,12 @@ import pl.viola.ems.model.modules.coordinator.plans.*;
 import pl.viola.ems.model.modules.coordinator.plans.repository.CoordinatorPlanPositionRepository;
 import pl.viola.ems.model.modules.coordinator.plans.repository.CoordinatorPlanRepository;
 import pl.viola.ems.model.modules.coordinator.plans.repository.CoordinatorPlanSubPositionRepository;
+import pl.viola.ems.payload.auth.UserSummary;
 import pl.viola.ems.payload.export.ExcelHeadRow;
+import pl.viola.ems.payload.modules.accountant.CoordinatorPlanResponse;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationProcurementPlanPosition;
 import pl.viola.ems.service.common.JasperPrintService;
+import pl.viola.ems.service.modules.accountant.institution.InstitutionPlanService;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 import pl.viola.ems.service.modules.coordinator.plans.PlanService;
 import pl.viola.ems.utils.Utils;
@@ -62,6 +65,9 @@ public class PlanServiceImpl implements PlanService {
     @Autowired
     JasperPrintService jasperPrintService;
 
+    @Autowired
+    InstitutionPlanService institutionPlanService;
+
 
     @Override
     public List<CoordinatorPlan> findByCoordinator() {
@@ -81,12 +87,20 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public <T extends CoordinatorPlanPosition> List<T> findPositionsByPlan(Long planId) {
-        CoordinatorPlan plan = this.findPlanById(planId);
+        CoordinatorPlan plan = coordinatorPlanRepository.findById(planId)
+                .orElseThrow(() -> new AppException("Coordinator.plan.notFound", HttpStatus.NOT_FOUND));
         return plan.getType().name().equals("FIN") ?
                 (List<T>) financialPositionRepository.findByPlan(plan) :
                 plan.getType().name().equals("PZP") ?
                         (List<T>) publicProcurementPositionRepository.findByPlan(plan) :
                         (List<T>) investmentPositionRepository.findByPlan(plan);
+    }
+
+    @Override
+    public <T extends CoordinatorPlanPosition> List<T> findPositionsByIdsAndPlanType(List<Long> positionIds, CoordinatorPlan.PlanType planType) {
+        return planType.name().equals("FIN") ?
+                (List<T>) financialPositionRepository.findByIdIn(positionIds) :
+                (List<T>) investmentPositionRepository.findByIdIn(positionIds);
     }
 
     @Override
@@ -114,9 +128,30 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public CoordinatorPlan findPlanById(Long planId) {
-        return coordinatorPlanRepository.findById(planId)
+    public CoordinatorPlanResponse findPlanById(Long planId) {
+        CoordinatorPlan plan = coordinatorPlanRepository.findById(planId)
                 .orElseThrow(() -> new AppException("Coordinator.plan.notFound", HttpStatus.NOT_FOUND));
+
+        setPlanAmountValues(plan);
+
+        return new CoordinatorPlanResponse(
+                plan.getId(),
+                plan.getYear(),
+                plan.getStatus(),
+                plan.getType(),
+                plan.getCoordinator(),
+                new UserSummary(plan.getSendUser().getId(), plan.getSendUser().getName(), plan.getSendUser().getSurname(), plan.getSendUser().getUsername()),
+                plan.getPlanAcceptUser() == null ? null : new UserSummary(plan.getPlanAcceptUser().getId(), plan.getPlanAcceptUser().getName(), plan.getPlanAcceptUser().getSurname(), plan.getPlanAcceptUser().getUsername()),
+                plan.getDirectorAcceptUser() == null ? null : new UserSummary(plan.getDirectorAcceptUser().getId(), plan.getDirectorAcceptUser().getName(), plan.getDirectorAcceptUser().getSurname(), plan.getDirectorAcceptUser().getUsername()),
+                plan.getChiefAcceptUser() == null ? null : new UserSummary(plan.getChiefAcceptUser().getId(), plan.getChiefAcceptUser().getName(), plan.getChiefAcceptUser().getSurname(), plan.getChiefAcceptUser().getUsername()),
+                plan.getPlanAmountRequestedNet(),
+                plan.getPlanAmountRequestedGross(),
+                plan.getPlanAmountAwardedNet(),
+                plan.getPlanAmountAwardedGross(),
+                plan.getPlanAmountRealizedNet(),
+                plan.getPlanAmountRealizedGross(),
+                plan.getPositions()
+        );
     }
 
     @Transactional
@@ -153,12 +188,14 @@ public class PlanServiceImpl implements PlanService {
 
         coordinatorPlanRepository.save(plan);
 
+        //Update Institution plan
+        institutionPlanService.updateInstitutionPlan(plan, newStatus.equals(CoordinatorPlan.PlanStatus.WY) ? "send" : "withdraw");
+
         return plan;
     }
 
     @Override
     public void updateInferredPositionValue(ApplicationProcurementPlanPosition planPosition) {
-        System.out.println(planPosition);
         Optional<PublicProcurementPosition> position = publicProcurementPositionRepository.findById(planPosition.getId());
         position.get().setAmountInferredNet(planPosition.getAmountInferredNet());
         publicProcurementPositionRepository.save(position.get());
@@ -238,9 +275,15 @@ public class PlanServiceImpl implements PlanService {
             position.setPlan(coordinatorPlan);
             position.getSubPositions().forEach(subPosition -> subPosition.setPlanPosition(position));
         });
+
         financialPositionRepository.saveAll(positions);
 
-        return setPlanAmountValues(coordinatorPlanRepository.save(coordinatorPlan));
+        setPlanAmountValues(coordinatorPlanRepository.save(coordinatorPlan));
+
+        //Update Institution plan
+        institutionPlanService.updateInstitutionPlanPositions(positions);
+
+        return coordinatorPlan;
     }
 
     @Transactional

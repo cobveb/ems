@@ -82,7 +82,7 @@ class PlanBasicInfoForm extends Component {
             },
             {
                 id: 'amountRequested',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS,
+                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -203,7 +203,7 @@ class PlanBasicInfoForm extends Component {
     }
 
     renderPlanContent = () =>{
-        const { initialValues, vats, units, costsTypes, modes, assortmentGroups, orderTypes, estimationTypes} = this.props;
+        const { initialValues, vats, units, costsTypes, modes, assortmentGroups, orderTypes, estimationTypes, foundingSources} = this.props;
         const { positionAction, selected } = this.state;
         switch(initialValues.type.code){
             case("FIN"):
@@ -225,9 +225,10 @@ class PlanBasicInfoForm extends Component {
             case("INW"):
                 return (
                     <PlanInvestmentContentPositionFormContainer
-                        initialValues={positionAction === 'add' ? {} : selected[0]}
+                        initialValues={positionAction === 'add' ? {vat: vats[1]} : selected[0]}
                         planStatus={initialValues.status.code}
                         action={positionAction}
+                        foundingSources={foundingSources}
                         vats={vats}
                         onExcelExport={this.handleExcelExport}
                         onClose={this.handleCloseDetails}
@@ -555,7 +556,7 @@ class PlanBasicInfoForm extends Component {
                                     <FormTableField
                                         className={classes.tableWrapper}
                                         name="positions"
-                                        head={ initialValues.type !== undefined && initialValues.type.code === "FIN" ? headFin : initialValues.type !== undefined && initialValues.type.code === "INV" ? headInv : headPzp}
+                                        head={ initialValues.type !== undefined && initialValues.type.code === "FIN" ? headFin : initialValues.type !== undefined && initialValues.type.code === "INW" ? headInv : headPzp}
                                         allRows={positions}
                                         checkedRows={selected}
                                         toolbar={true}
