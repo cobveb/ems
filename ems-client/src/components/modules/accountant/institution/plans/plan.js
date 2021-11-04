@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { withStyles, Grid, Typography, Divider, Toolbar, InputAdornment} from '@material-ui/core/';
-import { Description, LibraryBooks, Visibility, Cancel, DoneAll, Undo } from '@material-ui/icons/';
+import { Description, LibraryBooks, Visibility, Cancel, DoneAll, Undo, CheckCircle, Print } from '@material-ui/icons/';
 import { Table, Button, InputField, SearchField } from 'common/gui';
 import { Spinner, ModalDialog } from 'common/';
-import { FormAmountField } from 'common/form';
 import { numberWithSpaces, escapeSpecialCharacters, findIndexElement } from 'utils/';
 import PlanPositionsContainer from 'containers/modules/accountant/institution/plans/planPositionsContainer';
 
@@ -28,7 +27,7 @@ const styles = theme => ({
         marginBottom: theme.spacing(0),
     },
     tableWrapper: {
-        height: `calc(100vh - ${theme.spacing(54)}px)`,
+        height: `calc(100vh - ${theme.spacing(68.3)}px)`,
     },
     item: {
         paddingRight: theme.spacing(1),
@@ -74,10 +73,33 @@ class Plan extends Component {
                 type: 'amount',
             },
         ],
+        headPzp: [
+            {
+                id: 'assortmentGroup.name',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP,
+                type: 'object',
+            },
+            {
+                id: 'orderType',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDER_TYPE,
+                type: 'text',
+            },
+            {
+                id: 'estimationType',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_ESTIMATION_TYPE,
+                type: 'text',
+            },
+            {
+                id: 'amountRequestedNet',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+        ],
         selected:{},
         isDetailsVisible: false,
         codeNameSearch: '',
-        isApproveAvailable: false,
+        disabledApprove: true,
     }
 
     handleSelect = (id) => {
@@ -122,11 +144,23 @@ class Plan extends Component {
     }
 
     handleApprovePlan = () => {
-        this.props.onApprovePlan();
+        if(this.props.levelAccess === "accountant"){
+            this.props.onAccountantApprovePlan();
+        } else if (this.props.levelAccess === "director"){
+            this.props.onChiefApprovePlan()
+        }
     }
 
     handleWithdrawPlan = () => {
-        this.props.onWithdrawPlan();
+        if(this.props.levelAccess === "accountant"){
+            this.props.onAccountantWithdrawPlan();
+        } else if (this.props.levelAccess === "director"){
+            this.props.onChiefWithdrawPlan()
+        }
+    }
+
+    handleExcelExport = (exportType) => {
+        this.props.onExcelExport(exportType, this.state.headCells)
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -134,12 +168,12 @@ class Plan extends Component {
             this.setState(prevState =>{
                 let rows = [...prevState.rows];
                 let selected = {...prevState.selected};
-                let isApproveAvailable = {...prevState.isApproveAvailable}
+                let disabledApprove = {...prevState.disabledApprove}
                 rows = this.props.initialValues.planPositions;
                 if(rows.filter(row => {return row.status==='WY'}).length > 0){
-                    isApproveAvailable = false;
+                    disabledApprove = true;
                 } else {
-                    isApproveAvailable = true;
+                    disabledApprove = false;
                 }
                 if(Object.keys(selected).length > 0){
                     const index = findIndexElement(selected, this.props.initialValues.planPositions, "costTypeCode");
@@ -147,7 +181,7 @@ class Plan extends Component {
                         selected = this.props.initialValues.planPositions[index];
                     }
                 }
-                return {rows, selected, isApproveAvailable}
+                return {rows, selected, disabledApprove}
             });
         } else if (this.state.codeNameSearch !== prevState.codeNameSearch){
             this.setState({
@@ -157,8 +191,8 @@ class Plan extends Component {
     }
 
     render(){
-        const { classes, isLoading, error, initialValues } = this.props;
-        const { headCells, rows, selected, isDetailsVisible, isApproveAvailable } = this.state;
+        const { classes, isLoading, error, initialValues, levelAccess } = this.props;
+        const { headCells, headPzp, rows, selected, isDetailsVisible, disabledApprove } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -169,6 +203,7 @@ class Plan extends Component {
                         initialValues={selected}
                         planType={initialValues.type}
                         planStatus={initialValues.status}
+                        levelAccess={levelAccess}
                         onClosePosition={this.props.onClosePosition}
                         onClose={this.handleClosePlanPosition}
                     />
@@ -253,6 +288,37 @@ class Plan extends Component {
                                 </div>
                                 <div className={classes.section}>
                                     <Toolbar className={classes.toolbar}>
+                                        <CheckCircle className={classes.subHeaderIcon} fontSize="small" />
+                                        <Typography variant="subtitle1" >
+                                            {constants.COORDINATOR_PLAN_ACCEPT_PATH}
+                                        </Typography>
+                                    </Toolbar>
+                                    <Grid container spacing={1} justify="center" className={classes.container}>
+                                        <Grid item xs={12} sm={6}>
+                                            <InputField
+                                                name="approveUser"
+                                                label={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                    constants.ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER : constants.PUBLIC_PLAN_COORDINATOR_ACCEPT_USER}
+                                                disabled={true}
+                                                value={initialValues.approveUser !== undefined && initialValues.approveUser !== null ?
+                                                    `${initialValues.approveUser.name} ${initialValues.approveUser.surname}` :
+                                                        ''}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} sm={6}>
+                                            <InputField
+                                                name="chiefAcceptUser"
+                                                label={constants.ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER}
+                                                disabled={true}
+                                                value={initialValues.chiefAcceptUser !== undefined && initialValues.chiefAcceptUser !== null ?
+                                                    `${initialValues.chiefAcceptUser.name} ${initialValues.chiefAcceptUser.surname}` :
+                                                        ''}
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                </div>
+                                <div className={classes.section}>
+                                    <Toolbar className={classes.toolbar}>
                                         <LibraryBooks className={classes.subHeaderIcon} fontSize="small" />
                                         <Typography variant="subtitle1">{constants.COORDINATOR_PLAN_POSITIONS_HEAD_COSTS_TYPE}</Typography>
                                     </Toolbar>
@@ -270,12 +336,12 @@ class Plan extends Component {
                                             <Table
                                                 className={classes.tableWrapper}
                                                 rows={rows}
-                                                headCells={headCells}
+                                                headCells={initialValues.type !== undefined && initialValues.type.code === "FIN" ? headCells : headPzp}
                                                 onSelect={this.handleSelect}
                                                 onDoubleClick={this.handleDoubleClick}
                                                 onExcelExport={this.handleExcelExport}
                                                 rowKey='id'
-                                                defaultOrderBy="costType.code"
+                                                defaultOrderBy="id"
                                             />
                                         </Grid>
                                     </Grid>
@@ -289,7 +355,24 @@ class Plan extends Component {
                             alignItems="flex-start"
                             className={classes.container}
                         >
-                            <Grid item xs={11}>
+                            <Grid item xs={1}>
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="center"
+                                    alignItems="flex-start"
+                                >
+                                    <Button
+                                        label={constants.BUTTON_PRINT}
+                                        icon=<Print/>
+                                        iconAlign="left"
+                                        variant="cancel"
+                                        disabled={initialValues.status !== undefined && initialValues.status.code === 'AK'}
+                                        onClick={this.props.onPrintPlan}
+                                    />
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={10}>
                                 <Grid
                                     container
                                     direction="row"
@@ -310,7 +393,10 @@ class Plan extends Component {
                                         icon=<DoneAll/>
                                         iconAlign="left"
                                         variant="submit"
-                                        disabled={isApproveAvailable && initialValues.status !== undefined && initialValues.status !== 'UT'}
+                                        disabled={levelAccess === "accountant" ?
+                                            disabledApprove || (initialValues.status !== undefined && initialValues.status !== 'UT')
+                                                : (initialValues.status !== 'AN')
+                                        }
                                         onClick={this.handleApprovePlan}
                                     />
                                     <Button
@@ -333,7 +419,10 @@ class Plan extends Component {
                                         label={constants.BUTTON_WITHDRAW}
                                         icon=<Undo/>
                                         iconAlign="left"
-                                        disabled={initialValues.status !== undefined && initialValues.status !== 'ZA'}
+                                        disabled={levelAccess === "accountant" ?
+                                            initialValues.status !== undefined && initialValues.status !== 'AK'
+                                                : !['AE', 'AN'].includes(initialValues.status)
+                                        }
                                         onClick = {this.handleWithdrawPlan}
                                         variant="cancel"
                                     />

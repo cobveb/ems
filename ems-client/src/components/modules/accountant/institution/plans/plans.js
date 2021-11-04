@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
-import { withStyles, Grid, Typography, Divider} from '@material-ui/core/';
+import { withStyles, Grid, Typography} from '@material-ui/core/';
 import { Spinner, ModalDialog } from 'common/';
 import { Table, Button, DatePicker } from 'common/gui';
-import { PostAdd, Visibility } from '@material-ui/icons/';
+import { Visibility } from '@material-ui/icons/';
 import PlanContainer from 'containers/modules/accountant/institution/plans/planContainer';
 
 const styles = theme => ({
@@ -108,6 +108,10 @@ class Plans extends Component {
         });
     }
 
+    handleExcelExport = (exportType) => {
+        this.props.onExcelExport(exportType, this.state.headCells)
+    }
+
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
@@ -121,8 +125,9 @@ class Plans extends Component {
     }
 
     render(){
-        const { classes, isLoading, error, types } = this.props;
+        const { classes, isLoading, error, types, levelAccess } = this.props;
         const { headCells, rows, year, selected, isDetailsVisible } = this.state;
+
         return(
             <>
                 {isLoading && <Spinner />}
@@ -132,6 +137,7 @@ class Plans extends Component {
                         initialValues={selected}
                         changeVisibleDetails={this.handleChangeVisibleDetails}
                         types={types}
+                        levelAccess={levelAccess}
                         onClose={this.handleClose}
                     />
                 :

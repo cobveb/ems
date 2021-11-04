@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import * as constants from 'constants/uiNames';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
-import { Timeline, HowToReg } from '@material-ui/icons/';
+import { Timeline, HowToReg, LocationCity } from '@material-ui/icons/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import PlansContainer from 'containers/modules/director/coordinator/plans/plansContainer';
+import InstitutionPlansContainer from 'containers/modules/director/institution/plans/plansContainer';
 
 const styles = theme => ({
     root: {
@@ -46,8 +47,29 @@ class Director extends Component {
                     },
                 ],
             },
+            {
+                name: constants.ACCOUNTANT_MENU_INSTITUTION,
+                icon: <LocationCity />,
+                defaultExpanded: false,
+                items:  [
+                    {
+                        code: 'plans',
+                        name: constants.ACCOUNTANT_SUBMENU_INSTITUTION_PLANS,
+                        path: '/modules/director/institution/plans',
+                        icon: <Timeline />
+                    },
+                ],
+            },
         ]
     };
+
+    showInstitutionPlan = () =>{
+        return(
+            <InstitutionPlansContainer
+                levelAccess="director"
+            />
+        )
+    }
 
     render(){
 
@@ -65,6 +87,7 @@ class Director extends Component {
                                 <Switch>
                                     <PrivateRoute exact path='/modules/director/' component={PlansContainer}/>
                                     <PrivateRoute exact path='/modules/director/plans/coordinators' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/director/institution/plans' component={this.showInstitutionPlan}/>
                                 </Switch>
                             </CardContent>
                         </Card>

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { InputField, Button } from 'common/gui';
 import {Spinner, ModalDialog } from 'common/';
-import { FormDictionaryField, FormSelectField, FormAmountField, FormTableField } from 'common/form';
+import { FormDictionaryField, FormSelectField, FormAmountField, FormTableField, FormTextField } from 'common/form';
 import { Save, Cancel, Edit, Visibility, LibraryBooks } from '@material-ui/icons/';
 import { withStyles, Grid, Toolbar, Typography, Divider  } from '@material-ui/core/';
 import PlanFinancialPositionsFormContainer from 'containers/modules/coordinator/plans/forms/planFinancialPositionsFormContainer';
@@ -20,7 +20,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(57)}px)`,
+        height: `calc(100vh - ${theme.spacing(65.5)}px)`,
     },
     toolbar: {
         minHeight: theme.spacing(6),
@@ -256,7 +256,6 @@ class PlanFinancialContentPosition extends Component {
                                         options={vats}
                                         disabled={planStatus!=='ZP' && true}
                                     />
-
                                 </Grid>
                                 <Grid item xs={5}>
                                     <FormAmountField
@@ -303,6 +302,24 @@ class PlanFinancialContentPosition extends Component {
                                         label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS}
                                         disabled
                                         value={ Object.keys(initialValues).length !== 0 && initialValues.amountAwarded ? initialValues.amountAwarded : ''}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormTextField
+                                        name="coordinatorDescription"
+                                        label={constants.COORDINATOR_PLAN_POSITION_COORDINATOR_DESCRIPTION}
+                                        multiline
+                                        rows="1"
+                                        disabled={planStatus!=='ZP' && true}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormTextField
+                                        name="managementDescription"
+                                        label={constants.COORDINATOR_PLAN_POSITION_MANAGEMENT_DESCRIPTION}
+                                        multiline
+                                        rows="1"
+                                        disabled
                                     />
                                 </Grid>
                                 <Grid item xs={12} >

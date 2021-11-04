@@ -18,7 +18,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "organization_units", uniqueConstraints = {
+@Table(name = "organization_units", schema = "emsadm", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "code"
         })
@@ -26,7 +26,7 @@ import java.util.Set;
 public class OrganizationUnit {
 
     public enum Role {
-        CHIEF, DIRECTOR, COORDINATOR
+        CHIEF, ECONOMIC, DIRECTOR, COORDINATOR
     }
 
     @Id

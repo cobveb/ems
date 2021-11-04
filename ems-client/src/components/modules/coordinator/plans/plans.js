@@ -4,7 +4,7 @@ import * as constants from 'constants/uiNames';
 import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { Table, Button, SelectField, DatePicker } from 'common/gui';
-import { Delete, Add, Edit, Undo, Visibility } from '@material-ui/icons/';
+import { Delete, Add, Edit, Undo, Visibility, DynamicFeed } from '@material-ui/icons/';
 import PlanContainer from 'containers/modules/coordinator/plans/planContainer';
 
 const styles = theme => ({
@@ -17,6 +17,11 @@ const styles = theme => ({
     container: {
         width: '100%',
         padding: 0,
+        margin: 0,
+    },
+    containerBtn: {
+        width: '100%',
+        paddingLeft: theme.spacing(35),
         margin: 0,
     },
     tableWrapper: {
@@ -47,6 +52,11 @@ class Plans extends Component {
                 id: 'status.name',
                 label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS,
                 type: 'object',
+            },
+            {
+                id: 'isUpdate',
+                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE,
+                type: 'boolean',
             },
         ],
         selected: {},
@@ -142,6 +152,16 @@ class Plans extends Component {
         this.setState({ action: action });
     }
 
+    handleUpdate = (event, action) => {
+        this.setState({action: action})
+    }
+
+    handleConfirmUpdate = () =>{
+        this.setState({
+            isDetailsVisible: !this.state.isDetailsVisible,
+        })
+    }
+
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
@@ -188,6 +208,15 @@ class Plans extends Component {
                                         onClose={this.handleCloseDialog}
                                     />
                                 )
+                            case "update":
+                                return(
+                                    <ModalDialog
+                                        message={constants.COORDINATOR_PLANS_CONFIRM_UPDATE_MESSAGE}
+                                        variant="confirm"
+                                        onConfirm={this.handleConfirmUpdate}
+                                        onClose={this.handleCloseDialog}
+                                    />
+                                )
                             default:
                                 return null;
                         }
@@ -204,6 +233,7 @@ class Plans extends Component {
                             types={types}
                             statuses={statuses}
                             modes={modes}
+                            investmentCategories={this.props.investmentCategories}
                             plans={initialValues}
                             onSubmitPlan={onSubmitPlan}
                         />
@@ -269,13 +299,15 @@ class Plans extends Component {
                                 justify="center"
                                 alignItems="flex-start"
                                 className={classes.container}
+                                spacing={0}
                             >
-                                <Grid item xs={10}>
+                                <Grid item xs={9}>
                                     <Grid
                                         container
                                         direction="row"
                                         justify="center"
                                         alignItems="flex-start"
+                                        className={classes.containerBtn}
                                     >
                                         <Button
                                             label={constants.BUTTON_ADD}
@@ -304,12 +336,13 @@ class Plans extends Component {
                                         />
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={2}>
+                                <Grid item xs={3}>
                                     <Grid
                                         container
                                         direction="row"
-                                        justify="flex-start"
+                                        justify="flex-end"
                                         alignItems="flex-start"
+                                        className={classes.container}
                                     >
                                         <Button
                                             label={constants.BUTTON_WITHDRAW}
@@ -319,6 +352,17 @@ class Plans extends Component {
                                             onClick = {(event) => this.handleWithdraw(event, 'withdraw', )}
                                             variant="cancel"
                                         />
+                                        {/*
+                                            //TODO: Add in next version
+                                        <Button
+                                            label={constants.BUTTON_UPDATE}
+                                            icon=<DynamicFeed/>
+                                            iconAlign="left"
+                                            disabled={Object.keys(selected).length === 0 || !['ZA','RE'].includes(selected.status.code)}
+                                            onClick = {(event) => this.handleUpdate(event, 'update', )}
+                                            variant="cancel"
+                                        />
+                                        */}
                                     </Grid>
                                 </Grid>
                             </Grid>

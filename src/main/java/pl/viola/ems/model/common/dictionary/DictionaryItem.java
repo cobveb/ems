@@ -31,7 +31,7 @@ public class DictionaryItem {
     private String code;
     @NonNull
     @NotBlank(message = "{valid.notBlank}")
-    @Size(max = 120, message = "{valid.maxSize}")
+    @Size(max = 160, message = "{valid.maxSize}")
     private String name;
     @NonNull
     @Column(name = "is_active")

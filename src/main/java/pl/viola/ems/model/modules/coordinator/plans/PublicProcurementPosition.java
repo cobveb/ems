@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 @ToString(exclude = {"assortmentGroup"})
 @EqualsAndHashCode(exclude = {"assortmentGroup"}, callSuper = true)
@@ -71,6 +72,21 @@ public class PublicProcurementPosition extends CoordinatorPlanPosition {
         }
         return this.amountRequestedEuroNet;
     }
+
+    @Override
+    public BigDecimal getExpensesPositionAwardedGross() {
+        return null;
+    }
+
+    @Override
+    public List<FundingSource> getPositionFundingSources() {
+        return null;
+    }
+
+    @Override
+    public void setPositionFundingSources(List<FundingSource> fundingSources) {
+    }
+
 
     @Override
     public CostType getCostType() {

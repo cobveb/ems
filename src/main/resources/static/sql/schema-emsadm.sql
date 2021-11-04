@@ -5,14 +5,14 @@
 /*-----------------------------------------Tables Module ADMINISTRATOR-------------------------------------------------*/
 
 /*Create the table of organization units*/
-DROP TABLE emsadm.organization_units CASCADE CONSTRAINTS PURGE;
+drop table emsadm.organization_units cascade constraints purge;
 /
-CREATE TABLE emsadm.organization_units
+create TABLE emsadm.organization_units
 (
 	code VARCHAR2(10) NOT NULL ,
 	name VARCHAR2(120) NOT NULL ,
 	short_name VARCHAR2(80) NOT NULL ,
-	role VARCHAR2(10),
+	role VARCHAR2(11),
 	nip VARCHAR2(10),
 	regon VARCHAR2(14),
 	city VARCHAR2(30),
@@ -27,7 +27,7 @@ CREATE TABLE emsadm.organization_units
 	director_id VARCHAR2(10),
     CONSTRAINT ou_pk PRIMARY KEY (code),
 	CONSTRAINT ou_email_unq UNIQUE(email),
-	CONSTRAINT ou_director_fk FOREIGN KEY (director_id) REFERENCES emsadm.organization_units(code),
+	CONSTRAINT ou_director_fk FOREIGN KEY (director_id) REFERENCES emsadm.organization_units(code)
 )
 TABLESPACE ems_data;
 
@@ -46,20 +46,19 @@ COMMENT on COLUMN organization_units.phone is 'Unit phone number';
 COMMENT on COLUMN organization_units.fax is 'Unit fax number';
 COMMENT on COLUMN organization_units.email is 'Unit email address';
 COMMENT on COLUMN organization_units.active is 'Unit status 1 - active 0 - unactive';
-COMMENT on COLUMN organization_units.coordinator is 'Unit coordinator 1 - yes 0 - no';
 COMMENT on COLUMN organization_units.parent is 'Unit parent organization unit';
 COMMENT on COLUMN organization_units.director_id is 'Director unit for coordinator';
 
 /*Grant permissions on table organization_units for the user emsarch*/
-GRANT SELECT, REFERENCES ON emsadm.organization_units TO emsarch;
+grant select, REFERENCES ON emsadm.organization_units TO emsarch;
 /
 
 /*-----------------------------------------Tables Module APPLICANT----------------------------------------------------*/
 
 /*Create the table of Application on module Applicant*/
-DROP TABLE emsadm.application CASCADE CONSTRAINTS PURGE;
+drop table emsadm.application cascade constraints purge;
 /
-CREATE TABLE emsadm.application (
+create TABLE emsadm.application (
     id NUMBER(19,0) NOT NULL,
     app_number VARCHAR2(22) NOT NULL,
     applicant_id VARCHAR(10) NOT NULL,
@@ -83,9 +82,9 @@ COMMENT on COLUMN application.create_date is 'Applicaton create date';
 COMMENT on COLUMN application.send_date is 'Applicaton date send to coordinator';
 
 /*Create the table of Application position on module Applicant*/
-DROP TABLE emsadm.application_positions CASCADE CONSTRAINTS PURGE;
+drop table emsadm.application_positions cascade constraints purge;
 /
-CREATE TABLE emsadm.application_positions (
+create TABLE emsadm.application_positions (
     id NUMBER(19,0) NOT NULL,
     application_id NUMBER(19,0) NOT NULL,
     unit_id NUMBER(19,0) NOT NULL,
@@ -112,12 +111,12 @@ COMMENT on COLUMN application_positions.rejection_reason is 'Application positio
 /*-----------------------------------------Tables Module ACCOUNTANT----------------------------------------------------*/
 
 /*Create the table of CostsType on module Accountant*/
-DROP TABLE emsadm.acc_costs_type CASCADE CONSTRAINTS PURGE;
+drop table emsadm.acc_costs_type cascade constraints purge;
 /
 
-CREATE TABLE emsadm.acc_costs_type (
+create TABLE emsadm.acc_costs_type (
     id NUMBER(19,0) NOT NULL,
-    cost_number VARCHAR(12) NOT NULL,
+    cost_number VARCHAR(75) NOT NULL,
     name VARCHAR(200) NOT NULL,
     active NUMBER(1) DEFAULT 1 NOT NULL,
 	CONSTRAINT acc_costs_type_pk PRIMARY KEY(id),
@@ -131,10 +130,10 @@ COMMENT on COLUMN acc_costs_type.name is 'Cost Type name';
 COMMENT on COLUMN acc_costs_type.active is 'Cost Type status 1 - active 0 - inactive';
 
 /*Create the table of CostsType on module Accountant*/
-DROP TABLE emsadm.acc_cost_years CASCADE CONSTRAINTS PURGE;
+drop table emsadm.acc_cost_years cascade constraints purge;
 /
 
-CREATE TABLE emsadm.acc_cost_years (
+create TABLE emsadm.acc_cost_years (
     id NUMBER(19,0) NOT NULL,
     year NUMBER(4) NOT NULL,
     cost_type_id NUMBER(19,0) NOT NULL,
@@ -149,10 +148,10 @@ COMMENT on COLUMN acc_cost_years.year is 'Number representing full year';
 COMMENT on COLUMN acc_cost_years.cost_type_id is 'Cost Type ID';
 
 /*Create the table of Costs Year Coordinators on module Accountant*/
-DROP TABLE emsadm.acc_cost_years_coordinators CASCADE CONSTRAINTS PURGE;
+drop table emsadm.acc_cost_years_coordinators cascade constraints purge;
 /
 
-CREATE TABLE emsadm.acc_cost_years_coordinators (
+create TABLE emsadm.acc_cost_years_coordinators (
     cost_year_id NUMBER(19,0) NOT NULL,
     coordinator_id VARCHAR2(10) NOT NULL,
     CONSTRAINT acc_cost_years_coordinators_pk PRIMARY KEY(cost_year_id, coordinator_id),
@@ -167,17 +166,19 @@ COMMENT on COLUMN acc_cost_years_coordinators.coordinator_id is 'Organization Un
 /
 
 /*Create the table of Institution plans in module Accountant*/
-DROP TABLE emsadm.acc_institution_plans CASCADE CONSTRAINTS PURGE;
+drop table emsadm.acc_institution_plans cascade constraints purge;
 /
-CREATE TABLE emsadm.acc_institution_plans(
+create TABLE emsadm.acc_institution_plans(
     id NUMBER(19,0) NOT NULL,
     year INTEGER NULL,
     status VARCHAR(2) NOT NULL,
     plan_type VARCHAR(3) NOT NULL,
     plan_approve_user_id NUMBER(19,0),
+    chief_accept_user_id NUMBER(19,0),
     plan_correction_id NUMBER(19,0),
     CONSTRAINT acc_institution_plan_pk PRIMARY KEY(id),
     CONSTRAINT acc_inst_plan_approve_usr_fk FOREIGN KEY (plan_approve_user_id) REFERENCES emsarch.users(id),
+    CONSTRAINT acc_inst_plan_chief_usr_fk FOREIGN KEY (chief_accept_user_id) REFERENCES emsarch.users(id),
     CONSTRAINT acc_inst_correction_plan_fk FOREIGN KEY (plan_correction_id) REFERENCES emsadm.acc_institution_plans(id)
 )
 TABLESPACE ems_data;
@@ -186,13 +187,14 @@ COMMENT on COLUMN acc_institution_plans.year is 'Year of the plan validity';
 COMMENT on COLUMN acc_institution_plans.status is 'Plan status';
 COMMENT on COLUMN acc_institution_plans.plan_type is 'Plan type in (FIN, INW)';
 COMMENT on COLUMN acc_institution_plans.plan_approve_user_id is 'Plan aprove user ID (FK -> Users)';
+COMMENT on COLUMN acc_institution_plans.chief_accept_user_id is 'Plan chief accept user ID (FK -> Users)';
 COMMENT on COLUMN acc_institution_plans.plan_correction_id is 'Plan corretion ID (FK -> acc_institution_plans)';
 /
 
 /*Create the table of institution plans positions on module Accountant*/
-DROP TABLE emsadm.acc_institution_plan_positions CASCADE CONSTRAINTS PURGE;
+drop table emsadm.acc_institution_plan_positions cascade constraints purge;
 /
-CREATE TABLE emsadm.acc_institution_plan_positions(
+create TABLE emsadm.acc_institution_plan_positions(
     id NUMBER(19,0) NOT NULL,
     status VARCHAR(2) NOT NULL,
     am_req_net NUMBER(20,5) NOT NULL,
@@ -222,9 +224,9 @@ COMMENT on COLUMN acc_institution_plan_positions.plan_id is 'Plan Institution ID
 /
 
 /*Create the table of Institution Plans Positions Financial on module Accountant*/
-DROP TABLE emsadm.acc_institution_plan_pos_fin CASCADE CONSTRAINTS PURGE;
+drop table emsadm.acc_institution_plan_pos_fin cascade constraints purge;
 /
-CREATE TABLE emsadm.acc_institution_plan_pos_fin(
+create TABLE emsadm.acc_institution_plan_pos_fin(
     id NUMBER(19,0) NOT NULL,
     cost_type_id NUMBER(19,0) NOT NULL,
 	CONSTRAINT acc_inst_fin_pos_pk PRIMARY KEY(id),
@@ -238,9 +240,9 @@ COMMENT on COLUMN acc_institution_plan_pos_fin.cost_type_id is 'Position Cost Ty
 /
 
 
-DROP TABLE emsadm.acc_institution_plan_cor_pos CASCADE CONSTRAINTS PURGE;
+drop table emsadm.acc_institution_plan_cor_pos cascade constraints purge;
 /
-CREATE TABLE emsadm.acc_institution_plan_cor_pos(
+create TABLE emsadm.acc_institution_plan_cor_pos(
     id NUMBER(19,0) NOT NULL,
     cor_position_id NUMBER(19,0) NOT NULL,
     pos_correction_id NUMBER(19,0),
@@ -260,9 +262,9 @@ COMMENT on COLUMN acc_institution_plan_cor_pos.institution_position_id is 'Insti
 /*-----------------------------------------Tables Module COORDINATOR----------------------------------------------------*/
 
 /*Create the table of Plans on module Coordinator*/
-DROP TABLE emsadm.cor_plans CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_plans cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_plans(
+create TABLE emsadm.cor_plans(
     id NUMBER(19,0) NOT NULL,
     year INTEGER NULL,
     status VARCHAR(2) NOT NULL,
@@ -271,16 +273,20 @@ CREATE TABLE emsadm.cor_plans(
     send_date DATE,
     coordinator_id VARCHAR2(10) NOT NULL,
     send_user_id NUMBER(19,0),
-    plant_accept_user_id NUMBER(19,0),
+    plan_accept_user_id NUMBER(19,0),
     director_accept_user_id NUMBER(19,0),
+    economic_accept_user_id NUMBER(19,0),
     chief_accept_user_id NUMBER(19,0),
+    plan_correction_id NUMBER(19,0),
 	CONSTRAINT cor_plan_pk PRIMARY KEY(id),
 	CONSTRAINT cor_plan_coordinator_fk FOREIGN KEY (coordinator_id) REFERENCES organization_units(code),
 	CONSTRAINT cor_plan_send_usr_fk FOREIGN KEY (send_user_id) REFERENCES emsarch.users(id),
 	CONSTRAINT cor_plan_accept_usr_fk FOREIGN KEY (plan_accept_user_id) REFERENCES emsarch.users(id),
 	CONSTRAINT cor_plan_dir_accept_usr_fk FOREIGN KEY (director_accept_user_id) REFERENCES emsarch.users(id),
+    CONSTRAINT cor_plan_eco_accept_usr_fk FOREIGN KEY (economic_accept_user_id) REFERENCES emsarch.users(id),
 	CONSTRAINT cor_plan_chf_accept_usr_fk FOREIGN KEY (chief_accept_user_id) REFERENCES emsarch.users(id),
-    CONSTRAINT cor_plan_year_type_cor_unq UNIQUE(year, plan_type, coordinator_id)
+    CONSTRAINT cor_plan_year_type_cor_unq UNIQUE(year, plan_type, coordinator_id, plan_correction_id),
+    CONSTRAINT cor_plan_correction_plan_fk FOREIGN KEY (plan_correction_id) REFERENCES emsadm.cor_plans(id)
 )
 TABLESPACE ems_data;
 
@@ -296,12 +302,13 @@ COMMENT on COLUMN cor_plans.send_user_id is 'Plan send user (Users)';
 COMMENT on COLUMN cor_plans.plan_accept_user_id is 'Plan accountant / procuements accept user (Users)';
 COMMENT on COLUMN cor_plans.director_accept_user_id is 'Plan director accept user (Users)';
 COMMENT on COLUMN cor_plans.chief_accept_user_id is 'Plan chief accept user (Users)';
+COMMENT on COLUMN cor_plans.plan_correction_id is 'Plan corretion ID (FK -> cor_plans)';
 /
 
 /*Create the table of Plans Positions on module Coordinator*/
-DROP TABLE emsadm.cor_plan_positions CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_plan_positions cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_plan_positions(
+create TABLE emsadm.cor_plan_positions(
     id NUMBER(19,0) NOT NULL,
     status VARCHAR(2) NOT NULL,
     am_req_net NUMBER(20,5),
@@ -311,9 +318,13 @@ CREATE TABLE emsadm.cor_plan_positions(
     am_rea_net NUMBER(20,5),
     am_rea_gross NUMBER(20,5),
     vat NUMBER(3,2) NOT NULL,
+    desc_coordinator VARCHAR2(256),
+    desc_management VARCHAR2(256),
     plan_id NUMBER(19,0) NOT NULL,
+    pos_correction_id NUMBER(19,0),
 	CONSTRAINT cor_plan_pos_pk PRIMARY KEY(id),
-	CONSTRAINT cor_plan_pos_fk FOREIGN KEY (plan_id) REFERENCES emsadm.cor_plans(id)
+	CONSTRAINT cor_plan_pos_fk FOREIGN KEY (plan_id) REFERENCES emsadm.cor_plans(id),
+	CONSTRAINT cor_plan_correction_pos_fk FOREIGN KEY (pos_correction_id) REFERENCES emsadm.cor_plan_positions(id)
 )
 TABLESPACE ems_data;
 
@@ -325,12 +336,16 @@ COMMENT on COLUMN cor_plan_positions.am_awa_net is 'Position amount awared net';
 COMMENT on COLUMN cor_plan_positions.am_awa_gross is 'Position amount awared gross';
 COMMENT on COLUMN cor_plan_positions.am_rea_net is 'Position amount realized net';
 COMMENT on COLUMN cor_plan_positions.am_rea_gross is 'Position amount realized gross';
+COMMENT on COLUMN cor_plan_positions.vat is 'Position vat value';
+COMMENT on COLUMN cor_plan_positions.desc_coordinator is 'Coordinator description';
+COMMENT on COLUMN cor_plan_positions.desc_management is 'Management description';
 COMMENT on COLUMN cor_plan_positions.plan_id is 'Plan ID foregin key cor_plans';
+COMMENT on COLUMN cor_plan_positions.pos_correction_id is 'Position corection ID (FK -> cor_plan_positions)';
 
 /*Create the table of Plans Positions Financial on module Coordinator*/
-DROP TABLE emsadm.cor_financial_positions CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_financial_positions cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_financial_positions(
+create TABLE emsadm.cor_financial_positions(
     id NUMBER(19,0) NOT NULL,
     cost_type_id NUMBER(19,0) NOT NULL,
 	CONSTRAINT cor_fin_pos_pk PRIMARY KEY(id),
@@ -344,9 +359,9 @@ COMMENT on COLUMN cor_financial_positions.cost_type_id is 'Position Cost Type ID
 /
 
 /*Create the table of Plans Positions Public Procurement on module Coordinator*/
-DROP TABLE emsadm.cor_pub_procurement_positions CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_pub_procurement_positions cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_pub_procurement_positions(
+create TABLE emsadm.cor_pub_procurement_positions(
     id NUMBER(19,0) NOT NULL,
     order_type VARCHAR(3) NOT NULL,
     initiation_term VARCHAR(20) NOT NULL,
@@ -376,29 +391,36 @@ COMMENT on COLUMN cor_pub_procurement_positions.mode_id is 'Position order mode 
 
 
 /*Create the table of Plans Positions Investment on module Coordinator*/
-DROP TABLE emsadm.cor_investment_positions CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_investment_positions cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_investment_positions(
+create TABLE emsadm.cor_investment_positions(
     id NUMBER(19,0) NOT NULL,
-    task VARCHAR(120) NOT NULL,
+    name VARCHAR(200),
+    task VARCHAR(200) NOT NULL,
     application VARCHAR(200),
     substantiation VARCHAR(200),
+    realization_date DATE NOT NULL,
+    category_id NUMBER(19,0) NOT NULL,
 	CONSTRAINT cor_inv_pos_pk PRIMARY KEY(id),
-	CONSTRAINT cor_inv_fk FOREIGN KEY (id) REFERENCES emsadm.cor_plan_positions(id)
+	CONSTRAINT cor_inv_fk FOREIGN KEY (id) REFERENCES emsadm.cor_plan_positions(id),
+	CONSTRAINT cor_inv_category_fk FOREIGN KEY (category_id) REFERENCES emsarch.dictionary_items(id)
 )
 TABLESPACE ems_data;
 
 COMMENT on COLUMN cor_investment_positions.id is 'Investment position ID PK and FK';
-COMMENT on COLUMN cor_investment_positions.task is 'Position task name';
+COMMENT on COLUMN cor_investment_positions.name is 'Position accountant task name';
+COMMENT on COLUMN cor_investment_positions.task is 'Position coordinator task name';
 COMMENT on COLUMN cor_investment_positions.application is 'Position application';
 COMMENT on COLUMN cor_investment_positions.substantiation is 'Position substantiation';
+COMMENT on COLUMN cor_investment_positions.realization_date is 'Realized position date';
+COMMENT on COLUMN cor_investment_positions.category_id is 'Position category (FK -> slKatSlInw)';
 
 /*Create the table of Plans Sub Positions on module Coordinator*/
-DROP TABLE emsadm.cor_plan_sub_positions CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_plan_sub_positions cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_plan_sub_positions(
+create TABLE emsadm.cor_plan_sub_positions(
     id NUMBER(19,0) NOT NULL,
-    name VARCHAR(120) NOT NULL,
+    name VARCHAR(200) NOT NULL,
     am_net NUMBER(20,5) NOT NULL,
     am_gross NUMBER(20,5) NOT NULL,
     comments VARCHAR(200),
@@ -413,10 +435,10 @@ COMMENT on COLUMN cor_plan_sub_positions.am_net is 'Position amount requested ne
 COMMENT on COLUMN cor_plan_sub_positions.comments is 'Position comments';
 COMMENT on COLUMN cor_plan_sub_positions.plan_position_id is 'Plan Position ID foregin key -> cor_plan_position';
 
-/*Create the table of Plans Positions Financial on module Coordinator*/
-DROP TABLE emsadm.cor_financial_sub_positions CASCADE CONSTRAINTS PURGE;
+/*Create the table of Plan Sub Positions Financial on module Coordinator*/
+drop table emsadm.cor_financial_sub_positions cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_financial_sub_positions(
+create TABLE emsadm.cor_financial_sub_positions(
     id NUMBER(19,0) NOT NULL,
     quantity NUMBER(8,0) NOT NULL,
     unit_price NUMBER(20,5) NOT NULL,
@@ -433,26 +455,43 @@ COMMENT on COLUMN cor_financial_sub_positions.unit_price is 'Position unit price
 COMMENT on COLUMN cor_financial_sub_positions.unit_id is 'Position quantity Unit ID';
 /
 
-/*Create the table of Plans Positions Public Procurement on module Coordinator*/
-DROP TABLE emsadm.cor_pub_sub_proc_positions CASCADE CONSTRAINTS PURGE;
+/*Create the table of Plan Sub Positions Public Procurement on module Coordinator*/
+drop table emsadm.cor_pub_sub_proc_positions cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_pub_sub_proc_positions(
+create TABLE emsadm.cor_pub_sub_proc_positions(
     id NUMBER(19,0) NOT NULL,
-	CONSTRAINT cor_pub_proc_sub_pos_pk PRIMARY KEY(id),
+	CONSTRAINT cor_pub_proc_sub_pos_pk PRIMARY KEY(id)
 )
 TABLESPACE ems_data;
 
 COMMENT on COLUMN cor_pub_sub_proc_positions.id is 'Financial position ID PK and FK';
 /
 
+/* Create the table of Plan Sub Positions Investment on module Coordinator */
+drop table emsadm.cor_inv_sub_positions cascade constraints purge;
+/
+
+create TABLE emsadm.cor_inv_sub_positions(
+    id NUMBER(19,0) NOT NULL,
+    quantity NUMBER(8,0) NOT NULL,
+    target_unit VARCHAR2(10),
+    CONSTRAINT cor_inv_sub_pos_pk PRIMARY KEY(id),
+    CONSTRAINT cor_inv_target_unit_fk FOREIGN KEY (target_unit) REFERENCES emsadm.organization_units(code)
+)
+TABLESPACE ems_data;
+
+COMMENT on COLUMN cor_inv_sub_positions.id is 'Investment sub position ID PK and FK';
+COMMENT on COLUMN cor_inv_sub_positions.quantity is 'Quantity per target unit';
+COMMENT on COLUMN cor_inv_sub_positions.target_unit is 'Target Unit FK (FK -> organization_units)';
+/
 
 /*Create the table of Plans Positions Investment Founding Source */
-DROP TABLE emsadm.cor_inv_founding_source CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_inv_founding_source cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_inv_founding_source(
+create TABLE emsadm.cor_inv_founding_source(
     id NUMBER(19,0) NOT NULL,
-    so_am_awa_net NUMBER(20,5) NOT NULL,
-    so_ex_plan_net NUMBER(20,5) NOT NULL,
+    so_am_net NUMBER(20,5) NOT NULL,
+    so_am_gross NUMBER(20,5) NOT NULL,
     type_id NUMBER(19,0) NOT NULL,
     position_id NUMBER(19,0) NOT NULL,
 	CONSTRAINT cor_inv_pos_source_pk PRIMARY KEY(id),
@@ -469,9 +508,9 @@ COMMENT on COLUMN cor_inv_founding_source.position_id is 'Position ID FK cor_inv
 /
 
 /*Create the table of Public Procurement Application */
-DROP TABLE emsadm.cor_pub_proc_application CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_pub_proc_application cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_pub_proc_application(
+create TABLE emsadm.cor_pub_proc_application(
     id NUMBER(19,0) NOT NULL,
     apl_number VARCHAR2(22),
     apl_mode VARCHAR2(2) NOT NULL,
@@ -558,9 +597,9 @@ COMMENT on COLUMN cor_pub_proc_application.create_user_id is 'Application create
 COMMENT on COLUMN cor_pub_proc_application.send_user_id is 'Application send user FK (users)';
 
 /*Create the table of Public Procurement Application Assortments Groups */
-DROP TABLE emsadm.cor_pub_proc_groups CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_pub_proc_groups cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_pub_proc_groups(
+create TABLE emsadm.cor_pub_proc_groups(
     id NUMBER(19,0) NOT NULL,
     order_group_value_net NUMBER(20,5) NOT NULL,
     vat NUMBER(3,2) NOT NULL,
@@ -585,9 +624,9 @@ COMMENT on COLUMN cor_pub_proc_groups.plan_position_id is 'Plan public procureme
 COMMENT on COLUMN cor_pub_proc_groups.application_id is 'Public procurement application FK';
 /
 /*Create the table of Public Procurement Application Parts */
-DROP TABLE emsadm.cor_pub_proc_parts CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_pub_proc_parts cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_pub_proc_parts(
+create TABLE emsadm.cor_pub_proc_parts(
     id NUMBER(19,0) NOT NULL,
     name VARCHAR2(120) NOT NULL,
     amount_net NUMBER(20,5) NOT NULL,
@@ -607,9 +646,9 @@ COMMENT on COLUMN cor_pub_proc_parts.amount_gross is 'Gross amount of the part';
 COMMENT on COLUMN cor_pub_proc_parts.application_id is 'Public procurement application FK';
 /
 /*Create the table of Public Procurement Application Criteria */
-DROP TABLE emsadm.cor_pub_proc_criteria CASCADE CONSTRAINTS PURGE;
+drop table emsadm.cor_pub_proc_criteria cascade constraints purge;
 /
-CREATE TABLE emsadm.cor_pub_proc_criteria(
+create TABLE emsadm.cor_pub_proc_criteria(
     id NUMBER(19,0) NOT NULL,
     value NUMBER(3,0) NOT NULL,
     name  VARCHAR2(120) NOT NULL,
@@ -632,203 +671,205 @@ COMMENT on COLUMN cor_pub_proc_criteria.application_id is 'Public procurement ap
 /*-----------------------------------------Sequence Module APPLICANT---------------------------------------------------*/
 
 -- Create sequence of table application
-DROP SEQUENCE application_seq;
+drop sequence application_seq;
 /
-CREATE SEQUENCE application_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence application_seq start with 1 increment by 1 nomaxvalue;
 /
 
 -- Create sequence of table application positions
-DROP SEQUENCE application_pos_seq;
+drop sequence application_pos_seq;
 /
-CREATE SEQUENCE application_pos_seq START WITH 2 INCREMENT BY 1 NOMAXVALUE;
+create sequence application_pos_seq start with 2 increment by 1 nomaxvalue;
 /
 
 /*-----------------------------------------Sequence Module ACCOUNTANT--------------------------------------------------*/
 
 -- Create sequence of table costs type
-DROP SEQUENCE acc_costs_type_seq;
+drop sequence acc_costs_type_seq;
 /
-CREATE SEQUENCE acc_costs_type_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence acc_costs_type_seq start with 1 increment by 1 nomaxvalue;
 /
 
 -- Create sequence of table cost year
-DROP SEQUENCE acc_cost_years_seq;
+drop sequence acc_cost_years_seq;
 /
-CREATE SEQUENCE acc_cost_years_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence acc_cost_years_seq start with 1 increment by 1 nomaxvalue;
 
 /-- Create sequence of table institution plan
-DROP SEQUENCE acc_inst_plan_seq;
+drop sequence acc_inst_plan_seq;
 /
-CREATE SEQUENCE acc_inst_plan_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence acc_inst_plan_seq start with 1 increment by 1 nomaxvalue;
 /
 
 /-- Create sequence of table institution plan positions
-DROP SEQUENCE acc_inst_plan_pos_seq;
+drop sequence acc_inst_plan_pos_seq;
 /
-CREATE SEQUENCE acc_inst_plan_pos_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence acc_inst_plan_pos_seq start with 1 increment by 1 nomaxvalue;
 /
 
 /-- Create sequence of table institution plan coordinator positions
-DROP SEQUENCE acc_inst_plan_cor_pos_seq;
+drop sequence acc_inst_plan_cor_pos_seq;
 /
-CREATE SEQUENCE acc_inst_plan_cor_pos_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence acc_inst_plan_cor_pos_seq start with 1 increment by 1 nomaxvalue;
 /
 /*-----------------------------------------Sequence Module COORDINATOR-------------------------------------------------*/
 
 -- Create sequence of table coordinator plan
-DROP SEQUENCE cor_plan_seq;
+drop sequence cor_plan_seq;
 /
-CREATE SEQUENCE cor_plan_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence cor_plan_seq start with 1 increment by 1 nomaxvalue;
 /
 
 -- Create sequence of table coordinator plan position
-DROP SEQUENCE cor_plan_pos_seq;
+drop sequence cor_plan_pos_seq;
 /
-CREATE SEQUENCE cor_plan_pos_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence cor_plan_pos_seq start with 1 increment by 1 nomaxvalue;
 
 -- Create sequence of table coordinator plan position
-DROP SEQUENCE cor_pos_inv_source_seq;
+drop sequence cor_pos_inv_source_seq;
 /
-CREATE SEQUENCE cor_pos_inv_source_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence cor_pos_inv_source_seq start with 1 increment by 1 nomaxvalue;
 
 -- Create sequence of table coordinator plan sub position
-DROP SEQUENCE cor_plan_sub_pos_seq;
+drop sequence cor_plan_sub_pos_seq;
 /
-CREATE SEQUENCE cor_plan_sub_pos_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence cor_plan_sub_pos_seq start with 1 increment by 1 nomaxvalue;
 
 -- Create sequence of table coordinator public procurement application
-DROP SEQUENCE cor_pub_proc_apl_seq;
+drop sequence cor_pub_proc_apl_seq;
 /
-CREATE SEQUENCE cor_pub_proc_apl_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence cor_pub_proc_apl_seq start with 1 increment by 1 nomaxvalue;
 
 -- Create sequence of table coordinator public procurement application
-DROP SEQUENCE cor_pub_proc_apl_groups_seq;
+drop sequence cor_pub_proc_apl_groups_seq;
 /
-CREATE SEQUENCE cor_pub_proc_apl_groups_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence cor_pub_proc_apl_groups_seq start with 1 increment by 1 nomaxvalue;
 
 -- Create sequence of table coordinator public procurement application
-DROP SEQUENCE cor_pub_proc_apl_parts_seq;
+drop sequence cor_pub_proc_apl_parts_seq;
 /
-CREATE SEQUENCE cor_pub_proc_apl_parts_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence cor_pub_proc_apl_parts_seq start with 1 increment by 1 nomaxvalue;
 
 -- Create sequence of table coordinator public procurement application
-DROP SEQUENCE cor_pub_proc_apl_criteria_seq;
+drop sequence cor_pub_proc_apl_criteria_seq;
 /
-CREATE SEQUENCE cor_pub_proc_apl_criteria_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+create sequence cor_pub_proc_apl_criteria_seq start with 1 increment by 1 nomaxvalue;
 /*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   PACKAGES                                           		       */
 /*-------------------------------------------------------------------------------------------------------------------- */
 
 /* Create package Application management*/
-CREATE OR REPLACE PACKAGE application_mgmt AS
-    PROCEDURE generate_number(applicant IN VARCHAR2, new_number OUT VARCHAR2);
-END application_mgmt;
+create or replace package application_mgmt as
+    procedure generate_number(applicant in varchar2, new_number out varchar2);
+end application_mgmt;
 /
-CREATE OR REPLACE PACKAGE BODY application_mgmt AS
-    PROCEDURE generate_number(applicant IN VARCHAR2, new_number OUT VARCHAR2)
-        AS
-            last_application_number emsadm.application.app_number%TYPE;
-            last_number NUMBER;
-            first_day Date;
-            last_day Date;
-            year VARCHAR2(4);
-        BEGIN
+create or replace package body application_mgmt as
+    procedure generate_number(applicant in varchar2, new_number out varchar2)
+        as
+            last_application_number emsadm.application.app_number%type;
+            last_number number;
+            first_day date;
+            last_day date;
+            year varchar2(4);
+        begin
 
-            SELECT TRUNC (SYSDATE , 'YEAR')
-            INTO first_day
-            FROM DUAL;
+            select trunc (sysdate , 'YEAR')
+            into first_day
+            from DUAL;
 
-            SELECT ADD_MONTHS(TRUNC (SYSDATE, 'YEAR'), 12) - 1
-            INTO last_day
-            FROM DUAL;
+            select add_months(trunc (sysdate, 'YEAR'), 12) - 1
+            into last_day
+            from DUAL;
 
-            SELECT app_number
-            INTO last_application_number
-            FROM (SELECT *
-                    FROM application
-                        WHERE application.applicant_id = applicant AND
-                            application.create_date BETWEEN first_day AND last_day
-                                ORDER BY application.id DESC)
-            WHERE ROWNUM <= 1;
+            select app_number
+            into last_application_number
+            from (select *
+                    from application
+                        where application.applicant_id = applicant and
+                            application.create_date between first_day and last_day
+                                order by application.id desc)
+            where rownum <= 1;
 
-            SELECT EXTRACT(YEAR FROM sysdate)
-            INTO year
-            FROM dual;
+            select extract(year from sysdate)
+            into year
+            from dual;
 
-            last_number:=TO_NUMBER(SUBSTR(last_application_number, 0, INSTR(last_application_number, '/')-1))+1;
+            last_number:=to_number(substr(last_application_number, 0, instr(last_application_number, '/')-1))+1;
 
             new_number := last_number || '/' || applicant || '/' || year;
 
-        END;
+        end;
 
-END application_mgmt;
+end application_mgmt;
 /
 /* Create package Coordinator Public Procurement management*/
-CREATE OR REPLACE PACKAGE cor_public_procurement_mgmt AS
-    PROCEDURE generate_application_number(coordinator IN VARCHAR2, application_mode IN varchar2, new_number OUT VARCHAR2);
-END cor_public_procurement_mgmt;
+create or replace package cor_public_procurement_mgmt as
+    procedure generate_application_number(coordinator in varchar2, application_mode in varchar2, new_number out varchar2);
+end cor_public_procurement_mgmt;
 /
-CREATE OR REPLACE PACKAGE BODY cor_public_procurement_mgmt AS
-    PROCEDURE generate_application_number(coordinator IN VARCHAR2, application_mode IN varchar2, new_number OUT VARCHAR2)
-        AS
-            last_application_number emsadm.cor_pub_proc_application.apl_number%TYPE;
-            last_number NUMBER;
-            first_day Date;
-            last_day Date;
-            year VARCHAR2(4);
-        BEGIN
+create or replace package body cor_public_procurement_mgmt as
+    procedure generate_application_number(coordinator in varchar2, application_mode in varchar2, new_number out varchar2)
+        as
+            last_application_number emsadm.cor_pub_proc_application.apl_number%type;
+            last_number number;
+            first_day date;
+            last_day date;
+            year varchar2(4);
+        begin
 
-            SELECT TRUNC (SYSDATE , 'YEAR')
-            INTO first_day
-            FROM DUAL;
+            select trunc (sysdate , 'YEAR')
+            into first_day
+            from DUAL;
 
-            SELECT ADD_MONTHS(TRUNC (SYSDATE, 'YEAR'), 12) - 1
-            INTO last_day
-            FROM DUAL;
+            select add_months(trunc (sysdate, 'YEAR'), 12) - 1
+            into last_day
+            from DUAL;
 
-            SELECT apl_number
-            INTO last_application_number
-            FROM (SELECT *
-                    FROM cor_pub_proc_application apl
-                        WHERE
-                            apl.coordinator_id = coordinator AND
-                            apl.create_date BETWEEN first_day AND last_day AND
-                            apl.apl_mode = application_mode AND
+            select apl_number
+            into last_application_number
+            from (select *
+                    from cor_pub_proc_application apl
+                        where
+                            apl.coordinator_id = coordinator and
+                            apl.create_date between first_day and last_day and
+                            apl.apl_mode = application_mode and
                             apl.apl_number is not null
-                                ORDER BY apl.id DESC)
-            WHERE ROWNUM <= 1;
-            EXCEPTION
-                WHEN NO_DATA_FOUND THEN
-                    last_application_number := NULL;
+                                order by apl.id desc)
+            where rownum <= 1;
+            exception
+                when NO_DATA_FOUND then
+                    last_application_number := null;
 
-            SELECT EXTRACT(YEAR FROM sysdate)
-            INTO year
-            FROM dual;
+            select extract(year from sysdate)
+            into year
+            from dual;
 
-            IF last_application_number IS NULL THEN
+            if last_application_number is null then
                 last_number := 1;
-            ELSE
-                last_number:=TO_NUMBER(SUBSTR(last_application_number, 0, INSTR(last_application_number, '/')-1))+1;
-            END IF;
+            else
+                last_number:=to_number(substr(last_application_number, 0, instr(last_application_number, '/')-1))+1;
+            end if;
 
-            new_number := last_number || '/' || application_mode || '/' || UPPER(coordinator) || '/' || year;
+            new_number := last_number || '/' || application_mode || '/' || upper(coordinator) || '/' || year;
 
-        END;
+        end;
 
-END cor_public_procurement_mgmt;
+end cor_public_procurement_mgmt;
 /
 /*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   TRIGGERS                                            			    */
 /*-------------------------------------------------------------------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER trg_app_number_gen
-    BEFORE INSERT
-        ON application
-            FOR EACH ROW
-                DECLARE
-                    out_application application.id%TYPE;
-                BEGIN
+
+/* NOT USED APPLICATION MODULE*/
+create or replace trigger trg_app_number_gen
+    before insert
+        on application
+            for each row
+                declare
+                    out_application application.id%type;
+                begin
                     :new.app_number := application_mgmt.generate_number(:new.applicant_id);
-                END;
+                end;
 /
 
 /*Close connection of user emsadm*/

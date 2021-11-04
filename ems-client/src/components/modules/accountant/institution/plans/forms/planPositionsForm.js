@@ -147,6 +147,10 @@ class PlanPositionsForm extends Component {
         }
     }
 
+    handleExcelExport = (exportType) => {
+        this.props.onExcelExport(exportType, this.state.headCells)
+    }
+
     componentDidUpdate(prevProps, prevState){
         if(prevProps.initValues !== undefined && this.props.initValues.planPositions !== prevProps.initValues.planPositions){
             this.setState({
@@ -166,7 +170,7 @@ class PlanPositionsForm extends Component {
     }
 
     render(){
-        const {handleSubmit, classes, isLoading, error, initValues, planStatus} = this.props;
+        const {handleSubmit, classes, isLoading, error, initValues, planStatus, levelAccess} = this.props;
         const {headCells, selected, planPositions, action, openPlanDetails, acceptDisabled} = this.state;
         if(initValues === undefined) {
             return null;
@@ -181,6 +185,7 @@ class PlanPositionsForm extends Component {
                         initialValues={selected[0]}
                         changeVisibleDetails={this.handleChangeVisibleDetails}
                         action={'plan'}
+                        levelAccess={levelAccess}
                         changeAction={this.handleChangeAction}
                         handleClose={this.handleClosePlanDetails}
                         statuses={this.state.statuses}
@@ -245,10 +250,11 @@ class PlanPositionsForm extends Component {
                                                 allRows={planPositions}
                                                 checkedRows={selected}
                                                 toolbar={false}
-                                                multiChecked={true}
+                                                multiChecked={levelAccess === "accountant" ? true : false}
                                                 checkedColumnFirst={true}
                                                 onSelect={this.handleSelect}
                                                 onExcelExport={this.handleExcelExport}
+                                                defaultOrderBy="id"
                                             />
                                         </Grid>
                                     </Grid>
@@ -269,28 +275,32 @@ class PlanPositionsForm extends Component {
                                     justify="center"
                                     alignItems="flex-start"
                                 >
-                                    <Button
-                                        label={constants.BUTTON_ACCEPT}
-                                        icon=<Done/>
-                                        iconAlign="left"
-                                        variant="add"
-                                        disabled={selected.length === 0 ||
-                                            (selected.length === 1 && selected[0].amountAwardedGross !== null) || acceptDisabled ||
-                                                (selected[0].planStatus !== undefined && !['WY', 'RO'].includes(selected[0].planStatus))
-                                                    || planStatus !== 'UT'}
-                                        onClick={(event) => this.handleAction(event, 'accept')}
-                                    />
-                                    <Button
-                                        label={constants.BUTTON_CORRECT}
-                                        icon=<Edit/>
-                                        iconAlign="left"
-                                        variant="edit"
-                                        disabled={selected.length === 0 ||
-                                            selected.length > 1 ||
-                                                (selected[0].planStatus !== undefined && !['WY', 'RO'].includes(selected[0].planStatus))
-                                                    || planStatus !== 'UT'}
-                                        onClick={this.handleOpenCorrection}
-                                    />
+                                    { levelAccess === "accountant" &&
+                                        <>
+                                            <Button
+                                                label={constants.BUTTON_ACCEPT}
+                                                icon=<Done/>
+                                                iconAlign="left"
+                                                variant="add"
+                                                disabled={selected.length === 0 ||
+                                                    (selected.length === 1 && selected[0].amountAwardedGross !== null) || acceptDisabled ||
+                                                        (selected[0].planStatus !== undefined && !['WY', 'RO'].includes(selected[0].planStatus))
+                                                            || planStatus !== 'UT'}
+                                                onClick={(event) => this.handleAction(event, 'accept')}
+                                            />
+                                            <Button
+                                                label={constants.BUTTON_CORRECT}
+                                                icon=<Edit/>
+                                                iconAlign="left"
+                                                variant="edit"
+                                                disabled={selected.length === 0 ||
+                                                    selected.length > 1 ||
+                                                        (selected[0].planStatus !== undefined && !['WY', 'RO'].includes(selected[0].planStatus))
+                                                            || planStatus !== 'UT'}
+                                                onClick={this.handleOpenCorrection}
+                                            />
+                                        </>
+                                    }
                                     <Button
                                         label={constants.BUTTON_CLOSE}
                                         icon=<Cancel/>

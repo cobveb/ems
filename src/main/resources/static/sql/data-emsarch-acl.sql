@@ -16,17 +16,24 @@ insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (13,'4022','Wysłanie pl
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (14,'5022','Wycofanie wysłanego planu do jednstki nardzędnej');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (15,'1024','Odczyt planów koordynatora');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (16,'2024','Akceptacja pozycji planu koordynatora');
-insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (17,'3024','Zatwierdzenie planu koordynatora');
+--TODO Niewykozystywana opcja zatwierdzanie na poziomie planu instytucji
+--insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (17,'3024','Zatwierdzenie planu koordynatora');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (18,'1013','Odczyt planów koordynatora');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (19,'2013','Zatwierdzenie planu koordynatora');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (20,'1015','Odczyt planów koordynatora');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (21,'2015','Zatwierdzenie planu koordynatora Dyrektor pionu');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (22,'3015','Zatwierdzenie planu koordynatora Dyrektor naczelny');
-insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (23,'4024','Wycofanie zatwierdzonego planu koordynatora');
+--TODO Niewykozystywana opcja zatwierdzanie na poziomie planu instytucji
+--insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (23,'4024','Wycofanie zatwierdzonego planu koordynatora');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (24,'1034','Odczyt planu instytucji');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (25,'2034','Akceptacja pozycji w planie instytucji');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (26,'3034','Zatwierdzenie planu instytucji');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (27,'4034','Wycofanie zatwierdzonego planu instytucji');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (28,'4015','Zgłaszanie uwag do pozycji planu Koordynatora');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (29,'1025','Odczyt planu instytucji');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (30,'2025','Zatwierdzenie planu instytucji');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (31,'3025','Wycofanie planu instytucji');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (32,'5015','Zatwierdzenie planu koordynatora Dyrektor Ekonmiczny');
 
 REM INSERTING into EMSARCH.AC_OBJECTS
 SET DEFINE OFF;
@@ -53,7 +60,8 @@ insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,9);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,15);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,16);
-insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,17);
+--TODO Niewykozystywana opcja zatwierdzanie na poziomie planu instytucji
+--insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,17);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,10);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,11);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,12);
@@ -64,10 +72,16 @@ insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,20);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,21);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,22);
-insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,23);
+--TODO Niewykozystywana opcja zatwierdzanie na poziomie planu instytucji
+--insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,23);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,24);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,25);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,26);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,27);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,28);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,29);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,30);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,31);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,32);
 
 

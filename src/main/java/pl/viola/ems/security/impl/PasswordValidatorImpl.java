@@ -33,15 +33,17 @@ public class PasswordValidatorImpl implements PasswordValidator {
     private ParameterService parameterService;
 
     public boolean validate(final String password){
-        List<Parameter> passwordParams = parameterService.findByCodeIn(Arrays.asList("minDigits","minLowercase","minUppercase", "minSpecialChar", "minCharLength"));
+        List<Parameter> passwordParams = parameterService.findByCodeIn(Arrays.asList("minLowercase", "minUppercase", "minSpecialChar", "minDigits"));
+        Parameter minCharLength = parameterService.findById("minCharLength").orElse(null);
         password_pattern = "(";
-        passwordParams.forEach(condition->{
+        passwordParams.forEach(condition -> {
             password_pattern += setParameterPattern(condition);
         });
+        password_pattern += ".{" + setParameterValue(minCharLength) + ",20}";
         password_pattern += ")";
         pattern = Pattern.compile(password_pattern);
-        boolean valid =  pattern.matcher(password).matches();
-        if(valid){
+        boolean valid = pattern.matcher(password).matches();
+        if (valid) {
             return valid;
         } else {
             List<String> values = new ArrayList<String>();
@@ -55,7 +57,7 @@ public class PasswordValidatorImpl implements PasswordValidator {
                 values.get(1),
                 values.get(2),
                 values.get(3),
-                values.get(4)
+                    minCharLength.getValue()
             );
         }
     }
@@ -79,10 +81,6 @@ public class PasswordValidatorImpl implements PasswordValidator {
             }
             case "minSpecialChar": {
                 pattern = "(?=(?:.*[@#$%!&*^].*){"+ value +"})";
-                break;
-            }
-            case "minCharLength": {
-                pattern = ".{"+ value +",20}";
                 break;
             }
             default:{

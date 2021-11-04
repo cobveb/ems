@@ -22,7 +22,7 @@ import java.util.Set;
 public class InstitutionPlan {
 
     public enum InstitutionPlanStatus {
-        UT, ZA, RE, ZR
+        UT, AK, AD, AE, AN, ZA, RE, ZR, AA
     }
 
     @Id
@@ -43,10 +43,16 @@ public class InstitutionPlan {
     private CoordinatorPlan.PlanType type;
 
     @Transient
+    private BigDecimal amountRequestedNet;
+
+    @Transient
     private BigDecimal amountRequestedGross;
 
     @Transient
     private BigDecimal amountAwardedGross;
+
+    @Transient
+    private BigDecimal amountRealizedNet;
 
     @Transient
     private BigDecimal amountRealizedGross;
@@ -58,6 +64,10 @@ public class InstitutionPlan {
     @ManyToOne
     @JoinColumn(name = "plan_approve_user_id")
     private User approveUser;
+
+    @ManyToOne
+    @JoinColumn(name = "chief_accept_user_id")
+    private User chiefAcceptUser;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plan", cascade = {CascadeType.ALL})
     private Set<InstitutionPlanPosition> planPositions;

@@ -19,6 +19,7 @@ export function numberMask(rawValue){
     Mask allowed input only number
 */
     let mask = []
+    console.log(rawValue)
     rawValue = rawValue.replace(/[^0-9]/g, '');
     mask.push(rawValue);
     return mask;
@@ -234,12 +235,28 @@ export const  publicProcurementEstimationTypes = () => [
 
 export const getCoordinatorPlanStatuses = () => [
     {
+        code: 'ZP',
+        name: constants.COORDINATOR_PLAN_STATUS_SAVED,
+    },
+    {
         code: 'WY',
         name: constants.COORDINATOR_PLAN_STATUS_SENT,
     },
     {
         code: 'RO',
         name: constants.COORDINATOR_PLAN_STATUS_ADOPTED,
+    },
+    {
+        code: 'PK',
+        name: constants.COORDINATOR_PLAN_STATUS_FORWARD,
+    },
+    {
+        code: 'UZ',
+        name: constants.COORDINATOR_PLAN_STATUS_AGREED,
+    },
+    {
+        code: 'AZ',
+        name: constants.COORDINATOR_PLAN_STATUS_APPROVED_PUBLIC_PROCUREMENT,
     },
     {
         code: 'AK',
@@ -250,12 +267,16 @@ export const getCoordinatorPlanStatuses = () => [
         name: constants.COORDINATOR_PLAN_STATUS_APPROVED_DIRECTOR,
     },
     {
-        code: 'ZA',
+        code: 'AE',
+        name: constants.COORDINATOR_PLAN_STATUS_APPROVED_ECONOMIC,
+    },
+    {
+        code: 'AN',
         name: constants.COORDINATOR_PLAN_STATUS_APPROVED_CHIEF,
     },
     {
-        code: 'SK',
-        name: constants.COORDINATOR_PLAN_STATUS_CORRECTED,
+        code: 'ZA',
+        name: constants.COORDINATOR_PLAN_STATUS_APPROVED,
     },
     {
         code: 'RE',
@@ -264,6 +285,10 @@ export const getCoordinatorPlanStatuses = () => [
     {
         code: 'ZR',
         name: constants.COORDINATOR_PLAN_STATUS_EXECUTED,
+    },
+    {
+        code: 'AA',
+        name: constants.COORDINATOR_PLAN_STATUS_UPDATE,
     },
 
 ];
@@ -280,6 +305,10 @@ export const getCoordinatorPlanPositionsStatuses = () => [
     {
         code: 'WY',
         name: constants.COORDINATOR_PLAN_POSITION_STATUS_SENT,
+    },
+    {
+        code: 'UZ',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_AGREED,
     },
     {
         code: 'ZA',
@@ -302,6 +331,10 @@ export const getCoordinatorPlanPositionsStatuses = () => [
 
 export const getVats = () =>  [
     {
+        code: 1.05,
+        name: "5%",
+    },
+    {
         code: 1.08,
         name: "8%",
     },
@@ -320,3 +353,61 @@ export function generateExportLink(response){
     link.click()
 
 }
+
+export const getInvestmentPositionSourceHead = () => [
+    {
+        id: 'type.name',
+        label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_SOURCES,
+        type: 'object',
+    },
+    {
+        id: 'sourceAmountGross',
+        label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_TASK_GROSS,
+        suffix: 'zł.',
+        type: 'amount',
+    },
+    {
+        id: 'sourceAmountAwardedGross',
+        label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_AWARDED_GROSS,
+        suffix: 'zł.',
+        type: 'amount',
+    },
+    {
+        id: 'sourceExpensesPlanGross',
+        label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS,
+        suffix: 'zł.',
+        type: 'amount',
+    },
+    {
+        id: 'sourceExpensesPlanAwardedGross',
+        label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_AWARDED_GROSS,
+        suffix: 'zł.',
+        type: 'amount',
+    },
+];
+
+export const getInvestmentPositionUnitsHead = () => [
+    {
+        id: 'targetUnit.name',
+        label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_UNIT,
+        type: 'object',
+    },
+    {
+        id: 'taskGross',
+        label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_TASK_GROSS,
+        suffix: 'zł.',
+        type: 'amount',
+    },
+    {
+        id: 'amountRealizedGross',
+        label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_REALIZED_PLAN_GROSS,
+        suffix: 'zł.',
+        type: 'amount',
+    },
+    {
+        id: 'amountRequestedGross',
+        label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS,
+        suffix: 'zł.',
+        type: 'amount',
+    },
+];

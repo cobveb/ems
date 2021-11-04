@@ -12,6 +12,7 @@ class OrganizationUnitContainer extends Component {
         initData: {
             active: false,
             coordinator: false,
+            directorCoordinators: [],
         },
         unassignedCoordinators: [],
         isEdit: false,

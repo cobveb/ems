@@ -132,6 +132,7 @@ class PlanFinancialContentPosition extends Component {
                                         label={constants.APPLICATION_POSITION_DETAILS_POSITION_NAME}
                                         isRequired={true}
                                         disabled={planStatus!=='ZP' && true}
+                                        inputProps={{ maxLength: 120 }}
                                     />
                                 </Grid>
                                 <Grid item xs={4} >
@@ -176,11 +177,12 @@ class PlanFinancialContentPosition extends Component {
                                 </Grid>
                                 <Grid item xs={12} >
                                     <FormTextField
-                                        name="description"
+                                        name="comments"
                                         label={constants.COORDINATOR_PLAN_POSITION_FINANCIAL_DESCRIPTION}
                                         multiline
                                         rows="5"
                                         disabled={planStatus!=='ZP' && true}
+                                        inputProps={{ maxLength: 500 }}
                                     />
                                 </Grid>
                             </Grid>

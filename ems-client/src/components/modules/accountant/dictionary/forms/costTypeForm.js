@@ -195,7 +195,7 @@ class CostTypeForm extends Component {
                                         label={constants.ACCOUNTANT_COST_TYPE_NUMBER}
                                         isRequired={true}
                                         disabled={action === "edit" ? true : false}
-                                        inputProps={{ maxLength: 12 }}
+                                        inputProps={{ maxLength: 75 }}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={9}>

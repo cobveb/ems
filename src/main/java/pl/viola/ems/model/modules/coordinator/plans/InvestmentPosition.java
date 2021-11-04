@@ -3,72 +3,187 @@ package pl.viola.ems.model.modules.coordinator.plans;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.Hibernate;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
+import pl.viola.ems.model.modules.accountant.CostType;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
-@ToString(exclude = {"foundingSources"})
-@EqualsAndHashCode(exclude = {"foundingSources"}, callSuper = true)
 @NoArgsConstructor
 @SuperBuilder
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Entity
 @Table(name = "cor_investment_positions", schema = "emsadm")
 public class InvestmentPosition extends CoordinatorPlanPosition {
 
+    @Size(max = 200, message = "{valid.maxSize}")
+    private String name;
+
+    @NonNull
+    @NotBlank(message = "{valid.notBlank}")
+    @Size(max = 200, message = "{valid.maxSize}")
     private String task;
 
+    @Size(max = 200, message = "{valid.maxSize}")
     private String application;
 
+    @Size(max = 200, message = "{valid.maxSize}")
     private String substantiation;
 
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private DictionaryItem category;
+
+    @NonNull
+    @Column(name = "realization_date")
+    private Date realizationDate;
+
     @Transient
     @NonNull
-    private BigDecimal expensesPlanNet;
+    private BigDecimal taskPositionNet;
 
     @Transient
     @NonNull
-    private BigDecimal expensesPlanGross;
+    private BigDecimal taskPositionGross;
 
     @Transient
-    private BigDecimal realizedPlanNet;
+    private BigDecimal expensesPositionAwardedNet;
 
     @Transient
-    private BigDecimal realizedPlanGross;
+    private BigDecimal expensesPositionAwardedGross;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "investmentPosition", cascade = {CascadeType.ALL})
-    private Set<FundingSource> foundingSources = new HashSet<>();
+    @Transient
+    private BigDecimal realizedPositionNet;
 
-    public BigDecimal getExpensesPlanGross() {
-        return this.expensesPlanGross = expensesPlanNet.multiply(this.getVat()).setScale(2, RoundingMode.HALF_EVEN);
+    @Transient
+    private BigDecimal realizedPositionGross;
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "coordinatorPlanPosition", cascade = {CascadeType.ALL})
+    @ToString.Exclude
+    private List<FundingSource> positionFundingSources;
+
+    public BigDecimal getTaskPositionNet() {
+        return this.getTaskPositionGross().divide(this.getVat(), 2, RoundingMode.HALF_EVEN);
     }
 
-    public BigDecimal getExpensesPlanNet() {
-        return this.expensesPlanNet = sumFoundingPositionsAmount("expenses");
+    public BigDecimal getTaskPositionGross() {
+        return sumFoundingPositionsAmount("task");
     }
 
     @Override
-    public @NonNull BigDecimal getAmountRequestedNet() {
+    public BigDecimal getAmountRequestedNet() {
+        return this.getAmountRequestedGross().divide(this.getVat(), 2, RoundingMode.HALF_EVEN);
+    }
 
-        super.setAmountRequestedNet(sumFoundingPositionsAmount("requested"));
-        return super.getAmountRequestedNet();
+    @Override
+    public @NonNull BigDecimal getAmountRequestedGross() {
+
+        return sumFoundingPositionsAmount("expenses");
+    }
+
+    public BigDecimal getExpensesPositionAwardedNet() {
+        return this.getExpensesPositionAwardedGross().divide(this.getVat(), 2, RoundingMode.HALF_EVEN);
+    }
+
+    @Override
+    public BigDecimal getExpensesPositionAwardedGross() {
+
+        return sumFoundingPositionsAmount("awarded");
     }
 
     private BigDecimal sumFoundingPositionsAmount(String typeAmount) {
-        BigDecimal planAmountNet = new BigDecimal(0);
-        for (FundingSource source : foundingSources) {
+        BigDecimal positionAmount = new BigDecimal(0);
+        for (FundingSource source : positionFundingSources) {
             switch (typeAmount) {
-                case "requested":
-                    planAmountNet = planAmountNet.add(source.getSourceAmountRequestedNet());
+                case "task":
+                    positionAmount = positionAmount.add(source.getSourceAmountGross());
                     break;
                 case "expenses":
-                    planAmountNet = planAmountNet.add(source.getSourceExpensesPlanNet());
+                    positionAmount = positionAmount.add(source.getSourceExpensesPlanGross());
+                    break;
+                case "awarded":
+                    if (source.getSourceExpensesPlanAwardedGross() != null) {
+                        positionAmount = positionAmount.add(source.getSourceExpensesPlanAwardedGross());
+                    }
+                    break;
             }
         }
-        return planAmountNet;
+        return positionAmount;
 
+    }
+
+    @Override
+    public CostType getCostType() {
+        return null;
+    }
+
+    @Override
+    public PublicProcurementPosition.EstimationType getEstimationType() {
+        return null;
+    }
+
+    @Override
+    public PublicProcurementPosition.OrderType getOrderType() {
+        return null;
+    }
+
+    @Override
+    public String getInitiationTerm() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getEuroExchangeRate() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getAmountRequestedEuroNet() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getAmountInferredNet() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getAmountInferredGross() {
+        return null;
+    }
+
+    @Override
+    public DictionaryItem getMode() {
+        return null;
+    }
+
+    @Override
+    public DictionaryItem getAssortmentGroup() {
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        InvestmentPosition that = (InvestmentPosition) o;
+
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return 2043463193;
     }
 }

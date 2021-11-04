@@ -10,6 +10,7 @@ import pl.viola.ems.model.security.AcPrivilege;
 import pl.viola.ems.security.impl.UserPrincipal;
 import pl.viola.ems.service.security.AcPrivilegeService;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -45,9 +46,38 @@ public class CustomMethodSecurityExpressionRootConfig extends SecurityExpression
 
         AcPrivilege acPrivilege = acPrivilegeService.findByCode(permission.toString());
         throw new AppException(HttpStatus.FORBIDDEN,
-            "Security.accessDenied.hasPrivilege",
+                "Security.accessDenied.hasPrivilege",
                 acPrivilege.getCode() + " - " + acPrivilege.getName()
         );
+    }
+
+    public boolean hasAnyPrivilege(Object... permissions) {
+
+        ArrayList<AcPrivilege> privileges = new ArrayList<>();
+        String msg = "";
+        if (authentication == null) {
+            return false;
+        }
+
+        for (Object permission : permissions) {
+            if (!(permission instanceof String)) {
+                return false;
+            } else {
+                for (GrantedAuthority grantedAuth : authentication.getAuthorities()) {
+                    if (grantedAuth.getAuthority().startsWith(permission.toString())) {
+                        return true;
+                    }
+                }
+                AcPrivilege acPrivilege = acPrivilegeService.findByCode(permission.toString());
+                privileges.add(acPrivilege);
+            }
+        }
+
+        for (AcPrivilege privilege : privileges) {
+            msg = msg + privilege.getCode() + " - " + privilege.getName() + "\n";
+        }
+
+        throw new AppException(HttpStatus.FORBIDDEN, "Security.accessDenied.hasPrivilege", msg);
     }
 
     @Override

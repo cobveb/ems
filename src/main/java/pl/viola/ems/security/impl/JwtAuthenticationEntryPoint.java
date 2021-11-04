@@ -27,6 +27,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 						 AuthenticationException authException) throws IOException {
 		ErrorDetails errorDetails = new ErrorDetails(HttpStatus.UNAUTHORIZED, authException.getMessage(),
 				authException, request.getRequestURI());
+		//TODO: return when path unauthorized
+//		response.sendRedirect("/");
+		//TODO: Return if token expire
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType("application/json");
 		OutputStream out = response.getOutputStream();

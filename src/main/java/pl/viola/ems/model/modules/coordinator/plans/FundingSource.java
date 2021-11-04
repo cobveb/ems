@@ -6,10 +6,9 @@ import pl.viola.ems.model.common.dictionary.DictionaryItem;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
-@ToString(exclude = {"investmentPosition"})
-@EqualsAndHashCode(exclude = {"investmentPosition"})
+@ToString(exclude = {"coordinatorPlanSubPosition", "coordinatorPlanSubPositionExp"})
+@EqualsAndHashCode(exclude = {"coordinatorPlanSubPosition", "coordinatorPlanSubPositionExp"})
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -27,31 +26,44 @@ public class FundingSource {
     @JoinColumn(name = "type_id")
     private DictionaryItem type;
 
-    @Column(name = "so_am_awa_net")
-    private BigDecimal sourceAmountRequestedNet;
+    @Column(name = "so_am_net")
+    private BigDecimal sourceAmountNet;
 
-    @Transient
-    private BigDecimal sourceAmountRequestedGross;
+    @Column(name = "so_am_gross")
+    private BigDecimal sourceAmountGross;
 
-    @Column(name = "so_ex_plan_net")
+    @Column(name = "so_awa_net")
+    private BigDecimal sourceAmountAwardedNet;
+
+    @Column(name = "so_awa_gross")
+    private BigDecimal sourceAmountAwardedGross;
+
+    @Column(name = "so_exp_net")
     private BigDecimal sourceExpensesPlanNet;
 
-    @Transient
+    @Column(name = "so_exp_gross")
     private BigDecimal sourceExpensesPlanGross;
 
+    @Column(name = "so_exp_awa_net")
+    private BigDecimal sourceExpensesPlanAwardedNet;
+
+    @Column(name = "so_exp_awa_gross")
+    private BigDecimal sourceExpensesPlanAwardedGross;
+
+    @Column(name = "so_rea_net")
+    private BigDecimal sourceRealizedAmountNet;
+
+    @Column(name = "so_rea_gross")
+    private BigDecimal sourceRealizedAmountGross;
+
     @JsonIgnore
-    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "sub_position_id")
+    private CoordinatorPlanSubPosition coordinatorPlanSubPosition;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "position_id")
-    private InvestmentPosition investmentPosition;
+    private CoordinatorPlanPosition coordinatorPlanPosition;
 
-    public BigDecimal getSourceAmountRequestedGross() {
-        this.sourceAmountRequestedGross = sourceAmountRequestedNet.multiply(investmentPosition.getVat());
-        return this.sourceAmountRequestedGross.setScale(2, RoundingMode.CEILING);
-    }
-
-    public BigDecimal getSourceExpensesPlanGross() {
-        this.sourceExpensesPlanGross = sourceExpensesPlanNet.multiply(investmentPosition.getVat());
-        return this.sourceExpensesPlanGross.setScale(2, RoundingMode.CEILING);
-    }
 }

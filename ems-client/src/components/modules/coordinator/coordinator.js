@@ -65,6 +65,8 @@ class Coordinator extends Component {
                     },
                 ],
             },
+            /*
+                TODO: Add in next version
             {
                 name: constants.COORDINATOR_MENU_PUBLIC_PROCUREMENT,
                 icon: <EuroSymbol />,
@@ -89,6 +91,7 @@ class Coordinator extends Component {
                     },
                 ],
             },
+            */
             {
                 name: constants.COORDINATOR_MENU_DICTIONARIES,
                 icon: <LibraryBooks />,

@@ -29,7 +29,7 @@ import java.util.Set;
 public class CoordinatorPlan {
 
     public enum PlanStatus {
-        ZP, WY, RO, AK, AD, AZ, ZA, SK, RE, ZR
+        ZP, WY, RO, PK, UZ, AK, AD, AZ, AE, AN, ZA, RE, ZR, AA
     }
 
     public enum PlanType {
@@ -90,6 +90,10 @@ public class CoordinatorPlan {
     private User directorAcceptUser;
 
     @ManyToOne
+    @JoinColumn(name = "economic_accept_user_id")
+    private User economicAcceptUser;
+
+    @ManyToOne
     @JoinColumn(name = "chief_accept_user_id")
     private User chiefAcceptUser;
 
@@ -101,6 +105,10 @@ public class CoordinatorPlan {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "plan", cascade = {CascadeType.REMOVE})
     private Set<CoordinatorPlanPosition> positions = new HashSet<>();
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "plan_correction_id", referencedColumnName = "id")
+    private CoordinatorPlan correctionPlan;
 
     public void removePosition(CoordinatorPlanPosition position) {
         positions.remove(position);

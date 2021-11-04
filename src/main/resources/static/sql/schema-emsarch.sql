@@ -37,7 +37,7 @@ CREATE TABLE emsarch.users
 	is_credentials_expired NUMBER(1) DEFAULT 0 NOT NULL,
 	ou VARCHAR2(10) NOT NULL,
 	CONSTRAINT user_pk PRIMARY KEY(id),
-    CONSTRAINT user_username_unq UNIQUE(username)
+    CONSTRAINT user_username_unq UNIQUE(username),
     CONSTRAINT user_organization_unit_fk FOREIGN KEY (ou) REFERENCES emsadm.organization_units(code)
 ) TABLESPACE ems_users;
 /
@@ -95,7 +95,7 @@ CREATE TABLE emsarch.dictionary_items
 (
     id NUMBER(19,0) NOT NULL,
     code VARCHAR2(10) NOT NULL ,
-	name VARCHAR2(120) NOT NULL ,
+	name VARCHAR2(160) NOT NULL ,
 	is_active NUMBER(1) DEFAULT 1 NOT NULL,
 	dictionary_code VARCHAR2(10) NOT NULL,
 	CONSTRAINT dictionary_items_pk PRIMARY KEY (id),
@@ -198,6 +198,14 @@ GRANT SELECT ON emsarch.user_seq TO emsadm;
 --/
 --GRANT SELECT ON emsarch.module_seq TO emsadm;
 /
+-- Create sequence of table user
+DROP SEQUENCE user_seq;
+/
+CREATE SEQUENCE user_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
+/
+GRANT SELECT ON emsarch.user_seq TO emsadm;
+/
+
 -- Create sequence of table user groups
 DROP SEQUENCE groups_seq;
 /
@@ -205,6 +213,7 @@ CREATE SEQUENCE groups_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 /
 GRANT SELECT ON emsarch.groups_seq TO emsadm;
 /
+
 -- Create sequence of dictionary item
 DROP SEQUENCE dict_item_seq;
 /

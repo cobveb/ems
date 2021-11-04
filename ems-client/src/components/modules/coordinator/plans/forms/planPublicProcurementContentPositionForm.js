@@ -75,7 +75,7 @@ class PlanPublicProcurementContentPosition extends Component {
     };
 
     handleCheckEstimationType = () => {
-        const {amountRequestedNet, estimationType, euroExchangeRate } = this.props;
+        const {amountRequestedNet, estimationType } = this.props;
         let wrongEstimationType = false
 
         if(amountRequestedNet != null && (estimationType.code !== 'WR' && estimationType.code !== 'COVID')){

@@ -6,6 +6,7 @@ export const PASSWORD = 'Hasło';
 export const BUTTON_LOGIN = 'Zaloguj';
 export const CREDENTIALS_EXPIRED = 'Hasło wymaga zmiany.';
 export const TOGGLE_PASSWORD_VISIBILITY = 'Przełącz widoczność hasła';
+export const WRONG_CREDENTIALS = 'Niepoprawna nazwa użytkownika lub hasło';
 /* components/login/changePasswordForm.js */
 export const PASSWORD_NEEDS_CHANGE = 'hasło wymaga zmiany';
 export const OLD_PASSWORD = 'Stare hasło';
@@ -54,6 +55,7 @@ export const ORGANIZATION_UNIT_TITLE_EDIT = 'Edycja jednostki organizacyjnej - '
 export const ORGANIZATION_UNIT_ACTIVE = 'Aktywna:';
 export const ORGANIZATION_UNIT_COORDINATOR = 'Koordynator';
 export const ORGANIZATION_UNIT_DIRECTOR = 'Dyrektor Pionu';
+export const ORGANIZATION_UNIT_ECONOMIC = 'Dyrektor Ekonomiczny';
 export const ORGANIZATION_UNIT_CHIEF = 'Dyrektor Naczelny';
 export const ORGANIZATION_UNIT_COORDINATORS = 'Podlegli Koordynatorzy:';
 export const ORGANIZATION_UNIT_COORDINATOR_CODE = 'Kod';
@@ -234,13 +236,17 @@ export const COORDINATOR_PLAN_STATUS = 'Status';
 export const COORDINATOR_PLAN_STATUS_SAVED = 'Zapisany';
 export const COORDINATOR_PLAN_STATUS_SENT = 'Wysłany';
 export const COORDINATOR_PLAN_STATUS_ADOPTED = 'Rozpatrywany';
-export const COORDINATOR_PLAN_STATUS_APPROVED_ACCOUNTANT = 'Akceptacja księgowa';
+export const COORDINATOR_PLAN_STATUS_FORWARD = 'Przekazany';
+export const COORDINATOR_PLAN_STATUS_AGREED = 'Uzgodniony';
+export const COORDINATOR_PLAN_STATUS_APPROVED_ACCOUNTANT = 'Akceptacja - Główny księgowy';
 export const COORDINATOR_PLAN_STATUS_APPROVED_PUBLIC_PROCUREMENT = 'Akceptacja ZP';
-export const COORDINATOR_PLAN_STATUS_APPROVED_DIRECTOR = 'Akceptacja dyrektora';
-export const COORDINATOR_PLAN_STATUS_APPROVED_CHIEF = 'Zaakceptowany';
-export const COORDINATOR_PLAN_STATUS_CORRECTED = 'Akceptacja księgowa - korekta';
+export const COORDINATOR_PLAN_STATUS_APPROVED_DIRECTOR = 'Akceptacja  - Dyrektor pionu';
+export const COORDINATOR_PLAN_STATUS_APPROVED_ECONOMIC = 'Akceptacja - Dyrektor ekonomiczny';
+export const COORDINATOR_PLAN_STATUS_APPROVED_CHIEF = 'Akceptacja - Dyrektor naczelny';
+export const COORDINATOR_PLAN_STATUS_APPROVED = 'Zaakceptowany';
 export const COORDINATOR_PLAN_STATUS_REALIZED = 'Realizowany';
 export const COORDINATOR_PLAN_STATUS_EXECUTED = 'Zrealizowany';
+export const COORDINATOR_PLAN_STATUS_UPDATE = 'Zaktualizowany';
 export const COORDINATOR_PLAN_TYPE= 'Rodzaj';
 export const COORDINATOR_PLAN_TYPE_FINANCIAL= 'Finansowy';
 export const COORDINATOR_PLAN_TYPE_INVESTMENT= 'Inwestycyjny';
@@ -250,12 +256,15 @@ export const COORDINATOR_PLANS_TITLE = 'Plany';
 export const COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR = 'Rok';
 export const COORDINATOR_PLANS_TABLE_HEAD_ROW_TYPE = 'Rodzaj';
 export const COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS = 'Status';
-export const COORDINATOR_PLANS_CONFIRM_DELETE_MESSAGE = 'Plan zostanie usunięty. Czy kontynuować?'
-export const COORDINATOR_PLANS_CONFIRM_WITHDRAW_MESSAGE = 'Wysłanie planu zostanie wycofane. Czy kontynuować?'
+export const COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE = 'Aktualizacja';
+export const COORDINATOR_PLANS_CONFIRM_DELETE_MESSAGE = 'Plan zostanie usunięty. Czy kontynuować?';
+export const COORDINATOR_PLANS_CONFIRM_WITHDRAW_MESSAGE = 'Wysłanie planu zostanie wycofane. Czy kontynuować?';
+export const COORDINATOR_PLANS_CONFIRM_UPDATE_MESSAGE = 'Zostanie utworzona nowa wersja planu. Czy kontynuować?';
 /* containers/modules/coordinators/plans/planContainer.js */
 export const COORDINATOR_PLAN_POSITION_STATUS_ADDED = 'Dodana';
 export const COORDINATOR_PLAN_POSITION_STATUS_SAVED = 'Zapisana';
 export const COORDINATOR_PLAN_POSITION_STATUS_SENT = 'Wysłana';
+export const COORDINATOR_PLAN_POSITION_STATUS_AGREED = 'Uzgodniona';
 export const COORDINATOR_PLAN_POSITION_STATUS_ACCEPT = 'Zaakceptowana';
 export const COORDINATOR_PLAN_POSITION_STATUS_CORRECT = 'Skorygowana';
 export const COORDINATOR_PLAN_POSITION_STATUS_REALIZED = 'Realizowana';
@@ -271,6 +280,7 @@ export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_COVID = 'COVID';
 /* components/modules/coordinator/plans/plan.js */
 export const COORDINATOR_PLAN_CREATE_NEW_PLAN_TITLE = 'Nowy plan';
 export const COORDINATOR_PLAN_EDIT_PLAN_TITLE = 'Edycja planu: ';
+export const COORDINATOR_PLAN_UPDATE_PLAN_TITLE = 'Aktualizacja planu: ';
 export const COORDINATOR_PLAN_BASIC_INFORMATION = 'Dane podstawowe';
 export const COORDINATOR_PLAN_POSITIONS = 'Pozycje planu';
 export const COORDINATOR_PLAN_PUBLIC_ORDERS_REGISTER = 'Rejestr zamówień publicznych';
@@ -288,7 +298,7 @@ export const COORDINATOR_PLAN_FINANCIAL_REQUESTED_VALUE = 'Szacowana wartość p
 export const COORDINATOR_PLAN_FINANCIAL_AWARDED_VALUE = 'Przyznana wartość planu brutto';
 export const COORDINATOR_PLAN_FINANCIAL_REALIZED_VALUE = 'Zrealizowana wartość planu brutto';
 export const COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REQUESTED_VALUE = 'Orientacyjna wartość planu netto';
-export const COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REALIZED_VALUE = 'Zrealizowana wartość planu netto';
+    export const COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REALIZED_VALUE = 'Zrealizowana wartość planu netto';
 /* components/modules/coordinator/plans/forms/planBasicFormValid.js */
 export const COORDINATOR_PLAN_EXISTS = 'Dla wskazanego okresu istnieje plan ';
 /* components/modules/coordinator/plans/forms/planPositionsForm.js */
@@ -307,6 +317,10 @@ export const COORDINATOR_PLAN_POSITION_VAT = 'VAT';
 /* components/modules/coordinator/plans/forms/planFinancialContentPositionForm.js */
 export const COORDINATOR_PLAN_POSITION_FINANCIAL_COST_TYPES = 'Rodzaj kosztu';
 export const COORDINATOR_PLAN_POSITION_FINANCIAL_DESCRIPTION = 'Opis / Uwagi';
+export const COORDINATOR_PLAN_POSITION_COORDINATOR_DESCRIPTION = 'Uwagi Kooordynator';
+export const COORDINATOR_PLAN_POSITION_HEAD_COORDINATOR_DESCRIPTION = 'UK';
+export const COORDINATOR_PLAN_POSITION_MANAGEMENT_DESCRIPTION = 'Uwagi Dyrekcja';
+export const COORDINATOR_PLAN_POSITION_HEAD_MANAGEMENT_DESCRIPTION = 'UD';
 /* components/modules/coordinator/plans/forms/planFinancialContentPositionForm.js */
 export const COORDINATOR_PLAN_POSITION_PUBLIC_COST_TYPE_EXISTS = 'Wybrany rodzaj kosztu istnieje w ramach planu'
 export const COORDINATOR_PLAN_POSITION_PUBLIC_COST_TYPE_POSITIONS = 'Pozycje kosztu'
@@ -329,22 +343,61 @@ export const COORDINATOR_PLAN_POSITION_PUBLIC_COMMENTS = 'Uwagi';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP_POSITIONS = 'Pozycje grupy asortymentowej';
 /* components/modules/coordinator/plans/forms/planPublicProcurementContentPositionFormValid.js */
 export const COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP_EXISTS = 'Wybrana grupa asotymentowa istnieje w ramach planu'
-/* components/modules/coordinator/plans/forms/PlanInvestmentContentPosition.js */
+/* components/modules/coordinator/plans/forms/PlanInvestmentContentPositionForm.js */
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_CATEGORY = 'Kategoria';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_APPLICATION = 'Zastosowanie';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_SUBSTANTIATION = 'Uzasadnienie';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_FUNDING_SOURCES = 'Źródła finansowania';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_TARGET_UNITS = 'Jednostki docelowe';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_REMOVE_TARGET_UNITS_MSG = 'Jednostka/ki zostaną usunięte czy kontynuować?';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_SOURCES = 'Źródło finansowania';
 export const COORDINATOR_PLAN_POSITION_INVESTMENT_REALIZATION_DATE = 'Data realizacji';
-export const COORDINATOR_PLAN_POSITION_INVESTMENT_APPLICANT = 'Jednostka wnioskująca';
-export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_NET = 'Kwota wydatku netto';
-export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_GROSS = 'Kwota wydatku brutto';
-export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_NET = 'Kwota w planie netto';
-export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS = 'Kwota w planie brutto';
-export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_REALIZED_PLAN_GROSS = 'Realizacja w planie brutto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_UNIT = 'Jednostka';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_TASK_NET = 'Kwota zadania netto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_TASK_GROSS = 'Kwota zadania brutto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_AWARDED_GROSS = 'Przyznana kwota zadania brutto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_NET = 'Kwota wydatku netto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS = 'Kwota wydatku brutto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_AWARDED_GROSS = 'Przyznana kwota wydatku brutto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_REALIZED_PLAN_GROSS = 'Wydatki poniesione brutto';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_DELETE_TARGET_UNIT_MSG = 'Jednostka docelowa zostanie usunięta. Czy kontynuować?';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_DELETE_SOURCE_MSG = 'Źródło finansowania zostanie usunięte. Czy kontynuować?';
+/* components/modules/coordinator/plans/forms/PlanInvestmentContentPositionFormValid.js */
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_REALIZATION_DATE_INVALID = 'Data realizacji niezgodna z rokiem planu';
+/* components/modules/coordinator/plans/forms/planInvestmentPositionsForm.js */
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_CREATE_POSITION_DETAILS_TITLE = 'Nowa jednostka docelowa';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_EDIT_POSITION_DETAILS_TITLE = 'Edycja jednostki docelowej: ';
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_TARGET_UNIT = 'Jednostka Organizacyjna';
+/* components/modules/coordinator/plans/forms/planInvestmentPositionsFormValid.js */
+export const COORDINATOR_PLAN_POSITION_INVESTMENT_TARGET_UNIT_EXISTS = 'Jednostka Organizacyjna istnieje w ramach zadania';
 /* components/modules/coordinator/plans/forms/PlanFoundingSourcesForm.js */
 export const COORDINATOR_PLAN_INVESTMENTS_POSITION_CREATE_SOURCES_DETAILS_TITLE = "Nowe źródło finansowania";
 export const COORDINATOR_PLAN_INVESTMENTS_POSITION_EDIT_SOURCES_DETAILS_TITLE = "Edycja źródła finansowania: ";
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_SOURCE_TASK = "Wartość zadania";
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSE = "Wartość wydatku";
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_AWARDED_NET = 'Uzgodniona kwota zadania netto';
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_AWARDED_GROSS = 'Uzgodniona kwota zadania brutto';
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_AGREED_GROSS = 'Niewykorzystana / przekroczona kwota brutto dla źródła w ramach zadania';
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_PLAN_AWARDED_NET = 'Uzgodniona kwota wydatku netto';
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_PLAN_AWARDED_GROSS = 'Uzgodniona kwota wydatku brutto';
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_PLAN_AGREED_GROSS = 'Niewykorzystana kwota brutto dla źródła w ramach wydatku';
+/* components/modules/coordinator/plans/forms/PlanFoundingSourcesFormValid.js */
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_SOURCE_EXISTS = "Źródło finansowania istnieje w ramach pozycji";
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_INVALID_SOURCE_EXPENSES_PLAN_GROSS = "Kwota wydatku większa niż kwota zadania";
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_INVALID_SOURCE_AWARDED_GROSS = "Kwota zadania dla jednostki większa niż kwota zadania dla pozycji w planie";
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_INVALID_SOURCE_EXPENSES_AWARDED_GROSS = "Kwota wydatku dla jednostki większa niż kwota wydatku dla pozycji w planie";
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_INVALID_UNITS_SOURCE_AWARDED_GROSS = "Suma kwota zadania źródła dla jednostek większa niż kwota wydatku dla pozycji w planie";
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_INVALID_UNITS_SOURCE_EXPENSES_AWARDED_GROSS = "Suma kwota wydatku dla jednostek większa niż kwota wydatku dla pozycji w planie";
+/* components/modules/coordinator/plans/forms/planInvestmentPositionTargetUnitsForm.js */
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_TARGET_UNITS_TITLE = 'Jednostki organizacyjne';
+export const COORDINATOR_PLAN_INVESTMENTS_POSITION_TARGET_UNITS_SEARCH = 'Kod / Nazwa';
+/* components/modules/coordinator/plans/forms/planUpdateForm.js */
+export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT = "Korekta";
+export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECTED_GROSS = "Kwota po korekcie";
+/* components/modules/coordinator/plans/planUpdateFinancialContentPositionForm.js */
+export const COORDINATOR_PLAN_UPDATE_POSITION_DETAILS_TITLE = "Szczegóły pozycji planu: ";
+/* components/modules/coordinator/plans/planUpdateFinancialContentPositionFormValid.js */
+export const COORDINATOR_PLAN_UPDATE_PLAN_AMOUNT_AWARDED_EXCEEDED = "Przekroczono zatwierdzoną wartość planu";
 /* containers/modules/coordinator/publicProcurement/applications/applicationsContainer.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_SAVE = 'Zapisany';
 /* components/modules/coordinator/publicProcurement/applications/applications.js */
@@ -488,13 +541,20 @@ export const ACCOUNTANT_COORDINATOR_PLANS_CONFIRM_WITHDRAW_MESSAGE = 'Zatwierdze
 /* components/modules/accountant/coordinator/plans/forms/planBasicInfoForm.js */
 export const ACCOUNTANT_COORDINATOR_PLAN_PLAN_TITLE = 'Plan ';
 export const ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_APPROVE_MESSAGE = 'Plan zostanie zatwierdzony. Czy kontynuować?';
+export const ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_FORWARD_MESSAGE = 'Plan zostanie przekazany do koordynatora. Czy kontynuować?';
 export const ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_ACCEPT_POSITIONS_MESSAGE = 'Dla wszystkich zaznaczonych pozycji zostanie przyznana kwota szacowana. Czy kontynuować?';
 export const ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER = 'Akceptacja Głównego Księgowego';
 export const ACCOUNTANT_PLAN_COORDINATOR_DIRECTOR_ACCEPT_USER = 'Zatwierdzenie Dyrektor Pionu';
 export const ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER = 'Zatwierdzenie Dyrektor Naczelny';
 /* components/modules/accountant/coordinator/plans/forms/planCorrectionPositionForm.js */
 export const ACCOUNTANT_PLAN_COORDINATOR_CORRECTION_POSITIONS_TITLE = 'Korekta pozycji: ';
+export const ACCOUNTANT_PLAN_COORDINATOR_POSITION_REMARKS_TITLE = 'Uwagi dla pozycji: ';
 export const ACCOUNTANT_PLAN_INSTITUTION_CORRECTION_POSITIONS_TITLE = 'Korekta pozycji w planie Koordynatora: ';
+/* components/modules/accountant/coordinator/plans/forms/planInvestmentPositionFoundingSourcesForm */
+export const ACCOUNTANT_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_AWARDED_NET = 'Przyznana kwota zadania netto';
+export const ACCOUNTANT_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_AWARDED_GROSS = 'Przyznana kwota zadania brutto';
+export const ACCOUNTANT_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_PLAN_AWARDED_NET = 'Przyznana kwota wydatku netto';
+export const ACCOUNTANT_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_PLAN_AWARDED_GROSS = 'Przyznana kwota wydatku brutto';
 /* components/modules/accountant/institution/plans/plans.js */
 export const ACCOUNTANT_INSTITUTION_PLANS_TITLE = 'Plany';
 /* components/modules/accountant/institution/plans/plan.js */
@@ -528,6 +588,8 @@ export const ACCOUNTANT_COST_TYPE_ALL_COORDINATORS = 'Koordynatorzy: ';
 export const ACCOUNTANT_COST_TYPE_YEAR_COORDINATORS = 'Przypisani koordynatorzy: ';
 /*components/modules/accountant/dictionary/forms/costYearFormValid.js*/
 export const ACCOUNTANT_COST_TYPE_YEAR_EXISTS = 'Podany okres obowiązywania istnieje';
+/* components/modules/director/coordinator/plans/plans.js */
+export const DIRECTOR_COORDINATOR_PLAN_TABLE_HEAD_ROW_AMOUNT_REQUESTED_NET = 'Kwota szacowana netto';
 /* components/modules/director/director.js */
 export const DIRECTOR_MENU_PLANS = 'Plany';
 export const DIRECTOR_MENU_COORDINATOR_PLANS = 'Koordynatorzy';
@@ -537,9 +599,11 @@ export const DIRECTOR_COORDINATOR_PLAN_TITLE = 'Szczegóły planu: ';
 export const PUBLIC_MENU_COORDINATOR = 'Koordynator';
 export const PUBLIC_SUBMENU_COORDINATOR_PLANS = 'Plany';
 export const PUBLIC_SUBMENU_COORDINATOR_APPLICATIONS = 'Wnioski';
+export const PUBLIC_MENU_INSTITUTION = 'Instytucja';
+export const PUBLIC_SUBMENU_INSTITUTION_PLANS = 'Plany';
 export const PUBLIC_MENU_DICTIONARIES = 'Słowniki';
 export const PUBLIC_SUBMENU_DICTIONARIES = 'Słowniki';
-/* components/modules/publicProcurement/plans/plans.js */
+/* components/modules/publicProcurement/coordinators/plans/plans.js */
 export const PUBLIC_COORDINATOR_PLANS_TITLE = 'Plany Koordynatorów';
 export const PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR = 'Rok';
 export const PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_COORDINATOR = 'Koordynator';
@@ -548,6 +612,8 @@ export const PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_AMOUNT_REALIZED_GROSS = 'Kw
 export const PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS = 'Status';
 /* components/modules/publicProcurement/coordinator/plans/forms/planBasicInfoForm.js */
 export const PUBLIC_PLAN_COORDINATOR_ACCEPT_USER = 'Akceptacja Zamówień Publicznych';
+/* components/modules/publicProcurement/institution/plans/plans.js */
+export const PUBLIC_INSTITUTION_PLANS_TITLE = 'Plany'
 /*components/modules/hr/humanResources.js*/
 export const HR_MENU_STAFF = 'Personel';
 export const HR_MENU_STAFF_WORKERS = 'Pracownicy';
@@ -608,8 +674,14 @@ export const BUTTON_RECEIVE = 'Przyjmij';
 export const BUTTON_CORRECT = 'Koryguj';
 export const BUTTON_ACCEPT = 'Akceptuj';
 export const BUTTON_APPROVE = 'Zatwierdź';
+export const BUTTON_COORDINATOR = 'Przekazanie - Koordynator';
+export const BUTTON_APPROVE_DIRECTOR = 'Zatwierdzenie - Dyrektor pionu';
+export const BUTTON_APPROVE_ECONOMIC = 'Zatwierdzenie - Dyrektor ekonomiczny';
+export const BUTTON_APPROVE_CHIEF = 'Zatwierdzenie - Dyrektor naczelny';
 export const BUTTON_CONSIDER = 'Rozpatrz';
 export const BUTTON_PRINT = 'Drukuj';
+export const BUTTON_UPDATE = 'Aktualizuj';
+export const BUTTON_REMARKS = 'Uwagi';
 export const TEXTFIELD_SEARCH = 'Szukaj';
 export const DRAWER_MENU_SHOW = 'Pokaż';
 export const DRAWER_MENU_HIDE = 'Ukryj';

@@ -33,7 +33,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: theme.spacing(15),
+        height: theme.spacing(18),
     },
 });
 
@@ -49,6 +49,10 @@ class OrganizationUnitForm extends Component {
             {
                 code: "CHIEF",
                 name: constants.ORGANIZATION_UNIT_CHIEF,
+            },
+            {
+                code: "ECONOMIC",
+                name: constants.ORGANIZATION_UNIT_ECONOMIC,
             },
             {
                 code: "DIRECTOR",

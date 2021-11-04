@@ -4,7 +4,7 @@ import Plans from 'components/modules/coordinator/plans/plans';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
-import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink, getCoordinatorPlanTypes} from 'utils';
+import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink, getCoordinatorPlanTypes, getCoordinatorPlanStatuses} from 'utils';
 import PlansApi from 'api/modules/coordinator/plansApi';
 import DictionaryApi from 'api/common/dictionaryApi';
 
@@ -13,52 +13,8 @@ class PlansContainer extends Component {
     state = {
         plans: [],
         modes:[],
-        statuses:[
-            {
-                code: '',
-                name: constants.COORDINATOR_PLAN_STATUS,
-            },
-            {
-                code: 'ZP',
-                name: constants.COORDINATOR_PLAN_STATUS_SAVED,
-            },
-            {
-                code: 'WY',
-                name: constants.COORDINATOR_PLAN_STATUS_SENT,
-            },
-            {
-                code: 'RO',
-                name: constants.COORDINATOR_PLAN_STATUS_ADOPTED,
-            },
-            {
-                code: 'AK',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_ACCOUNTANT,
-            },
-            {
-                code: 'SK',
-                name: constants.COORDINATOR_PLAN_STATUS_CORRECTED,
-            },
-            {
-                code: 'AZ',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_PUBLIC_PROCUREMENT,
-            },
-            {
-                code: 'AD',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_DIRECTOR,
-            },
-            {
-                code: 'ZA',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_CHIEF,
-            },
-            {
-                code: 'RE',
-                name: constants.COORDINATOR_PLAN_STATUS_REALIZED,
-            },
-            {
-                code: 'ZR',
-                name: constants.COORDINATOR_PLAN_STATUS_EXECUTED,
-            },
-        ],
+        investmentCategories: [],
+        statuses: getCoordinatorPlanStatuses(),
         types:[
             {
                 code: '',
@@ -77,12 +33,29 @@ class PlansContainer extends Component {
         .catch(error => {});
     };
 
+    handleGetDictionaryInvestmentCategories(){
+        return DictionaryApi.getDictionary('slKatPlInw')
+        .then(response => {
+            this.setState({
+                investmentCategories: response.data.data.items,
+            })
+        })
+        .catch(error => {});
+    }
+
      handleGetPlans(){
         this.props.loading(true);
         PlansApi.getPlans()
         .then(response =>{
             this.setState(prevState => {
                 let plans = [...prevState.plans];
+                const statuses = [...prevState.statuses];
+                statuses.unshift(
+                    {
+                        code: '',
+                        name: constants.COORDINATOR_PLAN_STATUS,
+                    },
+                );
                 plans = response.data.data;
                 plans.map(plan => (
                     Object.assign(plan,
@@ -90,6 +63,7 @@ class PlansContainer extends Component {
                             year: plan.year = new Date(plan.year,0,1).toJSON(),
                             status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
                             type: plan.type = findSelectFieldPosition( this.state.types, plan.type),
+                            isUpdate: plan.isUpdate = plan.correctionPlan === null ? false : true,
                         }
                     )
                 ))
@@ -148,17 +122,19 @@ class PlansContainer extends Component {
     componentDidMount() {
         this.handleGetPlans();
         this.handleGetDictionaryModes();
+        this.handleGetDictionaryInvestmentCategories();
     }
 
     render(){
         const {isLoading, loading, error, clearError} = this.props;
-        const { types, statuses, plans, modes } = this.state;
+        const { types, statuses, plans, modes, investmentCategories } = this.state;
         return(
             <Plans
                 initialValues={plans}
                 types={types}
                 statuses={statuses}
                 modes={modes}
+                investmentCategories={investmentCategories}
                 isLoading={isLoading}
                 loading={loading}
                 error={error}

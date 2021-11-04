@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PropTypes from 'prop-types';
-import { LibraryBooks, Style, HowToReg, Timeline } from '@material-ui/icons/';
+import { LibraryBooks, Style, HowToReg, Timeline, Description, LocationCity } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames'
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
 import PlansContainer from 'containers/modules/publicProcurement/coordinator/plans/plansContainer';
+import ApplicationsContainer from 'containers/modules/publicProcurement/coordinator/applications/applicationsContainer';
 import DictionariesContainer from 'containers/modules/publicProcurement/dictionaries/dictionariesContainer';
+import InstitutionPlansContainer from 'containers/modules/publicProcurement/institution/plans/plansContainer';
 
 const styles = theme => ({
     root: {
@@ -46,6 +48,25 @@ class PublicProcurement extends Component {
                         path: '/modules/public/coordinator/plans',
                         icon: <Timeline />
                     },
+                    {
+                        code: 'applications',
+                        name: constants.PUBLIC_SUBMENU_COORDINATOR_APPLICATIONS,
+                        path: '/modules/public/coordinator/applications',
+                        icon: <Description />
+                    },
+                ],
+            },
+            {
+                name: constants.PUBLIC_MENU_INSTITUTION,
+                icon: <LocationCity />,
+                defaultExpanded: false,
+                items:  [
+                    {
+                        code: 'plans',
+                        name: constants.PUBLIC_SUBMENU_INSTITUTION_PLANS,
+                        path: '/modules/public/institution/plans',
+                        icon: <Timeline />
+                    },
                 ],
             },
             {
@@ -63,6 +84,15 @@ class PublicProcurement extends Component {
         ]
     };
 
+    showInstitutionPlans = () =>{
+        return(
+            <InstitutionPlansContainer
+                levelAccess="publicProcurement"
+            />
+        )
+    }
+
+
     render(){
         const { classes } = this.props;
         const { menus } = this.state;
@@ -77,6 +107,8 @@ class PublicProcurement extends Component {
                                 <Switch>
                                     <PrivateRoute exact path='/modules/public/' component={PlansContainer}/>
                                     <PrivateRoute exact path='/modules/public/coordinator/plans' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/public/coordinator/applications' component={ApplicationsContainer}/>
+                                    <PrivateRoute exact path='/modules/public/institution/plans' component={this.showInstitutionPlans}/>
                                     <PrivateRoute exact path='/modules/public/dictionaries' component={DictionariesContainer}/>
                                 </Switch>
                             </CardContent>

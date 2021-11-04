@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @ToString(exclude = {"unit"})
@@ -33,4 +34,8 @@ public class FinancialSubPosition extends CoordinatorPlanSubPosition {
     @JoinColumn(name = "unit_price")
     private BigDecimal unitPrice;
 
+    @Override
+    public List<FundingSource> getFundingSources() {
+        return null;
+    }
 }

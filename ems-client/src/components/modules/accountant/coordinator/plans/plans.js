@@ -4,7 +4,7 @@ import * as constants from 'constants/uiNames';
 import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { Table, Button, SelectField, DatePicker } from 'common/gui';
-import { PostAdd, Visibility, Undo } from '@material-ui/icons/';
+import { PostAdd, Visibility } from '@material-ui/icons/';
 import PlanContainer from 'containers/modules/accountant/coordinator/plans/planContainer';
 
 const styles = theme => ({
@@ -44,6 +44,11 @@ class Plans extends Component {
             {
                 id: 'coordinator.name',
                 label: constants.ACCOUNTANT_COORDINATOR_PLANS_TABLE_HEAD_ROW_COORDINATOR,
+                type:'object',
+            },
+            {
+                id: 'type.name',
+                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_TYPE,
                 type:'object',
             },
             {
@@ -117,7 +122,6 @@ class Plans extends Component {
 
     filter = () => {
         let plans = this.props.initialValues;
-
         return plans.filter((plan) => {
             return plan.status.code.toLowerCase().search(
                     this.state.status.toLowerCase()) !== -1 &&
@@ -141,19 +145,6 @@ class Plans extends Component {
             action: '',
             selected: {},
         });
-    }
-
-    handleWithdraw = (event, action) => {
-        this.setState(state => ({ action: action}));
-    }
-
-    handleConfirmWithdraw = () => {
-        this.props.onWithdraw(this.state.selected.id);
-        this.setState({ action: '' });
-    }
-
-    handleCancelWithdraw = () => {
-        this.setState({ action: '' });
     }
 
     handleCloseDialog = () => {
@@ -189,23 +180,18 @@ class Plans extends Component {
             <>
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
-                { action === 'withdraw' &&
-                    <ModalDialog
-                        message={constants.ACCOUNTANT_COORDINATOR_PLANS_CONFIRM_WITHDRAW_MESSAGE}
-                        variant="confirm"
-                        onConfirm={this.handleConfirmWithdraw}
-                        onClose={this.handleCloseDialog}
-                    />
-                }
+
                 <div>
                     { isDetailsVisible ?
                         <PlanContainer
                             initialValues={action === "add" ? {} : selected}
                             changeVisibleDetails={this.handleChangeVisibleDetails}
                             action={action}
+                            levelAccess="accountant"
                             changeAction={this.handleChangeAction}
                             handleClose={this.handleClose}
                             statuses={statuses}
+                            investmentCategories={this.props.investmentCategories}
                             plans={initialValues}
                             onSubmitPlan={onSubmitPlan}
                         />
@@ -272,7 +258,7 @@ class Plans extends Component {
                                 alignItems="flex-start"
                                 className={classes.container}
                             >
-                                <Grid item xs={11}>
+                                <Grid item xs={12}>
                                     <Grid
                                         container
                                         direction="row"
@@ -293,23 +279,6 @@ class Plans extends Component {
                                                     "cancel"}
                                             onClick = { (event) => this.handleChangeVisibleDetails(event, 'edit', )}
                                             data-action="edit"
-                                        />
-                                    </Grid>
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <Grid
-                                        container
-                                        direction="row"
-                                        justify="flex-start"
-                                        alignItems="flex-start"
-                                    >
-                                        <Button
-                                            label={constants.BUTTON_WITHDRAW}
-                                            icon=<Undo/>
-                                            iconAlign="left"
-                                            disabled={Object.keys(selected).length === 0 || (selected.status.code !== 'AK' && selected.status.code !== 'SK')}
-                                            onClick = {(event) => this.handleWithdraw(event, 'withdraw', )}
-                                            variant="cancel"
                                         />
                                     </Grid>
                                 </Grid>

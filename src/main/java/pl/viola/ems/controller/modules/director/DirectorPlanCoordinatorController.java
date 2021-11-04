@@ -7,13 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import pl.viola.ems.model.common.coordinatorPlan.ApprovePlanType;
 import pl.viola.ems.model.common.export.ExportType;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
+import pl.viola.ems.model.modules.coordinator.plans.FinancialPosition;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.service.modules.coordinator.plans.PlanService;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static pl.viola.ems.utils.Utils.generateExportResponse;
 
@@ -36,10 +39,22 @@ public class DirectorPlanCoordinatorController {
         return new ApiResponse(HttpStatus.OK, planService.approvePlan(planId, ApprovePlanType.DIRECTOR));
     }
 
+    @PutMapping("/plan/{planId}/economicApprove")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('5015')")
+    public ApiResponse economicApprove(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.OK, planService.approvePlan(planId, ApprovePlanType.ECONOMIC));
+    }
+
     @PutMapping("/plan/{planId}/chiefApprove")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('3015')")
     public ApiResponse chiefApprove(@PathVariable Long planId) {
         return new ApiResponse(HttpStatus.OK, planService.approvePlan(planId, ApprovePlanType.CHIEF));
+    }
+
+    @PutMapping("/plan/{planId}/updatePlanPositions")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('4015')")
+    public ApiResponse savePlanPositions(@RequestBody @Valid List<FinancialPosition> positions, @PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.CREATED, planService.updatePlanPositionsByAccountant(positions, planId));
     }
 
     @GetMapping("/plan/{planId}/getPositions")

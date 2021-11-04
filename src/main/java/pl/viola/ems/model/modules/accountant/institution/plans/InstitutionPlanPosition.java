@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.accountant.CostType;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
 import pl.viola.ems.model.modules.coordinator.plans.FinancialPosition;
@@ -91,5 +92,9 @@ public abstract class InstitutionPlanPosition {
     }
 
     public abstract CostType getCostType();
+
+    public abstract DictionaryItem getAssortmentGroup();
+
+    public abstract PublicProcurementPosition.OrderType getOrderType();
 
 }

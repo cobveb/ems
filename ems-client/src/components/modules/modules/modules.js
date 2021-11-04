@@ -29,21 +29,21 @@ class Modules extends Component {
         return(
             <>
                 <div className={classes.root}>
-            	    <Grid container spacing={0}>
-            	        <AppHeader />
-                    </Grid>
-                    <main className={classes.content}>
-                        <Switch>
-                            <PrivateRoute exact path='/modules' component={ModuleListContainer}/>
-                            <PrivateRoute path='/modules/administrator' component={Administrator}/>
-                            <PrivateRoute path='/modules/director' component={Director}/>
-                            <PrivateRoute path='/modules/accountant' component={Accountant}/>
-                            <PrivateRoute path='/modules/applicant' component={Applicant}/>
-                            <PrivateRoute path='/modules/coordinator' component={Coordinator}/>
-                            <PrivateRoute path='/modules/hr' component={HumanResources}/>
-                            <PrivateRoute path='/modules/public' component={PublicProcurement}/>
-                        </Switch>
-                    </main>
+                <Grid container spacing={0}>
+                    <AppHeader />
+                </Grid>
+                <main className={classes.content}>
+                    <Switch>
+                        <PrivateRoute exact path='/modules' component={ModuleListContainer}/>
+                        <PrivateRoute path='/modules/administrator' component={Administrator}/>
+                        <PrivateRoute path='/modules/director' component={Director}/>
+                        <PrivateRoute path='/modules/accountant' component={Accountant}/>
+                        <PrivateRoute path='/modules/applicant' component={Applicant}/>
+                        <PrivateRoute path='/modules/coordinator' component={Coordinator}/>
+                        <PrivateRoute path='/modules/hr' component={HumanResources}/>
+                        <PrivateRoute path='/modules/public' component={PublicProcurement}/>
+                    </Switch>
+                </main>
                 </div>
             </>
         )

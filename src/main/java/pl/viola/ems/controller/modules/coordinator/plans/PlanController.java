@@ -109,4 +109,21 @@ public class PlanController {
     public void generatePlan(@PathVariable Long planId, HttpServletResponse response) throws JRException, SQLException, IOException {
         planService.exportPlanToJasper(planId, generateJasperResponse(response, JasperExportType.PDF));
     }
+
+    @PutMapping("/plan/update/{planId}")
+    public ApiResponse updatePlan(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.CREATED, planService.updatePlan(planId));
+    }
+
+    @DeleteMapping("/plan/position/deleteTargetUnit/{unitId}")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('3022')")
+    public ApiResponse deleteTargetUnit(@PathVariable Long unitId) {
+        return new ApiResponse(HttpStatus.ACCEPTED, planService.deleteTargetUnit(unitId));
+    }
+
+    @DeleteMapping("/plan/position/{positionId}/deleteSource/{sourceId}")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('3022')")
+    public ApiResponse deleteInvestmentSource(@PathVariable Long positionId, @PathVariable Long sourceId) {
+        return new ApiResponse(HttpStatus.ACCEPTED, planService.deleteInvestmentSource(positionId, sourceId));
+    }
 }

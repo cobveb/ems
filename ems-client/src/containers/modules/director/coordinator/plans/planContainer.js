@@ -9,7 +9,7 @@ import PlansApi from 'api/modules/director/coordinator/plansApi';
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
 import DictionaryApi from 'api/common/dictionaryApi';
 import * as constants from 'constants/uiNames';
-import {publicProcurementEstimationTypes} from 'utils/';
+import {publicProcurementEstimationTypes, findIndexElement, getCoordinatorPlanPositionsStatuses} from 'utils/';
 
 class PlanContainer extends Component {
     state = {
@@ -18,6 +18,7 @@ class PlanContainer extends Component {
         },
         units: [],
         costsTypes:[],
+        fundingSources:[],
         vats: [
             {
                 code: 1.08,
@@ -39,36 +40,8 @@ class PlanContainer extends Component {
             }
         ],
         estimationTypes: publicProcurementEstimationTypes(),
-        statuses:[
-            {
-                code: 'DO',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_ADDED,
-            },
-            {
-                code: 'ZP',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_SAVED,
-            },
-            {
-                code: 'WY',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_SENT,
-            },
-            {
-                code: 'ZA',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_ACCEPT,
-            },
-            {
-                code: 'SK',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_CORRECT,
-            },
-            {
-                code: 'RE',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_REALIZED,
-            },
-            {
-                code: 'ZR',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_EXECUTED,
-            },
-        ],
+        statuses: getCoordinatorPlanPositionsStatuses(),
+        isDetailsVisible: false,
     }
 
     handleGetCostsTypes(){
@@ -91,6 +64,16 @@ class PlanContainer extends Component {
         .catch(error => {});
     };
 
+    handleGetDictionaryFoundingSources(){
+       return DictionaryApi.getDictionary('dicFunSour')
+        .then(response => {
+            this.setState({
+                fundingSources: response.data.data.items,
+            })
+        })
+        .catch(error => {});
+    };
+
     handleGetPlanPositions = () => {
         this.props.loading(true);
         PlansApi.getPlanPositions(this.props.initialValues.id)
@@ -105,7 +88,9 @@ class PlanContainer extends Component {
                             Object.assign(position,
                                 {
                                     vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
-                                    status: position.status = findSelectFieldPosition(this.state.statuses, position.status)
+                                    status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                                    isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
+                                    isDescMan: position.isDescMan = position.managementDescription === null ? false : true,
                                 }
                             )
                         ))
@@ -132,8 +117,33 @@ class PlanContainer extends Component {
                     });
                     this.handleGetDictionaryAssortmentGroups();
                 break;
-                default:
-                    return null;
+                case("INW"):
+                    this.setState( prevState => {
+                        let initData = {...prevState.initData};
+                        Object.assign(initData, this.props.initialValues);
+                        initData.positions = response.data.data;
+                        console.log(response.data.data)
+                        initData["positions"].map(position => (
+                            Object.assign(position,
+                                {
+                                    vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
+                                    status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                                    isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
+                                    isDescMan: position.isDescMan = position.managementDescription === null ? false : true,
+                                },
+                                position.positionFundingSources.map(source =>(
+                                    Object.assign(source,
+                                        {
+                                            type: source.type = findSelectFieldPosition(this.state.fundingSources, source.type.code),
+                                        }
+                                    )
+                                ))
+                            )
+                        ))
+                        return {initData};
+                    });
+                break;
+                // no default
             }
         this.props.loading(false)
         })
@@ -148,6 +158,22 @@ class PlanContainer extends Component {
                 let initData = {...prevState.initData};
                 initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
                 initData.directorAcceptUser = response.data.data.directorAcceptUser;
+                return {initData};
+            });
+            this.props.loading(false)
+            this.props.handleClose(this.state.initData);
+        })
+        .catch(error =>{});
+    }
+
+    handleApproveEconomic = () => {
+        this.props.loading(true);
+        PlansApi.approveEconomic(this.state.initData.id)
+        .then(response =>{
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
+                initData.economicAcceptUser = response.data.data.economicAcceptUser;
                 return {initData};
             });
             this.props.loading(false)
@@ -172,6 +198,53 @@ class PlanContainer extends Component {
         .catch(error =>{});
     }
 
+    handleSubmitPlanPositions = () =>{
+        this.props.loading(true);
+        const payload = JSON.parse(JSON.stringify(this.state.initData.positions))
+        if(this.state.initData.type.code === 'FIN'){
+            payload.forEach(position =>{
+                position.type = 'fin';
+                position.status = position.status.code;
+                position.vat = position.vat.code;
+            })
+        }
+        PlansApi.savePlanPositions(this.state.initData.id, payload)
+        .then(response =>{
+            switch(this.state.initData.type.code){
+                case ("FIN"):
+                    this.setState( prevState => {
+                        let initData = {...prevState.initData};
+                        initData.planAmountAwardedNet = response.data.data.planAmountAwardedNet;
+                        initData.planAmountAwardedGross = response.data.data.planAmountAwardedGross;
+                        initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status)
+                        initData["positions"].map(position => (
+                            Object.assign(position,
+                                {
+                                    isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
+                                    isDescMan: position.isDescMan = (position.managementDescription === null || position.managementDescription.length === 0) ? false : true,
+                                }
+                            )
+                        ))
+
+                        return {initData};
+                    });
+                break;
+                default:
+                    return null;
+            }
+        this.props.loading(false)
+        })
+        .catch(error =>{});
+    }
+
+    handleRemarksPlanPosition = (values) => {
+        const index = findIndexElement(values, this.state.initData.positions);
+        if(index !== null){
+            this.state.initData.positions.splice(index, 1, values);
+        }
+        this.handleSubmitPlanPositions();
+    }
+
     handleExcelExport = (exportType, headRow) =>{
         this.props.loading(true);
         PlansApi.exportPlanPositionsToExcel(exportType, this.state.initData.type.code, this.state.initData.id, headRow)
@@ -183,11 +256,15 @@ class PlanContainer extends Component {
     }
 
     componentDidMount() {
-            this.handleGetPlanPositions();
+        this.handleGetPlanPositions();
+        if(this.props.initialValues.type !== undefined && this.props.initialValues.type.code === 'INW'){
+            this.handleGetDictionaryFoundingSources();
+        }
     }
+
     render(){
         const {changeVisibleDetails, action, handleClose, error, isLoading } = this.props;
-        const {initData, units, vats, costsTypes } = this.state;
+        const {initData, units, vats, costsTypes, fundingSources } = this.state;
         return(
             <PlanBasicInfoForm
                 initialValues={initData}
@@ -196,11 +273,14 @@ class PlanContainer extends Component {
                 error={error}
                 isLoading={isLoading}
                 onApproveDirector={this.handleApproveDirector}
+                onApproveEconomic={this.handleApproveEconomic}
                 onApproveChief={this.handleApproveChief}
+                onRemarksPlanPosition={this.handleRemarksPlanPosition}
                 onExcelExport={this.handleExcelExport}
                 onClose={handleClose}
                 units={units}
                 costsTypes={costsTypes}
+                fundingSources={fundingSources}
                 vats={vats}
             />
         );

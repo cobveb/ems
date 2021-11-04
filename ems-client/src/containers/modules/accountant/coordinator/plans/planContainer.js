@@ -6,28 +6,28 @@ import PropTypes from 'prop-types';
 import PlanBasicInfoForm from 'containers/modules/accountant/coordinator/plans/forms/planBasicInfoFormContainer';
 import {findSelectFieldPosition, generateExportLink, findIndexElement, getVats, getCoordinatorPlanPositionsStatuses} from 'utils';
 import PlansApi from 'api/modules/accountant/coordinator/plansApi';
-import CostTypeApi from 'api/modules/accountant/costTypeApi';
+import DictionaryApi from 'api/common/dictionaryApi';
 
 class PlanContainer extends Component {
     state = {
         initData: {
             positions: [],
         },
-        units: [],
-        costsTypes:[],
+        fundingSources:[],
         vats: getVats(),
         statuses: getCoordinatorPlanPositionsStatuses(),
     }
 
-    handleGetCostsTypes(){
-        CostTypeApi.getCostTypeByCoordinatorAndYear(new Date(this.state.initData.year).getFullYear(), this.state.initData.coordinator.code)
+    handleGetDictionaryFoundingSources(){
+       return DictionaryApi.getDictionary('dicFunSour')
         .then(response => {
             this.setState({
-                costsTypes: response.data.data,
+                fundingSources: response.data.data.items,
             })
         })
         .catch(error => {});
     };
+
 
     handleGetPlan = () => {
         this.props.loading(true);
@@ -42,7 +42,9 @@ class PlanContainer extends Component {
                     Object.assign(position,
                         {
                             vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
-                            status: position.status = findSelectFieldPosition(this.state.statuses, position.status)
+                            status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                            isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
+                            isDescMan: position.isDescMan = position.managementDescription === null ? false : true,
                         }
                     )
                 ))
@@ -69,16 +71,43 @@ class PlanContainer extends Component {
                             Object.assign(position,
                                 {
                                     vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
-                                    status: position.status = findSelectFieldPosition(this.state.statuses, position.status)
+                                    status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                                    isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
+                                    isDescMan: position.isDescMan = position.managementDescription === null ? false : true,
                                 }
                             )
                         ))
                         return {initData};
                     });
-                    this.handleGetCostsTypes();
                 break;
-                default:
-                    return null;
+                case ("INW"):
+                    this.setState( prevState => {
+                        let initData = {...prevState.initData};
+                        Object.assign(initData, this.props.initialValues);
+                        console.log(initData)
+                        console.log(response.data.data)
+                        initData.positions = response.data.data;
+                        initData["positions"].map(position => (
+                            Object.assign(position,
+                                {
+                                    vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
+                                    status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                                    isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
+                                    isDescMan: position.isDescMan = position.managementDescription === null ? false : true,
+                                },
+                                position.positionFundingSources.map(source =>(
+                                    Object.assign(source,
+                                        {
+                                            type: source.type = findSelectFieldPosition(this.state.fundingSources, source.type.code),
+                                        }
+                                    )
+                                ))
+                            )
+                        ))
+                        return {initData};
+                    });
+                break;
+                // no default
             }
         this.props.loading(false)
         })
@@ -88,31 +117,89 @@ class PlanContainer extends Component {
     handleSubmitPlanPositions = () =>{
         this.props.loading(true);
         const payload = JSON.parse(JSON.stringify(this.state.initData.positions))
-        if(this.state.initData.type.code === 'FIN'){
-            payload.forEach(position =>{
-                position.type = 'fin';
-                position.status = position.status.code;
-                position.vat = position.vat.code;
-            })
-        }
+        payload.forEach(position =>{
+            position.type = 'fin';
+            position.status = position.status.code;
+            position.vat = position.vat.code;
+        })
         PlansApi.savePlanPositions(this.state.initData.id, payload)
         .then(response =>{
-            switch(this.state.initData.type.code){
-                case ("FIN"):
-                    this.setState( prevState => {
-                        let initData = {...prevState.initData};
-                        initData.planAmountAwardedNet = response.data.data.planAmountAwardedNet;
-                        initData.planAmountAwardedGross = response.data.data.planAmountAwardedGross;
-                        initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status)
-                        return {initData};
-                    });
-                break;
-                default:
-                    return null;
-            }
-        this.props.loading(false)
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                initData.planAmountAwardedNet = response.data.data.planAmountAwardedNet;
+                initData.planAmountAwardedGross = response.data.data.planAmountAwardedGross;
+                initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status)
+                initData["positions"].map(position => (
+                    Object.assign(position,
+                        {
+                            isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
+                            isDescMan: position.isDescMan = (position.managementDescription === null || position.managementDescription.length === 0) ? false : true,
+                        }
+                    )
+                ))
+                return {initData};
+            });
+            this.props.loading(false)
         })
         .catch(error =>{});
+    }
+
+    setUpPlanValueOnSubmitPosition = (values, initData, tmp) =>{
+        const index = findIndexElement(values, initData.positions, "positionId");
+        if(index !== null){
+            initData.planAmountAwardedNet = parseFloat((initData.planAmountAwardedNet - initData.positions[index].expensesPositionAwardedNet).toFixed(2))
+            initData.planAmountAwardedGross = parseFloat((initData.planAmountAwardedGross - initData.positions[index].expensesPositionAwardedGross).toFixed(2))
+            initData.positions.splice(index, 1, tmp);
+            initData.planAmountAwardedNet = parseFloat((initData.planAmountAwardedNet + tmp.expensesPositionAwardedNet).toFixed(2))
+            initData.planAmountAwardedGross = parseFloat((initData.planAmountAwardedGross + tmp.expensesPositionAwardedGross).toFixed(2))
+        }
+    }
+
+    handleUpdateInvestmentPosition = (values) =>{
+        this.props.loading(true);
+        const payload = JSON.parse(JSON.stringify(values))
+        payload.type = 'inw';
+        payload.status = payload.status.code;
+        payload.vat = payload.vat.code;
+        PlansApi.updatePlanPosition(this.state.initData.id, payload)
+        .then(response =>{
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                const idx = findIndexElement(response.data.data, this.state.initData.positions);
+                if(idx !== null){
+                    console.log(initData)
+                    initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.plan.status);
+                    initData.planAcceptUser = response.data.data.planAcceptUser;
+                    response.data.data.isDescCor = response.data.data.coordinatorDescription === null ? false : true;
+                    response.data.data.isDescMan = response.data.data.managementDescription === null ? false : true;
+                    response.data.data.status =  findSelectFieldPosition(this.state.statuses, response.data.data.status);
+                    response.data.data.vat =  findSelectFieldPosition(this.state.vats, response.data.data.vat);
+                    response.data.data.positionFundingSources.map(source =>(
+                        Object.assign(source,
+                            {
+                                type: source.type = findSelectFieldPosition(this.state.fundingSources, source.type.code),
+                            }
+                        )
+                   ));
+                   this.setUpPlanValueOnSubmitPosition(values, initData, response.data.data);
+                }
+                return {initData};
+            })
+            this.props.loading(false)
+        })
+        .catch(error =>{});
+    }
+
+    handleRemarksPlanPosition = (values) => {
+        if(this.state.initData.type.code === 'FIN'){
+            const index = findIndexElement(values, this.state.initData.positions);
+            if(index !== null){
+                this.state.initData.positions.splice(index, 1, values);
+            }
+            this.handleSubmitPlanPositions();
+        } else if (this.state.initData.type.code === 'INW') {
+            this.handleUpdateInvestmentPosition(values)
+        }
     }
 
     handleCorrectPlanPosition = (values) =>{
@@ -144,18 +231,42 @@ class PlanContainer extends Component {
         this.props.loading(true);
         PlansApi.approvePlan(this.state.initData.id)
         .then(response =>{
-            switch(this.state.initData.type.code){
-                case ("FIN"):
-                    this.setState( prevState => {
-                        let initData = {...prevState.initData};
-                        initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
-                        initData.planAcceptUser = response.data.data.planAcceptUser;
-                        return {initData};
-                    });
-                break;
-                default:
-                    return null;
-            }
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
+                initData.planAcceptUser = response.data.data.planAcceptUser;
+                return {initData};
+            });
+            this.props.loading(false)
+            this.props.handleClose(this.state.initData);
+        })
+        .catch(error =>{});
+    }
+
+    handleForwardPlan = () => {
+        this.props.loading(true);
+        PlansApi.forwardPlan(this.state.initData.id)
+        .then(response =>{
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
+                return {initData};
+            });
+            this.props.loading(false)
+            this.props.handleClose(this.state.initData);
+        })
+        .catch(error =>{});
+    }
+
+    handleWithdrawPlan = () => {
+        this.props.loading(true);
+        PlansApi.withdrawPlan(this.state.initData.id)
+        .then(response =>{
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
+                return {initData};
+            });
             this.props.loading(false)
             this.props.handleClose(this.state.initData);
         })
@@ -173,28 +284,37 @@ class PlanContainer extends Component {
     }
 
     componentDidMount() {
+        console.log(this.props.action)
         if (this.props.action === 'plan'){
             this.handleGetPlan();
         } else if (this.props.action !== 'add'){
             this.handleGetPlanPositions();
         }
+        if(this.props.initialValues.type !== undefined && this.props.initialValues.type.code === 'INW'){
+            this.handleGetDictionaryFoundingSources();
+        }
     }
     render(){
-        const {action, handleClose, error, isLoading } = this.props;
-        const {initData, units, vats, costsTypes } = this.state;
+        const {action, handleClose, error, isLoading, levelAccess } = this.props;
+        const {initData, vats, fundingSources } = this.state;
+
         return(
             <PlanBasicInfoForm
                 initialValues={initData}
+                levelAccess={levelAccess}
                 action={action}
                 error={error}
                 isLoading={isLoading}
                 onAcceptPlanPositions={this.handleAcceptPlanPositions}
                 onCorrectPlanPosition={this.handleCorrectPlanPosition}
+                onRemarksPlanPosition={this.handleRemarksPlanPosition}
+                onUpdateInvestmentPosition={this.handleUpdateInvestmentPosition}
                 onApprovePlan={this.handleApprovePlan}
+                onForwardPlan={this.handleForwardPlan}
+                onWithdrawPlan={this.handleWithdrawPlan}
                 onClose={handleClose}
                 onExcelExport={this.handleExcelExport}
-                units={units}
-                costsTypes={costsTypes}
+                fundingSources={fundingSources}
                 vats={vats}
             />
         );

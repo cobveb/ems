@@ -4,11 +4,13 @@ import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import PropTypes from 'prop-types';
 import Plan from 'components/modules/coordinator/plans/plan';
+import PlanUpdateFormContainer from 'containers/modules/coordinator/plans/forms/planUpdateFormContainer';
 import DictionaryApi from 'api/common/dictionaryApi';
 import PlansApi from 'api/modules/coordinator/plansApi';
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
+import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import * as constants from 'constants/uiNames';
-import {findIndexElement, publicProcurementEstimationTypes, findSelectFieldPosition, generateExportLink, getCoordinatorPlanPositionsStatuses} from 'utils/';
+import {findIndexElement, publicProcurementEstimationTypes, findSelectFieldPosition, generateExportLink, getCoordinatorPlanPositionsStatuses, getVats} from 'utils/';
 
 class PlanContainer extends Component {
     state = {
@@ -20,16 +22,8 @@ class PlanContainer extends Component {
         costsTypes:[],
         assortmentGroups:[],
         foundingSources:[],
-        vats: [
-            {
-                code: 1.08,
-                name: "8%",
-            },
-            {
-                code: 1.23,
-                name: "23%",
-            },
-        ],
+        unassignedUnits:[],
+        vats: getVats(),
         orderTypes: [
             {
                 code: 'DST',
@@ -90,15 +84,28 @@ class PlanContainer extends Component {
         .catch(error => {});
     };
 
-    handleGetPlanPositions = () => {
+    handleGetOrganizationUnits(){
+        return OrganizationUnitsApi.getActiveOu()
+        .then(response => {
+            this.setState({
+                unassignedUnits: response.data.data,
+            })
+        })
+        .catch(error => {});
+    }
+
+
+    handleGetPlanPositions = (planId) => {
         this.props.loading(true);
-        PlansApi.getPlanPositions(this.props.initialValues.id)
+        PlansApi.getPlanPositions(planId)
         .then(response =>{
             switch(this.props.initialValues.type.code){
                 case ("FIN"):
                     this.setState( prevState => {
                         let initData = {...prevState.initData};
-                        Object.assign(initData, this.props.initialValues);
+                        if(this.props.action !== "update"){
+                            Object.assign(initData, this.props.initialValues);
+                        }
                         initData.positions = response.data.data;
                         initData["positions"].map(position => (
                             Object.assign(position,
@@ -108,6 +115,15 @@ class PlanContainer extends Component {
                                 }
                             )
                         ))
+                        if(initData.isUpdate){
+                            initData["positions"].map(position => (
+                                Object.assign(position,
+                                    {
+                                       amountCorrect: position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross,
+                                    }
+                                )
+                            ))
+                        }
                         return {initData};
                     });
                     this.handleGetDictionaryUnits();
@@ -142,12 +158,21 @@ class PlanContainer extends Component {
                                 {
                                     vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
                                     status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
-                                }
+                                    category: position.category = findSelectFieldPosition(this.props.investmentCategories, position.category.code),
+                                },
+                                position.subPositions.map(subPosition =>(
+                                    subPosition.fundingSources.map(source =>(
+                                        Object.assign(source,
+                                            {
+                                                type: source.type = findSelectFieldPosition(this.state.foundingSources, source.type.code),
+                                            }
+                                        )
+                                    ))
+                                ))
                             )
                         ))
                         return {initData};
                     });
-                    this.handleGetDictionaryFoundingSources();
                 break;
                 // no default
             }
@@ -161,6 +186,15 @@ class PlanContainer extends Component {
             initData.positions.push(tmp);
             initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet + tmp.amountRequestedNet).toFixed(2))
             initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross + tmp.amountRequestedGross).toFixed(2))
+        } else if (action ==='correct'){
+            const index = findIndexElement(values, initData.positions, "positionId");
+            if(index !== null){
+                initData.planAmountAwardedNet = parseFloat((initData.planAmountAwardedNet - initData.positions[index].amountAwardedNet).toFixed(2))
+                initData.planAmountAwardedGross = parseFloat((initData.planAmountAwardedGross - initData.positions[index].amountAwardedGross).toFixed(2))
+                initData.positions.splice(index, 1, tmp);
+                initData.planAmountAwardedNet = parseFloat((initData.planAmountAwardedNet + tmp.amountAwardedNet).toFixed(2))
+                initData.planAmountAwardedGross = parseFloat((initData.planAmountAwardedGross + tmp.amountAwardedGross).toFixed(2))
+            }
         } else {
             const index = findIndexElement(values, initData.positions, "positionId");
             if(index !== null){
@@ -173,6 +207,16 @@ class PlanContainer extends Component {
         }
     }
 
+    setUpCorrectValue = (values) =>{
+        values.map(position => (
+            Object.assign(position,
+                {
+                   amountCorrect: position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross,
+                }
+            )
+        ))
+    }
+
     handleSubmitPlanPosition = (values, action) => {
         this.props.loading(true);
         const payload = JSON.parse(JSON.stringify(values));
@@ -183,7 +227,7 @@ class PlanContainer extends Component {
             payload.plan.status = payload.plan.status.code;
             payload.plan.type = payload.plan.type.code;
             payload.plan.year = new Date(payload.plan.year).getFullYear();
-        } else if (action === 'edit'){
+        } else if (action === 'edit' || action === 'correct'){
             payload.status = values.status.code;
         }
         payload.type = this.state.initData.type.code.toLowerCase();
@@ -191,9 +235,16 @@ class PlanContainer extends Component {
             payload.orderType = payload.orderType.code;
             payload.estimationType = payload.estimationType.code;
         }
+        if(payload.type === 'inw'){
+            payload.subPositions.map(subPosition =>{
+                if(values.task !== subPosition.name){
+                    subPosition.name = values.task;
+                }
+                return subPosition;
+            })
+        }
         PlansApi.savePlanPosition(this.state.initData.id, action, payload)
         .then(response => {
-
             switch(this.state.initData.type.code){
                 case ("FIN"):
                     this.setState(prevState => {
@@ -201,12 +252,13 @@ class PlanContainer extends Component {
                         let newPosition = {...prevState.newPosition};
                         const tmp =  response.data.data;
                         tmp.vat = findSelectFieldPosition(this.state.vats, tmp.vat);
-                        console.log(this.state.costsTypes)
-                        console.log(tmp.costType)
                         tmp.status = findSelectFieldPosition(this.state.statuses, tmp.status);
                         tmp.costType = findSelectFieldPosition(this.state.costsTypes, tmp.costType.code);
                         newPosition = tmp;
                         this.setUpPlanValueOnSubmitPosition(values, initData, tmp, action);
+                        if(action === 'correct'){
+                            this.setUpCorrectValue(initData.positions)
+                        }
                         return {initData, newPosition};
                     });
                 break;
@@ -226,8 +278,29 @@ class PlanContainer extends Component {
                         return {initData, newPosition};
                     });
                 break;
-                default:
-                    return null;
+                case("INW"):
+                    this.setState( prevState => {
+                        let initData = {...prevState.initData};
+                        let newPosition = {...prevState.newPosition};
+                        const tmp =  response.data.data;
+                        tmp.vat = findSelectFieldPosition(this.state.vats, tmp.vat);
+                        tmp.category = findSelectFieldPosition(this.props.investmentCategories, tmp.category.code);
+                        tmp.status = findSelectFieldPosition(this.state.statuses, tmp.status);
+                        newPosition = tmp;
+                        tmp.subPositions.map(subPosition =>(
+                            subPosition.fundingSources.map(source =>(
+                                Object.assign(source,
+                                    {
+                                        type: source.type = findSelectFieldPosition(this.state.foundingSources, source.type.code),
+                                    }
+                                )
+                            ))
+                        ))
+                        this.setUpPlanValueOnSubmitPosition(values, initData, tmp, action);
+                        return {initData, newPosition};
+                    });
+                break;
+                // no default
             }
             this.props.loading(false);
         })
@@ -279,6 +352,70 @@ class PlanContainer extends Component {
             })
             .catch(error => {});
         }
+    }
+
+    handleDeleteInvestmentTargetUnit = (unit) => {
+        PlansApi.deleteTargetUnit(unit.id)
+        .then(response => {
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                const tmp =  response.data.data;
+                tmp.vat = findSelectFieldPosition(this.state.vats, tmp.vat);
+                tmp.category = findSelectFieldPosition(this.props.investmentCategories, tmp.category.code);
+                tmp.status = findSelectFieldPosition(this.state.statuses, tmp.status);
+                tmp.subPositions.map(subPosition =>(
+                    subPosition.fundingSources.map(source =>(
+                        Object.assign(source,
+                            {
+                                type: source.type = findSelectFieldPosition(this.state.foundingSources, source.type.code),
+                            }
+                        )
+                    ))
+                ))
+                const idx = findIndexElement(tmp, this.state.initData.positions);
+                if (idx !== null){
+                    initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet - initData.positions[idx].amountRequestedNet).toFixed(2))
+                    initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross - initData.positions[idx].amountRequestedGross).toFixed(2))
+                    initData.positions.splice(idx, 1, tmp);
+                    initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet + tmp.amountRequestedNet).toFixed(2))
+                    initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross + tmp.amountRequestedGross).toFixed(2))
+                }
+                return {initData};
+            });
+        })
+        .catch(error => {})
+    }
+
+    handleDeleteInvestmentPositionSource = (source, position) => {
+        PlansApi.deleteInvestmentSource(position[0].id, source.id)
+        .then(response => {
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                const tmp =  response.data.data;
+                tmp.vat = findSelectFieldPosition(this.state.vats, tmp.vat);
+                tmp.category = findSelectFieldPosition(this.props.investmentCategories, tmp.category.code);
+                tmp.status = findSelectFieldPosition(this.state.statuses, tmp.status);
+                tmp.subPositions.map(subPosition =>(
+                    subPosition.fundingSources.map(source =>(
+                        Object.assign(source,
+                            {
+                                type: source.type = findSelectFieldPosition(this.state.foundingSources, source.type.code),
+                            }
+                        )
+                    ))
+                ))
+                const idx = findIndexElement(tmp, this.state.initData.positions);
+                if (idx !== null){
+                    initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet - initData.positions[idx].amountRequestedNet).toFixed(2))
+                    initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross - initData.positions[idx].amountRequestedGross).toFixed(2))
+                    initData.positions.splice(idx, 1, tmp);
+                    initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet + tmp.amountRequestedNet).toFixed(2))
+                    initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross + tmp.amountRequestedGross).toFixed(2))
+                }
+                return {initData};
+            });
+        })
+        .catch(error => {})
     }
 
     handleSubmitPlan = (values) => {
@@ -351,11 +488,31 @@ class PlanContainer extends Component {
         this.props.loading(true);
         PlansApi.printPlan(this.state.initData.id)
         .then(response => {
-            console.log(response)
             generateExportLink(response);
             this.props.loading(false);
         })
         .catch(error => {});
+    }
+
+    handleUpdate = () => {
+        this.props.loading(true);
+        PlansApi.updatePlan(this.props.initialValues.id)
+        .then(response => {
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                Object.assign(initData, response.data.data);
+                initData.year = new Date(initData.year,0,1).toJSON();
+                initData.status = findSelectFieldPosition(this.props.statuses, initData.status);
+                initData.type = findSelectFieldPosition( this.props.types, initData.type);
+
+                return {initData}
+            })
+            this.handleGetPlanPositions(this.state.initData.id);
+            this.props.loading(false);
+        })
+        .catch(error =>{
+            this.props.loading(false);
+        })
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -367,47 +524,94 @@ class PlanContainer extends Component {
             } else if (this.state.initData.type.code === 'PZP'){
                 this.handleGetDictionaryAssortmentGroups();
             }
+
+        else if (this.props.initialValues.type === undefined && this.state.initData.type !== undefined && this.state.initData.type.code === 'INW'){
+                this.handleGetOrganizationUnits();
+                this.handleGetDictionaryFoundingSources();
+            }
         }
     }
 
     componentDidMount(prevState) {
         if (this.props.action !== 'add'){
-            this.handleGetPlanPositions();
+            if(this.props.action === 'update'){
+                this.handleUpdate();
+            } else {
+                this.handleGetPlanPositions(this.props.initialValues.id);
+            }
+        }
+        if(this.props.initialValues.type !== undefined && this.props.initialValues.type.code === 'INW'){
+            this.handleGetDictionaryFoundingSources();
+            this.handleGetOrganizationUnits();
         }
     }
     render(){
         const {changeVisibleDetails, plans, action, handleClose, types, modes, error, isLoading } = this.props;
-        const {initData, newPosition, units, vats, costsTypes, assortmentGroups, orderTypes, estimationTypes, foundingSources} = this.state;
+        const {initData, newPosition, units, vats, costsTypes, assortmentGroups, orderTypes, estimationTypes, foundingSources, unassignedUnits} = this.state;
         return(
-            <Plan
-                initialValues={initData}
-                newPosition={newPosition}
-                setNewPositionToNull={this.setNewPositionToNull}
-                plans={plans}
-                changeVisibleDetails={changeVisibleDetails}
-                action={action}
-                error={error}
-                isLoading={isLoading}
-                onSubmitPlanPosition={this.handleSubmitPlanPosition}
-                onDeletePlanPosition={this.handleDeletePlanPosition}
-                onSubmitPlanSubPosition={this.handleSubmitPlanPosition}
-                onDeletePlanSubPosition={this.handleDeletePlanSubPosition}
-                onSubmitPlan={this.handleSubmitPlan}
-                onSendPlan={this.handleSendPlan}
-                onPrintPlan={this.handlePrintPlan}
-                onExcelExport={this.handleExcelExport}
-                onClose={handleClose}
-                units={units}
-                costsTypes={costsTypes}
-                types={types}
-                vats={vats}
-                modes={modes}
-                assortmentGroups={assortmentGroups}
-                foundingSources={foundingSources}
-                orderTypes={orderTypes}
-                estimationTypes={estimationTypes}
-                isSubmit={this.handleIsSubmit}
-            />
+            <>
+                {!initData.isUpdate ?
+                    <Plan
+                        initialValues={initData}
+                        newPosition={newPosition}
+                        setNewPositionToNull={this.setNewPositionToNull}
+                        plans={plans}
+                        changeVisibleDetails={changeVisibleDetails}
+                        action={action}
+                        error={error}
+                        isLoading={isLoading}
+                        onSubmitPlanPosition={this.handleSubmitPlanPosition}
+                        onDeletePlanPosition={this.handleDeletePlanPosition}
+                        onSubmitPlanSubPosition={this.handleSubmitPlanPosition}
+                        onDeletePlanSubPosition={this.handleDeletePlanSubPosition}
+                        onDeleteTargetUnit={this.handleDeleteInvestmentTargetUnit}
+                        onDeleteSource={this.handleDeleteInvestmentPositionSource}
+                        onSubmitPlan={this.handleSubmitPlan}
+                        onSendPlan={this.handleSendPlan}
+                        onPrintPlan={this.handlePrintPlan}
+                        onExcelExport={this.handleExcelExport}
+                        onClose={handleClose}
+                        units={units}
+                        costsTypes={costsTypes}
+                        types={types}
+                        vats={vats}
+                        modes={modes}
+                        assortmentGroups={assortmentGroups}
+                        foundingSources={foundingSources}
+                        unassignedUnits={unassignedUnits}
+                        investmentCategories={this.props.investmentCategories}
+                        orderTypes={orderTypes}
+                        estimationTypes={estimationTypes}
+                        isSubmit={this.handleIsSubmit}
+                    />
+                :
+                    <PlanUpdateFormContainer
+                        initialValues={initData}
+                        newPosition={newPosition}
+                        setNewPositionToNull={this.setNewPositionToNull}
+                        plans={plans}
+                        changeVisibleDetails={changeVisibleDetails}
+                        action={action}
+                        error={error}
+                        isLoading={isLoading}
+                        onSubmitPlanPosition={this.handleSubmitPlanPosition}
+                        onSubmitPlan={this.handleSubmitPlan}
+                        onSendPlan={this.handleSendPlan}
+                        onPrintPlan={this.handlePrintPlan}
+                        onExcelExport={this.handleExcelExport}
+                        onClose={handleClose}
+                        units={units}
+                        costsTypes={costsTypes}
+                        types={types}
+                        vats={vats}
+                        modes={modes}
+                        assortmentGroups={assortmentGroups}
+                        foundingSources={foundingSources}
+                        orderTypes={orderTypes}
+                        estimationTypes={estimationTypes}
+                    />
+                }
+            </>
         );
     };
 };
@@ -415,7 +619,7 @@ class PlanContainer extends Component {
 PlanContainer.propTypes = {
     initialValues: PropTypes.object,
     changeVisibleDetails: PropTypes.func,
-    action: PropTypes.oneOf(['add', 'edit']).isRequired,
+    action: PropTypes.oneOf(['add', 'edit', 'update']).isRequired,
     changeAction: PropTypes.func,
     handleClose: PropTypes.func,
     error: PropTypes.string,

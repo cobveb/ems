@@ -10,12 +10,20 @@ class PlansApi {
         return Axios.put(`/api/director/coordinator/plan/${planId}/directorApprove`)
     }
 
+    static approveEconomic(planId){
+        return Axios.put(`/api/director/coordinator/plan/${planId}/economicApprove`)
+    }
+
     static approveChief(planId){
         return Axios.put(`/api/director/coordinator/plan/${planId}/chiefApprove`)
     }
 
     static getPlanPositions(planId){
         return Axios.get(`/api/director/coordinator/plan/${planId}/getPositions`)
+    }
+
+    static savePlanPositions(planId, data){
+        return Axios.put(`/api/director/coordinator/plan/${planId}/updatePlanPositions`, data)
     }
 
     static exportPlansToExcel(exportType, data){

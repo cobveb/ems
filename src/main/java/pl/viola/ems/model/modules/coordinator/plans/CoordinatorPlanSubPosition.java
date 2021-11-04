@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 @ToString(exclude = {"planPosition", "amountGross"})
 @EqualsAndHashCode(exclude = {"planPosition", "amountGross"})
@@ -28,6 +30,7 @@ import java.math.BigDecimal;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = FinancialSubPosition.class, name = "finp"),
         @JsonSubTypes.Type(value = PublicProcurementSubPosition.class, name = "pzpp"),
+        @JsonSubTypes.Type(value = InvestmentSubPosition.class, name = "inwp"),
 })
 @DynamicUpdate
 public abstract class CoordinatorPlanSubPosition implements Serializable {
@@ -55,4 +58,11 @@ public abstract class CoordinatorPlanSubPosition implements Serializable {
     @JoinColumn(name = "plan_position_id")
     private CoordinatorPlanPosition planPosition;
 
+    public abstract Long getQuantity();
+
+    public abstract DictionaryItem getUnit();
+
+    public abstract BigDecimal getUnitPrice();
+
+    public abstract List<FundingSource> getFundingSources();
 }

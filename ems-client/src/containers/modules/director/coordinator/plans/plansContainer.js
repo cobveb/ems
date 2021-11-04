@@ -4,7 +4,7 @@ import Plans from 'components/modules/director/coordinator/plans/plans';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
-import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink} from 'utils';
+import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink, getCoordinatorPlanStatuses} from 'utils';
 import PlansApi from 'api/modules/director/coordinator/plansApi';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import DictionaryApi from 'api/common/dictionaryApi';
@@ -19,48 +19,7 @@ class PlansContainer extends Component {
                 name: constants.HEADING_COORDINATOR,
             },
         ],
-        statuses:[
-            {
-                code: '',
-                name: constants.COORDINATOR_PLAN_STATUS,
-            },
-            {
-                code: 'WY',
-                name: constants.COORDINATOR_PLAN_STATUS_SENT,
-            },
-            {
-                code: 'RO',
-                name: constants.COORDINATOR_PLAN_STATUS_ADOPTED,
-            },
-            {
-                code: 'AZ',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_PUBLIC_PROCUREMENT,
-            },
-            {
-                code: 'AK',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_ACCOUNTANT,
-            },
-            {
-                code: 'AD',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_DIRECTOR,
-            },
-            {
-                code: 'ZA',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_CHIEF,
-            },
-            {
-                code: 'SK',
-                name: constants.COORDINATOR_PLAN_STATUS_CORRECTED,
-            },
-            {
-                code: 'RE',
-                name: constants.COORDINATOR_PLAN_STATUS_REALIZED,
-            },
-            {
-                code: 'ZR',
-                name: constants.COORDINATOR_PLAN_STATUS_EXECUTED,
-            },
-        ],
+        statuses: getCoordinatorPlanStatuses(),
         types:[
             {
                 code: '',
@@ -116,6 +75,13 @@ class PlansContainer extends Component {
         .then(response =>{
             this.setState(prevState => {
                 let plans = [...prevState.plans];
+                const statuses = [...prevState.statuses];
+                statuses.unshift(
+                    {
+                        code: '',
+                        name: constants.COORDINATOR_PLAN_STATUS,
+                    },
+                );
                 plans = response.data.data;
                 plans.map(plan => (
                     Object.assign(plan,

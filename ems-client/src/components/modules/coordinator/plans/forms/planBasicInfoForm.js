@@ -43,7 +43,8 @@ class PlanBasicInfoForm extends Component {
         positions: this.props.initialValues.positions,
         selected:[],
         send: false,
-        formChanged : false,
+        formChanged: false,
+        isAgreed: false,
         headFin: [
             {
                 id: 'costType.code',
@@ -81,24 +82,29 @@ class PlanBasicInfoForm extends Component {
                 type: 'text',
             },
             {
-                id: 'amountRequested',
-                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_GROSS,
+                id: 'taskPositionGross',
+                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_TASK_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
-                id: 'amountAwarded',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS,
+                id: 'amountRequestedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
-                id: 'amountRealized',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
+                id: 'expensesPositionAwardedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_AWARDED_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },
-
+            {
+                id: 'amountRealizedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_REALIZED_PLAN_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
         ],
         headPzp: [
             {
@@ -155,11 +161,14 @@ class PlanBasicInfoForm extends Component {
 
     handleSubmitSubPosition = (values, action) =>{
 
-        const {formFinancialValues, formFinancialInitialValues,formPublicProcurementValues, formPublicProcurementInitialValues} = this.props;
+        const {formFinancialValues, formFinancialInitialValues, formPublicProcurementValues, formPublicProcurementInitialValues, formInvestmentValues, formInvestmentInitialValues} = this.props;
 
-        const formValues = this.props.initialValues.type.code === 'FIN' ? formFinancialValues : formPublicProcurementValues;
-        const formInitialValues = this.props.initialValues.type.code === 'FIN' ? formFinancialInitialValues : formPublicProcurementInitialValues;
-
+        const formValues = this.props.initialValues.type.code === 'FIN' ?
+            formFinancialValues : this.props.initialValues.type.code === 'PZP' ?
+                formPublicProcurementValues : formInvestmentValues;
+        const formInitialValues = this.props.initialValues.type.code === 'FIN' ?
+            formFinancialInitialValues :  this.props.initialValues.type.code === 'PZP' ?
+                formPublicProcurementInitialValues : formInvestmentInitialValues;
         const payload = JSON.parse(JSON.stringify(formValues));
         if(action === 'add'){
             let sumAmountRequestedNet = 0;
@@ -203,13 +212,13 @@ class PlanBasicInfoForm extends Component {
     }
 
     renderPlanContent = () =>{
-        const { initialValues, vats, units, costsTypes, modes, assortmentGroups, orderTypes, estimationTypes, foundingSources} = this.props;
+        const { initialValues, vats, units, costsTypes, modes, assortmentGroups, orderTypes, estimationTypes, foundingSources, unassignedUnits, investmentCategories } = this.props;
         const { positionAction, selected } = this.state;
         switch(initialValues.type.code){
             case("FIN"):
                 return (
                     <PlanFinancialContentPositionFormContainer
-                        initialValues={positionAction === 'add' ? {vat: vats[1]} : selected[0]}
+                        initialValues={positionAction === 'add' ? {vat: vats[2]} : selected[0]}
                         planStatus={initialValues.status.code}
                         action={positionAction}
                         vats={vats}
@@ -225,11 +234,17 @@ class PlanBasicInfoForm extends Component {
             case("INW"):
                 return (
                     <PlanInvestmentContentPositionFormContainer
-                        initialValues={positionAction === 'add' ? {vat: vats[1]} : selected[0]}
+                        initialValues={positionAction === 'add' ? {vat: vats[2], subPositions: [], positionFundingSources: []} : selected[0]}
                         planStatus={initialValues.status.code}
+                        planYear={initialValues.year}
                         action={positionAction}
                         foundingSources={foundingSources}
+                        unassignedUnits={unassignedUnits}
+                        investmentCategories={investmentCategories}
                         vats={vats}
+                        onSubmitPlanSubPosition={this.handleSubmitSubPosition}
+                        onDeleteTargetUnit={this.props.onDeleteTargetUnit}
+                        onDeleteSource={this.props.onDeleteSource}
                         onExcelExport={this.handleExcelExport}
                         onClose={this.handleCloseDetails}
                         onSubmit={this.handleSubmitPosition}
@@ -238,7 +253,7 @@ class PlanBasicInfoForm extends Component {
             case("PZP"):
                 return(
                     <PlanPublicProcurementContentPositionFormContainer
-                        initialValues={positionAction === 'add' ? {vat: vats[1]} : selected[0]}
+                        initialValues={positionAction === 'add' ? {vat: vats[2]} : selected[0]}
                         planStatus={initialValues.status.code}
                         action={positionAction}
                         modes={modes}
@@ -331,7 +346,16 @@ class PlanBasicInfoForm extends Component {
         this.props.onExcelExport(exportType, head, level === undefined ? "position" : "subPositions", positionId)
     }
 
-    componentDidUpdate(prevProps){
+
+    setupAgreedPlan = (positions) => {
+        if(positions.filter(position => position.status.code !== 'UZ').length === 0){
+            if(!this.state.isAgreed){
+                this.setState({ isAgreed: true });
+            }
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState){
         if(this.state.positionAction === 'add' && this.props.newPosition !== null){
             this.setState(prevState =>{
                 const selected =  [...prevState.selected];
@@ -355,20 +379,32 @@ class PlanBasicInfoForm extends Component {
                 }
             }
         }
+
         if(this.props.initialValues.positions !== prevProps.initialValues.positions){
             this.setState({
                 positions: this.props.initialValues.positions,
             });
+            if(this.props.initialValues.type !== undefined && this.props.initialValues.type.code === "INW"){
+                this.setupAgreedPlan(this.props.initialValues.positions);
+            }
         }
+
         if(this.props.submitAction === true){
             this.handleCloseDetails();
+        }
+
+        /* Check if exist non agreed position in investment plan,
+            if not allow forward to accountant after agreed  */
+        if(this.props.initialValues.type !== undefined && this.props.initialValues.type.code === "INW"
+            && this.props.initialValues.status.code === 'PK'){
+            this.setupAgreedPlan(this.props.initialValues.positions);
         }
     }
 
     render(){
         const { handleSubmit, pristine, submitting, invalid, action, submitSucceeded, classes, initialValues, types } = this.props
-        const { headFin, headInv, headPzp, selected, openPositionDetails, positionAction, positions, send, formChanged } = this.state;
-            return(
+        const { headFin, headInv, headPzp, selected, openPositionDetails, positionAction, positions, send, formChanged, isAgreed } = this.state;
+        return(
             <>
                 {positionAction === "delete" &&
                     <ModalDialog
@@ -404,7 +440,9 @@ class PlanBasicInfoForm extends Component {
                     >
                         { action === "add" ?
                             constants.COORDINATOR_PLAN_CREATE_NEW_PLAN_TITLE
-                                : Object.keys(initialValues).length > 1 && constants.COORDINATOR_PLAN_EDIT_PLAN_TITLE + ` ${initialValues.type.name} ${new Date(initialValues.year).getFullYear()} `
+                                : action === "edit" ?
+                                    Object.keys(initialValues).length > 1 && constants.COORDINATOR_PLAN_EDIT_PLAN_TITLE + ` ${initialValues.type.name} ${new Date(initialValues.year).getFullYear()} `
+                                        : Object.keys(initialValues).length > 1 && constants.COORDINATOR_PLAN_UPDATE_PLAN_TITLE + ` ${initialValues.type.name} ${new Date(initialValues.year).getFullYear()} `
                         }
                     </Typography>
                     <Divider />
@@ -426,7 +464,7 @@ class PlanBasicInfoForm extends Component {
                                         views={["year"]}
                                         disablePast
                                         isRequired={true}
-                                        disabled={action ==='add' ? false :
+                                        disabled={action ==='add' ? false : action === 'update' ? true :
                                             initialValues.status !== undefined && initialValues.status.code !=='ZP' ? true :
                                                 false
                                         }
@@ -462,9 +500,9 @@ class PlanBasicInfoForm extends Component {
                                 </Grid>
                                 <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
                                     <FormAmountField
-                                        name={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                        name={initialValues.type !== undefined && (initialValues.type.code === 'FIN' || initialValues.type.code === 'INW')  ?
                                             "planAmountRequestedGross" : "planAmountRequestedNet"}
-                                        label={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                        label={initialValues.type !== undefined && (initialValues.type.code === 'FIN' || initialValues.type.code === 'INW') ?
                                             constants.COORDINATOR_PLAN_FINANCIAL_REQUESTED_VALUE : constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REQUESTED_VALUE}
                                         suffix={'zł.'}
                                         disabled
@@ -482,9 +520,9 @@ class PlanBasicInfoForm extends Component {
                                 }
                                 <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
                                     <FormAmountField
-                                        name={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                        name={initialValues.type !== undefined && (initialValues.type.code === 'FIN' || initialValues.type.code === 'INW')  ?
                                             "planAmountRealizedGross" : "planAmountRealizedNet"}
-                                        label={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                        label={initialValues.type !== undefined && (initialValues.type.code === 'FIN' || initialValues.type.code === 'INW')  ?
                                             constants.COORDINATOR_PLAN_FINANCIAL_REALIZED_VALUE : constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REALIZED_VALUE}
                                         suffix={'zł.'}
                                         disabled
@@ -633,13 +671,16 @@ class PlanBasicInfoForm extends Component {
                                             disabled={pristine || submitting || invalid || submitSucceeded  }
                                         />
                                     }
-                                    {(Object.keys(initialValues).length === 1 || (initialValues.status !== undefined && initialValues.status.code === 'ZP')) &&
+                                    {(Object.keys(initialValues).length === 1 || (initialValues.status !== undefined && (initialValues.status.code === 'ZP'|| initialValues.status.code === 'PK'))) &&
                                         <Button
                                             label={constants.BUTTON_SEND}
                                             icon=<Send/>
                                             iconAlign="left"
                                             variant="submit"
-                                            disabled={!pristine || submitting || invalid || initialValues.positions === undefined || positions.length === 0}
+                                            disabled={!pristine || submitting || invalid || initialValues.positions === undefined ||
+                                                positions.length === 0 || (initialValues.status.code === 'PK' && !isAgreed) ||
+                                                    (initialValues.type !== undefined && initialValues.type.code === "INW" &&
+                                                        initialValues.planAmountRequestedGross === 0)}
                                             onClick={this.handleSend}
                                         />
                                     }

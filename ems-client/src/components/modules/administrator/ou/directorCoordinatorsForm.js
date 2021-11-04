@@ -27,12 +27,12 @@ class DirectorCoordinatorsForm extends Component {
         head: [
             {
                 id: 'code',
-                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_TYPE,
+                label: constants.ORGANIZATION_UNIT_COORDINATOR_CODE,
                 type: 'text',
             },
             {
                 id: 'name',
-                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_TYPE,
+                label: constants.ORGANIZATION_UNIT_COORDINATOR_NAME,
                 type: 'text',
             },
         ],

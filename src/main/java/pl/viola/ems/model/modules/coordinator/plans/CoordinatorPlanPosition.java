@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.accountant.CostType;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @ToString(exclude = {"plan", "subPositions"})
@@ -29,12 +31,13 @@ import java.util.Set;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = FinancialPosition.class, name = "fin"),
         @JsonSubTypes.Type(value = PublicProcurementPosition.class, name = "pzp"),
+        @JsonSubTypes.Type(value = InvestmentPosition.class, name = "inw"),
 })
 @DynamicUpdate
 public abstract class CoordinatorPlanPosition implements Serializable {
 
     public enum PlanPositionStatus {
-        ZP, WY, ZA, SK, RE, ZR
+        ZP, WY, UZ, ZA, SK, RE, ZR, AA,
     }
 
     @Id
@@ -67,10 +70,20 @@ public abstract class CoordinatorPlanPosition implements Serializable {
     @NonNull
     private BigDecimal vat;
 
+    @Column(name = "desc_coordinator")
+    private String coordinatorDescription;
+
+    @Column(name = "desc_management")
+    private String managementDescription;
+
     @NonNull
     @ManyToOne
     @JoinColumn(name = "plan_id")
     private CoordinatorPlan plan;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "pos_correction_id", referencedColumnName = "id")
+    private CoordinatorPlanPosition correctionPlanPosition;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "planPosition", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<CoordinatorPlanSubPosition> subPositions = new HashSet<>();
@@ -87,4 +100,28 @@ public abstract class CoordinatorPlanPosition implements Serializable {
     }
 
     public abstract CostType getCostType();
+
+    public abstract PublicProcurementPosition.EstimationType getEstimationType();
+
+    public abstract PublicProcurementPosition.OrderType getOrderType();
+
+    public abstract String getInitiationTerm();
+
+    public abstract BigDecimal getEuroExchangeRate();
+
+    public abstract BigDecimal getAmountRequestedEuroNet();
+
+    public abstract BigDecimal getAmountInferredNet();
+
+    public abstract BigDecimal getAmountInferredGross();
+
+    public abstract BigDecimal getExpensesPositionAwardedGross();
+
+    public abstract DictionaryItem getMode();
+
+    public abstract DictionaryItem getAssortmentGroup();
+
+    public abstract List<FundingSource> getPositionFundingSources();
+
+    public abstract void setPositionFundingSources(List<FundingSource> fundingSources);
 }

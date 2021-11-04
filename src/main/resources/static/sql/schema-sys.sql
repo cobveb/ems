@@ -24,7 +24,7 @@ DROP USER emsadm CASCADE;
 
 /*Create a database system  administrator user - emsadm*/
 CREATE USER emsadm IDENTIFIED BY emsadm
-  DEFAULT TABLESPACE ems_users
+  DEFAULT TABLESPACE ems_users;
 
 /*Grant privileges to the database system administrator*/
 GRANT
@@ -33,14 +33,14 @@ GRANT
     CREATE ROLE, DROP ANY ROLE, GRANT ANY ROLE,
     CREATE USER, BECOME USER, ALTER USER, DROP USER,
     CREATE PUBLIC SYNONYM
-TO emsadm WITH ADMIN OPTION
+TO emsadm WITH ADMIN OPTION;
 
 /* Delete database system architecture user - sysarch - if exist*/
 DROP USER emsarch CASCADE;
 
 /*Create a database system architecture user - sysarch*/
 CREATE USER emsarch IDENTIFIED BY emsarch
-  DEFAULT TABLESPACE ems_users
+  DEFAULT TABLESPACE ems_users;
 
 /*Grant privileges to the database system administrator*/
 GRANT

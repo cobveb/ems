@@ -17,12 +17,16 @@ PlanBasicInfoFormContainer = connect(state => {
         const formFinancialInitialValues = getFormInitialValues('PlanFinancialContentPositionForm')(state)
         const formPublicProcurementValues = getFormValues('PlanPublicProcurementContentPositionForm')(state)
         const formPublicProcurementInitialValues = getFormInitialValues('PlanPublicProcurementContentPositionForm')(state)
+        const formInvestmentValues = getFormValues('PlanInvestmentContentPositionForm')(state)
+        const formInvestmentInitialValues = getFormInitialValues('PlanInvestmentContentPositionForm')(state)
 
         return{
             formFinancialValues,
             formFinancialInitialValues,
             formPublicProcurementValues,
             formPublicProcurementInitialValues,
+            formInvestmentValues,
+            formInvestmentInitialValues,
         }
     }
 )(PlanBasicInfoFormContainer)

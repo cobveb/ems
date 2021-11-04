@@ -5,7 +5,7 @@ import { loading, setError } from 'actions/';
 import PropTypes from 'prop-types';
 import PlanPositionsFormContainer from 'containers/modules/accountant/institution/plans/forms/planPositionsFormContainer';
 import PlansApi from 'api/modules/accountant/institution/plansApi';
-import {findSelectFieldPosition, getVats, getCoordinatorPlanPositionsStatuses, findIndexElement} from 'utils';
+import {findSelectFieldPosition, getVats, getCoordinatorPlanPositionsStatuses, findIndexElement, generateExportLink} from 'utils';
 
 class PlanPositionsContainer extends Component {
     state = {
@@ -39,31 +39,36 @@ class PlanPositionsContainer extends Component {
         });
     }
 
-    handleSubmitPlanPositions = () =>{
+    handleSubmitPlanPositions = (values) =>{
         this.props.loading(true);
-        const payload = JSON.parse(JSON.stringify(this.state.initData.planPositions))
-        if(this.props.planType.code === 'FIN'){
-            payload.forEach(position =>{
-                position.vat = position.vat.code;
-            })
-        }
+        const payload = JSON.parse(JSON.stringify(values))
         PlansApi.acceptPlanPositions(this.props.planType.code, this.props.initialValues.id, payload)
         .then(response =>{
             switch(this.props.planType.code){
                 case ("FIN"):
                     this.setState(prevState => {
                         let initData = {...prevState.initData};
-                        initData.planPositions = response.data.data
                         initData.amountAwardedGross = 0
                         initData.amountAwardedNet = 0
-                        initData["planPositions"].map(position => (
-                            Object.assign(position,
-                            {
-                                vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
-                            }),
-                            initData.amountAwardedNet += position.amountAwardedNet,
-                            initData.amountAwardedGross += position.amountAwardedGross
-                        ))
+
+                        response.data.data.map(position => {
+                            const index = findIndexElement(position, this.state.initData.planPositions, "positionId");
+                            if(index !== null){
+                                position['amountAwardedNet'] = position.amountRequestedNet;
+                                position['amountAwardedGross'] = position.amountRequestedGross;
+                                Object.assign(position,
+                                {
+                                    vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
+                                });
+                                initData.planPositions.splice(index, 1, position);
+                            }
+                            return position;
+                        })
+                        initData["planPositions"].map(position => {
+                            initData.amountAwardedNet += position.amountAwardedNet;
+                            initData.amountAwardedGross += position.amountAwardedGross;
+                            return position;
+                        })
                         return {initData};
                     });
                 break;
@@ -84,11 +89,12 @@ class PlanPositionsContainer extends Component {
                 position['amountAwardedNet'] = position['amountRequestedNet'];
                 position['amountAwardedGross'] = position['amountRequestedGross'];
                 position.positionStatus = "ZA";
-                this.state.initData.planPositions.splice(index, 1, position);
+                position.vat = position.vat.code;
+//                this.state.initData.planPositions.splice(index, 1, position);
             }
             return position;
         })
-        this.handleSubmitPlanPositions();
+        this.handleSubmitPlanPositions(values);
     }
 
     handleCorrectPosition = (values) =>{
@@ -114,10 +120,11 @@ class PlanPositionsContainer extends Component {
                             this.state.initData.planPositions.splice(index, 1, response.data.data[0]);
                             initData.amountAwardedGross = 0
                             initData.amountAwardedNet = 0
-                            initData["planPositions"].map(position => (
-                                initData.amountAwardedNet += position.amountAwardedNet,
-                                initData.amountAwardedGross += position.amountAwardedGross
-                            ))
+                            initData["planPositions"].map(position => {
+                                initData.amountAwardedNet += position.amountAwardedNet;
+                                initData.amountAwardedGross += position.amountAwardedGross;
+                                return position;
+                            })
                         }
                         return {initData};
                     });
@@ -132,6 +139,17 @@ class PlanPositionsContainer extends Component {
         });
     }
 
+    handleExcelExport = (exportType, headRow) =>{
+        this.props.loading(true);
+        console.log(this.state.initData)
+        PlansApi.exportPlanSubPositionsToExcel(exportType, this.state.initData.type, this.state.initData.id, headRow)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues.amountAwardedGross !== prevProps.initialValues.amountAwardedGross){
             this.handleGetPlanPositions();
@@ -143,7 +161,7 @@ class PlanPositionsContainer extends Component {
     }
 
     render(){
-        const {planStatus} = this.props;
+        const {planStatus, levelAccess} = this.props;
         const {initData} = this.state;
 
         return(
@@ -153,9 +171,11 @@ class PlanPositionsContainer extends Component {
                     types={this.state.types}
                     statuses={this.state.statuses}
                     planStatus={planStatus}
+                    levelAccess={levelAccess}
                     onAcceptPlanPositions={this.handleAcceptPositions}
                     onCorrectPlanPosition={this.handleCorrectPosition}
                     onClosePlanDetails={this.props.onClosePosition}
+                    onExcelExport={this.handleExcelExport}
                     onClose={this.props.onClose}
                 />
             </>

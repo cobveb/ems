@@ -28,5 +28,21 @@ class PlansApi{
     static withdrawPlan(planId){
         return  Axios.put(`/api/accountant/institution/plans/withdrawPlan/${planId}`)
     }
+
+    static exportPlansToExcel(exportType, data){
+        return Axios.put(`/api/accountant/institution/plans/export/plans/${exportType}`, data, {responseType: 'blob'})
+    }
+
+    static exportPlanPositionsToExcel(exportType, planType, planId, data){
+        return Axios.put(`/api/accountant/institution/plans/export/planPositions/${planType}/${planId}/${exportType}`, data, {responseType: 'blob'})
+    }
+
+    static exportPlanSubPositionsToExcel(exportType, positionType, positionId, data){
+        return Axios.put(`/api/accountant/institution/plans/export/planSubPositions/${positionType}/${positionId}/${exportType}`, data, {responseType: 'blob'})
+    }
+
+    static printPlan(planId){
+        return Axios.get(`/api/accountant/institution/plans/plan/print/${planId}`, {responseType: 'blob'})
+    }
 }
 export default PlansApi;

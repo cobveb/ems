@@ -43,6 +43,8 @@ public interface PlanService {
 
     CoordinatorPlan updatePlanPositionsByAccountant(List<FinancialPosition> positions, Long planId);
 
+    CoordinatorPlanPosition updateInvestmentPositionByAccountant(InvestmentPosition position, Long planId);
+
     String deletePlanPosition(Long planId, Long planPositionId);
 
     List<CoordinatorPlan> getPlansByCoordinatorInAccountant();
@@ -60,4 +62,10 @@ public interface PlanService {
     void exportSubPositionsToExcel(ExportType exportType, CoordinatorPlan.PlanType planType, Long positionId, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
 
     void exportPlanToJasper(Long planId, HttpServletResponse response) throws IOException, JRException, SQLException;
+
+    CoordinatorPlan updatePlan(Long planId);
+
+    CoordinatorPlanPosition deleteTargetUnit(Long unitId);
+
+    CoordinatorPlanPosition deleteInvestmentSource(Long positionId, Long sourceId);
 }

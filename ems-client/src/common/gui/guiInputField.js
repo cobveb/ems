@@ -1,5 +1,5 @@
 import React from 'react';
-import { withStyles, TextField  }  from '@material-ui/core/';
+import { withStyles, TextField, InputAdornment }  from '@material-ui/core/';
 import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
 import {TextMask, digitsAndNumberMask} from 'utils/';
@@ -11,9 +11,15 @@ const inputField = theme => ({
     input: {
         padding: theme.spacing(1.5),
     },
-   inputRequired: {
+    inputRequired: {
         padding: theme.spacing(1.5),
         backgroundColor: '#faffbd',
+    },
+    inputError:{
+        color: '#8B0000',
+    },
+    inputSuccess:{
+        color: '#009900',
     },
     disabled: {
         color: '#757575',
@@ -42,7 +48,7 @@ TextMaskCustom.propTypes = {
 
 function InputField(props){
 
-    const { classes, label, mask, valueType, onChange, isRequired, ...custom } = props;
+    const { classes, label, mask, valueType, onChange, isRequired, isError, isSuccess, postfix, ...custom } = props;
     return(
         <TextField
             id="textField"
@@ -59,8 +65,9 @@ function InputField(props){
                 inputComponent: mask ? TextMask(mask) : valueType === "numbers" ? TextMaskCustom(valueType) : valueType === "digits" ? TextMaskCustom(valueType) : undefined,
                 classes: {
                     input: isRequired ? classes.inputRequired : classes.input,
-                    disabled: classes.disabled,
+                    disabled: isError ? classes.inputError :  isSuccess ? classes.inputSuccess : classes.disabled,
                 },
+                endAdornment: postfix && <InputAdornment position="end">{postfix}</InputAdornment>,
             }}
             {...custom}
         />

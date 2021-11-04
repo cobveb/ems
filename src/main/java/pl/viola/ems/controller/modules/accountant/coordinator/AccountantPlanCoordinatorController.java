@@ -8,6 +8,7 @@ import pl.viola.ems.model.common.coordinatorPlan.ApprovePlanType;
 import pl.viola.ems.model.common.export.ExportType;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.model.modules.coordinator.plans.FinancialPosition;
+import pl.viola.ems.model.modules.coordinator.plans.InvestmentPosition;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.service.modules.coordinator.plans.PlanService;
@@ -38,16 +39,21 @@ public class AccountantPlanCoordinatorController {
         return new ApiResponse(HttpStatus.FOUND, planService.findPlanById(planId));
     }
 
-    @PutMapping("/plan/{planId}/accountantApprove")
+    @PutMapping("/plan/approvePlan/{planId}")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('3024')")
     public ApiResponse accountantApprove(@PathVariable Long planId) {
         return new ApiResponse(HttpStatus.OK, planService.approvePlan(planId, ApprovePlanType.ACCOUNTANT));
     }
 
-    @PutMapping("/plan/withdraw/{planId}")
+    @PutMapping("/plan/withdrawPlan/{planId}")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('4024')")
     public ApiResponse withdrawAccountantApprove(@PathVariable Long planId) {
         return new ApiResponse(HttpStatus.ACCEPTED, planService.updatePlanStatus(planId, CoordinatorPlan.PlanStatus.RO));
+    }
+
+    @PutMapping("/plan/forwardPlan/{planId}")
+    public ApiResponse forwardPlan(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.ACCEPTED, planService.updatePlanStatus(planId, CoordinatorPlan.PlanStatus.PK));
     }
 
     @GetMapping("/plan/{planId}/getPositions")
@@ -60,6 +66,12 @@ public class AccountantPlanCoordinatorController {
     @PreAuthorize("hasGroup('admin') or hasPrivilege('2024')")
     public ApiResponse savePlanPositions(@RequestBody @Valid List<FinancialPosition> positions, @PathVariable Long planId) {
         return new ApiResponse(HttpStatus.CREATED, planService.updatePlanPositionsByAccountant(positions, planId));
+    }
+
+    @PutMapping("/plan/{planId}/updatePlanPosition")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('2024')")
+    public ApiResponse updatePlanPosition(@RequestBody @Valid InvestmentPosition position, @PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.CREATED, planService.updateInvestmentPositionByAccountant(position, planId));
     }
 
     @PutMapping("/export/plans/{exportType}")

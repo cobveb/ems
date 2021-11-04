@@ -47,7 +47,7 @@ class DictionaryItemForm extends Component {
                                 name="name"
                                 label={constants.DICTIONARY_ITEM_FORM_NAME}
                                 isRequired={true}
-                                inputProps={{ maxLength: 120 }}
+                                inputProps={{ maxLength: 160 }}
                                 disabled={ dictionaryType ==='P' && true}
                             />
                         </Grid>

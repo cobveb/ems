@@ -53,6 +53,18 @@ class PlansApi {
     static printPlan(planId){
         return Axios.get(`/api/coordinator/plan/print/${planId}`, {responseType: 'blob'})
     }
+
+    static updatePlan(planId){
+        return Axios.put(`/api/coordinator/plan/update/${planId}`)
+    }
+
+    static deleteTargetUnit(unitId){
+        return Axios.delete(`/api/coordinator/plan/position/deleteTargetUnit/${unitId}`)
+    }
+
+    static deleteInvestmentSource(positionId, sourceId){
+        return Axios.delete(`/api/coordinator/plan/position/${positionId}/deleteSource/${sourceId}`)
+    }
 }
 
 export default PlansApi;

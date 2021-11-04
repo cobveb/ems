@@ -25,6 +25,8 @@ class Plan extends Component {
                     modes={modes}
                     assortmentGroups={assortmentGroups}
                     foundingSources={this.props.foundingSources}
+                    unassignedUnits={this.props.unassignedUnits}
+                    investmentCategories={this.props.investmentCategories}
                     orderTypes={orderTypes}
                     estimationTypes={estimationTypes}
                     onClose={() => onClose(initialValues)}
@@ -32,6 +34,8 @@ class Plan extends Component {
                     onDeletePlanPosition={this.props.onDeletePlanPosition}
                     onSubmitPlanSubPosition={this.props.onSubmitPlanPosition}
                     onDeletePlanSubPosition={this.props.onDeletePlanSubPosition}
+                    onDeleteTargetUnit={this.props.onDeleteTargetUnit}
+                    onDeleteSource={this.props.onDeleteSource}
                     onExcelExport={this.props.onExcelExport}
                     onSendPlan={this.props.onSendPlan}
                     onPrintPlan={this.props.onPrintPlan}
@@ -45,7 +49,7 @@ class Plan extends Component {
 Plan.propTypes = {
     classes: PropTypes.object,
     initialValues: PropTypes.object,
-    action: PropTypes.oneOf(['add', 'edit']).isRequired,
+    action: PropTypes.oneOf(['add', 'edit', 'update']).isRequired,
     error: PropTypes.string,
     isLoading: PropTypes.bool,
     onClose: PropTypes.func,

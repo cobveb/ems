@@ -38,7 +38,7 @@ const useToolbarStyles = makeStyles(theme => ({
 
     },
     spacer: {
-        flex: '1 1 100%',
+        flex: '1 1 90%',
     },
 
 }));
@@ -76,16 +76,18 @@ const EnhancedTableToolbar = props => {
                                 disabled={selected.length === 0 || (editButtonProps && editButtonProps.disabled) }
                             />
                         }
-                        <Button
-                            label={deleteButtonProps && deleteButtonProps.label ? deleteButtonProps.label : constants.BUTTON_DELETE}
-                            icon={deleteButtonProps && deleteButtonProps.icon ? deleteButtonProps.icon : <Delete />}
-                            iconAlign="left"
-                            variant={deleteButtonProps && deleteButtonProps.variant ? deleteButtonProps.variant : "delete"}
-                            size="small"
-                            version="text"
-                            onClick={(event) => onDelete(event, 'delete')}
-                            disabled={selected.length === 0 || (deleteButtonProps && deleteButtonProps.disabled)}
-                        />
+                        {(deleteButtonProps === undefined || deleteButtonProps.hide !== true) &&
+                            <Button
+                                label={deleteButtonProps && deleteButtonProps.label ? deleteButtonProps.label : constants.BUTTON_DELETE}
+                                icon={deleteButtonProps && deleteButtonProps.icon ? deleteButtonProps.icon : <Delete />}
+                                iconAlign="left"
+                                variant={deleteButtonProps && deleteButtonProps.variant ? deleteButtonProps.variant : "delete"}
+                                size="small"
+                                version="text"
+                                onClick={(event) => onDelete(event, 'delete')}
+                                disabled={selected.length === 0 || (deleteButtonProps && deleteButtonProps.disabled)}
+                            />
+                        }
                     </ButtonGroup>
                 </div>
             </Toolbar>

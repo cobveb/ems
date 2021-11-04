@@ -1,8 +1,10 @@
 package pl.viola.ems.model.modules.accountant.institution.plans;
 
 import lombok.*;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.accountant.CostType;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
+import pl.viola.ems.model.modules.coordinator.plans.PublicProcurementPosition;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -58,4 +60,13 @@ public class InstitutionFinancialPlanPosition extends InstitutionPlanPosition {
         super.setCorrectionPlanPosition(correctionPlanPosition);
     }
 
+    @Override
+    public DictionaryItem getAssortmentGroup() {
+        return null;
+    }
+
+    @Override
+    public PublicProcurementPosition.OrderType getOrderType() {
+        return null;
+    }
 }

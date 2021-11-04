@@ -75,6 +75,14 @@ class Accountant extends Component {
             }
         ],
     }
+
+    showInstitutionPlans = () =>{
+        return(
+            <InstitutionPlansContainer
+                levelAccess="accountant"
+            />
+        )
+    }
     render(){
         const {classes} = this.props;
         const {menus} = this.state;
@@ -87,9 +95,9 @@ class Accountant extends Component {
                         <Card className={classes.card}>
                             <CardContent>
                                 <Switch>
-                                    <PrivateRoute exact path='/modules/accountant/' component={InstitutionPlansContainer}/>
+                                    <PrivateRoute exact path='/modules/accountant/' component={this.showInstitutionPlans}/>
                                     <PrivateRoute exact path='/modules/accountant/coordinator/plans' component={PlansContainer}/>
-                                    <PrivateRoute exact path='/modules/accountant/institution/plans' component={InstitutionPlansContainer}/>
+                                    <PrivateRoute exact path='/modules/accountant/institution/plans' component={this.showInstitutionPlans}/>
                                     <PrivateRoute path='/modules/accountant/dictionaries/costs' component={CostsTypesContainer}/>
                                 </Switch>
                             </CardContent>

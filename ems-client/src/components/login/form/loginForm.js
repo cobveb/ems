@@ -63,7 +63,7 @@ class LoginForm extends Component {
         .catch(error =>{
             this.props.onToggleLoading(false);
             this.setState({
-                msgError: error,
+                msgError: error === "errorResponse is undefined" ? constants.WRONG_CREDENTIALS : error,
                 resetPassword: {...this.state.resetPassword, username: username},
             })
         })

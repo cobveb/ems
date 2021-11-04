@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import Plans from 'components/modules/accountant/institution/plans/plans';
 import PlansApi from 'api/modules/accountant/institution/plansApi';
-import {updateOnCloseDetails, findSelectFieldPosition, getCoordinatorPlanTypes} from 'utils';
+import {updateOnCloseDetails, findSelectFieldPosition, getCoordinatorPlanTypes, generateExportLink} from 'utils';
 
 class PlansContainer extends Component {
     state = {
@@ -38,20 +38,32 @@ class PlansContainer extends Component {
         return updateOnCloseDetails(plans, plan, "year");
     }
 
+    handleExcelExport = (exportType, headRow) =>{
+        this.props.loading(true);
+        PlansApi.exportPlansToExcel(exportType, headRow)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
     componentDidMount() {
         this.handleGetPlans();
     }
 
     render(){
-        const {isLoading, error} = this.props;
+        const {isLoading, error, levelAccess} = this.props;
         const {plans, types} = this.state;
         return(
             <Plans
                 initialValues={plans}
+                levelAccess={levelAccess}
                 isLoading={isLoading}
                 types={types}
                 error={error}
                 onClose={this.handleUpdateOnCloseDetails}
+                onExcelExport={this.handleExcelExport}
             />
         );
     };
