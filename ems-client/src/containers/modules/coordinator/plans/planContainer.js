@@ -305,9 +305,26 @@ class PlanContainer extends Component {
             this.props.loading(false);
         })
         .catch(error => {
-            this.setState({
-                initData: values,
-            });
+            //update position value if error exist
+            if(action === 'add'){
+                values.status = "ZP";
+                values.plan = JSON.parse(JSON.stringify(this.state.initData));
+                values.plan.year = new Date(values.plan.year).getFullYear();
+                values.plan.status = values.plan.status.code;
+                values.plan.type = values.plan.type.code;
+                this.setState({
+                    newPosition: values,
+                });
+            } else if (action === 'edit') {
+                values.status = values.status.code;
+                const idx = findIndexElement(values, this.state.initData.positions);
+                if(idx !== null){
+                    this.setState( prevState => {
+                        const initData = {...prevState.initData};
+                        initData.positions.splice(idx, 1, values);
+                    })
+                }
+            }
         });
     }
 

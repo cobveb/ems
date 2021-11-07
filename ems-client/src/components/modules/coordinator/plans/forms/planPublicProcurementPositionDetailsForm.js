@@ -126,6 +126,7 @@ class PlanPublicProcurementContentPosition extends Component {
                                         label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERED_OBJECT}
                                         isRequired={true}
                                         disabled={planStatus!=='ZP' && true}
+                                        inputProps={{ maxLength: 200 }}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
@@ -150,6 +151,7 @@ class PlanPublicProcurementContentPosition extends Component {
                                         multiline
                                         rows="5"
                                         disabled={planStatus!=='ZP' && true}
+                                        inputProps={{ maxLength: 500 }}
                                     />
                                 </Grid>
                             </Grid>

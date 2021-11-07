@@ -1,5 +1,6 @@
 package pl.viola.ems.exception;
 
+import org.hibernate.JDBCException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -53,13 +54,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(MissingResourceException.class)
-    public final ResponseEntity<ErrorDetails> handleOrganizationUnitsNotFoundException(MissingResourceException ex, WebRequest request){
+    public final ResponseEntity<ErrorDetails> handleOrganizationUnitsNotFoundException(MissingResourceException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(HttpStatus.NOT_FOUND, ex.getMessage(), ex, request.getDescription(false));
         return new ResponseEntity<>(errorDetails, errorDetails.getStatus());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public final ResponseEntity<ErrorDetails> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, WebRequest request){
+    public final ResponseEntity<ErrorDetails> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(HttpStatus.BAD_REQUEST, ex.getMessage(), ex, request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, errorDetails.getStatus());
+    }
+
+    @ExceptionHandler(JDBCException.class)
+    public final ResponseEntity<ErrorDetails> handleOracleDatabaseException(JDBCException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(HttpStatus.BAD_REQUEST, ex.getMessage(), ex, request.getDescription(false));
         return new ResponseEntity<>(errorDetails, errorDetails.getStatus());
     }

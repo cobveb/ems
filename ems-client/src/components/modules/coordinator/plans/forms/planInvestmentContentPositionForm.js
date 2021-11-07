@@ -29,6 +29,11 @@ const styles = theme => ({
         overflow: 'auto',
         padding: 0,
     },
+    form: {
+        height: `calc(100vh - ${theme.spacing(14)}px)`,
+        overflow: 'auto',
+        padding: 0,
+    },
     section: {
         marginBottom: theme.spacing(0),
     },
@@ -176,7 +181,7 @@ class PlanInvestmentContentPosition extends Component {
                             onClose={this.handleCloseDetails}
                         />
                     :
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} >
                             { submitting && <Spinner /> }
                             {formChanged === true &&
                                 <ModalDialog
@@ -186,188 +191,191 @@ class PlanInvestmentContentPosition extends Component {
                                     onClose={this.handleCancelClose}
                                 />
                             }
-                            <Typography
-                                variant="h6"
-                            >
-                                { action === "add" ?
-                                    constants.COORDINATOR_PLAN_POSITION_CREATE_DETAILS_TITLE
-                                        :  constants.COORDINATOR_PLAN_POSITION_EDIT_DETAILS_TITLE + `${initialValues.task}`
-                                }
-                            </Typography>
-                            <Divider />
-                            <div className={classes.content}>
-                                <div className={classes.section}>
-                                    <Grid container spacing={1} className={classes.container}>
-                                        <Grid item xs={12} >
-                                            <Toolbar className={classes.toolbar}>
-                                                <LibraryBooks className={classes.toolbarHeaderIcon} fontSize="small" />
-                                                <Typography variant="subtitle1" >
-                                                    {constants.COORDINATOR_PLAN_BASIC_INFORMATION}
-                                                </Typography>
-                                            </Toolbar>
-                                        </Grid>
-                                        <Grid item xs={12} >
-                                            <FormTextField
-                                                name="name"
-                                                label={constants.APPLICATION_POSITION_DETAILS_POSITION_NAME}
-                                                disabled={planStatus!=='WY' && true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12} >
-                                            <FormTextField
-                                                name="task"
-                                                label={constants.COORDINATOR_PLAN_POSITIONS_HEAD_TASK}
-                                                isRequired={true}
-                                                disabled={planStatus!=='ZP' && true}
-                                                inputProps={{ maxLength: 190 }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={8}>
-                                            <FormSelectField
-                                                isRequired={true}
-                                                name="category"
-                                                label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_CATEGORY}
-                                                options={investmentCategories}
-                                                disabled={planStatus!=='ZP' && true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={2}>
-                                            <FormDateField
-                                                name="realizationDate"
-                                                label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_REALIZATION_DATE}
-                                                disablePast
-                                                isRequired={true}
-                                                disabled={action ==='add' ? false :
-                                                    initialValues.status !== undefined && initialValues.status.code !=='ZP' ? true :
-                                                        false
-                                                }
-                                            />
-                                        </Grid>
-                                        <Grid item xs={1}>
-                                            <FormSelectField
-                                                isRequired={true}
-                                                name="vat"
-                                                label={constants.COORDINATOR_PLAN_POSITION_VAT}
-                                                value={initialValues.vat !== undefined ? initialValues.vat : ""}
-                                                options={vats}
-                                                disabled={planStatus!=='ZP' && true}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={1} >
-                                            <InputField
-                                                name="status"
-                                                label={constants.APPLICATION_POSITION_DETAILS_STATUS}
-                                                disabled
-                                                value={ Object.keys(initialValues).length !== 0 && initialValues.status ? initialValues.status.name : ''}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <FormAmountField
-                                                name="taskPositionGross"
-                                                label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_TASK_GROSS}
-                                                disabled
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <FormAmountField
-                                                name="amountAwardedGross"
-                                                label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_AWARDED_GROSS}
-                                                disabled
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <FormAmountField
-                                                name="amountRequestedGross"
-                                                label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS}
-                                                disabled
-                                            />
-                                        </Grid>
-                                        <Grid item xs={3}>
-                                            <FormAmountField
-                                                name="expensesPositionAwardedGross"
-                                                label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_AWARDED_GROSS}
-                                                disabled
-                                            />
-                                        </Grid>
-                                        <Grid item xs={6} >
-                                            <FormTextField
-                                                name="application"
-                                                label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_APPLICATION}
-                                                multiline
-                                                rows="1"
-                                                disabled={planStatus!=='ZP' && true}
-                                                inputProps={{ maxLength: 200 }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={6} >
-                                            <FormTextField
-                                                name="substantiation"
-                                                label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_SUBSTANTIATION}
-                                                multiline
-                                                rows="1"
-                                                disabled={planStatus!=='ZP' && true}
-                                                inputProps={{ maxLength: 200 }}
-                                            />
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <div className={classes.section}>
+                            <div className={classes.form}>
+                                <Typography
+                                    variant="h6"
+                                >
+                                    { action === "add" ?
+                                        constants.COORDINATOR_PLAN_POSITION_CREATE_DETAILS_TITLE
+                                            :  constants.COORDINATOR_PLAN_POSITION_EDIT_DETAILS_TITLE + `${initialValues.task}`
+                                    }
+                                </Typography>
+                                <Divider />
+                                <div className={classes.content}>
+                                    <div className={classes.section}>
+                                        <Grid container spacing={1} className={classes.container}>
+                                            <Grid item xs={12} >
                                                 <Toolbar className={classes.toolbar}>
-                                                    <AccountBalanceWallet className={classes.toolbarHeaderIcon} fontSize="small" />
+                                                    <LibraryBooks className={classes.toolbarHeaderIcon} fontSize="small" />
                                                     <Typography variant="subtitle1" >
-                                                        {constants.COORDINATOR_PLAN_POSITION_INVESTMENT_FUNDING_SOURCES}
+                                                        {constants.COORDINATOR_PLAN_BASIC_INFORMATION}
                                                     </Typography>
                                                 </Toolbar>
-                                                <Table
-                                                    className={classes.sourceTableWrapper}
-                                                    name="positionFundingSources"
-                                                    headCells={headSource}
-                                                    rows={initialValues.positionFundingSources}
-                                                    onSelect={() => {}}
-                                                    onExcelExport={this.handleExcelExport}
-                                                    rowKey="id"
-                                                    defaultOrderBy="id"
+                                            </Grid>
+                                            <Grid item xs={12} >
+                                                <FormTextField
+                                                    name="name"
+                                                    label={constants.APPLICATION_POSITION_DETAILS_POSITION_NAME}
+                                                    disabled={planStatus!=='WY' && true}
+                                                    inputProps={{ maxLength: 200 }}
                                                 />
-                                            </div>
-                                        </Grid>
-                                        <Grid item xs={12} >
-                                            <div className={classes.section}>
-                                                <Toolbar className={classes.toolbar}>
-                                                    <AccountTree className={classes.toolbarHeaderIcon} fontSize="small" />
-                                                    <Typography variant="subtitle1" >
-                                                        {constants.COORDINATOR_PLAN_POSITION_INVESTMENT_TARGET_UNITS}
-                                                    </Typography>
-                                                </Toolbar>
-                                                <FormTableField
-                                                    className={classes.tableWrapper}
-                                                    name="subPositions"
-                                                    head={headUnits}
-                                                    allRows={initialValues.subPositions}
-                                                    checkedRows={selected}
-                                                    toolbar={true}
-                                                    addButtonProps={{
-                                                        disabled : (initialValues.status === undefined || initialValues.status.code !== 'ZP') ? true : false
-                                                    }}
-                                                    editButtonProps={{
-                                                        label : (planStatus === 'ZP') ?  constants.BUTTON_EDIT : constants.BUTTON_PREVIEW,
-                                                        icon : (planStatus === 'ZP') ?  <Edit/> : <Visibility/>,
-                                                        variant: (planStatus === 'ZP') ?  "edit" : "cancel",
-                                                    }}
-                                                    deleteButtonProps={{
-                                                        disabled : (planStatus === null || planStatus !== 'ZP') ? true : false
-                                                    }}
-                                                    onAdd={(event) => this.handleOpenPositionDetails(event, "add")}
-                                                    onEdit={(event) => this.handleOpenPositionDetails(event, 'edit')}
-                                                    onDelete={(event) => this.handleDeletePosition(event, 'delete', )}
-                                                    onDoubleClick={this.handleDoubleClick}
-                                                    multiChecked={false}
-                                                    checkedColumnFirst={true}
-                                                    onSelect={this.handleSelect}
-                                                    orderBy="id"
+                                            </Grid>
+                                            <Grid item xs={12} >
+                                                <FormTextField
+                                                    name="task"
+                                                    label={constants.COORDINATOR_PLAN_POSITIONS_HEAD_TASK}
+                                                    isRequired={true}
+                                                    disabled={planStatus!=='ZP' && true}
+                                                    inputProps={{ maxLength: 200 }}
                                                 />
-                                            </div>
-                                        </Grid>
+                                            </Grid>
+                                            <Grid item xs={8}>
+                                                <FormSelectField
+                                                    isRequired={true}
+                                                    name="category"
+                                                    label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_CATEGORY}
+                                                    options={investmentCategories}
+                                                    disabled={planStatus!=='ZP' && true}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={2}>
+                                                <FormDateField
+                                                    name="realizationDate"
+                                                    label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_REALIZATION_DATE}
+                                                    disablePast
+                                                    isRequired={true}
+                                                    disabled={action ==='add' ? false :
+                                                        initialValues.status !== undefined && initialValues.status.code !=='ZP' ? true :
+                                                            false
+                                                    }
+                                                />
+                                            </Grid>
+                                            <Grid item xs={1}>
+                                                <FormSelectField
+                                                    isRequired={true}
+                                                    name="vat"
+                                                    label={constants.COORDINATOR_PLAN_POSITION_VAT}
+                                                    value={initialValues.vat !== undefined ? initialValues.vat : ""}
+                                                    options={vats}
+                                                    disabled={planStatus!=='ZP' && true}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={1} >
+                                                <InputField
+                                                    name="status"
+                                                    label={constants.APPLICATION_POSITION_DETAILS_STATUS}
+                                                    disabled
+                                                    value={ Object.keys(initialValues).length !== 0 && initialValues.status ? initialValues.status.name : ''}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <FormAmountField
+                                                    name="taskPositionGross"
+                                                    label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_TASK_GROSS}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <FormAmountField
+                                                    name="amountAwardedGross"
+                                                    label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_AWARDED_GROSS}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <FormAmountField
+                                                    name="amountRequestedGross"
+                                                    label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <FormAmountField
+                                                    name="expensesPositionAwardedGross"
+                                                    label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_AWARDED_GROSS}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6} >
+                                                <FormTextField
+                                                    name="application"
+                                                    label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_APPLICATION}
+                                                    multiline
+                                                    rows="1"
+                                                    disabled={planStatus!=='ZP' && true}
+                                                    inputProps={{ maxLength: 200 }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={6} >
+                                                <FormTextField
+                                                    name="substantiation"
+                                                    label={constants.COORDINATOR_PLAN_POSITION_INVESTMENT_SUBSTANTIATION}
+                                                    multiline
+                                                    rows="1"
+                                                    disabled={planStatus!=='ZP' && true}
+                                                    inputProps={{ maxLength: 200 }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <div className={classes.section}>
+                                                    <Toolbar className={classes.toolbar}>
+                                                        <AccountBalanceWallet className={classes.toolbarHeaderIcon} fontSize="small" />
+                                                        <Typography variant="subtitle1" >
+                                                            {constants.COORDINATOR_PLAN_POSITION_INVESTMENT_FUNDING_SOURCES}
+                                                        </Typography>
+                                                    </Toolbar>
+                                                    <Table
+                                                        className={classes.sourceTableWrapper}
+                                                        name="positionFundingSources"
+                                                        headCells={headSource}
+                                                        rows={initialValues.positionFundingSources}
+                                                        onSelect={() => {}}
+                                                        onExcelExport={this.handleExcelExport}
+                                                        rowKey="id"
+                                                        defaultOrderBy="id"
+                                                    />
+                                                </div>
+                                            </Grid>
+                                            <Grid item xs={12} >
+                                                <div className={classes.section}>
+                                                    <Toolbar className={classes.toolbar}>
+                                                        <AccountTree className={classes.toolbarHeaderIcon} fontSize="small" />
+                                                        <Typography variant="subtitle1" >
+                                                            {constants.COORDINATOR_PLAN_POSITION_INVESTMENT_TARGET_UNITS}
+                                                        </Typography>
+                                                    </Toolbar>
+                                                    <FormTableField
+                                                        className={classes.tableWrapper}
+                                                        name="subPositions"
+                                                        head={headUnits}
+                                                        allRows={initialValues.subPositions}
+                                                        checkedRows={selected}
+                                                        toolbar={true}
+                                                        addButtonProps={{
+                                                            disabled : (initialValues.status === undefined || initialValues.status.code !== 'ZP') ? true : false
+                                                        }}
+                                                        editButtonProps={{
+                                                            label : (planStatus === 'ZP') ?  constants.BUTTON_EDIT : constants.BUTTON_PREVIEW,
+                                                            icon : (planStatus === 'ZP') ?  <Edit/> : <Visibility/>,
+                                                            variant: (planStatus === 'ZP') ?  "edit" : "cancel",
+                                                        }}
+                                                        deleteButtonProps={{
+                                                            disabled : (planStatus === null || planStatus !== 'ZP') ? true : false
+                                                        }}
+                                                        onAdd={(event) => this.handleOpenPositionDetails(event, "add")}
+                                                        onEdit={(event) => this.handleOpenPositionDetails(event, 'edit')}
+                                                        onDelete={(event) => this.handleDeletePosition(event, 'delete', )}
+                                                        onDoubleClick={this.handleDoubleClick}
+                                                        multiChecked={false}
+                                                        checkedColumnFirst={true}
+                                                        onSelect={this.handleSelect}
+                                                        orderBy="id"
+                                                    />
+                                                </div>
+                                            </Grid>
 
-                                    </Grid>
+                                        </Grid>
+                                    </div>
                                 </div>
                             </div>
                             <div>

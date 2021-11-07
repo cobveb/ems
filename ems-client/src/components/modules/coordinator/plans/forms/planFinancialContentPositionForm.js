@@ -311,6 +311,7 @@ class PlanFinancialContentPosition extends Component {
                                         multiline
                                         rows="1"
                                         disabled={planStatus!=='ZP' && true}
+                                        inputProps={{ maxLength: 230 }}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>

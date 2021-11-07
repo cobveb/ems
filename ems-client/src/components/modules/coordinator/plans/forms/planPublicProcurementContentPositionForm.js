@@ -304,6 +304,7 @@ class PlanPublicProcurementContentPosition extends Component {
                                         label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_INITIATION_TERM}
                                         isRequired={true}
                                         disabled={planStatus!=='ZP' && true}
+                                        inputProps={{ maxLength: 20 }}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>

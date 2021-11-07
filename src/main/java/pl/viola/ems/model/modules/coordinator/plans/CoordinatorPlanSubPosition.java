@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,6 +42,7 @@ public abstract class CoordinatorPlanSubPosition implements Serializable {
     private Long id;
 
     @NonNull
+    @Size(max = 200, message = "{valid.maxSize}")
     private String name;
 
     @NonNull
@@ -51,6 +53,7 @@ public abstract class CoordinatorPlanSubPosition implements Serializable {
     @Column(name = "am_gross")
     private BigDecimal amountGross;
 
+    @Size(max = 500, message = "{valid.maxSize}")
     private String comments;
 
     @JsonIgnore

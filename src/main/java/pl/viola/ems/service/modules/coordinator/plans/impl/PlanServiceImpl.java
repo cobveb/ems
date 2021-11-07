@@ -332,14 +332,9 @@ public class PlanServiceImpl implements PlanService {
                                 sumSourceExpensesAwardedGross[0] = sumSourceExpensesAwardedGross[0].add(source.getSourceExpensesPlanAwardedGross() != null ? source.getSourceExpensesPlanAwardedGross() : BigDecimal.ZERO);
                             }
                         }));
-
-                        System.out.println(positionSource.getType() + " - " + positionSource.getSourceAmountAwardedGross() + " - " + sumSourceAwardedGross[0]);
-                        System.out.println(positionSource.getSourceAmountAwardedGross().equals(sumSourceAwardedGross[0]));
-                        System.out.println(positionSource.getSourceExpensesPlanAwardedGross().equals(sumSourceExpensesAwardedGross[0]));
                         if (!positionSource.getSourceAmountAwardedGross().equals(sumSourceAwardedGross[0]) || !positionSource.getSourceExpensesPlanAwardedGross().equals(sumSourceExpensesAwardedGross[0])) {
                             isAgreed[0] = false;
                         }
-
                     });
                     if (isAgreed[0]) {
                         position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.UZ);

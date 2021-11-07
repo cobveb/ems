@@ -9,6 +9,7 @@ import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.accountant.CostType;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -71,9 +72,11 @@ public abstract class CoordinatorPlanPosition implements Serializable {
     private BigDecimal vat;
 
     @Column(name = "desc_coordinator")
+    @Size(max = 250, message = "{valid.maxSize}")
     private String coordinatorDescription;
 
     @Column(name = "desc_management")
+    @Size(max = 250, message = "{valid.maxSize}")
     private String managementDescription;
 
     @NonNull
