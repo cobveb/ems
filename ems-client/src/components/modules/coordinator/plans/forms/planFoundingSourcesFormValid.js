@@ -4,7 +4,11 @@ export const validate =  ( values, props ) => {
     const errors = {}
 
     const requiredFieldsOnCreate = [
-        'type', 'sourceAmountRequestedGross', 'sourceExpensesPlanGross'
+        'type',
+    ]
+
+    const requiredAmountFieldsOnCreate = [
+        'sourceAmountRequestedGross', 'sourceExpensesPlanGross'
     ]
 
     const requiredFieldsOnCorrect = [
@@ -14,6 +18,11 @@ export const validate =  ( values, props ) => {
     if(props.planStatus === 'ZP'){
         requiredFieldsOnCreate.forEach(field => {
             if (!values[field]) {
+                errors[field] = constants.FORM_ERROR_MSG_REQUIRED_FIELD
+            }
+        })
+        requiredAmountFieldsOnCreate.forEach(field => {
+            if(values[field] === null){
                 errors[field] = constants.FORM_ERROR_MSG_REQUIRED_FIELD
             }
         })
