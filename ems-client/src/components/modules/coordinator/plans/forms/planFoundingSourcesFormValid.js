@@ -4,11 +4,7 @@ export const validate =  ( values, props ) => {
     const errors = {}
 
     const requiredFieldsOnCreate = [
-        'type',
-    ]
-
-    const requiredAmountFieldsOnCreate = [
-        'sourceAmountRequestedGross', 'sourceExpensesPlanGross'
+        'type', 'sourceAmountRequestedGross'
     ]
 
     const requiredFieldsOnCorrect = [
@@ -21,11 +17,12 @@ export const validate =  ( values, props ) => {
                 errors[field] = constants.FORM_ERROR_MSG_REQUIRED_FIELD
             }
         })
-        requiredAmountFieldsOnCreate.forEach(field => {
-            if(values[field] === null){
-                errors[field] = constants.FORM_ERROR_MSG_REQUIRED_FIELD
+        // Allow 0 to sourceExpensesPlanGross
+        if(values["sourceExpensesPlanGross"] !== 0){
+            if(values.sourceExpensesPlanGross === null || (values.sourceExpensesPlanGross !== undefined && values.sourceExpensesPlanGross.length < 1)){
+                errors.sourceExpensesPlanGross = constants.FORM_ERROR_MSG_REQUIRED_FIELD
             }
-        })
+        }
     } else {
         requiredFieldsOnCorrect.forEach(field => {
             if(values[field] !== 0){

@@ -275,7 +275,7 @@ class PlanContainer extends Component {
 
     handleExcelExport = (exportType, headRow) =>{
         this.props.loading(true);
-        PlansApi.exportPlanPositionsToExcel(exportType, this.state.initData.id, headRow)
+        PlansApi.exportPlanPositionsToExcel(exportType, this.state.initData.type.code, this.state.initData.id, headRow)
         .then(response => {
             generateExportLink(response);
             this.props.loading(false);

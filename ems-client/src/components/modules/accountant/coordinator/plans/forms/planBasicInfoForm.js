@@ -312,7 +312,9 @@ class PlanBasicInfoForm extends Component {
     }
 
     handleExcelExport = (exportType) => {
-        this.props.onExcelExport(exportType, this.state.headFin)
+        const {headFin, headInv} = this.state;
+        const {initialValues} = this.props;
+        this.props.onExcelExport(exportType, initialValues.type !== undefined && initialValues.type.code === "FIN" ? headFin : headInv)
     }
 
     handleChangeVisibleDetails = () =>{

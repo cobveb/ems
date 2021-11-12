@@ -340,7 +340,7 @@ class PlanBasicInfoForm extends Component {
             head = headRow;
         } else {
            head = initialValues.type !== undefined && initialValues.type.code === "FIN" ?
-                headFin : initialValues.type !== undefined && initialValues.type.code === "INV" ? headInv :
+                headFin : initialValues.type !== undefined && initialValues.type.code === "INW" ? headInv :
                     headPzp;
         }
         this.props.onExcelExport(exportType, head, level === undefined ? "position" : "subPositions", positionId)

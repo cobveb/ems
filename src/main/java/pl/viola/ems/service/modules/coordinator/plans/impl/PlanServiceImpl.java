@@ -680,6 +680,18 @@ public class PlanServiceImpl implements PlanService {
                     rows.add(row);
                 });
                 break;
+            case INW:
+                List<InvestmentPosition> investmentPositions = this.findPositionsByPlan(planId);
+                investmentPositions.forEach(position -> {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("task", position.getTask());
+                    row.put("taskPositionGross", position.getTaskPositionGross());
+                    row.put("amountRequestedGross", position.getAmountRequestedGross());
+                    row.put("expensesPositionAwardedGross", position.getExpensesPositionAwardedGross());
+                    row.put("amountRealizedGross", position.getAmountRealizedGross());
+                    rows.add(row);
+                });
+                break;
         }
         Utils.generateExcelExport(exportType, headRow, rows, response);
     }
@@ -777,6 +789,9 @@ public class PlanServiceImpl implements PlanService {
                 }
                 newPosition.setSubPositions(newSubPositions);
                 newPlanPositions.add(newPosition);
+
+                // Set the status of the current position to updated
+                planPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.AA);
             });
 
             financialPositionRepository.saveAll(newPlanPositions);
@@ -818,12 +833,109 @@ public class PlanServiceImpl implements PlanService {
                 }
 
                 newPosition.setSubPositions(newSubPositions);
-
                 newPlanPositions.add(newPosition);
 
+                // Set the status of the current position to updated
+                planPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.AA);
             });
 
             publicProcurementPositionRepository.saveAll(newPlanPositions);
+        } else {
+            Set<InvestmentPosition> newPlanPositions = new HashSet<>();
+            plan.getPositions().forEach(planPosition -> {
+                InvestmentPosition newPosition = new InvestmentPosition();
+                newPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZP);
+                newPosition.setAmountRequestedNet(planPosition.getAmountRequestedNet());
+                newPosition.setAmountRequestedGross(planPosition.getAmountRequestedGross());
+                newPosition.setAmountAwardedNet(planPosition.getAmountAwardedNet());
+                newPosition.setAmountAwardedGross(planPosition.getAmountAwardedGross());
+                newPosition.setAmountRealizedNet(planPosition.getAmountRealizedNet());
+                newPosition.setAmountRealizedGross(planPosition.getAmountRealizedGross());
+                newPosition.setVat(planPosition.getVat());
+                newPosition.setName(planPosition.getName());
+                newPosition.setTask(planPosition.getTask());
+                newPosition.setApplication(planPosition.getApplication());
+                newPosition.setSubstantiation(planPosition.getSubstantiation());
+                newPosition.setCategory(planPosition.getCategory());
+                newPosition.setRealizationDate(planPosition.getRealizationDate());
+                //TODO: dodano właściwości Transistent sprawdzić czy będą potrzebne
+                newPosition.setTaskPositionNet(planPosition.getTaskPositionNet());
+                newPosition.setTaskPositionGross(planPosition.getTaskPositionGross());
+                newPosition.setExpensesPositionAwardedNet(planPosition.getExpensesPositionAwardedNet());
+                newPosition.setExpensesPositionAwardedGross(planPosition.getExpensesPositionAwardedGross());
+                newPosition.setRealizedPositionNet(planPosition.getRealizedPositionNet());
+                newPosition.setRealizedPositionGross(planPosition.getRealizedPositionGross());
+
+
+//                //Copy position funding source if exist in to new position
+                List<FundingSource> newPositionSources = new ArrayList<>();
+                if (!planPosition.getPositionFundingSources().isEmpty()) {
+                    planPosition.getPositionFundingSources().forEach(positionSource -> {
+                        FundingSource newPositionSource = new FundingSource();
+                        newPositionSource.setType(positionSource.getType());
+                        newPositionSource.setSourceAmountNet(positionSource.getSourceAmountNet());
+                        newPositionSource.setSourceAmountGross(positionSource.getSourceAmountGross());
+                        newPositionSource.setSourceAmountAwardedNet(positionSource.getSourceAmountAwardedNet());
+                        newPositionSource.setSourceAmountAwardedGross(positionSource.getSourceAmountAwardedGross());
+                        newPositionSource.setSourceExpensesPlanNet(positionSource.getSourceExpensesPlanNet());
+                        newPositionSource.setSourceExpensesPlanGross(positionSource.getSourceExpensesPlanGross());
+                        newPositionSource.setSourceExpensesPlanAwardedNet(positionSource.getSourceExpensesPlanAwardedNet());
+                        newPositionSource.setSourceExpensesPlanAwardedGross(positionSource.getSourceExpensesPlanAwardedGross());
+                        newPositionSource.setSourceRealizedAmountNet(positionSource.getSourceRealizedAmountNet());
+                        newPositionSource.setSourceRealizedAmountGross(positionSource.getSourceRealizedAmountGross());
+                        newPositionSource.setCoordinatorPlanPosition(newPosition);
+                        newPositionSources.add(newPositionSource);
+                    });
+                }
+                newPosition.setPositionFundingSources(newPositionSources);
+
+                //Copy sub position if exist in to new position
+                Set<CoordinatorPlanSubPosition> newSubPositions = new HashSet<>();
+                if (!planPosition.getSubPositions().isEmpty()) {
+                    planPosition.getSubPositions().forEach(subPosition -> {
+                        InvestmentSubPosition newSubPosition = new InvestmentSubPosition();
+                        newSubPosition.setName(subPosition.getName());
+                        newSubPosition.setAmountNet(subPosition.getAmountNet());
+                        newSubPosition.setAmountGross(subPosition.getAmountGross());
+                        newSubPosition.setQuantity(subPosition.getQuantity());
+                        newSubPosition.setTargetUnit(subPosition.getTargetUnit());
+                        newSubPosition.setPlanPosition(newPosition);
+
+                        //Copy funding Sources if exist in to new sub position
+                        List<FundingSource> newSubPositionSources = new ArrayList<>();
+                        if (!subPosition.getFundingSources().isEmpty()) {
+                            subPosition.getFundingSources().forEach(subPositionSource -> {
+                                FundingSource newSubPositionSource = new FundingSource();
+                                newSubPositionSource.setType(subPositionSource.getType());
+                                newSubPositionSource.setSourceAmountNet(subPositionSource.getSourceAmountNet());
+                                newSubPositionSource.setSourceAmountGross(subPositionSource.getSourceAmountGross());
+                                newSubPositionSource.setSourceAmountAwardedNet(subPositionSource.getSourceAmountAwardedNet());
+                                newSubPositionSource.setSourceAmountAwardedGross(subPositionSource.getSourceAmountAwardedGross());
+                                newSubPositionSource.setSourceExpensesPlanNet(subPositionSource.getSourceExpensesPlanNet());
+                                newSubPositionSource.setSourceExpensesPlanGross(subPositionSource.getSourceExpensesPlanGross());
+                                newSubPositionSource.setSourceExpensesPlanAwardedNet(subPositionSource.getSourceExpensesPlanAwardedNet());
+                                newSubPositionSource.setSourceExpensesPlanAwardedGross(subPositionSource.getSourceExpensesPlanAwardedGross());
+                                newSubPositionSource.setSourceRealizedAmountNet(subPositionSource.getSourceRealizedAmountNet());
+                                newSubPositionSource.setSourceRealizedAmountGross(subPositionSource.getSourceRealizedAmountGross());
+                                newSubPositionSource.setCoordinatorPlanSubPosition(newSubPosition);
+                                newSubPositionSources.add(newSubPositionSource);
+                            });
+                        }
+                        newSubPosition.setFundingSources(newSubPositionSources);
+                        newSubPositions.add(newSubPosition);
+                    });
+                }
+
+                newPosition.setSubPositions(newSubPositions);
+                newPosition.setPlan(newPlan);
+                newPosition.setCorrectionPlanPosition(planPosition);
+
+                newPlanPositions.add(newPosition);
+
+                // Set the status of the current position to updated
+                planPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.AA);
+            });
+            investmentPositionRepository.saveAll(newPlanPositions);
         }
 
         newPlan.setYear(plan.getYear());
@@ -832,6 +944,10 @@ public class PlanServiceImpl implements PlanService {
         newPlan.setCreateDate(new Date());
         newPlan.setCoordinator(plan.getCoordinator());
         newPlan.setCorrectionPlan(plan);
+
+        //Set the status of the current plan to updated
+        plan.setStatus(CoordinatorPlan.PlanStatus.AA);
+        coordinatorPlanRepository.save(plan);
 
         return setPlanAmountValues(coordinatorPlanRepository.save(newPlan));
     }

@@ -81,11 +81,11 @@ public class AccountantPlanCoordinatorController {
         planService.exportPlansToExcel(exportType, "accountant", headRow, generateExportResponse(response, exportType));
     }
 
-    @PutMapping("/export/planPositions/{planId}/{exportType}")
-    public void exportPlanPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
+    @PutMapping("/export/planPositions/{planType}/{planId}/{exportType}")
+    public void exportPlanPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow, @PathVariable CoordinatorPlan.PlanType planType,
                                           @PathVariable ExportType exportType, @PathVariable Long planId, HttpServletResponse response) throws IOException {
 
-        planService.exportPlanPositionsToExcel(exportType, CoordinatorPlan.PlanType.FIN, planId, headRow, generateExportResponse(response, exportType));
+        planService.exportPlanPositionsToExcel(exportType, planType, planId, headRow, generateExportResponse(response, exportType));
     }
 
 
