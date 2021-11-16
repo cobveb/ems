@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
+import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -68,4 +69,6 @@ public abstract class CoordinatorPlanSubPosition implements Serializable {
     public abstract BigDecimal getUnitPrice();
 
     public abstract List<FundingSource> getFundingSources();
+
+    public abstract OrganizationUnit getTargetUnit();
 }

@@ -68,12 +68,12 @@ class Plans extends Component {
     }
 
     handleClose = (plan) => {
-        this.setState(state => ({
-            isDetailsVisible: !state.isDetailsVisible,
+        this.setState({
+            isDetailsVisible: !this.state.isDetailsVisible,
             selected: {},
             action: '',
-            rows: this.props.onClose(plan),
-        }));
+            rows: this.props.onClose(plan, this.state.action),
+        });
     }
 
     handleSelect = (id) => {
@@ -181,7 +181,7 @@ class Plans extends Component {
         }
     }
     render(){
-        const { classes, initialValues, isLoading, error, statuses, types, modes, onSubmitPlan } = this.props;
+        const { classes, initialValues, isLoading, error, statuses, types, modes } = this.props;
         const { headCells, rows, selected, isDetailsVisible, action, year, type, status } = this.state;
         return(
             <>
@@ -235,7 +235,6 @@ class Plans extends Component {
                             modes={modes}
                             investmentCategories={this.props.investmentCategories}
                             plans={initialValues}
-                            onSubmitPlan={onSubmitPlan}
                         />
                     :
                         <>
@@ -352,17 +351,16 @@ class Plans extends Component {
                                             onClick = {(event) => this.handleWithdraw(event, 'withdraw', )}
                                             variant="cancel"
                                         />
-                                        {/*
-                                            //TODO: Add in next version
-                                        <Button
-                                            label={constants.BUTTON_UPDATE}
-                                            icon=<DynamicFeed/>
-                                            iconAlign="left"
-                                            disabled={Object.keys(selected).length === 0 || !['ZA','RE'].includes(selected.status.code)}
-                                            onClick = {(event) => this.handleUpdate(event, 'update', )}
-                                            variant="cancel"
-                                        />
-                                        */}
+                                        {
+                                            <Button
+                                                label={constants.BUTTON_UPDATE}
+                                                icon=<DynamicFeed/>
+                                                iconAlign="left"
+                                                disabled={Object.keys(selected).length === 0 || !['ZA','RE'].includes(selected.status.code)}
+                                                onClick = {(event) => this.handleUpdate(event, 'update', )}
+                                                variant="cancel"
+                                            />
+                                        }
                                     </Grid>
                                 </Grid>
                             </Grid>

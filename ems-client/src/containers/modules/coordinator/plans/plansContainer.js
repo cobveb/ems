@@ -43,7 +43,7 @@ class PlansContainer extends Component {
         .catch(error => {});
     }
 
-     handleGetPlans(){
+    handleGetPlans(){
         this.props.loading(true);
         PlansApi.getPlans()
         .then(response =>{
@@ -94,19 +94,45 @@ class PlansContainer extends Component {
         this.props.loading(true);
         PlansApi.deletePlan(planId)
         .then(response => {
-            let plans = this.state.plans;
-            plans = plans.filter(plan => plan.id !== planId)
-            this.setState({
-                plans: plans,
-            })
+            const idx = this.state.plans.findIndex(plan => plan.id === planId);
+            //Check that the plan you are removing is an update
+            if(this.state.plans[idx].correctionPlan !== null){
+                //Deleted plan is an update
+                const corIdx = this.state.plans.findIndex(plan => plan.id === this.state.plans[idx].correctionPlan.id)
+                this.setState(prevState => {
+                    const plans = [...prevState.plans];
+                    plans[corIdx].status = findSelectFieldPosition(this.state.statuses, plans[corIdx].planAmountRealizedGross === 0 ? "ZA" : "RE");
+                    plans.splice(idx, 1);
+                    return {plans};
+                })
+            } else {
+                //Deleted plan is not an update
+                this.setState(prevState => {
+                    const plans = [...prevState.plans];
+                    plans.splice(idx, 1);
+                    return {plans}
+                })
+            }
             this.props.loading(false);
         })
         .catch(error => {});
     }
 
-    handleUpdateOnCloseDetails = (plan) => {
-        let plans = this.state.plans;
-        return updateOnCloseDetails(plans, plan);
+    handleUpdateOnCloseDetails = (plan, action) => {
+        if(action !== "update"){
+            let plans = this.state.plans;
+            return updateOnCloseDetails(plans, plan);
+        } else {
+            //If action is update plan, change correctionPlan status to "AA"
+            plan.isUpdate = true;
+            this.setState(prevState => {
+                const plans = [...prevState.plans];
+                const corIdx = this.state.plans.findIndex(oldPlan => oldPlan.id === plan.correctionPlan.id)
+                plans[corIdx].status = findSelectFieldPosition(this.state.statuses, "AA");
+                return {plans}
+            })
+            return updateOnCloseDetails(this.state.plans, plan);
+        }
     }
 
     handleExcelExport = (exportType, headRow) =>{

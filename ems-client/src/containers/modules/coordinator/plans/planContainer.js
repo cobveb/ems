@@ -612,6 +612,7 @@ class PlanContainer extends Component {
                         error={error}
                         isLoading={isLoading}
                         onSubmitPlanPosition={this.handleSubmitPlanPosition}
+                        onSubmitPlanSubPosition={this.handleSubmitPlanPosition}
                         onSubmitPlan={this.handleSubmitPlan}
                         onSendPlan={this.handleSendPlan}
                         onPrintPlan={this.handlePrintPlan}

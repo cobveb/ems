@@ -269,6 +269,7 @@ export const COORDINATOR_PLAN_POSITION_STATUS_ACCEPT = 'Zaakceptowana';
 export const COORDINATOR_PLAN_POSITION_STATUS_CORRECT = 'Skorygowana';
 export const COORDINATOR_PLAN_POSITION_STATUS_REALIZED = 'Realizowana';
 export const COORDINATOR_PLAN_POSITION_STATUS_EXECUTED = 'Zrealizowana';
+export const COORDINATOR_PLAN_POSITION_STATUS_UPDATED = 'Zaktualizowana';
 export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_DELIVERY = 'Dostawa';
 export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_SERVICE = 'Usługa';
 export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_DO50 = 'Do 50 000 zl netto';
@@ -325,8 +326,9 @@ export const COORDINATOR_PLAN_POSITION_HEAD_MANAGEMENT_DESCRIPTION = 'UD';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_COST_TYPE_EXISTS = 'Wybrany rodzaj kosztu istnieje w ramach planu'
 export const COORDINATOR_PLAN_POSITION_PUBLIC_COST_TYPE_POSITIONS = 'Pozycje kosztu'
 /* components/modules/coordinator/plans/forms/planFinancialPositionsForm.js */
-export const COORDINATOR_PLAN_POSITION_FINANCIAL_CREATE_POSITION_DETAILS_TITLE = "Nowa pozycja"
-export const COORDINATOR_PLAN_POSITION_FINANCIAL_EDIT_POSITION_DETAILS_TITLE = "Edycja pozycji: "
+export const COORDINATOR_PLAN_POSITION_FINANCIAL_CREATE_POSITION_DETAILS_TITLE = "Nowa pozycja";
+export const COORDINATOR_PLAN_POSITION_FINANCIAL_EDIT_POSITION_DETAILS_TITLE = "Edycja pozycji: ";
+export const COORDINATOR_PLAN_POSITION_FINANCIAL_PREVIEW_POSITION_DETAILS_TITLE = "Szczegóły pozycji: ";
 export const COORDINATOR_PLAN_POSITION_FINANCIAL_UNIT_PRICE = 'Cena jednostkowa brutto';
 export const COORDINATOR_PLAN_POSITION_FINANCIAL_AMOUNT_NET = 'Kwota netto';
 export const COORDINATOR_PLAN_POSITION_FINANCIAL_AMOUNT_GROSS = 'Kwota brutto';
@@ -392,10 +394,20 @@ export const COORDINATOR_PLAN_INVESTMENTS_POSITION_INVALID_UNITS_SOURCE_EXPENSES
 export const COORDINATOR_PLAN_INVESTMENTS_POSITION_TARGET_UNITS_TITLE = 'Jednostki organizacyjne';
 export const COORDINATOR_PLAN_INVESTMENTS_POSITION_TARGET_UNITS_SEARCH = 'Kod / Nazwa';
 /* components/modules/coordinator/plans/forms/planUpdateForm.js */
+export const COORDINATOR_PLAN_UPDATE_PUBLIC_PROCUREMENT_VALUE = 'Przyznana wartość planu netto przed korektą';
+export const COORDINATOR_PLAN_UPDATE_PUBLIC_PROCUREMENT_CORRECT_VALUE = 'Wartość planu netto po korekcie';
+export const COORDINATOR_PLAN_UPDATE_PLAN_AWARDED_VALUE = 'Przyznana wartość planu brutto przed korektą';
+export const COORDINATOR_PLAN_UPDATE_PLAN_AWARDED_CORRECT_VALUE = 'Wartość planu brutto po korekcie';
 export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT = "Korekta";
-export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECTED_GROSS = "Kwota po korekcie";
+export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECTED = "Kwota po korekcie";
+export const COORDINATOR_PLAN_UPDATE_PUBLIC_POSITION_VALUE = 'Przyznana kwota netto';
+export const COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_CORRECTED = 'Kwota wydatku po korekcie';
 /* components/modules/coordinator/plans/planUpdateFinancialContentPositionForm.js */
 export const COORDINATOR_PLAN_UPDATE_POSITION_DETAILS_TITLE = "Szczegóły pozycji planu: ";
+export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_NET = "Kwota przyznana netto przed korektą";
+export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_GROSS = "Kwota przyznana brutto przed korektą";
+export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AFTER_CORRECTED_NET = "Kwota netto po korekcie";
+export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AFTER_CORRECTED_GROSS = "Kwota brutto po korekcie";
 /* components/modules/coordinator/plans/planUpdateFinancialContentPositionFormValid.js */
 export const COORDINATOR_PLAN_UPDATE_PLAN_AMOUNT_AWARDED_EXCEEDED = "Przekroczono zatwierdzoną wartość planu";
 /* containers/modules/coordinator/publicProcurement/applications/applicationsContainer.js */

@@ -16,6 +16,9 @@
 *.iml
 *.ipr
 
+### JASPER ###
+*.jasper
+
 ### NetBeans ###
 /nbproject/private/
 /build/

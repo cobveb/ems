@@ -77,7 +77,7 @@ class PlanFinancialContentPosition extends Component {
     }
 
     render(){
-        const {classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, action, planStatus, units} = this.props;
+        const {classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, action, planStatus, units, isUpdatePlan} = this.props;
         const {formChanged} = this.state;
         return(
             <>
@@ -109,7 +109,8 @@ class PlanFinancialContentPosition extends Component {
                                     <Typography variant='h6'>
                                         { action === "add" ?
                                             constants.COORDINATOR_PLAN_POSITION_FINANCIAL_CREATE_POSITION_DETAILS_TITLE
-                                                :  constants.COORDINATOR_PLAN_POSITION_FINANCIAL_EDIT_POSITION_DETAILS_TITLE + `${initialValues.name}`
+                                                : isUpdatePlan ? constants.COORDINATOR_PLAN_POSITION_FINANCIAL_PREVIEW_POSITION_DETAILS_TITLE + `${initialValues.name}`
+                                                    : constants.COORDINATOR_PLAN_POSITION_FINANCIAL_EDIT_POSITION_DETAILS_TITLE + `${initialValues.name}`
                                         }
                                     </Typography>
                                     <IconButton aria-label="Close"
@@ -131,7 +132,7 @@ class PlanFinancialContentPosition extends Component {
                                         name="name"
                                         label={constants.APPLICATION_POSITION_DETAILS_POSITION_NAME}
                                         isRequired={true}
-                                        disabled={planStatus!=='ZP' && true}
+                                        disabled={(planStatus!=='ZP' || isUpdatePlan) && true}
                                         inputProps={{ maxLength: 120 }}
                                     />
                                 </Grid>
@@ -140,7 +141,7 @@ class PlanFinancialContentPosition extends Component {
                                         name="quantity"
                                         label={constants.APPLICATION_POSITION_DETAILS_QUANTITY}
                                         isRequired={true}
-                                        disabled={planStatus!=='ZP' && true}
+                                        disabled={(planStatus!=='ZP' || isUpdatePlan) && true}
                                     />
                                 </Grid>
                                 <Grid item xs={4}>
@@ -149,7 +150,7 @@ class PlanFinancialContentPosition extends Component {
                                         name="unit"
                                         dictionaryName='Jednostki miary'
                                         label={constants.APPLICATION_POSITION_DETAILS_UNIT}
-                                        disabled={planStatus!=='ZP' && true}
+                                        disabled={(planStatus!=='ZP' || isUpdatePlan) && true}
                                         items={units}
                                     />
                                 </Grid>
@@ -158,7 +159,7 @@ class PlanFinancialContentPosition extends Component {
                                         isRequired={true}
                                         name="unitPrice"
                                         label={constants.COORDINATOR_PLAN_POSITION_FINANCIAL_UNIT_PRICE}
-                                        disabled={planStatus!=='ZP' && true}
+                                        disabled={(planStatus!=='ZP' || isUpdatePlan) && true}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
@@ -227,5 +228,9 @@ class PlanFinancialContentPosition extends Component {
 PlanFinancialContentPosition.propTypes = {
     initialValues: PropTypes.object.isRequired,
 };
+
+PlanFinancialContentPosition.defaultProps ={
+    isUpdatePlan: false,
+}
 
 export default withStyles(styles)(PlanFinancialContentPosition);

@@ -3,6 +3,7 @@ package pl.viola.ems.model.modules.coordinator.plans;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
+import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -36,6 +37,11 @@ public class FinancialSubPosition extends CoordinatorPlanSubPosition {
 
     @Override
     public List<FundingSource> getFundingSources() {
+        return null;
+    }
+
+    @Override
+    public OrganizationUnit getTargetUnit() {
         return null;
     }
 }

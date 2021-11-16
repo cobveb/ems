@@ -12,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -118,6 +119,8 @@ public abstract class CoordinatorPlanPosition implements Serializable {
 
     public abstract BigDecimal getAmountInferredGross();
 
+    public abstract BigDecimal getExpensesPositionAwardedNet();
+
     public abstract BigDecimal getExpensesPositionAwardedGross();
 
     public abstract DictionaryItem getMode();
@@ -127,4 +130,24 @@ public abstract class CoordinatorPlanPosition implements Serializable {
     public abstract List<FundingSource> getPositionFundingSources();
 
     public abstract void setPositionFundingSources(List<FundingSource> fundingSources);
+
+    public abstract DictionaryItem getCategory();
+
+    public abstract String getName();
+
+    public abstract String getTask();
+
+    public abstract String getApplication();
+
+    public abstract String getSubstantiation();
+
+    public abstract Date getRealizationDate();
+
+    public abstract BigDecimal getTaskPositionNet();
+
+    public abstract BigDecimal getTaskPositionGross();
+
+    public abstract BigDecimal getRealizedPositionNet();
+
+    public abstract BigDecimal getRealizedPositionGross();
 }

@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 
@@ -63,6 +64,11 @@ public class FinancialPosition extends CoordinatorPlanPosition {
     }
 
     @Override
+    public BigDecimal getExpensesPositionAwardedNet() {
+        return null;
+    }
+
+    @Override
     public BigDecimal getExpensesPositionAwardedGross() {
         return null;
     }
@@ -86,4 +92,53 @@ public class FinancialPosition extends CoordinatorPlanPosition {
     public void setPositionFundingSources(List<FundingSource> fundingSources) {
     }
 
+    @Override
+    public DictionaryItem getCategory() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public String getTask() {
+        return null;
+    }
+
+    @Override
+    public String getApplication() {
+        return null;
+    }
+
+    @Override
+    public String getSubstantiation() {
+        return null;
+    }
+
+    @Override
+    public Date getRealizationDate() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getTaskPositionNet() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getTaskPositionGross() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getRealizedPositionNet() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getRealizedPositionGross() {
+        return null;
+    }
 }

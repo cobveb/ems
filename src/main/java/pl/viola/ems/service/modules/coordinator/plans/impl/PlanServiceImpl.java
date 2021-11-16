@@ -220,10 +220,12 @@ public class PlanServiceImpl implements PlanService {
             }
         }
         coordinatorPlanRepository.save(plan);
-
+        //If plan different that investment then update institution plan
         if (!plan.getType().equals(CoordinatorPlan.PlanType.INW)) {
-            //Update Institution plan
-            institutionPlanService.updateInstitutionPlan(plan, newStatus.equals(CoordinatorPlan.PlanStatus.WY) ? "send" : "withdraw");
+            //If it is not an update of the coordinator's plan, update the institution's plan
+            if (plan.getCorrectionPlan() == null) {
+                institutionPlanService.updateInstitutionPlan(plan, newStatus.equals(CoordinatorPlan.PlanStatus.WY) ? "send" : "withdraw");
+            }
         }
         return plan;
     }
@@ -286,12 +288,24 @@ public class PlanServiceImpl implements PlanService {
     @Transactional
     @Override
     public String deletePlan(Long planId) {
-        if (coordinatorPlanRepository.existsById(planId)) {
-            coordinatorPlanRepository.deleteById(planId);
-            return messageSource.getMessage("Coordinator.plan.deleteMsg", null, Locale.getDefault());
-        } else {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Coordinator.plan.notFound");
+        CoordinatorPlan plan = coordinatorPlanRepository.findById(planId)
+                .orElseThrow(() -> new AppException("Coordinator.plan.notFound", HttpStatus.NOT_FOUND));
+
+        //If the deleted plan is an update, restore the source plan
+        if (plan.getCorrectionPlan() != null) {
+            plan.getCorrectionPlan().setStatus(plan.getCorrectionPlan().getPlanAmountRealizedGross() == null ?
+                    CoordinatorPlan.PlanStatus.ZA : CoordinatorPlan.PlanStatus.RE);
+            plan.getCorrectionPlan().getPositions().forEach(position -> {
+                position.setStatus(position.getAmountRealizedGross() == null ? CoordinatorPlanPosition.PlanPositionStatus.ZA :
+                        position.getAmountRealizedGross().equals(position.getAmountAwardedGross()) ?
+                                CoordinatorPlanPosition.PlanPositionStatus.ZR : CoordinatorPlanPosition.PlanPositionStatus.RE
+                );
+            });
+            coordinatorPlanRepository.save(plan.getCorrectionPlan());
         }
+        coordinatorPlanRepository.deleteById(plan.getId());
+        return messageSource.getMessage("Coordinator.plan.deleteMsg", null, Locale.getDefault());
+
     }
 
     @Transactional
@@ -735,8 +749,11 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public void exportPlanToJasper(final Long planId, final HttpServletResponse response) throws IOException, JRException, SQLException {
+        CoordinatorPlan plan = coordinatorPlanRepository.findById(planId).orElseThrow(() -> new AppException("Coordinator.plan.notFound", HttpStatus.NOT_FOUND));
         OutputStream outputStream = response.getOutputStream();
-        JasperPrint jasperPrint = jasperPrintService.exportPdf(planId, "/jasper/prints/modules/coordinator/plans/coordinatorPlanReport.jrxml");
+        JasperPrint jasperPrint = jasperPrintService.exportPdf(planId, plan.getCorrectionPlan() == null ?
+                "/jasper/prints/modules/coordinator/plans/coordinatorPlanReport.jrxml"
+                : "/jasper/prints/modules/coordinator/plans/updateCoordinatorPlan.jrxml");
         JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
     }
 

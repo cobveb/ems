@@ -19,7 +19,6 @@ export function numberMask(rawValue){
     Mask allowed input only number
 */
     let mask = []
-    console.log(rawValue)
     rawValue = rawValue.replace(/[^0-9]/g, '');
     mask.push(rawValue);
     return mask;
@@ -325,6 +324,10 @@ export const getCoordinatorPlanPositionsStatuses = () => [
     {
         code: 'ZR',
         name: constants.COORDINATOR_PLAN_POSITION_STATUS_EXECUTED,
+    },
+    {
+        code: 'AA',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_UPDATED,
     },
 ];
 
