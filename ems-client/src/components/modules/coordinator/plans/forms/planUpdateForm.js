@@ -174,7 +174,7 @@ class PlanBasicInfoForm extends Component {
         if(this.props.pristine === false){
             this.setState({formChanged: !this.state.formChanged});
         } else {
-            this.props.onClose();
+            this.props.onClose(this.props.initialValues);
             this.props.reset();
         }
     };
@@ -185,13 +185,19 @@ class PlanBasicInfoForm extends Component {
 
     handleConfirmClose = () => {
         this.setState({formChanged: false});
-        this.props.onClose();
+        this.props.onClose(this.props.initialValues);
         this.props.reset();
     }
 
     handleSubmitPosition = (values, action) =>{
+        this.setState({
+            openPositionDetails: !this.state.openPositionDetails,
+            selected: [],
+            positionAction: '',
+            notExistCorrectedPositions: (   ((values.correctionPlanPosition === undefined && values.amountAwardedGross !== undefined)
+                || values.amountAwardedGross !== values.correctionPlanPosition) ? false : true),
+        });
         this.props.onSubmitPlanPosition(values, this.state.positionAction);
-        this.setState({openPositionDetails: !this.state.openPositionDetails, selected: [], positionAction: '',});
     }
 
     handleSubmitSubPosition = (values, action) =>{
@@ -224,7 +230,6 @@ class PlanBasicInfoForm extends Component {
                         action={positionAction}
                         vats={vats}
                         costsTypes={costsTypes}
-                        onSubmitPlanPosition={this.handleSubmitPosition}
                         onSubmitPlanSubPosition={this.handleSubmitSubPosition}
                         onExcelExport={this.handleExcelExport}
                         onClose={this.handleCloseDetails}
@@ -326,16 +331,7 @@ class PlanBasicInfoForm extends Component {
         return correctedPositions.length > 0 ? false : true;
     }
 
-    componentDidUpdate(prevProps){
-        if(this.state.positionAction === 'add' && this.props.newPosition !== null){
-            this.setState(prevState =>{
-                const selected =  [...prevState.selected];
-                let positionAction = {...prevState.positionAction}
-                selected[0] = this.props.newPosition;
-                positionAction = 'correct';
-                return {selected, positionAction}
-            })
-        }
+    componentDidUpdate(prevProps, prevState){
         if(this.state.selected.length > 0 && this.state.positionAction === 'correct' ){
             const index = findIndexElement(this.state.selected[0], this.props.initialValues.positions, "positionId");
             if(index !== null){
@@ -563,7 +559,7 @@ class PlanBasicInfoForm extends Component {
                                         checkedRows={selected}
                                         toolbar={true}
                                         addButtonProps={{
-                                            disabled : (initialValues.status === undefined || (initialValues.status !== undefined && initialValues.status.code !== 'ZP') || (initialValues.planAmountAwardedGross >= initialValues.correctionPlan.planAmountAwardedGross )) ? true : false
+                                            disabled : (initialValues.status === undefined || (initialValues.status !== undefined && initialValues.status.code !== 'ZP')) ? true : false
                                         }}
                                         editButtonProps={{
                                             label: (initialValues.status === undefined || (initialValues.status !== undefined && initialValues.status.code === 'ZP')) ?  constants.BUTTON_CORRECT : constants.BUTTON_PREVIEW,

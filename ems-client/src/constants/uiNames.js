@@ -571,10 +571,12 @@ export const ACCOUNTANT_PLAN_INVESTMENTS_POSITION_SOURCE_EXPENSES_PLAN_AWARDED_G
 export const ACCOUNTANT_INSTITUTION_PLANS_TITLE = 'Plany';
 /* components/modules/accountant/institution/plans/plan.js */
 export const ACCOUNTANT_INSTITUTION_POSITION_SEARCH_COST_TYPE = 'Rodzaj kosztu / Nazwa rodzaju kosztu';
-/* components/modules/accountant/institution/plans//forms/planPositionsForm.js */
+/* components/modules/accountant/institution/plans/forms/planPositionsForm.js */
 export const ACCOUNTANT_INSTITUTION_PLAN_POSITIONS_TITLE = 'Pozycja planu: ';
 export const ACCOUNTANT_INSTITUTION_PLAN_COORDINATOR_POSITIONS = 'Pozycje w planach Koordynatorów: ';
 export const ACCOUNTANT_INSTITUTION_PLAN_COORDINATOR_POSITIONS_BUTTON_PLAN = "Plan";
+/* components/modules/accountant/coordinator/plans/forms/planUpdateForm.js */
+export const ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_CORRECTION_APPROVE_MESSAGE = 'Korekta planu zostanie zatwierdzona. Czy kontynować?'
 /* components/modules/accountant/dictionary/costsTypes.js */
 export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NUMBER = 'Numer';
 export const ACCOUNTANT_COSTS_TYPES_TABLE_HEAD_ROW_NAME = 'Nazwa';
@@ -694,6 +696,7 @@ export const BUTTON_CONSIDER = 'Rozpatrz';
 export const BUTTON_PRINT = 'Drukuj';
 export const BUTTON_UPDATE = 'Aktualizuj';
 export const BUTTON_REMARKS = 'Uwagi';
+export const BUTTON_DETAILS = 'Szczegoły';
 export const TEXTFIELD_SEARCH = 'Szukaj';
 export const DRAWER_MENU_SHOW = 'Pokaż';
 export const DRAWER_MENU_HIDE = 'Ukryj';

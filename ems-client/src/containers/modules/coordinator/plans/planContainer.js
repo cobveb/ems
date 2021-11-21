@@ -94,6 +94,20 @@ class PlanContainer extends Component {
         .catch(error => {});
     }
 
+    setUpPlanValue = (values) =>{
+        let planAmountAwardedNet = 0;
+        let planAmountAwardedGross = 0;
+
+        values.positions.map(position => {
+            planAmountAwardedNet += position.amountAwardedNet;
+            planAmountAwardedGross += position.amountAwardedGross;
+
+            return position;
+        })
+
+        values.planAmountAwardedNet = planAmountAwardedNet
+        values.planAmountAwardedGross = planAmountAwardedGross
+    }
 
     handleGetPlanPositions = (planId) => {
         this.props.loading(true);
@@ -119,10 +133,13 @@ class PlanContainer extends Component {
                             initData["positions"].map(position => (
                                 Object.assign(position,
                                     {
-                                       amountCorrect: position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross,
+                                        amountCorrect: position.correctionPlanPosition !== null ?
+                                            position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross :
+                                            position.amountAwardedGross,
                                     }
                                 )
                             ))
+                            this.setUpPlanValue(initData);
                         }
                         return {initData};
                     });
@@ -211,7 +228,8 @@ class PlanContainer extends Component {
         values.map(position => (
             Object.assign(position,
                 {
-                   amountCorrect: position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross,
+                    amountCorrect: position.correctionPlanPosition !== null ?
+                        position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross : position.amountAwardedGross,
                 }
             )
         ))
@@ -256,6 +274,10 @@ class PlanContainer extends Component {
                         tmp.costType = findSelectFieldPosition(this.state.costsTypes, tmp.costType.code);
                         newPosition = tmp;
                         this.setUpPlanValueOnSubmitPosition(values, initData, tmp, action);
+                        if(action === 'add' && initData.isUpdate){
+                            this.setUpCorrectValue(initData.positions)
+                            this.setUpPlanValue(initData)
+                        }
                         if(action === 'correct'){
                             this.setUpCorrectValue(initData.positions)
                         }
@@ -521,7 +543,7 @@ class PlanContainer extends Component {
                 initData.year = new Date(initData.year,0,1).toJSON();
                 initData.status = findSelectFieldPosition(this.props.statuses, initData.status);
                 initData.type = findSelectFieldPosition( this.props.types, initData.type);
-
+                initData.isUpdate = true;
                 return {initData}
             })
             this.handleGetPlanPositions(this.state.initData.id);
@@ -541,7 +563,6 @@ class PlanContainer extends Component {
             } else if (this.state.initData.type.code === 'PZP'){
                 this.handleGetDictionaryAssortmentGroups();
             }
-
         else if (this.props.initialValues.type === undefined && this.state.initData.type !== undefined && this.state.initData.type.code === 'INW'){
                 this.handleGetOrganizationUnits();
                 this.handleGetDictionaryFoundingSources();

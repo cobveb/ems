@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
+import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -37,6 +38,11 @@ public class PublicProcurementSubPosition extends CoordinatorPlanSubPosition {
 
     @Override
     public List<FundingSource> getFundingSources() {
+        return null;
+    }
+
+    @Override
+    public OrganizationUnit getTargetUnit() {
         return null;
     }
 }

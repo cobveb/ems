@@ -3,7 +3,6 @@ package pl.viola.ems.model.modules.coordinator.plans;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.Hibernate;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.accountant.CostType;
 
@@ -14,8 +13,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
+@EqualsAndHashCode(exclude = {"positionFundingSources"}, callSuper = false)
 @NoArgsConstructor
 @SuperBuilder
 @Getter
@@ -67,7 +66,6 @@ public class InvestmentPosition extends CoordinatorPlanPosition {
 
     @Transient
     private BigDecimal realizedPositionGross;
-
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "coordinatorPlanPosition", cascade = {CascadeType.ALL})
     @ToString.Exclude
@@ -173,17 +171,4 @@ public class InvestmentPosition extends CoordinatorPlanPosition {
         return null;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        InvestmentPosition that = (InvestmentPosition) o;
-
-        return Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return 2043463193;
-    }
 }

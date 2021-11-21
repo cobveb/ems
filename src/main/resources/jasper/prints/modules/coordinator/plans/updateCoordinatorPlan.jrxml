@@ -241,10 +241,12 @@ from
 			<variableExpression><![CDATA[$F{COR_AWA_GROSS}]]></variableExpression>
 		</variable>
 		<variable name="AM_COR_PLAN_GROSS" class="java.math.BigDecimal" resetType="Master" calculation="Sum">
-			<variableExpression><![CDATA[$F{AM_AWA_GROSS}.subtract( $F{COR_AWA_GROSS} )]]></variableExpression>
+			<variableExpression>
+				<![CDATA[$F{COR_AWA_GROSS} == null ? $F{AM_AWA_GROSS} :  $F{AM_AWA_GROSS}.subtract( $F{COR_AWA_GROSS} )]]></variableExpression>
 		</variable>
 		<variable name="AM_COR_POS_GROSS" class="java.math.BigDecimal" resetType="Master">
-			<variableExpression><![CDATA[$F{AM_AWA_GROSS}.subtract( $F{COR_AWA_GROSS} )]]></variableExpression>
+			<variableExpression>
+				<![CDATA[$F{COR_AWA_GROSS} == null ? $F{AM_AWA_GROSS} : $F{AM_AWA_GROSS}.subtract( $F{COR_AWA_GROSS} )]]></variableExpression>
 		</variable>
 	</subDataset>
 	<subDataset name="inw" uuid="f8fbd499-719e-450a-90e9-d80906edf459">
@@ -746,7 +748,8 @@ WHERE
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{AM_REQ_GROSS}]]></textFieldExpression>
+								<textFieldExpression>
+									<![CDATA[$F{AM_REQ_GROSS} ==null ? BigDecimal.ZERO :  $F{AM_REQ_GROSS}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -782,7 +785,8 @@ WHERE
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{COR_AWA_GROSS}]]></textFieldExpression>
+								<textFieldExpression>
+									<![CDATA[$F{COR_AWA_GROSS} == null ? BigDecimal.ZERO : $F{COR_AWA_GROSS}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

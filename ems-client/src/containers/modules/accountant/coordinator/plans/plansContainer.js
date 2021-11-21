@@ -71,6 +71,7 @@ class PlansContainer extends Component {
                         {
                             status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
                             type: plan.type = findSelectFieldPosition( this.state.types, plan.type),
+                            isUpdate: plan.isUpdate = plan.correctionPlan === null ? false : true,
                         }
                     )
                 ))

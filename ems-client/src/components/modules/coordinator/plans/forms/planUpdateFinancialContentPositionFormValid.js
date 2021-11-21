@@ -20,17 +20,17 @@ export const validate =  ( values, props ) => {
         }
     }
 
-    if(values.amountAwardedGross){
-        let planValue = 0;
-        props.planPositions.map(position => {
-            if(position.id !== values.id){
-                planValue += position.amountAwardedGross;
-            }
-            return position;
-        })
-        if(planValue + values.amountAwardedGross > props.correctedPlanValue){
-            errors.amountAwardedGross = constants.COORDINATOR_PLAN_UPDATE_PLAN_AMOUNT_AWARDED_EXCEEDED;
-        }
-    }
+//    if(values.amountAwardedGross){
+//        let planValue = 0;
+//        props.planPositions.map(position => {
+//            if(position.id !== values.id){
+//                planValue += position.amountAwardedGross;
+//            }
+//            return position;
+//        })
+//        if(planValue + values.amountAwardedGross > props.correctedPlanValue){
+//            errors.amountAwardedGross = constants.COORDINATOR_PLAN_UPDATE_PLAN_AMOUNT_AWARDED_EXCEEDED;
+//        }
+//    }
     return errors
 }

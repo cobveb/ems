@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { withStyles, Grid, Typography, Divider, Toolbar }  from '@material-ui/core/';
-import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
-import { Button, InputField } from 'common/gui';
+import { withStyles, Typography, Divider, Toolbar, Grid }  from '@material-ui/core/';
+import { FormAmountField, FormTableField } from 'common/form';
+import { Description, CheckCircle, LibraryBooks, Visibility, DoneAll, Cancel } from '@material-ui/icons/';
+import { Spinner, ModalDialog } from 'common/';
 import * as constants from 'constants/uiNames';
-import { FormTableField, FormAmountField} from 'common/form';
-import { Cancel, Description, LibraryBooks, CheckCircle, DoneAll, PriorityHigh, Visibility } from '@material-ui/icons/';
-import PlanPositionRemarksFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planPositionRemarksFormContainer.js';
-import PlanInvestmentPositionFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planInvestmentPositionFormContainer.js';
+import { InputField, Button } from 'common/gui';
+import PlanUpdateFinancialContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planUpdateFinancialContentPositionFormContainer';
+import PlanUpdateInvestmentContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planUpdateInvestmentContentPositionFormContainer';
 
 const styles = theme => ({
     content: {
@@ -15,11 +15,11 @@ const styles = theme => ({
         overflow: 'auto',
         padding: 0,
     },
-    toolbar: {
-        minHeight: theme.spacing(6),
-    },
     section: {
         marginBottom: theme.spacing(0),
+    },
+    toolbar: {
+        minHeight: theme.spacing(6),
     },
     subHeaderIcon: {
         marginRight: theme.spacing(1),
@@ -27,25 +27,20 @@ const styles = theme => ({
     container: {
         width: '100%',
     },
-    containerBtn: {
-        width: '100%',
-        paddingLeft: theme.spacing(35),
-        margin: 0,
-    },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(54.5)}px)`,
+        height: `calc(100vh - ${theme.spacing(58.5)}px)`,
     },
 });
 
+class PlanUpdateForm extends Component {
 
-class PlanBasicInfoForm extends Component {
     state = {
-        planAction: null,
-        approveType: null,
-        openRemarks: false,
-        positions: this.props.initialValues.positions,
+        openPositionDetails: false,
+        positionAction: null,
+        positions: [],
         selected:[],
+        approve: false,
         headFin: [
             {
                 id: 'costType.code',
@@ -58,14 +53,21 @@ class PlanBasicInfoForm extends Component {
                 type: 'object',
             },
             {
-                id: 'amountRequestedGross',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS,
+                id: 'correctionPlanPosition.amountAwardedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrect',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
                 id: 'amountAwardedGross',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS,
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECTED,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -74,16 +76,6 @@ class PlanBasicInfoForm extends Component {
                 label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
-            },
-            {
-                id: 'isDescCor',
-                label: constants.COORDINATOR_PLAN_POSITION_HEAD_COORDINATOR_DESCRIPTION,
-                type: 'boolean',
-            },
-            {
-                id: 'isDescMan',
-                label: constants.COORDINATOR_PLAN_POSITION_HEAD_MANAGEMENT_DESCRIPTION,
-                type: 'boolean',
             },
         ],
         headInv: [
@@ -105,8 +97,21 @@ class PlanBasicInfoForm extends Component {
                 type: 'amount',
             },
             {
-                id: 'expensesPositionAwardedGross',
+                id: 'correctionPlanPosition.expensesPositionAwardedGross',
                 label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_AWARDED_GROSS,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrect',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'expensesPositionAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_CORRECTED,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -115,16 +120,6 @@ class PlanBasicInfoForm extends Component {
                 label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_REALIZED_PLAN_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
-            },
-            {
-                id: 'isDescCor',
-                label: constants.COORDINATOR_PLAN_POSITION_HEAD_COORDINATOR_DESCRIPTION,
-                type: 'boolean',
-            },
-            {
-                id: 'isDescMan',
-                label: constants.COORDINATOR_PLAN_POSITION_HEAD_MANAGEMENT_DESCRIPTION,
-                type: 'boolean',
             },
         ],
         headPzp: [
@@ -144,158 +139,146 @@ class PlanBasicInfoForm extends Component {
                 type: 'object',
             },
             {
-                id: 'amountRequestedNet',
-                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_NET,
+                id: 'correctionPlanPosition.amountRequestedNet',
+                label: constants.COORDINATOR_PLAN_UPDATE_PUBLIC_POSITION_VALUE,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrect',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
-                id: 'initiationTerm',
-                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INITIATION_TERM,
+                id: 'amountRequestedNet',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECTED,
                 suffix: 'zł.',
-                type: 'text',
+                type: 'amount',
+            },
+            {
+                id: 'amountRealized',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
             },
         ],
-    };
-
-    handleClose = () =>{
-        this.props.onClose(this.props.initialValues);
-        this.props.reset();
-    };
-
-    handleCancelClose = () => {
-        this.setState({formChanged: false});
-    }
-
-    handleConfirmClose = () => {
-        this.setState({formChanged: false});
-        this.props.onClose();
-        this.props.reset();
-    }
-
-    handleApprove = (event, approveType) => {
-        this.setState({ planAction: 'approve', approveType: approveType });
-    }
-
-    handleCancelApprove = () => {
-        this.setState({ planAction: null, approveType: null });
-    }
-
-    handleConfirmApprove = () => {
-        if(this.state.approveType === 'approveDirector') {
-            this.props.onApproveDirector();
-        } else if (this.state.approveType === 'approveEconomic'){
-            this.props.onApproveEconomic();
-        } else {
-            this.props.onApproveChief();
-        }
-        this.setState({
-            selected: [],
-            planAction: null,
-            approveType: null,
-        })
     }
 
     handleSelect = (id) => {
         this.setState({selected: id});
     }
 
-    handleRemarks = () =>{
-        this.setState({
-            openRemarks: true,
+    handleDoubleClick = (row) =>{
+        this.setState(prevState =>{
+            const selected = [...prevState.selected];
+            let openPositionDetails = {...prevState.openPositionDetails};
+            let positionAction = {...prevState.positionAction};
+            selected[0] = row;
+            openPositionDetails =  !this.state.openPositionDetails;
+            positionAction = 'correct';
+            return {selected, openPositionDetails, positionAction}
         });
     }
 
-    handleRemarksPosition = (values) =>{
-            this.props.onRemarksPlanPosition(values);
-            this.setState({
-                openRemarks: !this.state.openRemarks,
-                selected: [],
-            });
-        }
+    handleClose = () =>{
+        this.props.onClose();
+        this.props.reset();
+    };
+
+    handleSubmitPosition = (values, action) =>{
+        this.setState({openPositionDetails: !this.state.openPositionDetails, selected: [], positionAction: '',});
+        this.props.onSubmitPlanPosition(values, this.state.positionAction);
+    }
+
+    handleCloseDetails = () => {
+        this.setState({openPositionDetails: !this.state.openPositionDetails, selected: [], positionAction: '',});
+    };
+
+    renderPlanPositionDetails = () =>{
+        const { initialValues, vats, costsTypes, foundingSources} = this.props;
+        const { positionAction, selected } = this.state;
+        switch(initialValues.type.code){
+            case("FIN"):
+                return (
+                    <PlanUpdateFinancialContentPositionFormContainer
+                        initialValues={selected[0]}
+                        planStatus={initialValues.status.code}
+                        levelAccess="accountant"
+                        correctedPlanValue={initialValues.correctionPlan.planAmountAwardedGross}
+                        action={positionAction}
+                        vats={vats}
+                        costsTypes={costsTypes}
+                        onExcelExport={this.handleExcelExport}
+                        onClose={this.handleCloseDetails}
+                        onSubmit={this.handleSubmitPosition}
+                    />
+                );
+            case("INW"):
+                return (
+                    <PlanUpdateInvestmentContentPositionFormContainer
+                        initialValues={selected[0]}
+                        planStatus={initialValues.status.code}
+                        action={positionAction}
+                        foundingSources={foundingSources}
+                        vats={vats}
+                        onExcelExport={this.handleExcelExport}
+                        onClose={this.handleCloseDetails}
+                        onSubmit={this.handleSubmitPosition}
+                    />
+                );
+            default:
+                return null;
+        };
+    };
+
+    handleApproveCorrectionPlan = () =>{
+        this.setState({approve: !this.state.approve});
+    }
+
+    handleConfirmApprove = () =>{
+        this.props.handleSubmit();
+    }
 
     handleCloseDialog = () => {
         this.setState({
-            openRemarks: !this.state.openRemarks,
-            selected: [],
+            approve: !this.state.approve,
         });
     };
 
-    handleDoubleClick = (row) =>{
-        if(this.props.initialValues.type.code === "FIN"){
-            this.setState(prevState =>{
-                const selected = [...prevState.selected];
-                let openRemarks = {...prevState.openRemarks};
-                selected[0] = row;
-                openRemarks = true;
-                return {selected, openRemarks}
-            });
-        }
-    }
-
-    handleChangeVisibleDetails = () =>{
-        this.setState(state => ({isDetailsVisible: !state.isDetailsVisible}));
-    }
-
-    handleExcelExport = (exportType) => {
-        const {initialValues} = this.props;
-        const {headFin, headInv, headPzp} = this.state;
-        this.props.onExcelExport(exportType, initialValues.type !== undefined && initialValues.type.code === "FIN" ?
-            headFin : initialValues.type !== undefined && initialValues.type.code === "INV" ? headInv :
-                headPzp)
-    }
-
-    componentDidUpdate(prevProps){
-
-        if(this.props.initialValues.positions !== prevProps.initialValues.positions){
-            this.setState({
-                positions: this.props.initialValues.positions,
-            });
-        }
+    componentDidMount(){
+        this.setState({
+            positions: this.props.initialValues.positions,
+        })
     }
 
     render(){
-        const { handleSubmit, submitting, classes, initialValues } = this.props
-        const { headFin, headInv, headPzp, selected, positions, planAction, openRemarks, isDetailsVisible } = this.state;
+        const { pristine, invalid, submitting, classes, initialValues, isLoading, error } = this.props;
+        const { headFin, headInv, headPzp, positions, selected, openPositionDetails, approve } = this.state;
         return(
             <>
-                { planAction &&
+                {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
+                { approve &&
                     <ModalDialog
-                        message={constants.ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_APPROVE_MESSAGE}
+                        message={constants.ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_CORRECTION_APPROVE_MESSAGE}
                         variant="confirm"
                         onConfirm={this.handleConfirmApprove}
-                        onClose={this.handleCancelApprove}
+                        onClose={this.handleCancelDialog}
                     />
                 }
-                { openRemarks &&
-                    <PlanPositionRemarksFormContainer
-                        initialValues={this.state.selected[0]}
-                        planStatus={initialValues.status.code}
-                        open={openRemarks}
-                        level="director"
-                        onSubmit={this.handleRemarksPosition}
-                        onClose={this.handleCloseDialog}
-                    />
-                }
-
-                {isDetailsVisible ?
-                    <PlanInvestmentPositionFormContainer
-                        initialValues={selected[0]}
-                        planType={initialValues.type}
-                        planStatus={initialValues.status}
-                        fundingSources={this.props.fundingSources}
-                        levelAccess={""}
-                        onSubmit={this.handleSubmitPosition}
-                        onClose={this.handleChangeVisibleDetails}
-                    />
+                {openPositionDetails ?
+                    this.renderPlanPositionDetails()
                 :
-                    <form onSubmit={handleSubmit}>
-                        { submitting && <Spinner /> }
+
+                    <form>
+                        { (isLoading || submitting) && <Spinner /> }
                         <Typography
                             variant="h6"
                         >
-                            { Object.keys(initialValues).length > 1 &&
-                                constants.DIRECTOR_COORDINATOR_PLAN_TITLE + `${initialValues.type.name} - ${initialValues.coordinator.name} - ${initialValues.year} `
+                            {
+                                Object.keys(initialValues).length > 1 && constants.COORDINATOR_PLAN_UPDATE_PLAN_TITLE +
+                            ` ${initialValues.type.name} ${initialValues.year} - ${initialValues.coordinator.name} `
                             }
                         </Typography>
                         <Divider />
@@ -312,8 +295,8 @@ class PlanBasicInfoForm extends Component {
                                         <InputField
                                             name="year"
                                             label={constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR}
-                                            value={initialValues.year !== undefined ? initialValues.year : ''}
                                             isRequired={true}
+                                            value={initialValues.year !== undefined ? initialValues.year : ''}
                                             disabled
                                         />
                                     </Grid>
@@ -321,7 +304,7 @@ class PlanBasicInfoForm extends Component {
                                         <InputField
                                             name="type"
                                             label={constants.COORDINATOR_PLAN_FORM_TYPE}
-                                            disabled={true}
+                                            disabled
                                             isRequired={true}
                                             value={initialValues.type !== undefined ? initialValues.type.name : ''}
                                         />
@@ -334,27 +317,49 @@ class PlanBasicInfoForm extends Component {
                                             value={initialValues.status !== undefined ? initialValues.status.name : ''}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
-                                        <FormAmountField
-                                            name={initialValues.type !== undefined && (initialValues.type.code === 'FIN' ||  initialValues.type.code === 'INW')?
-                                                "planAmountRequestedGross" : "planAmountRequestedNet"}
-                                            label={initialValues.type !== undefined && (initialValues.type.code === 'FIN' || initialValues.type.code === 'INW') ?
-                                                constants.COORDINATOR_PLAN_FINANCIAL_REQUESTED_VALUE : constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REQUESTED_VALUE}
-                                            suffix={'zł.'}
-                                            disabled
-                                        />
-                                    </Grid>
-                                    { (initialValues.type !== undefined && initialValues.type.code === 'FIN') &&
-                                        <Grid item xs={12} sm={4}>
-                                            <FormAmountField
-                                                name="planAmountAwardedGross"
-                                                label={constants.COORDINATOR_PLAN_FINANCIAL_AWARDED_VALUE}
-                                                suffix={'zł.'}
-                                                disabled
-                                            />
-                                        </Grid>
+                                    {
+                                        (initialValues.type !== undefined && initialValues.type.code === 'PZP') &&
+                                        <>
+                                            <Grid item xs={12} sm={4}>
+                                                <FormAmountField
+                                                    name="correctionPlan.planAmountRequestedNet"
+                                                    label={constants.COORDINATOR_PLAN_UPDATE_PUBLIC_PROCUREMENT_VALUE}
+                                                    suffix={'zł.'}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={4}>
+                                                <FormAmountField
+                                                    name="planAmountRequestedNet"
+                                                    label={constants.COORDINATOR_PLAN_UPDATE_PUBLIC_PROCUREMENT_CORRECT_VALUE}
+                                                    suffix={'zł.'}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                        </>
                                     }
-                                    <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
+                                    {
+                                        (initialValues.type !== undefined && initialValues.type.code !== 'PZP') &&
+                                        <>
+                                            <Grid item xs={12} sm={4}>
+                                                <FormAmountField
+                                                    name="correctionPlan.planAmountAwardedGross"
+                                                    label={constants.COORDINATOR_PLAN_UPDATE_PLAN_AWARDED_VALUE}
+                                                    suffix={'zł.'}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={4}>
+                                                <FormAmountField
+                                                    name="planAmountAwardedGross"
+                                                    label={constants.COORDINATOR_PLAN_UPDATE_PLAN_AWARDED_CORRECT_VALUE}
+                                                    suffix={'zł.'}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                        </>
+                                    }
+                                    <Grid item xs={12} sm={4}>
                                         <FormAmountField
                                             name={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
                                                 "planAmountRealizedGross" : "planAmountRealizedNet"}
@@ -433,7 +438,23 @@ class PlanBasicInfoForm extends Component {
                                             head={ initialValues.type !== undefined && initialValues.type.code === "FIN" ? headFin : initialValues.type !== undefined && initialValues.type.code === "INW" ? headInv : headPzp}
                                             allRows={positions}
                                             checkedRows={selected}
-                                            toolbar={false}
+                                            toolbar={true}
+                                            addButtonProps={{
+                                                label: constants.BUTTON_DETAILS,
+                                                icon: <Visibility />,
+                                                variant: "cancel",
+                                                disabled : (initialValues.status !== undefined && ['WY','RO'].includes(initialValues.status.code)) && selected.length === 0
+                                            }}
+                                            editButtonProps={{
+                                                hide: true,
+                                            }}
+                                            deleteButtonProps={{
+                                                hide: true,
+                                            }}
+                                            onAdd={(event) => this.handleOpenPositionDetails(event, "details")}
+                                            onEdit={() => {}}
+                                            onDelete={() => {}}
+                                            multiChecked={false}
                                             checkedColumnFirst={true}
                                             onSelect={this.handleSelect}
                                             onDoubleClick={this.handleDoubleClick}
@@ -453,60 +474,31 @@ class PlanBasicInfoForm extends Component {
                                 alignItems="flex-start"
                                 className={classes.container}
                             >
-                                <Grid item xs={9}>
+                                <Grid item xs={10}>
                                     <Grid
                                         container
                                         direction="row"
                                         justify="center"
                                         alignItems="flex-start"
-                                        className={classes.containerBtn}
                                     >
-                                        {(initialValues.status !== undefined && ['AZ','AK', 'AE','AD'].includes(initialValues.status.code))  &&
+                                        {(initialValues.status !== undefined && ['WY','RO'].includes(initialValues.status.code)) &&
                                             <Button
-                                                label={initialValues.status.code === 'AK' || initialValues.status.code === 'AZ' ?
-                                                 constants.BUTTON_APPROVE_DIRECTOR : initialValues.status.code === 'AD' ?
-                                                    constants.BUTTON_APPROVE_ECONOMIC : constants.BUTTON_APPROVE_CHIEF }
+                                                label={constants.BUTTON_APPROVE}
                                                 icon=<DoneAll/>
                                                 iconAlign="left"
                                                 variant="submit"
-                                                onClick={initialValues.status.code === 'AK' || initialValues.status.code === 'AZ' ?
-                                                    (event) => this.handleApprove(event, "approveDirector") : initialValues.status.code === 'AD' ?
-                                                        (event) => this.handleApprove(event, "approveEconomic") :
-                                                            (event) => this.handleApprove(event, "approveChief")}
-                                            />
-                                        }
-
-                                        { (initialValues.type !== undefined && initialValues.type.code === "INW") &&
-                                            <Button
-                                                label={constants.BUTTON_PREVIEW}
-                                                icon={<Visibility/>}
-                                                iconAlign="right"
-                                                disabled={Object.keys(selected).length === 0}
-                                                variant={"cancel"}
-                                                onClick={this.handleChangeVisibleDetails}
-                                                data-action="edit"
-                                            />
-                                        }
-
-                                        { (initialValues.type !== undefined && initialValues.type.code === "FIN") &&
-                                            <Button
-                                                label={constants.BUTTON_REMARKS}
-                                                icon=<PriorityHigh/>
-                                                iconAlign="left"
-                                                variant="cancel"
-                                                disabled={selected.length === 0 ||  selected.length > 1}
-                                                onClick={this.handleRemarks}
+                                                disabled={!pristine || submitting || invalid }
+                                                onClick={this.handleApproveCorrectionPlan}
                                             />
                                         }
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={2}>
                                     <Grid
                                         container
                                         direction="row"
-                                        justify="flex-end"
+                                        justify="center"
                                         alignItems="flex-start"
-                                        className={classes.container}
                                     >
                                         <Button
                                             label={constants.BUTTON_CLOSE}
@@ -526,10 +518,10 @@ class PlanBasicInfoForm extends Component {
     };
 };
 
-PlanBasicInfoForm.propTypes = {
+PlanUpdateForm.propTypes = {
     classes: PropTypes.object.isRequired,
     onClose: PropTypes.func.isRequired,
     initialValues: PropTypes.object.isRequired,
-}
+};
 
-export default withStyles(styles)(PlanBasicInfoForm)
+export default withStyles(styles)(PlanUpdateForm)

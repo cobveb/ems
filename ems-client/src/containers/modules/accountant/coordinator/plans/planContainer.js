@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import PropTypes from 'prop-types';
 import PlanBasicInfoForm from 'containers/modules/accountant/coordinator/plans/forms/planBasicInfoFormContainer';
+import PlanUpdateFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planUpdateFormContainer';
 import {findSelectFieldPosition, generateExportLink, findIndexElement, getVats, getCoordinatorPlanPositionsStatuses} from 'utils';
 import PlansApi from 'api/modules/accountant/coordinator/plansApi';
 import DictionaryApi from 'api/common/dictionaryApi';
@@ -77,6 +78,16 @@ class PlanContainer extends Component {
                                 }
                             )
                         ))
+                        if(initData.isUpdate){
+                            initData["positions"].map(position => (
+                                Object.assign(position,
+                                    {
+                                        amountCorrect: position.correctionPlanPosition !== null ?
+                                            position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross : position.amountAwardedGross,
+                                    }
+                                )
+                            ))
+                        }
                         return {initData};
                     });
                 break;
@@ -84,8 +95,6 @@ class PlanContainer extends Component {
                     this.setState( prevState => {
                         let initData = {...prevState.initData};
                         Object.assign(initData, this.props.initialValues);
-                        console.log(initData)
-                        console.log(response.data.data)
                         initData.positions = response.data.data;
                         initData["positions"].map(position => (
                             Object.assign(position,
@@ -134,6 +143,10 @@ class PlanContainer extends Component {
                         {
                             isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
                             isDescMan: position.isDescMan = (position.managementDescription === null || position.managementDescription.length === 0) ? false : true,
+                            amountCorrect: position.amountCorrect = initData.isUpdate ?
+                                position.correctionPlanPosition !== null ?
+                                    position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross
+                                        : position.amountAwardedGross : null,
                         }
                     )
                 ))
@@ -167,7 +180,6 @@ class PlanContainer extends Component {
                 let initData = {...prevState.initData};
                 const idx = findIndexElement(response.data.data, this.state.initData.positions);
                 if(idx !== null){
-                    console.log(initData)
                     initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.plan.status);
                     initData.planAcceptUser = response.data.data.planAcceptUser;
                     response.data.data.isDescCor = response.data.data.coordinatorDescription === null ? false : true;
@@ -284,7 +296,6 @@ class PlanContainer extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props.action)
         if (this.props.action === 'plan'){
             this.handleGetPlan();
         } else if (this.props.action !== 'add'){
@@ -297,26 +308,39 @@ class PlanContainer extends Component {
     render(){
         const {action, handleClose, error, isLoading, levelAccess } = this.props;
         const {initData, vats, fundingSources } = this.state;
-
         return(
-            <PlanBasicInfoForm
-                initialValues={initData}
-                levelAccess={levelAccess}
-                action={action}
-                error={error}
-                isLoading={isLoading}
-                onAcceptPlanPositions={this.handleAcceptPlanPositions}
-                onCorrectPlanPosition={this.handleCorrectPlanPosition}
-                onRemarksPlanPosition={this.handleRemarksPlanPosition}
-                onUpdateInvestmentPosition={this.handleUpdateInvestmentPosition}
-                onApprovePlan={this.handleApprovePlan}
-                onForwardPlan={this.handleForwardPlan}
-                onWithdrawPlan={this.handleWithdrawPlan}
-                onClose={handleClose}
-                onExcelExport={this.handleExcelExport}
-                fundingSources={fundingSources}
-                vats={vats}
-            />
+            <>
+                {!initData.isUpdate ?
+                    <PlanBasicInfoForm
+                        initialValues={initData}
+                        levelAccess={levelAccess}
+                        action={action}
+                        error={error}
+                        isLoading={isLoading}
+                        onAcceptPlanPositions={this.handleAcceptPlanPositions}
+                        onCorrectPlanPosition={this.handleCorrectPlanPosition}
+                        onRemarksPlanPosition={this.handleRemarksPlanPosition}
+                        onUpdateInvestmentPosition={this.handleUpdateInvestmentPosition}
+                        onApprovePlan={this.handleApprovePlan}
+                        onForwardPlan={this.handleForwardPlan}
+                        onWithdrawPlan={this.handleWithdrawPlan}
+                        onClose={handleClose}
+                        onExcelExport={this.handleExcelExport}
+                        fundingSources={fundingSources}
+                        vats={vats}
+                    />
+                :
+                    <PlanUpdateFormContainer
+                        initialValues={initData}
+                        onSubmit={this.handleApprovePlan}
+                        vats={vats}
+                        onSubmitPlanPosition={this.handleCorrectPlanPosition}
+                        onClose={handleClose}
+                        error={error}
+                        isLoading={isLoading}
+                    />
+                }
+            </>
         );
     };
 };

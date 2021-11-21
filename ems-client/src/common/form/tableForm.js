@@ -444,7 +444,7 @@ function EnhancedTable(props) {
                                                                 disabled={true}
                                                             />
                                                         :
-                                                            cell.type === 'date' && row[cell.id] !== null
+                                                            (cell.type === 'date' && row[cell.id] !== null && row[cell.id] !== undefined)
                                                                 ?
                                                                     format(
                                                                        new Date(Date.parse(row[cell.id])),
@@ -456,7 +456,9 @@ function EnhancedTable(props) {
                                                                         ?
                                                                             cell.subtype === 'amount'
                                                                                 ?
-                                                                                    `${numberWithSpaces((row[cell.id.substring(0, cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.') +1)]))}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
+                                                                                    row[cell.id.substring(0, cell.id.lastIndexOf('.'))] !== null ?
+                                                                                        `${numberWithSpaces((row[cell.id.substring(0, cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.') +1)]))}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}` :
+                                                                                         `${numberWithSpaces(0)}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
                                                                                 :
                                                                                     //TODO: Find a universal solution for several levels of object properties
                                                                                     (()=>{

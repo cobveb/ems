@@ -74,6 +74,11 @@ class Plans extends Component {
                 label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS,
                 type: 'object',
             },
+            {
+                id: 'isUpdate',
+                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE,
+                type: 'boolean',
+            },
         ],
         selected: {},
         isDetailsVisible: false,

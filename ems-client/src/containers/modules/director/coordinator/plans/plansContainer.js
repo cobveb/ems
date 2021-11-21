@@ -4,7 +4,7 @@ import Plans from 'components/modules/director/coordinator/plans/plans';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
-import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink, getCoordinatorPlanStatuses} from 'utils';
+import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink, getCoordinatorPlanStatuses, getCoordinatorPlanTypes} from 'utils';
 import PlansApi from 'api/modules/director/coordinator/plansApi';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import DictionaryApi from 'api/common/dictionaryApi';
@@ -22,22 +22,10 @@ class PlansContainer extends Component {
         statuses: getCoordinatorPlanStatuses(),
         types:[
             {
-                code: '',
-                name: constants.COORDINATOR_PLAN_TYPE,
+              code: '',
+              name: constants.COORDINATOR_PLAN_TYPE,
             },
-            {
-                code: 'FIN',
-                name: constants.COORDINATOR_PLAN_TYPE_FINANCIAL,
-            },
-            {
-                code: 'INW',
-                name: constants.COORDINATOR_PLAN_TYPE_INVESTMENT,
-            },
-            {
-                code: 'PZP',
-                name: constants.COORDINATOR_PLAN_TYPE_PUBLIC_PROCUREMENT,
-            },
-        ],
+        ].concat(getCoordinatorPlanTypes()),
     }
 
     handleUpdateOnCloseDetails = (plan) => {
@@ -88,6 +76,7 @@ class PlansContainer extends Component {
                         {
                             status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
                             type: plan.type = findSelectFieldPosition( this.state.types, plan.type),
+                            isUpdate: plan.isUpdate = plan.correctionPlan === null ? false : true,
                         }
                     )
                 ))

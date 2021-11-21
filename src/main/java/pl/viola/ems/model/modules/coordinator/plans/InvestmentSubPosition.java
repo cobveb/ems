@@ -1,6 +1,7 @@
 package pl.viola.ems.model.modules.coordinator.plans;
 
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.DynamicUpdate;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
@@ -8,9 +9,8 @@ import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
-@ToString(exclude = {"fundingSources"})
-@EqualsAndHashCode(exclude = {"fundingSources"})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -57,5 +57,23 @@ public class InvestmentSubPosition extends CoordinatorPlanSubPosition {
         return amountGross;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        InvestmentSubPosition that = (InvestmentSubPosition) o;
 
+        return Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return 636438430;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + getId() + ")";
+    }
 }

@@ -143,8 +143,9 @@ class PlanUpdateFinancialPositionDetails extends Component {
     }
 
     render(){
-        const {handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, action, planStatus, costsTypes, vats} = this.props;
+        const {handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, action, planStatus, costsTypes, vats, levelAccess} = this.props;
         const {head, selected, positions, formChanged, openPositionDetails } = this.state;
+
         return(
             <>
                 {openPositionDetails &&
@@ -239,7 +240,9 @@ class PlanUpdateFinancialPositionDetails extends Component {
                                         name="amountAwardedGross"
                                         label={constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AFTER_CORRECTED_GROSS}
                                         suffix={'zł.'}
-
+                                        disabled={(levelAccess !== 'accountant' && planStatus !== 'ZP') ||
+                                            (levelAccess === 'accountant' &&  !['WY','RO'].includes(planStatus)) ? true : false
+                                        }
                                     />
                                 </Grid>
                                 <Grid item xs={3} >
@@ -318,7 +321,7 @@ class PlanUpdateFinancialPositionDetails extends Component {
                             justify="center"
                             alignItems="flex-start"
                         >
-                            {planStatus === 'ZP' &&
+                            {((planStatus === 'ZP' )|| (levelAccess === 'accountant' && ['WY','SK'].includes(initialValues.status.code))) &&
                                 <Button
                                     label={constants.BUTTON_SAVE}
                                     icon=<Save/>
@@ -346,5 +349,9 @@ class PlanUpdateFinancialPositionDetails extends Component {
 PlanUpdateFinancialPositionDetails.propTypes = {
     initialValues: PropTypes.object.isRequired,
 };
+
+PlanUpdateFinancialPositionDetails.defaultProps ={
+    levelAccess: 'coordinator',
+}
 
 export default withStyles(styles)(PlanUpdateFinancialPositionDetails);

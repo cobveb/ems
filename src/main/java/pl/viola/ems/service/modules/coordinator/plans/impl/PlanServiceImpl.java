@@ -246,10 +246,17 @@ public class PlanServiceImpl implements PlanService {
         User user = Utils.getCurrentUser();
 
         switch (approvePlanType) {
-            /* Accountant approve for investments plan only allowed */
+            /* Accountant approve for investments and update plan only allowed */
             case ACCOUNTANT:
                 plan.setStatus(CoordinatorPlan.PlanStatus.AK);
                 plan.setPlanAcceptUser(user);
+                // if approve update plan
+                if (plan.getCorrectionPlan() != null) {
+                    plan.getPositions().forEach(position -> {
+                        if (position.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.WY))
+                            position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZA);
+                    });
+                }
                 break;
             case PUBLIC_PROCUREMENT:
                 plan.setStatus(CoordinatorPlan.PlanStatus.AZ);
@@ -428,9 +435,10 @@ public class PlanServiceImpl implements PlanService {
 
         setPlanAmountValues(coordinatorPlanRepository.save(coordinatorPlan));
 
-        //Update Institution plan
-        institutionPlanService.updateInstitutionPlanPositions(positions);
-
+        //Update Institution plan if current plan is not update
+        if (coordinatorPlan.getCorrectionPlan() == null) {
+            institutionPlanService.updateInstitutionPlanPositions(positions);
+        }
         return coordinatorPlan;
     }
 
@@ -516,7 +524,8 @@ public class PlanServiceImpl implements PlanService {
                 CoordinatorPlan.PlanStatus.UZ,
                 CoordinatorPlan.PlanStatus.AN,
                 CoordinatorPlan.PlanStatus.RE,
-                CoordinatorPlan.PlanStatus.ZR
+                CoordinatorPlan.PlanStatus.ZR,
+                CoordinatorPlan.PlanStatus.AA
         );
 
         List<CoordinatorPlan.PlanType> types = Arrays.asList(
@@ -560,7 +569,8 @@ public class PlanServiceImpl implements PlanService {
                 CoordinatorPlan.PlanStatus.AN,
                 CoordinatorPlan.PlanStatus.ZA,
                 CoordinatorPlan.PlanStatus.RE,
-                CoordinatorPlan.PlanStatus.ZR
+                CoordinatorPlan.PlanStatus.ZR,
+                CoordinatorPlan.PlanStatus.AA
         );
 
         User user = Utils.getCurrentUser();
@@ -770,7 +780,7 @@ public class PlanServiceImpl implements PlanService {
         newPlan.setType(plan.getType());
         newPlan.setCreateDate(new Date());
         newPlan.setCoordinator(plan.getCoordinator());
-        newPlan.setCorrectionPlan(plan);
+        newPlan.setCorrectionPlan(setPlanAmountValues(plan));
         coordinatorPlanRepository.save(newPlan);
 
         if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {

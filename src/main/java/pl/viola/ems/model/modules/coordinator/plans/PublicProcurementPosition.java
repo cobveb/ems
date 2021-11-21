@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 import java.util.List;
 
 @ToString(exclude = {"assortmentGroup"})
@@ -74,6 +75,11 @@ public class PublicProcurementPosition extends CoordinatorPlanPosition {
     }
 
     @Override
+    public BigDecimal getExpensesPositionAwardedNet() {
+        return null;
+    }
+
+    @Override
     public BigDecimal getExpensesPositionAwardedGross() {
         return null;
     }
@@ -87,6 +93,57 @@ public class PublicProcurementPosition extends CoordinatorPlanPosition {
     public void setPositionFundingSources(List<FundingSource> fundingSources) {
     }
 
+    ;
+
+    @Override
+    public DictionaryItem getCategory() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public String getTask() {
+        return null;
+    }
+
+    @Override
+    public String getApplication() {
+        return null;
+    }
+
+    @Override
+    public String getSubstantiation() {
+        return null;
+    }
+
+    @Override
+    public Date getRealizationDate() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getTaskPositionNet() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getTaskPositionGross() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getRealizedPositionNet() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getRealizedPositionGross() {
+        return null;
+    }
 
     @Override
     public CostType getCostType() {

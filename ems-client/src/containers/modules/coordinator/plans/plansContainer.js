@@ -121,9 +121,14 @@ class PlansContainer extends Component {
     handleUpdateOnCloseDetails = (plan, action) => {
         if(action !== "update"){
             let plans = this.state.plans;
+
+            if(plan.isUpdate === undefined){
+                /* Close after add new plan setup isUpdate value */
+                plan.isUpdate = false;
+            }
             return updateOnCloseDetails(plans, plan);
         } else {
-            //If action is update plan, change correctionPlan status to "AA"
+            /* If action is update plan, change correctionPlan status to "AA" */
             plan.isUpdate = true;
             this.setState(prevState => {
                 const plans = [...prevState.plans];
