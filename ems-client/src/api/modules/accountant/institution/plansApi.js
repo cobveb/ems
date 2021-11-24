@@ -44,5 +44,9 @@ class PlansApi{
     static printPlan(planId){
         return Axios.get(`/api/accountant/institution/plans/plan/print/${planId}`, {responseType: 'blob'})
     }
+
+    static checkDisableWithdraw(planId){
+        return Axios.get(`/api/accountant/institution/plans/checkDisableWithdraw/${planId}`)
+    }
 }
 export default PlansApi;

@@ -231,6 +231,30 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
+    public String returnCoordinatorPlan(Long planId) {
+        CoordinatorPlan plan = coordinatorPlanRepository.findById(planId)
+                .orElseThrow(() -> new AppException("Coordinator.plan.notFound", HttpStatus.NOT_FOUND));
+
+        plan.setStatus(CoordinatorPlan.PlanStatus.ZP);
+        plan.setSendUser(null);
+        plan.setPlanAcceptUser(null);
+        plan.setDirectorAcceptUser(null);
+        plan.setEconomicAcceptUser(null);
+        plan.setChiefAcceptUser(null);
+
+        plan.getPositions().forEach(position -> {
+            position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZP);
+            position.setAmountAwardedNet(null);
+            position.setAmountAwardedGross(null);
+        });
+        coordinatorPlanRepository.save(plan);
+        if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
+            institutionPlanService.updateInstitutionPlan(plan, "return");
+        }
+        return messageSource.getMessage("Coordinator.plan.returnMsg", null, Locale.getDefault());
+    }
+
+    @Override
     public void updateInferredPositionValue(ApplicationProcurementPlanPosition planPosition) {
         Optional<PublicProcurementPosition> position = publicProcurementPositionRepository.findById(planPosition.getId());
         position.get().setAmountInferredNet(planPosition.getAmountInferredNet());

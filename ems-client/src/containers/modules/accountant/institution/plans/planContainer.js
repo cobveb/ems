@@ -13,7 +13,16 @@ class PlanContainer extends Component {
         initData:{
             year:'',
             planPositions:[],
-        }
+        },
+        disableWithdraw: true,
+    }
+
+    checkDisableWithdraw = () => {
+        PlansApi.checkDisableWithdraw(this.props.initialValues.id)
+        .then(response =>{
+            this.setState({ disableWithdraw : response.data.data})
+        })
+        .catch(error =>{});
     }
 
     handleGetPlan(){
@@ -26,6 +35,7 @@ class PlanContainer extends Component {
                 initData.type = findSelectFieldPosition(this.props.types, response.data.data.type);
                 return {initData};
             });
+            this.checkDisableWithdraw();
             this.props.loading(false)
         })
         .catch(error =>{
@@ -134,11 +144,12 @@ class PlanContainer extends Component {
     }
     render(){
         const {levelAccess} = this.props;
-        const {initData} = this.state;
+        const {initData, disableWithdraw} = this.state;
         return(
             <Plan
                 initialValues={initData}
                 levelAccess={levelAccess}
+                disableWithdraw={disableWithdraw}
                 onClosePosition={this.handleClosePosition}
                 onAccountantApprovePlan={this.handleAccountantApprovePlan}
                 onChiefApprovePlan={this.handleChiefApprovePlan}

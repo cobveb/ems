@@ -609,6 +609,7 @@ export const DIRECTOR_MENU_PLANS = 'Plany';
 export const DIRECTOR_MENU_COORDINATOR_PLANS = 'Koordynatorzy';
 /* components/modules/director/coordinator/plans/planBasicInfoForm.js */
 export const DIRECTOR_COORDINATOR_PLAN_TITLE = 'Szczegóły planu: ';
+export const DIRECTOR_PLAN_COORDINATOR_CONFIRM_RETURN_MESSAGE = 'Plan zostanie wycofany do Koordynatora. Czy kontynuować?';
 /* components/modules/publicProcurement/publicProcurement.js */
 export const PUBLIC_MENU_COORDINATOR = 'Koordynator';
 export const PUBLIC_SUBMENU_COORDINATOR_PLANS = 'Plany';
@@ -689,6 +690,7 @@ export const BUTTON_CORRECT = 'Koryguj';
 export const BUTTON_ACCEPT = 'Akceptuj';
 export const BUTTON_APPROVE = 'Zatwierdź';
 export const BUTTON_COORDINATOR = 'Przekazanie - Koordynator';
+export const BUTTON_RETURN_COORDINATOR = 'Wycofanie - Koordynator';
 export const BUTTON_APPROVE_DIRECTOR = 'Zatwierdzenie - Dyrektor pionu';
 export const BUTTON_APPROVE_ECONOMIC = 'Zatwierdzenie - Dyrektor ekonomiczny';
 export const BUTTON_APPROVE_CHIEF = 'Zatwierdzenie - Dyrektor naczelny';

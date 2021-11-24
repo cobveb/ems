@@ -100,6 +100,7 @@ class Plan extends Component {
         isDetailsVisible: false,
         codeNameSearch: '',
         disabledApprove: true,
+        planAction:'',
     }
 
     handleSelect = (id) => {
@@ -143,7 +144,11 @@ class Plan extends Component {
         this.setState({[event.target.name]: event.target.value})
     }
 
-    handleApprovePlan = () => {
+    handlePlanAction = (event, action) => {
+        this.setState({planAction: action})
+    }
+
+    handleConfirmApprovePlan = () => {
         if(this.props.levelAccess === "accountant"){
             this.props.onAccountantApprovePlan();
         } else if (this.props.levelAccess === "director"){
@@ -151,11 +156,40 @@ class Plan extends Component {
         }
     }
 
-    handleWithdrawPlan = () => {
+    handleConfirmWithdrawPlan = () => {
         if(this.props.levelAccess === "accountant"){
             this.props.onAccountantWithdrawPlan();
         } else if (this.props.levelAccess === "director"){
             this.props.onChiefWithdrawPlan()
+        }
+    }
+
+    handleCloseDialog = () => {
+        this.setState({planAction: ""})
+    }
+
+    renderDialog = () =>{
+        switch (this.state.planAction){
+            case "approve":
+                return(
+                    <ModalDialog
+                        message={constants.ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_APPROVE_MESSAGE}
+                        variant="confirm"
+                        onConfirm={this.handleConfirmApprovePlan}
+                        onClose={this.handleCloseDialog}
+                    />
+                );
+            case "withdraw":
+                return(
+                    <ModalDialog
+                        message={constants.ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_APPROVE_MESSAGE}
+                        variant="confirm"
+                        onConfirm={this.handleConfirmWithdrawPlan}
+                        onClose={this.handleCloseDialog}
+                    />
+                );
+            default:
+                //no default;
         }
     }
 
@@ -191,12 +225,14 @@ class Plan extends Component {
     }
 
     render(){
-        const { classes, isLoading, error, initialValues, levelAccess } = this.props;
-        const { headCells, headPzp, rows, selected, isDetailsVisible, disabledApprove } = this.state;
+        const { classes, isLoading, error, initialValues, levelAccess, disableWithdraw } = this.props;
+        const { headCells, headPzp, rows, selected, isDetailsVisible, disabledApprove, planAction } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
+
+                { planAction && this.renderDialog() }
 
                 {isDetailsVisible ?
                     <PlanPositionsContainer
@@ -397,7 +433,7 @@ class Plan extends Component {
                                             disabledApprove || (initialValues.status !== undefined && initialValues.status !== 'UT')
                                                 : (initialValues.status !== 'AN')
                                         }
-                                        onClick={this.handleApprovePlan}
+                                        onClick={(event) => this.handlePlanAction(event, 'approve')}
                                     />
                                     <Button
                                         label={constants.BUTTON_CLOSE}
@@ -420,10 +456,10 @@ class Plan extends Component {
                                         icon=<Undo/>
                                         iconAlign="left"
                                         disabled={levelAccess === "accountant" ?
-                                            initialValues.status !== undefined && initialValues.status !== 'AK'
+                                            ( disableWithdraw)
                                                 : !['AE', 'AN'].includes(initialValues.status)
                                         }
-                                        onClick = {this.handleWithdrawPlan}
+                                        onClick = {(event) => this.handlePlanAction(event, 'withdraw')}
                                         variant="cancel"
                                     />
                                 </Grid>

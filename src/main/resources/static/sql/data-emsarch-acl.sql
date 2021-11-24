@@ -34,6 +34,7 @@ insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (29,'1025','Odczyt planu
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (30,'2025','Zatwierdzenie planu instytucji');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (31,'3025','Wycofanie planu instytucji');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (32,'5015','Zatwierdzenie planu koordynatora Dyrektor Ekonmiczny');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (33,'6015','Wycofanie planu koordynatora');
 
 REM INSERTING into EMSARCH.AC_OBJECTS
 SET DEFINE OFF;
@@ -83,5 +84,6 @@ insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,30);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,31);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,32);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,33);
 
 

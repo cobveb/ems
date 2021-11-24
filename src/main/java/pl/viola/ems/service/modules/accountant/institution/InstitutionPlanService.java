@@ -30,6 +30,8 @@ public interface InstitutionPlanService {
 
     InstitutionPlan updatePlanStatus(Long planId, String action, String levelAccess);
 
+    boolean disableWithdrawInstitutionPlan(Long planId);
+
     void exportPlanToJasper(Long planId, HttpServletResponse response) throws IOException, JRException, SQLException;
 
     void exportPlansToExcel(ExportType exportType, String accessLevel, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;

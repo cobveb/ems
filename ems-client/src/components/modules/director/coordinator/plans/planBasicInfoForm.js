@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Button, InputField } from 'common/gui';
 import * as constants from 'constants/uiNames';
 import { FormTableField, FormAmountField} from 'common/form';
-import { Cancel, Description, LibraryBooks, CheckCircle, DoneAll, PriorityHigh, Visibility } from '@material-ui/icons/';
+import { Cancel, Description, LibraryBooks, CheckCircle, DoneAll, PriorityHigh, Visibility, Redo } from '@material-ui/icons/';
 import PlanPositionRemarksFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planPositionRemarksFormContainer.js';
 import PlanInvestmentPositionFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planInvestmentPositionFormContainer.js';
 
@@ -44,6 +44,7 @@ class PlanBasicInfoForm extends Component {
         planAction: null,
         approveType: null,
         openRemarks: false,
+        returnCoordinator: false,
         positions: this.props.initialValues.positions,
         selected:[],
         headFin: [
@@ -200,6 +201,15 @@ class PlanBasicInfoForm extends Component {
         this.setState({selected: id});
     }
 
+    handleReturnCoordinator = () => {
+        this.setState({ returnCoordinator: !this.state.returnCoordinator})
+    }
+
+    handleConfirmReturn = () => {
+        this.props.onReturnPlan();
+        this.props.reset();
+    }
+
     handleRemarks = () =>{
         this.setState({
             openRemarks: true,
@@ -246,7 +256,6 @@ class PlanBasicInfoForm extends Component {
     }
 
     componentDidUpdate(prevProps){
-
         if(this.props.initialValues.positions !== prevProps.initialValues.positions){
             this.setState({
                 positions: this.props.initialValues.positions,
@@ -256,7 +265,7 @@ class PlanBasicInfoForm extends Component {
 
     render(){
         const { handleSubmit, submitting, classes, initialValues } = this.props
-        const { headFin, headInv, headPzp, selected, positions, planAction, openRemarks, isDetailsVisible } = this.state;
+        const { headFin, headInv, headPzp, selected, positions, planAction, openRemarks, isDetailsVisible, returnCoordinator } = this.state;
         return(
             <>
                 { planAction &&
@@ -277,7 +286,14 @@ class PlanBasicInfoForm extends Component {
                         onClose={this.handleCloseDialog}
                     />
                 }
-
+                { returnCoordinator &&
+                    <ModalDialog
+                        message={constants.DIRECTOR_PLAN_COORDINATOR_CONFIRM_RETURN_MESSAGE}
+                        variant="confirm"
+                        onConfirm={this.handleConfirmReturn}
+                        onClose={this.handleReturnCoordinator}
+                    />
+                }
                 {isDetailsVisible ?
                     <PlanInvestmentPositionFormContainer
                         initialValues={selected[0]}
@@ -462,20 +478,31 @@ class PlanBasicInfoForm extends Component {
                                         className={classes.containerBtn}
                                     >
                                         {(initialValues.status !== undefined && ['AZ','AK', 'AE','AD'].includes(initialValues.status.code))  &&
+                                            <>
+                                                <Button
+                                                    label={initialValues.status.code === 'AK' || initialValues.status.code === 'AZ' ?
+                                                     constants.BUTTON_APPROVE_DIRECTOR : initialValues.status.code === 'AD' ?
+                                                        constants.BUTTON_APPROVE_ECONOMIC : constants.BUTTON_APPROVE_CHIEF }
+                                                    icon=<DoneAll/>
+                                                    iconAlign="left"
+                                                    variant="submit"
+                                                    onClick={initialValues.status.code === 'AK' || initialValues.status.code === 'AZ' ?
+                                                        (event) => this.handleApprove(event, "approveDirector") : initialValues.status.code === 'AD' ?
+                                                            (event) => this.handleApprove(event, "approveEconomic") :
+                                                                (event) => this.handleApprove(event, "approveChief")}
+                                                />
+                                            </>
+                                        }
+                                        {((initialValues.type !== undefined && ['FIN','PZP'].includes(initialValues.type.code)) &&
+                                            (initialValues.status !== undefined && ['AZ','AK', 'AE','AD'].includes(initialValues.status.code)))  &&
                                             <Button
-                                                label={initialValues.status.code === 'AK' || initialValues.status.code === 'AZ' ?
-                                                 constants.BUTTON_APPROVE_DIRECTOR : initialValues.status.code === 'AD' ?
-                                                    constants.BUTTON_APPROVE_ECONOMIC : constants.BUTTON_APPROVE_CHIEF }
-                                                icon=<DoneAll/>
+                                                label={constants.BUTTON_RETURN_COORDINATOR}
+                                                icon=<Redo/>
                                                 iconAlign="left"
-                                                variant="submit"
-                                                onClick={initialValues.status.code === 'AK' || initialValues.status.code === 'AZ' ?
-                                                    (event) => this.handleApprove(event, "approveDirector") : initialValues.status.code === 'AD' ?
-                                                        (event) => this.handleApprove(event, "approveEconomic") :
-                                                            (event) => this.handleApprove(event, "approveChief")}
+                                                variant="delete"
+                                                onClick={this.handleReturnCoordinator}
                                             />
                                         }
-
                                         { (initialValues.type !== undefined && initialValues.type.code === "INW") &&
                                             <Button
                                                 label={constants.BUTTON_PREVIEW}

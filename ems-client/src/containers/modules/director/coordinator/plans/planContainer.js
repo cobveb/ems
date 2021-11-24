@@ -198,6 +198,16 @@ class PlanContainer extends Component {
         .catch(error =>{});
     }
 
+    handleReturnPlan = () => {
+        this.props.loading(true)
+        PlansApi.returnPlan(this.state.initData.id)
+        .then(response =>{
+            this.props.loading(false)
+            this.props.handleCloseOnReturn(this.state.initData);
+        })
+        .catch(error=>{});
+    }
+
     handleSubmitPlanPositions = () =>{
         this.props.loading(true);
         const payload = JSON.parse(JSON.stringify(this.state.initData.positions))
@@ -275,6 +285,7 @@ class PlanContainer extends Component {
                 onApproveDirector={this.handleApproveDirector}
                 onApproveEconomic={this.handleApproveEconomic}
                 onApproveChief={this.handleApproveChief}
+                onReturnPlan={this.handleReturnPlan}
                 onRemarksPlanPosition={this.handleRemarksPlanPosition}
                 onExcelExport={this.handleExcelExport}
                 onClose={handleClose}

@@ -33,6 +33,8 @@ public interface PlanService {
 
     CoordinatorPlan updatePlanStatus(Long planId, CoordinatorPlan.PlanStatus newStatus);
 
+    String returnCoordinatorPlan(Long planId);
+
     void updateInferredPositionValue(ApplicationProcurementPlanPosition planPosition);
 
     CoordinatorPlan approvePlan(Long planId, ApprovePlanType approvePlanType);

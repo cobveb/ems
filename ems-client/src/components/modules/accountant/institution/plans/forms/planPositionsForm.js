@@ -172,6 +172,7 @@ class PlanPositionsForm extends Component {
     render(){
         const {handleSubmit, classes, isLoading, error, initValues, planStatus, levelAccess} = this.props;
         const {headCells, selected, planPositions, action, openPlanDetails, acceptDisabled} = this.state;
+        console.log(initValues !== undefined && initValues.costType)
         if(initValues === undefined) {
             return null;
         }
@@ -199,7 +200,7 @@ class PlanPositionsForm extends Component {
                             direction="column"
                             spacing={0}
                         >
-                            <Typography variant="h6">{constants.ACCOUNTANT_INSTITUTION_PLAN_POSITIONS_TITLE + ` ${initValues.costType !== undefined ? initValues.costType.code : ''} - ${initValues.costType !== undefined ? initValues.costType.name : ''}`}</Typography>
+                            <Typography variant="h6">{constants.ACCOUNTANT_INSTITUTION_PLAN_POSITIONS_TITLE + ` ${initValues.costType !==  undefined && initValues.costType !==  null ? initValues.costType.code : ''} - ${initValues.costType !== undefined && initValues.costType !== null ? initValues.costType.name : ''}`}</Typography>
                             <Divider />
                             <div className={classes.content}>
                                 <div className={classes.section}>

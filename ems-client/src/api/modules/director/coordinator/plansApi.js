@@ -18,6 +18,10 @@ class PlansApi {
         return Axios.put(`/api/director/coordinator/plan/${planId}/chiefApprove`)
     }
 
+    static returnPlan(planId){
+        return Axios.put(`/api/director/coordinator/plan/${planId}/returnPlan`)
+    }
+
     static getPlanPositions(planId){
         return Axios.get(`/api/director/coordinator/plan/${planId}/getPositions`)
     }

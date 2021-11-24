@@ -51,6 +51,12 @@ public class DirectorPlanCoordinatorController {
         return new ApiResponse(HttpStatus.OK, planService.approvePlan(planId, ApprovePlanType.CHIEF));
     }
 
+    @PutMapping("/plan/{planId}/returnPlan")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('6015')")
+    public ApiResponse returnCoordinatorPlan(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.OK, planService.returnCoordinatorPlan(planId));
+    }
+
     @PutMapping("/plan/{planId}/updatePlanPositions")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('4015')")
     public ApiResponse savePlanPositions(@RequestBody @Valid List<FinancialPosition> positions, @PathVariable Long planId) {

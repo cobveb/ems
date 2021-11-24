@@ -97,4 +97,10 @@ public class InstitutionPlanController {
 
         institutionPlanService.exportPlanSubPositionsToExcel(exportType, positionType.equals("InstitutionFinancialPlanPosition") ? CoordinatorPlan.PlanType.FIN : CoordinatorPlan.PlanType.INW, positionId, headRow, generateExportResponse(response, exportType));
     }
+
+    @GetMapping("/checkDisableWithdraw/{planId}")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1034')")
+    public ApiResponse checkDisableWithdraw(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.FOUND, institutionPlanService.disableWithdrawInstitutionPlan(planId));
+    }
 }
