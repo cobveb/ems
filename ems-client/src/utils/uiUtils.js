@@ -202,7 +202,16 @@ export const getCoordinatorPlanTypes = () => [
     },
 ]
 
-
+export const publicProcurementOrderTypes = () => [
+    {
+        code: 'DST',
+        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_DELIVERY,
+    },
+    {
+        code: 'USL',
+        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_SERVICE,
+    }
+]
 
 export const  publicProcurementEstimationTypes = () => [
     {

@@ -172,7 +172,6 @@ class PlanPositionsForm extends Component {
     render(){
         const {handleSubmit, classes, isLoading, error, initValues, planStatus, levelAccess} = this.props;
         const {headCells, selected, planPositions, action, openPlanDetails, acceptDisabled} = this.state;
-        console.log(initValues !== undefined && initValues.costType)
         if(initValues === undefined) {
             return null;
         }

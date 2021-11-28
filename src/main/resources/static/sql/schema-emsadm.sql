@@ -274,6 +274,7 @@ create TABLE emsadm.cor_plans(
     coordinator_id VARCHAR2(10) NOT NULL,
     send_user_id NUMBER(19,0),
     plan_accept_user_id NUMBER(19,0),
+    public_accept_user_id NUMBER(19,0),
     director_accept_user_id NUMBER(19,0),
     economic_accept_user_id NUMBER(19,0),
     chief_accept_user_id NUMBER(19,0),
@@ -282,6 +283,7 @@ create TABLE emsadm.cor_plans(
 	CONSTRAINT cor_plan_coordinator_fk FOREIGN KEY (coordinator_id) REFERENCES organization_units(code),
 	CONSTRAINT cor_plan_send_usr_fk FOREIGN KEY (send_user_id) REFERENCES emsarch.users(id),
 	CONSTRAINT cor_plan_accept_usr_fk FOREIGN KEY (plan_accept_user_id) REFERENCES emsarch.users(id),
+	CONSTRAINT cor_plan_pub_accept_usr_fk FOREIGN KEY (public_accept_user_id) REFERENCES emsarch.users(id),
 	CONSTRAINT cor_plan_dir_accept_usr_fk FOREIGN KEY (director_accept_user_id) REFERENCES emsarch.users(id),
     CONSTRAINT cor_plan_eco_accept_usr_fk FOREIGN KEY (economic_accept_user_id) REFERENCES emsarch.users(id),
 	CONSTRAINT cor_plan_chf_accept_usr_fk FOREIGN KEY (chief_accept_user_id) REFERENCES emsarch.users(id),
@@ -299,7 +301,8 @@ COMMENT on COLUMN cor_plans.send_user_id is 'Plan send user (Users)';
 COMMENT on COLUMN cor_plans.send_date is 'Plan send date';
 COMMENT on COLUMN cor_plans.coordinator_id is 'Coordinator ID (Organization Unit)';
 COMMENT on COLUMN cor_plans.send_user_id is 'Plan send user (Users)';
-COMMENT on COLUMN cor_plans.plan_accept_user_id is 'Plan accountant / procuements accept user (Users)';
+COMMENT on COLUMN cor_plans.plan_accept_user_id is 'Plan accountant accept user (Users)';
+COMMENT on COLUMN cor_plans.public_accept_user_id is 'Plan public procurement accept user (Users)';
 COMMENT on COLUMN cor_plans.director_accept_user_id is 'Plan director accept user (Users)';
 COMMENT on COLUMN cor_plans.chief_accept_user_id is 'Plan chief accept user (Users)';
 COMMENT on COLUMN cor_plans.plan_correction_id is 'Plan corretion ID (FK -> cor_plans)';

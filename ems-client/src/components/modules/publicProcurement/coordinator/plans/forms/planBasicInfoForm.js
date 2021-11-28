@@ -202,7 +202,7 @@ class PlanBasicInfoForm extends Component {
     }
 
     render(){
-        const { handleSubmit, submitting, classes, initialValues } = this.props
+        const { handleSubmit, submitting, classes, initialValues } = this.props;
         const { headPzp, selected, openPositionDetails, positions, planAction } = this.state;
         return(
             <>
@@ -361,17 +361,7 @@ class PlanBasicInfoForm extends Component {
                                     icon=<DoneAll/>
                                     iconAlign="left"
                                     variant="submit"
-                                    disabled={selected.length > 0}
                                     onClick={(event) => this.handleApprove(event, "approvePublicProcurement")}
-                                />
-                            }
-                            {(initialValues.status !== undefined && ['AZ'].includes(initialValues.status.code))  &&
-                                <Button
-                                    label={constants.BUTTON_APPROVE}
-                                    icon=<DoneAll/>
-                                    iconAlign="left"
-                                    variant="submit"
-                                    onClick={(event) => this.handleApprove(event, "approveChief")}
                                 />
                             }
                             <Button

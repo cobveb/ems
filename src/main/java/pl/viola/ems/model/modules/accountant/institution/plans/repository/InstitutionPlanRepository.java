@@ -14,4 +14,6 @@ public interface InstitutionPlanRepository extends JpaRepository<InstitutionPlan
     List<InstitutionPlan> findByStatusIn(List<InstitutionPlan.InstitutionPlanStatus> status);
 
     List<InstitutionPlan> findByTypeIn(List<CoordinatorPlan.PlanType> types);
+
+    List<InstitutionPlan> findByType(CoordinatorPlan.PlanType type);
 }

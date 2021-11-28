@@ -238,6 +238,7 @@ public class PlanServiceImpl implements PlanService {
         plan.setStatus(CoordinatorPlan.PlanStatus.ZP);
         plan.setSendUser(null);
         plan.setPlanAcceptUser(null);
+        plan.setPublicAcceptUser(null);
         plan.setDirectorAcceptUser(null);
         plan.setEconomicAcceptUser(null);
         plan.setChiefAcceptUser(null);
@@ -248,7 +249,7 @@ public class PlanServiceImpl implements PlanService {
             position.setAmountAwardedGross(null);
         });
         coordinatorPlanRepository.save(plan);
-        if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
+        if (!plan.getType().equals(CoordinatorPlan.PlanType.INW)) {
             institutionPlanService.updateInstitutionPlan(plan, "return");
         }
         return messageSource.getMessage("Coordinator.plan.returnMsg", null, Locale.getDefault());
@@ -284,8 +285,7 @@ public class PlanServiceImpl implements PlanService {
                 break;
             case PUBLIC_PROCUREMENT:
                 plan.setStatus(CoordinatorPlan.PlanStatus.AZ);
-                plan.setPlanAcceptUser(user);
-                institutionPlanService.updateInstitutionPlan(plan, "approvePublicProcurement");
+                plan.setPublicAcceptUser(user);
                 break;
             case DIRECTOR:
                 plan.setStatus(CoordinatorPlan.PlanStatus.AD);

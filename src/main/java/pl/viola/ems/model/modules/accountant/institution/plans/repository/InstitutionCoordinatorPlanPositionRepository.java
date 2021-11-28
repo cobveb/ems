@@ -7,10 +7,13 @@ import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPo
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface InstitutionCoordinatorPlanPositionRepository extends JpaRepository<InstitutionCoordinatorPlanPosition, Long> {
     List<InstitutionCoordinatorPlanPosition> findByInstitutionPlanPosition(InstitutionPlanPosition institutionPlanPosition);
+
+    List<InstitutionCoordinatorPlanPosition> findByInstitutionPlanPositionIn(Set<InstitutionPlanPosition> planPositions);
 
     InstitutionCoordinatorPlanPosition findByCoordinatorPlanPosition(CoordinatorPlanPosition coordinatorPlanPosition);
 }

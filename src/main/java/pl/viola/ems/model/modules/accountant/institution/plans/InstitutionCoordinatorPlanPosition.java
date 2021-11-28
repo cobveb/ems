@@ -23,10 +23,10 @@ public class InstitutionCoordinatorPlanPosition {
     private Long id;
 
     @Transient
-    BigDecimal amountAwardedNet;
+    private BigDecimal amountAwardedNet;
 
     @Transient
-    BigDecimal amountAwardedGross;
+    private BigDecimal amountAwardedGross;
 
     @NonNull
     @OneToOne(cascade = CascadeType.PERSIST)

@@ -8,8 +8,7 @@ import {findSelectFieldPosition, generateExportLink} from 'utils';
 import PlansApi from 'api/modules/director/coordinator/plansApi';
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
 import DictionaryApi from 'api/common/dictionaryApi';
-import * as constants from 'constants/uiNames';
-import {publicProcurementEstimationTypes, findIndexElement, getCoordinatorPlanPositionsStatuses} from 'utils/';
+import {publicProcurementEstimationTypes, publicProcurementOrderTypes, findIndexElement, getCoordinatorPlanPositionsStatuses} from 'utils/';
 
 class PlanContainer extends Component {
     state = {
@@ -29,16 +28,7 @@ class PlanContainer extends Component {
                 name: "23%",
             },
         ],
-        orderTypes: [
-            {
-                code: 'DST',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_DELIVERY,
-            },
-            {
-                code: 'USL',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_SERVICE,
-            }
-        ],
+        orderTypes: publicProcurementOrderTypes(),
         estimationTypes: publicProcurementEstimationTypes(),
         statuses: getCoordinatorPlanPositionsStatuses(),
         isDetailsVisible: false,

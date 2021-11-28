@@ -73,29 +73,6 @@ class Plan extends Component {
                 type: 'amount',
             },
         ],
-        headPzp: [
-            {
-                id: 'assortmentGroup.name',
-                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP,
-                type: 'object',
-            },
-            {
-                id: 'orderType',
-                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDER_TYPE,
-                type: 'text',
-            },
-            {
-                id: 'estimationType',
-                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_ESTIMATION_TYPE,
-                type: 'text',
-            },
-            {
-                id: 'amountRequestedNet',
-                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_NET,
-                suffix: 'zł.',
-                type: 'amount',
-            },
-        ],
         selected:{},
         isDetailsVisible: false,
         codeNameSearch: '',
@@ -166,6 +143,7 @@ class Plan extends Component {
 
     handleCloseDialog = () => {
         this.setState({planAction: ""})
+        this.props.clearError(null);
     }
 
     renderDialog = () =>{
@@ -199,7 +177,7 @@ class Plan extends Component {
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues !== prevProps.initialValues){
-            this.setState(prevState =>{
+                this.setState(prevState =>{
                 let rows = [...prevState.rows];
                 let selected = {...prevState.selected};
                 let disabledApprove = {...prevState.disabledApprove}
@@ -226,7 +204,7 @@ class Plan extends Component {
 
     render(){
         const { classes, isLoading, error, initialValues, levelAccess, disableWithdraw } = this.props;
-        const { headCells, headPzp, rows, selected, isDetailsVisible, disabledApprove, planAction } = this.state;
+        const { headCells, rows, selected, isDetailsVisible, disabledApprove, planAction } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -372,7 +350,7 @@ class Plan extends Component {
                                             <Table
                                                 className={classes.tableWrapper}
                                                 rows={rows}
-                                                headCells={initialValues.type !== undefined && initialValues.type.code === "FIN" ? headCells : headPzp}
+                                                headCells={headCells}
                                                 onSelect={this.handleSelect}
                                                 onDoubleClick={this.handleDoubleClick}
                                                 onExcelExport={this.handleExcelExport}

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
-import { withStyles, Grid, Typography, Divider} from '@material-ui/core/';
+import { withStyles, Grid, Typography } from '@material-ui/core/';
 import { Spinner, ModalDialog } from 'common/';
 import { Table, Button, DatePicker } from 'common/gui';
-import { PostAdd, Visibility } from '@material-ui/icons/';
-import PlanContainer from 'containers/modules/accountant/institution/plans/planContainer';
+import { Visibility } from '@material-ui/icons/';
+import PlanContainer from 'containers/modules/publicProcurement/institution/plans/planContainer';
 
 const styles = theme => ({
     root: {

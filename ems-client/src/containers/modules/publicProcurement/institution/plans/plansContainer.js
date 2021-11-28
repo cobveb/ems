@@ -55,7 +55,6 @@ class PlansContainer extends Component {
     render(){
         const {isLoading, error, levelAccess} = this.props;
         const {plans, types} = this.state;
-        console.log(plans)
         return(
             <Plans
                 initialValues={plans}

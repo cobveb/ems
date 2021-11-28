@@ -1,4 +1,4 @@
-package pl.viola.ems.model.modules.accountant.institution.plans;
+package pl.viola.ems.model.modules.publicProcurement.institution.plans;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.accountant.CostType;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionCoordinatorPlanPosition;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPosition;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
 import pl.viola.ems.model.modules.coordinator.plans.PublicProcurementPosition;
 

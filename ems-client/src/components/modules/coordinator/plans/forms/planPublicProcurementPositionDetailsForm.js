@@ -103,7 +103,8 @@ class PlanPublicProcurementContentPosition extends Component {
                                     <Typography variant='h6'>
                                         { action === "add" ?
                                             constants.COORDINATOR_PLAN_POSITION_FINANCIAL_CREATE_POSITION_DETAILS_TITLE
-                                                :  constants.COORDINATOR_PLAN_POSITION_FINANCIAL_EDIT_POSITION_DETAILS_TITLE + `${initialValues.name}`
+                                                :  (action === "edit" ? constants.COORDINATOR_PLAN_POSITION_FINANCIAL_EDIT_POSITION_DETAILS_TITLE
+                                                    : constants.COORDINATOR_PLAN_POSITION_FINANCIAL_PREVIEW_POSITION_DETAILS_TITLE) + `${initialValues.name}`
                                         }
                                     </Typography>
                                     <IconButton aria-label="Close"

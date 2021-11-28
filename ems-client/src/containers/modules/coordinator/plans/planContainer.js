@@ -9,8 +9,7 @@ import DictionaryApi from 'api/common/dictionaryApi';
 import PlansApi from 'api/modules/coordinator/plansApi';
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
-import * as constants from 'constants/uiNames';
-import {findIndexElement, publicProcurementEstimationTypes, findSelectFieldPosition, generateExportLink, getCoordinatorPlanPositionsStatuses, getVats} from 'utils/';
+import {findIndexElement, publicProcurementEstimationTypes, publicProcurementOrderTypes, findSelectFieldPosition, generateExportLink, getCoordinatorPlanPositionsStatuses, getVats} from 'utils/';
 
 class PlanContainer extends Component {
     state = {
@@ -24,16 +23,7 @@ class PlanContainer extends Component {
         foundingSources:[],
         unassignedUnits:[],
         vats: getVats(),
-        orderTypes: [
-            {
-                code: 'DST',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_DELIVERY,
-            },
-            {
-                code: 'USL',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_SERVICE,
-            }
-        ],
+        orderTypes: publicProcurementOrderTypes(),
         estimationTypes: publicProcurementEstimationTypes(),
         statuses: getCoordinatorPlanPositionsStatuses(),
     }

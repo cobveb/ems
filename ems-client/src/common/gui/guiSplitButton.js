@@ -38,13 +38,14 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: '#fff',
     },
     cancel: {
+        color: '#fff',
         backgroundColor: grey[500],
         '&:hover': {
              backgroundColor: grey[700],
         },
     },
     cancelPop: {
-        backgroundColor: grey[300],
+        backgroundColor: grey[500],
     },
     buttonLabel: {
         textTransform: 'capitalize',
@@ -111,7 +112,10 @@ export default function SplitButton(props) {
                     }}
                     disabled={options[selectedIndex].disabled}
                 >
-                    {options[selectedIndex].label}
+                    <>
+                        {options[selectedIndex].icon}
+                        {options[selectedIndex].label}
+                    </>
                 </Button>
                 <Button
                     classes={{
@@ -157,6 +161,7 @@ export default function SplitButton(props) {
                                             }}
                                             disabled={option.disabled}
                                         >
+                                            {options[selectedIndex].icon}
                                             <ListItemText primary={option.label} classes={{primary : classes.listItemText}} />
                                         </MenuItem>
                                     ))}

@@ -308,6 +308,7 @@ export const COORDINATOR_PLAN_POSITIONS_FINANCIAL_HEAD_NAME = 'Nazwa';
 /* components/modules/coordinator/plans/forms/planPositionForm.js */
 export const COORDINATOR_PLAN_POSITION_CREATE_DETAILS_TITLE = "Nowa pozycja planu"
 export const COORDINATOR_PLAN_POSITION_EDIT_DETAILS_TITLE = "Edycja pozycji planu: "
+export const COORDINATOR_PLAN_POSITION_PREVIEW_DETAILS_TITLE = "Szczególy pozycji: "
 export const COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_NET = 'Kwota szacowana netto';
 export const COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS = 'Kwota szacowana brutto';
 export const COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_NET = 'Kwota przyznana netto';
@@ -557,6 +558,7 @@ export const ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_FORWARD_MESSAGE = 'Plan zostani
 export const ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_ACCEPT_POSITIONS_MESSAGE = 'Dla wszystkich zaznaczonych pozycji zostanie przyznana kwota szacowana. Czy kontynuować?';
 export const ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER = 'Akceptacja Głównego Księgowego';
 export const ACCOUNTANT_PLAN_COORDINATOR_DIRECTOR_ACCEPT_USER = 'Zatwierdzenie Dyrektor Pionu';
+export const ACCOUNTANT_PLAN_COORDINATOR_ECONOMIC_ACCEPT_USER = 'Zatwierdzenie Dyrektor Ekonomiczny';
 export const ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER = 'Zatwierdzenie Dyrektor Naczelny';
 /* components/modules/accountant/coordinator/plans/forms/planCorrectionPositionForm.js */
 export const ACCOUNTANT_PLAN_COORDINATOR_CORRECTION_POSITIONS_TITLE = 'Korekta pozycji: ';
@@ -628,7 +630,9 @@ export const PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS = 'Status';
 /* components/modules/publicProcurement/coordinator/plans/forms/planBasicInfoForm.js */
 export const PUBLIC_PLAN_COORDINATOR_ACCEPT_USER = 'Akceptacja Zamówień Publicznych';
 /* components/modules/publicProcurement/institution/plans/plans.js */
-export const PUBLIC_INSTITUTION_PLANS_TITLE = 'Plany'
+export const PUBLIC_INSTITUTION_PLANS_TITLE = 'Plany';
+/* components/modules/publicProcurement/institution/plans/plan.js */
+export const PUBLIC_INSTITUTION_PLAN_TITLE = 'Plan Zamówień Publicznych';
 /*components/modules/hr/humanResources.js*/
 export const HR_MENU_STAFF = 'Personel';
 export const HR_MENU_STAFF_WORKERS = 'Pracownicy';
@@ -696,6 +700,8 @@ export const BUTTON_APPROVE_ECONOMIC = 'Zatwierdzenie - Dyrektor ekonomiczny';
 export const BUTTON_APPROVE_CHIEF = 'Zatwierdzenie - Dyrektor naczelny';
 export const BUTTON_CONSIDER = 'Rozpatrz';
 export const BUTTON_PRINT = 'Drukuj';
+export const BUTTON_PRINT_BASIC = 'Wydruk podstawowy';
+export const BUTTON_PRINT_DETAILS = 'Wydruk szczegółowy';
 export const BUTTON_UPDATE = 'Aktualizuj';
 export const BUTTON_REMARKS = 'Uwagi';
 export const BUTTON_DETAILS = 'Szczegoły';
