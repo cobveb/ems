@@ -93,10 +93,9 @@ class PlanPublicProcurementContentPosition extends Component {
     }
 
     handleClose = () =>{
-
         if(this.props.pristine === false){
             this.setState({formChanged: !this.state.formChanged});
-        } else if(this.handleCheckEstimationType()){
+        } else if(this.handleCheckEstimationType() && this.props.planStatus === 'ZP'){
             this.setState({wrongEstimationType: !this.state.wrongEstimationType});
         } else {
             this.props.onClose();
@@ -105,7 +104,7 @@ class PlanPublicProcurementContentPosition extends Component {
     };
 
     handleCancelClose = () => {
-        this.setState({formChanged: false});
+        this.setState({formChanged: false, wrongEstimationType: !this.state.wrongEstimationType});
     }
 
     handleConfirmClose = () => {
@@ -198,10 +197,10 @@ class PlanPublicProcurementContentPosition extends Component {
                 }
                 break;
             case "edit":
-                if( amountRequestedNet !== null && ((euroExchangeRate !== null && prevProps.estimationType !== "UE139" && estimationType.code === 'UE139') ||
+                if( (amountRequestedNet !== null && amountRequestedNet !== undefined) && ((euroExchangeRate !== null && prevProps.estimationType !== "UE139" && estimationType.code === 'UE139') ||
                    (estimationType.code === 'UE139' && euroExchangeRate !== prevProps.euroExchangeRate)))
                 {
-                    this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedEuroNet', parseFloat((amountRequestedNet / euroExchangeRate).toFixed(2))));
+                    this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedEuroNet', parseFloat((amountRequestedNet / euroExchangeRate.replace(",", ".")).toFixed(2))));
                 }
                 break;
             //no default
@@ -210,6 +209,12 @@ class PlanPublicProcurementContentPosition extends Component {
         if (prevProps.estimationType !== undefined && prevProps.estimationType.code === 'UE139' && estimationType.code !== 'UE139'){
             this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedEuroNet', null));
             this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'euroExchangeRate', null));
+        }
+        //Reuse UE mode
+        if (prevProps.estimationType !== undefined && prevProps.estimationType.code !== 'UE139' && estimationType.code === 'UE139'){
+            this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'euroExchangeRate', this.props.euroExchangeRate));
+        } else if ( prevProps.estimationType === undefined && estimationType !== undefined && estimationType.code === 'UE139' && this.props.initialValues.euroExchangeRate === undefined  ){
+            this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'euroExchangeRate', this.props.euroExchangeRate));
         }
     }
 
@@ -361,6 +366,7 @@ class PlanPublicProcurementContentPosition extends Component {
                                                 name="euroExchangeRate"
                                                 label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_EURO_EXCHANGE_RATE}
                                                 mask={euroExchangeRateMask}
+                                                disabled
                                             />
                                         </Grid>
                                         <Grid item xs={9}>

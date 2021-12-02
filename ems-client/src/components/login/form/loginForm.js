@@ -59,6 +59,7 @@ class LoginForm extends Component {
                 this.props.history.push("/modules");
                 this.props.onToggleLoading(false);
             })
+            this.props.setEuroExchangeRate();
         })
         .catch(error =>{
             this.props.onToggleLoading(false);

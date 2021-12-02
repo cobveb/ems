@@ -140,7 +140,7 @@ class ParameterForm extends Component {
                                             <FormTextField
                                                 name="value"
                                                 label={constants.PARAMETER_VALUE}
-                                                valueType={initialValues.valueType === "N" ? "numbers" : "digits"}
+                                                valueType={initialValues.valueType === "N" ? "numbers" : "all"}
                                             /> :
                                             <FormSelectField
                                                 name="value"

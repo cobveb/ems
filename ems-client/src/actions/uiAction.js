@@ -1,4 +1,6 @@
 import * as types from 'constants/actionTypes'
+import UiActionApi from 'api/action/uiActionApi';
+import {catchError} from 'utils/apiUtils';
 
 export function updateHeaderName (name){
 	 return {
@@ -20,3 +22,22 @@ export function setError (error){
 	    error: error
 	 }
 };
+
+export function setEuroExchangeRate(euroRate){
+    return{
+        type: types.SET_EURO_RATE,
+        euroRate: euroRate
+    }
+}
+
+export function getEuroExchangeRate(){
+    return function(dispatch) {
+        return UiActionApi.getEuroExchangeRate()
+        .then(response => {
+            dispatch(setEuroExchangeRate(response.data.data.value));
+        })
+        .catch(error => {
+            return catchError(error);
+        });
+    }
+}
