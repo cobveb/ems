@@ -105,8 +105,10 @@ export const zipCodeMask = [/\d/, /\d/, ' ', '-', ' ', /\d/, /\d/, /\d/,];
 
 export const euroExchangeRateMask = [/\d/, '.', /\d/, /\d/, /\d/, /\d/,];
 
+/* TODO: Function used in Public Procurement Plan Coordinator Position Form Valid.
+    Currently not used due to the value being passed through an application parameter. */
 export function isValidEuroExchangeRate(euro){
-    if (!/^\d{1}\.\d{4}$/i.test(euro)){
+    if (!/^\d{1}\\,\d{4}$/i.test(euro)){
         return constants.FORM_ERROR_MSG_INVALID_VALUE
     }
 };

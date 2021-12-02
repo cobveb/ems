@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
-import { loading, loadAccessTokens as auth, loadUserDetails, loadModules, setError } from 'actions/';
+import { loading, loadAccessTokens as auth, loadUserDetails, loadModules, setError, getEuroExchangeRate } from 'actions/';
 import LoginForm from 'components/login/form/loginForm';
 import { Redirect } from 'react-router';
 
@@ -30,6 +30,7 @@ class LoginFormContainer extends Component {
                     onAuth={this.props.actions}
                     loadUserDetail={this.props.loadUser}
                     loadModules={this.props.loadModules}
+                    setEuroExchangeRate={this.props.setEuroExchangeRate}
                     clearError={this.props.clearError}
                     changeTitle={this.props.changeTitle}
                     error={this.props.error}
@@ -62,6 +63,7 @@ function mapDispatchToProps (dispatch) {
         loadUser: bindActionCreators(loadUserDetails, dispatch),
         loadModules: bindActionCreators(loadModules, dispatch),
         clearError: bindActionCreators(setError, dispatch),
+        setEuroExchangeRate: bindActionCreators(getEuroExchangeRate, dispatch),
     }
 };
 

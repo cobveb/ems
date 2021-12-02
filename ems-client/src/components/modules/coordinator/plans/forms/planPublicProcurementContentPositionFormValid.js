@@ -1,5 +1,4 @@
 import * as constants from 'constants/uiNames';
-import {isValidEuroExchangeRate} from 'utils/';
 
 export const validate =  ( values, props ) => {
     const errors = {}
@@ -22,8 +21,5 @@ export const validate =  ( values, props ) => {
         }
     }
 
-    if(values.euroExchangeRate){
-        errors.euroExchangeRate = isValidEuroExchangeRate(values.euroExchangeRate);
-    }
     return errors
 }

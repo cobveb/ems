@@ -19,6 +19,11 @@ export const ui = (state = InitialState.ui, action) => {
 			    ...state,
 			        error: action.error,
 			}
+        case 'SET_EURO_RATE':
+			return {
+			    ...state,
+			        euroRate: action.euroRate,
+			}
 	    default:
 	      return state
 	}

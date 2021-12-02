@@ -11,6 +11,7 @@ export default {
         header: {
             name: constants.MODULES_TITLE
         },
+        euroRate:null,
     },
     modules: {
         modules: [],
