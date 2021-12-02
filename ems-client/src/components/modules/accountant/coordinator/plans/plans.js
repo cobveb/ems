@@ -84,6 +84,7 @@ class Plans extends Component {
         isDetailsVisible: false,
         action: null,
         coordinator:'',
+        type:'',
         status: '',
         year: null,
     }
@@ -130,6 +131,8 @@ class Plans extends Component {
         return plans.filter((plan) => {
             return plan.status.code.toLowerCase().search(
                     this.state.status.toLowerCase()) !== -1 &&
+                plan.type.code.toLowerCase().search(
+                    this.state.type.toLowerCase()) !== -1 &&
                 plan.coordinator.code.toLowerCase().search(
                     this.state.coordinator.toLowerCase()) !== -1 &&
                 (
@@ -167,6 +170,7 @@ class Plans extends Component {
             });
         } else if (this.state.year !== prevState.year ||
             this.state.status !== prevState.status ||
+            this.state.type !== prevState.type ||
             this.state.coordinator !== prevState.coordinator)
         {
             this.setState({
@@ -179,8 +183,8 @@ class Plans extends Component {
         }
     }
     render(){
-        const { classes, initialValues, isLoading, error, coordinators, statuses, onSubmitPlan } = this.props;
-        const { headCells, rows, selected, isDetailsVisible, action, year, coordinator, status } = this.state;
+        const { classes, initialValues, isLoading, error, coordinators, statuses, onSubmitPlan, types } = this.props;
+        const { headCells, rows, selected, isDetailsVisible, action, year, coordinator, status, type } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -197,6 +201,7 @@ class Plans extends Component {
                             handleClose={this.handleClose}
                             statuses={statuses}
                             investmentCategories={this.props.investmentCategories}
+                            modes={this.props.modes}
                             plans={initialValues}
                             onSubmitPlan={onSubmitPlan}
                         />
@@ -223,7 +228,16 @@ class Plans extends Component {
                                                 views={["year"]}
                                             />
                                         </Grid>
-                                        <Grid item xs={4} className={classes.item}>
+                                        <Grid item xs={3} className={classes.item}>
+                                            <SelectField
+                                                name="type"
+                                                onChange={this.handleSearch}
+                                                label={constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_TYPE}
+                                                options={types}
+                                                value={type}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={3} className={classes.item}>
                                             <SelectField
                                                 name="coordinator"
                                                 onChange={this.handleSearch}
@@ -232,7 +246,7 @@ class Plans extends Component {
                                                 value={coordinator}
                                             />
                                         </Grid>
-                                        <Grid item xs={5} >
+                                        <Grid item xs={3} >
                                             <SelectField
                                                 name="status"
                                                 onChange={this.handleSearch}

@@ -4,7 +4,7 @@ import Plans from 'components/modules/publicProcurement/coordinator/plans/plans'
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
-import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink} from 'utils';
+import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink, getCoordinatorPlanStatuses} from 'utils';
 import PlansApi from 'api/modules/publicProcurement/coordinator/plansApi';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import DictionaryApi from 'api/common/dictionaryApi';
@@ -25,43 +25,11 @@ class PlansContainer extends Component {
                 code: '',
                 name: constants.COORDINATOR_PLAN_STATUS,
             },
-            {
-                code: 'WY',
-                name: constants.COORDINATOR_PLAN_STATUS_SENT,
-            },
-            {
-                code: 'AZ',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_PUBLIC_PROCUREMENT,
-            },
-            {
-                code: 'AD',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_DIRECTOR,
-            },
-            {
-                code: 'ZA',
-                name: constants.COORDINATOR_PLAN_STATUS_APPROVED_CHIEF,
-            },
-            {
-                code: 'RE',
-                name: constants.COORDINATOR_PLAN_STATUS_REALIZED,
-            },
-            {
-                code: 'ZR',
-                name: constants.COORDINATOR_PLAN_STATUS_EXECUTED,
-            },
-        ],
+        ].concat(getCoordinatorPlanStatuses()),
         types:[
             {
                 code: '',
                 name: constants.COORDINATOR_PLAN_TYPE,
-            },
-            {
-                code: 'FIN',
-                name: constants.COORDINATOR_PLAN_TYPE_FINANCIAL,
-            },
-            {
-                code: 'INW',
-                name: constants.COORDINATOR_PLAN_TYPE_INVESTMENT,
             },
             {
                 code: 'PZP',

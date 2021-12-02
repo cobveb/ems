@@ -29,6 +29,7 @@ class Plan extends Component {
                     investmentCategories={this.props.investmentCategories}
                     orderTypes={orderTypes}
                     estimationTypes={estimationTypes}
+                    euroExchangeRate={this.props.euroExchangeRate}
                     onClose={() => onClose(initialValues)}
                     onSubmitPlanPosition={this.props.onSubmitPlanPosition}
                     onDeletePlanPosition={this.props.onDeletePlanPosition}

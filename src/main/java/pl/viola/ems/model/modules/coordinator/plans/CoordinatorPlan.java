@@ -86,6 +86,10 @@ public class CoordinatorPlan {
     private User planAcceptUser;
 
     @ManyToOne
+    @JoinColumn(name = "public_accept_user_id")
+    private User publicAcceptUser;
+
+    @ManyToOne
     @JoinColumn(name = "director_accept_user_id")
     private User directorAcceptUser;
 

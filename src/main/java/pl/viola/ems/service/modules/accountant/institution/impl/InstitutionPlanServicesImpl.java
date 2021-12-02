@@ -180,7 +180,7 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
 
                 });
                 institutionPlan.setPlanPositions(new HashSet<>(institutionFinancialPlanPositions));
-            } else if (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) && action.equals("approvePublicProcurement")) {
+            } else if (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP)) {
                 /*
                     Public Procurement Institution Plan
                     Create Institution plan on approve Public Procurement first coordinator plan
@@ -268,6 +268,62 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                                 institutionPlan.setPlanPositions(institutionFinancialPlanPositions.stream().collect(Collectors.toSet()));
                             }
                         }
+                    } else if (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP)) {
+                        //Update Public Procurement coordinator plan if exists institution plan
+
+                        if (institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
+
+                            InstitutionPlan institutionPlanUpd = institutionPlan;
+                            if (!institutionPlan.getPlanPositions().isEmpty()) {
+                                coordinatorPlan.getPositions().forEach(coordinatorPlanPosition -> {
+                                    if (institutionPlanUpd.getPlanPositions().stream().anyMatch(institutionPlanUpdPosition -> (institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()) && institutionPlanUpdPosition.getOrderType().equals(coordinatorPlanPosition.getOrderType())))) {
+                                        InstitutionPlanPosition institutionPlanPosition = institutionPlanUpd.getPlanPositions().stream().filter(institutionPlanUpdPosition -> (institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()) && institutionPlanUpdPosition.getOrderType().equals(coordinatorPlanPosition.getOrderType()))).findFirst().orElse(null);
+                                        institutionPlanPosition.getInstitutionCoordinatorPlanPositions().add(new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition));
+                                        institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
+                                        institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedGross).reduce(BigDecimal.ZERO, BigDecimal::add));
+                                    } else {
+                                        Set<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new HashSet<>();
+                                        InstitutionPublicProcurementPlanPosition institutionPlanPosition = new InstitutionPublicProcurementPlanPosition(
+                                                coordinatorPlanPosition.getStatus(),
+                                                coordinatorPlanPosition.getAmountRequestedNet(),
+                                                coordinatorPlanPosition.getAmountRequestedGross(),
+                                                institutionPlanUpd,
+                                                coordinatorPlanPosition.getEstimationType(),
+                                                coordinatorPlanPosition.getOrderType(),
+                                                coordinatorPlanPosition.getAssortmentGroup()
+                                        );
+
+                                        InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition);
+                                        institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+                                        institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions);
+                                        institutionPlanUpd.getPlanPositions().add(institutionPlanPosition);
+                                    }
+                                });
+                            } else {
+                                List<InstitutionPublicProcurementPlanPosition> institutionPublicProcurementPlanPositions = new ArrayList<>();
+                                List<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new ArrayList<>();
+
+                                coordinatorPlan.getPositions().forEach(financialPosition -> {
+                                    InstitutionPublicProcurementPlanPosition institutionPlanPosition = new InstitutionPublicProcurementPlanPosition(
+                                            financialPosition.getStatus(),
+                                            financialPosition.getAmountRequestedNet(),
+                                            financialPosition.getAmountRequestedGross(),
+                                            institutionPlanUpd,
+                                            financialPosition.getEstimationType(),
+                                            financialPosition.getOrderType(),
+                                            financialPosition.getAssortmentGroup()
+                                    );
+                                    institutionPublicProcurementPlanPositions.add(institutionPlanPosition);
+
+                                    InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(financialPosition, institutionPlanPosition);
+
+                                    institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+                                    institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions.stream().collect(Collectors.toSet()));
+
+                                });
+                                institutionPlan.setPlanPositions(institutionPublicProcurementPlanPositions.stream().collect(Collectors.toSet()));
+                            }
+                        }
                     }
                     break;
                 case "return":
@@ -304,63 +360,6 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                     }
                     institutionCoordinatorPlanPositionRepository.deleteInBatch(removedInstitutionCoordinatorPlanPositions);
                     institutionPlanPositionRepository.deleteInBatch(removedInstitutionPlanPositions);
-                    break;
-                case "approvePublicProcurement":
-                    //Update on approve Public Procurement coordinator plan if exists institution plan
-
-                    if (institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
-
-                        InstitutionPlan institutionPlanUpd = institutionPlan;
-                        if (!institutionPlan.getPlanPositions().isEmpty()) {
-                            coordinatorPlan.getPositions().forEach(coordinatorPlanPosition -> {
-                                if (institutionPlanUpd.getPlanPositions().stream().anyMatch(institutionPlanUpdPosition -> (institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()) && institutionPlanUpdPosition.getOrderType().equals(coordinatorPlanPosition.getOrderType())))) {
-                                    InstitutionPlanPosition institutionPlanPosition = institutionPlanUpd.getPlanPositions().stream().filter(institutionPlanUpdPosition -> (institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()) && institutionPlanUpdPosition.getOrderType().equals(coordinatorPlanPosition.getOrderType()))).findFirst().orElse(null);
-                                    institutionPlanPosition.getInstitutionCoordinatorPlanPositions().add(new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition));
-                                    institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
-                                    institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedGross).reduce(BigDecimal.ZERO, BigDecimal::add));
-                                } else {
-                                    Set<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new HashSet<>();
-                                    InstitutionPublicProcurementPlanPosition institutionPlanPosition = new InstitutionPublicProcurementPlanPosition(
-                                            coordinatorPlanPosition.getStatus(),
-                                            coordinatorPlanPosition.getAmountRequestedNet(),
-                                            coordinatorPlanPosition.getAmountRequestedGross(),
-                                            institutionPlanUpd,
-                                            coordinatorPlanPosition.getEstimationType(),
-                                            coordinatorPlanPosition.getOrderType(),
-                                            coordinatorPlanPosition.getAssortmentGroup()
-                                    );
-
-                                    InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition);
-                                    institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
-                                    institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions);
-                                    institutionPlanUpd.getPlanPositions().add(institutionPlanPosition);
-                                }
-                            });
-                        } else {
-                            List<InstitutionPublicProcurementPlanPosition> institutionPublicProcurementPlanPositions = new ArrayList<>();
-                            List<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new ArrayList<>();
-
-                            coordinatorPlan.getPositions().forEach(financialPosition -> {
-                                InstitutionPublicProcurementPlanPosition institutionPlanPosition = new InstitutionPublicProcurementPlanPosition(
-                                        financialPosition.getStatus(),
-                                        financialPosition.getAmountRequestedNet(),
-                                        financialPosition.getAmountRequestedGross(),
-                                        institutionPlanUpd,
-                                        financialPosition.getEstimationType(),
-                                        financialPosition.getOrderType(),
-                                        financialPosition.getAssortmentGroup()
-                                );
-                                institutionPublicProcurementPlanPositions.add(institutionPlanPosition);
-
-                                InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(financialPosition, institutionPlanPosition);
-
-                                institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
-                                institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions.stream().collect(Collectors.toSet()));
-
-                            });
-                            institutionPlan.setPlanPositions(institutionPublicProcurementPlanPositions.stream().collect(Collectors.toSet()));
-                        }
-                    }
                     break;
                 case "approveDirector":
                     if (!institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.AD)) {

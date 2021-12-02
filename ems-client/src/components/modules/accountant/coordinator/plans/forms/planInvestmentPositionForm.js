@@ -183,7 +183,7 @@ class PlanInvestmentPositionsForm extends Component {
                         >
                             { action === "add" ?
                                 constants.COORDINATOR_PLAN_POSITION_CREATE_DETAILS_TITLE :
-                                    constants.COORDINATOR_PLAN_UPDATE_POSITION_DETAILS_TITLE + (initialValues.name !== null ? `${initialValues.name}` : `${initialValues.task}`)
+                                    constants.COORDINATOR_PLAN_UPDATE_POSITION_DETAILS_TITLE + (initialValues !== undefined && initialValues.name !== null ? `${initialValues.name}` : `${initialValues.task}`)
                             }
                         </Typography>
                         <Divider />

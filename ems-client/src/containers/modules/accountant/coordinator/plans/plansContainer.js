@@ -18,10 +18,31 @@ class PlansContainer extends Component {
                 name: constants.HEADING_COORDINATOR,
             },
         ],
-        statuses: getCoordinatorPlanStatuses(),
-        types: getCoordinatorPlanTypes(),
+        statuses: [
+            {
+              code: '',
+              name: constants.COORDINATOR_PLAN_STATUS,
+            },
+        ].concat(getCoordinatorPlanStatuses()),
+        types:[
+            {
+                code: '',
+                name: constants.COORDINATOR_PLAN_TYPE,
+            },
+        ].concat(getCoordinatorPlanTypes()),
         investmentCategories: [],
+        modes:[],
     }
+
+    handleGetDictionaryModes(){
+       return DictionaryApi.getDictionary('slTryUdzZp')
+        .then(response => {
+            this.setState({
+                modes: response.data.data.items,
+            })
+        })
+        .catch(error => {});
+    };
 
     handleUpdateOnCloseDetails = (plan) => {
         let plans = this.state.plans;
@@ -110,18 +131,21 @@ class PlansContainer extends Component {
 
     componentDidMount() {
         this.handleGetPlans();
+        this.handleGetDictionaryModes();
         this.handleGetCoordinators();
     }
 
     render(){
         const {isLoading, loading, error, clearError} = this.props;
-        const { statuses, plans, coordinators, investmentCategories } = this.state;
+        const { statuses, plans, coordinators, investmentCategories, modes, types } = this.state;
         return(
             <Plans
                 initialValues={plans}
                 coordinators={coordinators}
                 statuses={statuses}
                 investmentCategories={investmentCategories}
+                modes={modes}
+                types={types}
                 isLoading={isLoading}
                 loading={loading}
                 error={error}

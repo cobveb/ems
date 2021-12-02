@@ -10,6 +10,7 @@ import { Cancel, Description, LibraryBooks, Edit, Done, PriorityHigh, CheckCircl
 import PlanCorrectionPositionFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planCorrectionPositionFormContainer.js';
 import PlanPositionRemarksFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planPositionRemarksFormContainer.js';
 import PlanInvestmentPositionFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planInvestmentPositionFormContainer.js';
+import PlanPublicProcurementContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planPublicProcurementContentPositionFormContainer';
 import { findIndexElement} from 'utils/';
 
 const styles = theme => ({
@@ -37,7 +38,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(54.5)}px)`,
+        height: `calc(100vh - ${theme.spacing(60.6)}px)`,
     },
 });
 
@@ -130,6 +131,35 @@ class PlanBasicInfoForm extends Component {
                 id: 'isDescMan',
                 label: constants.COORDINATOR_PLAN_POSITION_HEAD_MANAGEMENT_DESCRIPTION,
                 type: 'boolean',
+            },
+        ],
+        headPzp: [
+            {
+                id: 'assortmentGroup.name',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP,
+                type: 'object',
+            },
+            {
+                id: 'orderType.name',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDER_TYPE,
+                type: 'object',
+            },
+            {
+                id: 'estimationType.name',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_ESTIMATION_TYPE,
+                type: 'object',
+            },
+            {
+                id: 'amountRequestedNet',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'initiationTerm',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INITIATION_TERM,
+                suffix: 'zł.',
+                type: 'text',
             },
         ],
     };
@@ -300,7 +330,7 @@ class PlanBasicInfoForm extends Component {
                 openCorrection = true;
                 return {selected, openCorrection, planAction}
             });
-        } else if(this.props.initialValues.type.code === "INW"){
+        } else if(['INW', 'PZP'].includes(this.props.initialValues.type.code)){
             this.setState(prevState =>{
                 const selected = [...prevState.selected];
                 let isDetailsVisible: {...prevState.isDetailsVisible};
@@ -312,13 +342,20 @@ class PlanBasicInfoForm extends Component {
     }
 
     handleExcelExport = (exportType) => {
-        const {headFin, headInv} = this.state;
+        const {headFin, headInv, headPzp} = this.state;
         const {initialValues} = this.props;
-        this.props.onExcelExport(exportType, initialValues.type !== undefined && initialValues.type.code === "FIN" ? headFin : headInv)
+        this.props.onExcelExport(exportType, initialValues.type !== undefined && initialValues.type.code === "FIN" ?
+            headFin : initialValues.type !== undefined && initialValues.type.code === "INV" ? headInv :
+                headPzp)
     }
 
-    handleChangeVisibleDetails = () =>{
-        this.setState(state => ({isDetailsVisible: !state.isDetailsVisible, selected: []}));
+    handleChangeVisibleDetails = (event, action) =>{
+        console.log(this.state.isDetailsVisible)
+        if(action === "close"){
+            this.setState(state => ({isDetailsVisible: !state.isDetailsVisible, selected: []}));
+        } else {
+            this.setState(state => ({isDetailsVisible: !state.isDetailsVisible}));
+        }
     }
 
     handleSubmitPosition = (values) => {
@@ -332,6 +369,46 @@ class PlanBasicInfoForm extends Component {
             }).length > 0 ? row : null
         }).length === 0){
             this.setState({ disabledForward: false });
+        }
+    }
+
+    renderPlanContent = () =>{
+        const {initialValues, levelAccess, vats, modes, estimationTypes, orderTypes} = this.props;
+        const {selected} = this.state;
+        console.log(selected)
+        switch(initialValues.type.code){
+            case("INW"):
+                return(
+                    <PlanInvestmentPositionFormContainer
+                        initialValues={selected[0]}
+                        planType={initialValues.type}
+                        planStatus={initialValues.status}
+                        fundingSources={this.props.fundingSources}
+                        levelAccess={levelAccess}
+                        onSubmit={this.handleSubmitPosition}
+                        onClose={(event) => this.handleChangeVisibleDetails(event, "close")}
+                    />
+                );
+            case("PZP"):
+                return(
+                    <PlanPublicProcurementContentPositionFormContainer
+                        initialValues={selected[0]}
+                        planStatus={initialValues.status.code}
+                        action={"edit"}
+                        modes={modes}
+                        vats={vats}
+                        units={[]}
+                        assortmentGroups={[]}
+                        orderTypes={orderTypes}
+                        estimationTypes={estimationTypes}
+                        onSubmitPlanSubPosition={() => {}}
+                        onDeletePlanSubPosition={() => {}}
+                        onClose={(event) => this.handleChangeVisibleDetails(event, "close")}
+                        onSubmit={this.handleSubmitPosition}
+                        onExcelExport={this.handleExcelExport}
+                    />
+                );
+            // no default
         }
     }
 
@@ -380,22 +457,14 @@ class PlanBasicInfoForm extends Component {
 
     render(){
         const { handleSubmit, submitting, classes, initialValues, isLoading, levelAccess } = this.props
-        const { headFin, headInv, selected, positions, planAction, isDetailsVisible, disabledForward } = this.state;
+        const { headFin, headInv, headPzp, selected, positions, planAction, isDetailsVisible, disabledForward } = this.state;
         return(
             <>
                 {(submitting || isLoading) && <Spinner /> }
                 {planAction && this.renderDialog(initialValues.status)}
 
                 {isDetailsVisible ?
-                    <PlanInvestmentPositionFormContainer
-                        initialValues={selected[0]}
-                        planType={initialValues.type}
-                        planStatus={initialValues.status}
-                        fundingSources={this.props.fundingSources}
-                        levelAccess={levelAccess}
-                        onSubmit={this.handleSubmitPosition}
-                        onClose={this.handleChangeVisibleDetails}
-                    />
+                    this.renderPlanContent()
                 :
                     <form onSubmit={handleSubmit}>
                         { submitting && <Spinner /> }
@@ -442,26 +511,32 @@ class PlanBasicInfoForm extends Component {
                                         />
                                     </Grid>
 
-                                    <Grid item xs={12} sm={4}>
+                                    <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
                                         <FormAmountField
-                                            name={"planAmountRequestedGross"}
-                                            label={constants.COORDINATOR_PLAN_FINANCIAL_REQUESTED_VALUE}
+                                            name={initialValues.type !== undefined && (initialValues.type.code === 'FIN' ||  initialValues.type.code === 'INW')?
+                                                "planAmountRequestedGross" : "planAmountRequestedNet"}
+                                            label={initialValues.type !== undefined && (initialValues.type.code === 'FIN' || initialValues.type.code === 'INW') ?
+                                                constants.COORDINATOR_PLAN_FINANCIAL_REQUESTED_VALUE : constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REQUESTED_VALUE}
                                             suffix={'zł.'}
                                             disabled
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={4}>
+                                    {(initialValues.type !== undefined && initialValues.type.code === 'FIN') &&
+                                        <Grid item xs={12} sm={4}>
+                                            <FormAmountField
+                                                name={"planAmountAwardedGross"}
+                                                label={constants.COORDINATOR_PLAN_FINANCIAL_AWARDED_VALUE}
+                                                suffix={'zł.'}
+                                                disabled
+                                            />
+                                        </Grid>
+                                    }
+                                    <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
                                         <FormAmountField
-                                            name={"planAmountAwardedGross"}
-                                            label={constants.COORDINATOR_PLAN_FINANCIAL_AWARDED_VALUE}
-                                            suffix={'zł.'}
-                                            disabled
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} sm={4}>
-                                        <FormAmountField
-                                            name={"planAmountRealizedGross"}
-                                            label={constants.COORDINATOR_PLAN_FINANCIAL_REALIZED_VALUE}
+                                            name={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                                "planAmountRealizedGross" : "planAmountRealizedNet"}
+                                            label={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
+                                                constants.COORDINATOR_PLAN_FINANCIAL_REALIZED_VALUE : constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REALIZED_VALUE}
                                             suffix={'zł.'}
                                             disabled
                                         />
@@ -474,7 +549,7 @@ class PlanBasicInfoForm extends Component {
                                     </Typography>
                                 </Toolbar>
                                 <Grid container spacing={1} justify="center" className={classes.container}>
-                                    <Grid item xs={12} sm={3}>
+                                    <Grid item xs={12} sm={4}>
                                         <InputField
                                             name="sendUser"
                                             label={constants.COORDINATOR}
@@ -484,17 +559,23 @@ class PlanBasicInfoForm extends Component {
                                                     ''}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={3}>
+                                    <Grid item xs={12} sm={4}>
                                         <InputField
-                                            name="planAcceptUser"
-                                            label={constants.ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER}
+                                            name={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? "planAcceptUser" : "publicAcceptUser" }
+                                            label={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                constants.ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER : constants.PUBLIC_PLAN_COORDINATOR_ACCEPT_USER}
                                             disabled={true}
-                                            value={initialValues.planAcceptUser !== undefined && initialValues.planAcceptUser !== null ?
-                                                `${initialValues.planAcceptUser.name} ${initialValues.planAcceptUser.surname}` :
-                                                    ''}
+                                            value={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                initialValues.planAcceptUser !== undefined && initialValues.planAcceptUser !== null ?
+                                                    `${initialValues.planAcceptUser.name} ${initialValues.planAcceptUser.surname}` :
+                                                        ''
+                                                : initialValues.publicAcceptUser !== undefined && initialValues.publicAcceptUser !== null ?
+                                                    `${initialValues.publicAcceptUser.name} ${initialValues.publicAcceptUser.surname}` :
+                                                        ''
+                                            }
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={3}>
+                                    <Grid item xs={12} sm={4}>
                                         <InputField
                                             name="directorAcceptUser"
                                             label={constants.ACCOUNTANT_PLAN_COORDINATOR_DIRECTOR_ACCEPT_USER}
@@ -504,7 +585,22 @@ class PlanBasicInfoForm extends Component {
                                                     ''}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={3}>
+                                    <Grid item xs={12} sm={6}>
+                                        <InputField
+                                            name={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ? "economicAcceptUser" : "planAcceptUser" }
+                                            label={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                constants.ACCOUNTANT_PLAN_COORDINATOR_ECONOMIC_ACCEPT_USER : constants.ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER}
+                                            disabled={true}
+                                            value={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                initialValues.economicAcceptUser !== undefined && initialValues.economicAcceptUser !== null ?
+                                                    `${initialValues.economicAcceptUser.name} ${initialValues.economicAcceptUser.surname}` :
+                                                    ''
+                                                : initialValues.planAcceptUser !== undefined && initialValues.planAcceptUser !== null ?
+                                                    `${initialValues.planAcceptUser.name} ${initialValues.planAcceptUser.surname}` :
+                                                        ''}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
                                         <InputField
                                             name="chiefAcceptUser"
                                             label={constants.ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER}
@@ -530,7 +626,7 @@ class PlanBasicInfoForm extends Component {
                                         <FormTableField
                                             className={classes.tableWrapper}
                                             name="positions"
-                                            head={ initialValues.type !== undefined && initialValues.type.code === "FIN" ? headFin : headInv }
+                                            head={initialValues.type !== undefined && initialValues.type.code === "FIN" ? headFin : initialValues.type !== undefined && initialValues.type.code === "INW" ? headInv : headPzp}
                                             allRows={positions}
                                             checkedRows={selected}
                                             toolbar={false}
@@ -562,15 +658,17 @@ class PlanBasicInfoForm extends Component {
                                         alignItems="flex-start"
                                         className={classes.containerBtn}
                                     >
-                                        { (initialValues.type !== undefined && initialValues.type.code === "INW" && levelAccess === "accountant")  &&
+                                        { (initialValues.type !== undefined && ['INW', 'PZP'].includes(initialValues.type.code)  && levelAccess === "accountant")  &&
                                             <>
-                                                {initialValues.status !== undefined && (initialValues.status.code === 'WY' || initialValues.status.code === 'RO' || initialValues.status.code === 'UZ') &&
+                                                {initialValues.status !== undefined && (initialValues.status.code === 'WY' || initialValues.status.code === 'RO' ||
+                                                    initialValues.status.code === 'UZ' || (initialValues.type.code === 'PZP' && initialValues.status.code === 'AD')) &&
                                                     <Button
                                                         label={constants.BUTTON_APPROVE}
                                                         icon=<Done/>
                                                         iconAlign="left"
                                                         variant="submit"
-                                                        disabled={initialValues.status !== undefined && initialValues.status.code !== 'UZ' }
+                                                        disabled={initialValues.status !== undefined && ((initialValues.type.code === 'IWW' && initialValues.status.code !== 'UZ') ||
+                                                            (initialValues.type.code ==='PZP' && initialValues.status.code !== 'AD'))}
                                                         onClick={this.handleApprove}
                                                     />
                                                 }
@@ -600,25 +698,27 @@ class PlanBasicInfoForm extends Component {
                                                 }
                                             </>
                                         }
-                                        { (initialValues.type !== undefined && initialValues.type.code === "INW" && levelAccess === "accountant") &&
+                                        { (initialValues.type !== undefined && ['INW', 'PZP'].includes(initialValues.type.code) && levelAccess === "accountant") &&
                                             <Button
                                                 label={constants.BUTTON_PREVIEW}
                                                 icon={<Visibility/>}
                                                 iconAlign="right"
                                                 disabled={Object.keys(selected).length === 0}
                                                 variant={"cancel"}
-                                                onClick={this.handleChangeVisibleDetails}
+                                                onClick={(event) => this.handleChangeVisibleDetails(event, "open")}
                                                 data-action="edit"
                                             />
                                         }
-                                        <Button
-                                            label={constants.BUTTON_REMARKS}
-                                            icon=<PriorityHigh/>
-                                            iconAlign="left"
-                                            variant="cancel"
-                                            disabled={selected.length === 0 ||  selected.length > 1}
-                                            onClick={this.handleRemarks}
-                                        />
+                                        { (initialValues.type !== undefined && initialValues.type.code !== "PZP") &&
+                                            <Button
+                                                label={constants.BUTTON_REMARKS}
+                                                icon=<PriorityHigh/>
+                                                iconAlign="left"
+                                                variant="cancel"
+                                                disabled={selected.length === 0 ||  selected.length > 1}
+                                                onClick={this.handleRemarks}
+                                            />
+                                        }
                                         { (initialValues.type !== undefined && initialValues.type.code === "INW" && levelAccess === "accountant")  &&
                                             <>
                                                 {initialValues.status !== undefined && (initialValues.status.code === 'WY' || initialValues.status.code === 'RO' || initialValues.status.code === 'UZ') &&

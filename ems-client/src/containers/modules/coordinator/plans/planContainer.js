@@ -242,6 +242,12 @@ class PlanContainer extends Component {
         if(payload.type === 'pzp'){
             payload.orderType = payload.orderType.code;
             payload.estimationType = payload.estimationType.code;
+            //If estimationType is UE parse euroExchangeRate parameter value
+            if(payload.estimationType === 'UE139'){
+                if(isNaN(payload.euroExchangeRate)){
+                    payload.euroExchangeRate = parseFloat(payload.euroExchangeRate.replace(",", "."));
+                }
+            }
         }
         if(payload.type === 'inw'){
             payload.subPositions.map(subPosition =>{
@@ -611,6 +617,7 @@ class PlanContainer extends Component {
                         orderTypes={orderTypes}
                         estimationTypes={estimationTypes}
                         isSubmit={this.handleIsSubmit}
+                        euroExchangeRate={this.props.euroExchangeRate}
                     />
                 :
                     <PlanUpdateFormContainer
@@ -638,6 +645,7 @@ class PlanContainer extends Component {
                         foundingSources={foundingSources}
                         orderTypes={orderTypes}
                         estimationTypes={estimationTypes}
+                        euroExchangeRate={this.props.euroExchangeRate}
                     />
                 }
             </>
@@ -660,6 +668,7 @@ const mapStateToProps = (state) => {
 	return {
 		isLoading: state.ui.loading,
 		error: state.ui.error,
+		euroExchangeRate: state.ui.euroRate,
 	}
 };
 

@@ -36,6 +36,7 @@ import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.time.Year;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PlanServiceImpl implements PlanService {
@@ -271,7 +272,7 @@ public class PlanServiceImpl implements PlanService {
         User user = Utils.getCurrentUser();
 
         switch (approvePlanType) {
-            /* Accountant approve for investments and update plan only allowed */
+            /* Accountant approve for investments public procurement and update plan allowed */
             case ACCOUNTANT:
                 plan.setStatus(CoordinatorPlan.PlanStatus.AK);
                 plan.setPlanAcceptUser(user);
@@ -326,12 +327,10 @@ public class PlanServiceImpl implements PlanService {
         if (plan.getCorrectionPlan() != null) {
             plan.getCorrectionPlan().setStatus(plan.getCorrectionPlan().getPlanAmountRealizedGross() == null ?
                     CoordinatorPlan.PlanStatus.ZA : CoordinatorPlan.PlanStatus.RE);
-            plan.getCorrectionPlan().getPositions().forEach(position -> {
-                position.setStatus(position.getAmountRealizedGross() == null ? CoordinatorPlanPosition.PlanPositionStatus.ZA :
-                        position.getAmountRealizedGross().equals(position.getAmountAwardedGross()) ?
-                                CoordinatorPlanPosition.PlanPositionStatus.ZR : CoordinatorPlanPosition.PlanPositionStatus.RE
-                );
-            });
+            plan.getCorrectionPlan().getPositions().forEach(position -> position.setStatus(position.getAmountRealizedGross() == null ? CoordinatorPlanPosition.PlanPositionStatus.ZA :
+                    position.getAmountRealizedGross().equals(position.getAmountAwardedGross()) ?
+                            CoordinatorPlanPosition.PlanPositionStatus.ZR : CoordinatorPlanPosition.PlanPositionStatus.RE
+            ));
             coordinatorPlanRepository.save(plan.getCorrectionPlan());
         }
         coordinatorPlanRepository.deleteById(plan.getId());
@@ -552,12 +551,24 @@ public class PlanServiceImpl implements PlanService {
                 CoordinatorPlan.PlanStatus.AA
         );
 
-        List<CoordinatorPlan.PlanType> types = Arrays.asList(
-                CoordinatorPlan.PlanType.FIN,
-                CoordinatorPlan.PlanType.INW
+        List<CoordinatorPlan.PlanStatus> publicProcurementStatuses = Arrays.asList(
+                CoordinatorPlan.PlanStatus.AK,
+                CoordinatorPlan.PlanStatus.AD,
+                CoordinatorPlan.PlanStatus.ZA,
+                CoordinatorPlan.PlanStatus.AN,
+                CoordinatorPlan.PlanStatus.RE,
+                CoordinatorPlan.PlanStatus.ZR,
+                CoordinatorPlan.PlanStatus.AA
         );
 
-        List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusInAndTypeIn(statuses, types);
+        List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusIn(statuses);
+
+        coordinatorPlans = coordinatorPlans.stream().filter(coordinatorPlan ->
+                (!coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) ||
+                        (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) && publicProcurementStatuses.contains(coordinatorPlan.getStatus())
+                        ))).collect(Collectors.toList());
+
+
         if (!coordinatorPlans.isEmpty()) {
             coordinatorPlans.forEach(this::setPlanAmountValues);
         }
@@ -571,6 +582,8 @@ public class PlanServiceImpl implements PlanService {
                 CoordinatorPlan.PlanStatus.WY,
                 CoordinatorPlan.PlanStatus.AZ,
                 CoordinatorPlan.PlanStatus.AD,
+                CoordinatorPlan.PlanStatus.AK,
+                CoordinatorPlan.PlanStatus.AN,
                 CoordinatorPlan.PlanStatus.ZA,
                 CoordinatorPlan.PlanStatus.RE,
                 CoordinatorPlan.PlanStatus.ZR

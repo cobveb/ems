@@ -34,7 +34,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(54.5)}px)`,
+        height: `calc(100vh - ${theme.spacing(60.6)}px)`,
     },
 });
 
@@ -388,7 +388,7 @@ class PlanBasicInfoForm extends Component {
                                     </Typography>
                                 </Toolbar>
                                 <Grid container spacing={1} justify="center" className={classes.container}>
-                                    <Grid item xs={12} sm={3}>
+                                    <Grid item xs={12} sm={4}>
                                         <InputField
                                             name="sendUser"
                                             label={constants.COORDINATOR}
@@ -398,18 +398,23 @@ class PlanBasicInfoForm extends Component {
                                                     ''}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={3}>
+                                    <Grid item xs={12} sm={4}>
                                         <InputField
-                                            name="planAcceptUser"
+                                            name={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? "planAcceptUser" : "publicAcceptUser" }
                                             label={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
                                                 constants.ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER : constants.PUBLIC_PLAN_COORDINATOR_ACCEPT_USER}
                                             disabled={true}
-                                            value={initialValues.planAcceptUser !== undefined && initialValues.planAcceptUser !== null ?
-                                                `${initialValues.planAcceptUser.name} ${initialValues.planAcceptUser.surname}` :
-                                                    ''}
+                                            value={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                initialValues.planAcceptUser !== undefined && initialValues.planAcceptUser !== null ?
+                                                    `${initialValues.planAcceptUser.name} ${initialValues.planAcceptUser.surname}` :
+                                                        ''
+                                                : initialValues.publicAcceptUser !== undefined && initialValues.publicAcceptUser !== null ?
+                                                    `${initialValues.publicAcceptUser.name} ${initialValues.publicAcceptUser.surname}` :
+                                                        ''
+                                            }
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={3}>
+                                    <Grid item xs={12} sm={4}>
                                         <InputField
                                             name="directorAcceptUser"
                                             label={constants.ACCOUNTANT_PLAN_COORDINATOR_DIRECTOR_ACCEPT_USER}
@@ -419,7 +424,22 @@ class PlanBasicInfoForm extends Component {
                                                     ''}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} sm={3}>
+                                    <Grid item xs={12} sm={6}>
+                                        <InputField
+                                            name={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ? "economicAcceptUser" : "planAcceptUser" }
+                                            label={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                constants.ACCOUNTANT_PLAN_COORDINATOR_ECONOMIC_ACCEPT_USER : constants.ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER}
+                                            disabled={true}
+                                            value={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                initialValues.economicAcceptUser !== undefined && initialValues.economicAcceptUser !== null ?
+                                                    `${initialValues.economicAcceptUser.name} ${initialValues.economicAcceptUser.surname}` :
+                                                    ''
+                                                : initialValues.planAcceptUser !== undefined && initialValues.planAcceptUser !== null ?
+                                                    `${initialValues.planAcceptUser.name} ${initialValues.planAcceptUser.surname}` :
+                                                        ''}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
                                         <InputField
                                             name="chiefAcceptUser"
                                             label={constants.ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER}
@@ -477,19 +497,31 @@ class PlanBasicInfoForm extends Component {
                                         alignItems="flex-start"
                                         className={classes.containerBtn}
                                     >
-                                        {(initialValues.status !== undefined && ['AZ','AK', 'AE','AD'].includes(initialValues.status.code))  &&
+                                        {(initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                initialValues.status !== undefined && ['AK','AD','AE',].includes(initialValues.status.code)
+                                            :
+                                                initialValues.status !== undefined && ['AZ','AK'].includes(initialValues.status.code)) &&
                                             <>
                                                 <Button
-                                                    label={initialValues.status.code === 'AK' || initialValues.status.code === 'AZ' ?
-                                                     constants.BUTTON_APPROVE_DIRECTOR : initialValues.status.code === 'AD' ?
-                                                        constants.BUTTON_APPROVE_ECONOMIC : constants.BUTTON_APPROVE_CHIEF }
+                                                    label={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                        initialValues.status.code === 'AK' ? constants.BUTTON_APPROVE_DIRECTOR
+                                                            : initialValues.status.code === 'AD' ? constants.BUTTON_APPROVE_ECONOMIC
+                                                                : constants.BUTTON_APPROVE_CHIEF
+                                                    :
+                                                        initialValues.status.code === 'AZ' ? constants.BUTTON_APPROVE_DIRECTOR
+                                                            : constants.BUTTON_APPROVE_CHIEF
+                                                        }
                                                     icon=<DoneAll/>
                                                     iconAlign="left"
                                                     variant="submit"
-                                                    onClick={initialValues.status.code === 'AK' || initialValues.status.code === 'AZ' ?
-                                                        (event) => this.handleApprove(event, "approveDirector") : initialValues.status.code === 'AD' ?
-                                                            (event) => this.handleApprove(event, "approveEconomic") :
-                                                                (event) => this.handleApprove(event, "approveChief")}
+                                                    onClick={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
+                                                        initialValues.status.code === 'AK' ? (event) => this.handleApprove(event, "approveDirector")
+                                                            : initialValues.status.code === 'AD' ? (event) => this.handleApprove(event, "approveEconomic")
+                                                                : (event) => this.handleApprove(event, "approveChief")
+                                                    :
+                                                        initialValues.status.code === 'AZ' ? (event) => this.handleApprove(event, "approveDirector")
+                                                            : (event) => this.handleApprove(event, "approveChief")
+                                                    }
                                                 />
                                             </>
                                         }

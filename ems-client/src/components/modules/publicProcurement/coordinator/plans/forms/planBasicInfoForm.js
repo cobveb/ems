@@ -5,7 +5,7 @@ import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { Button, InputField } from 'common/gui';
 import * as constants from 'constants/uiNames';
-import { FormTableField } from 'common/form';
+import { FormTableField, FormAmountField } from 'common/form';
 import { Cancel, Description, LibraryBooks, Visibility, DoneAll, CheckCircle } from '@material-ui/icons/';
 import PlanPublicProcurementContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planPublicProcurementContentPositionFormContainer';
 
@@ -29,7 +29,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(52)}px)`,
+        height: `calc(100vh - ${theme.spacing(64.4)}px)`,
     },
 });
 
@@ -98,7 +98,7 @@ class PlanBasicInfoForm extends Component {
             case("PZP"):
                 return(
                     <PlanPublicProcurementContentPositionFormContainer
-                        initialValues={positionAction === 'add' ? {vat: vats[1]} : selected[0]}
+                        initialValues={selected[0]}
                         planStatus={initialValues.status.code}
                         action={positionAction}
                         modes={modes}
@@ -114,8 +114,7 @@ class PlanBasicInfoForm extends Component {
                         onExcelExport={this.handleExcelExport}
                     />
                 )
-            default:
-                return null;
+            //no default
         };
 
     };
@@ -254,6 +253,22 @@ class PlanBasicInfoForm extends Component {
                                         value={initialValues.status !== undefined ? initialValues.status.name : ''}
                                     />
                                 </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <FormAmountField
+                                        name={"planAmountRequestedNet"}
+                                        label={constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REQUESTED_VALUE}
+                                        suffix={'zł.'}
+                                        disabled
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <FormAmountField
+                                        name={"planAmountRealizedNet"}
+                                        label={constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REALIZED_VALUE}
+                                        suffix={'zł.'}
+                                        disabled
+                                    />
+                                </Grid>
                             </Grid>
                             <Toolbar className={classes.toolbar}>
                                 <CheckCircle className={classes.subHeaderIcon} fontSize="small" />
@@ -262,7 +277,7 @@ class PlanBasicInfoForm extends Component {
                                 </Typography>
                             </Toolbar>
                             <Grid container spacing={1} justify="center" className={classes.container}>
-                                <Grid item xs={12} sm={3}>
+                                <Grid item xs={12} sm={4}>
                                     <InputField
                                         name="sendUser"
                                         label={constants.COORDINATOR}
@@ -272,17 +287,17 @@ class PlanBasicInfoForm extends Component {
                                                 ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={3}>
+                                <Grid item xs={12} sm={4}>
                                     <InputField
-                                        name="planAcceptUser"
+                                        name="publicAcceptUser"
                                         label={constants.PUBLIC_PLAN_COORDINATOR_ACCEPT_USER}
                                         disabled={true}
-                                        value={initialValues.planAcceptUser !== undefined && initialValues.planAcceptUser !== null ?
-                                            `${initialValues.planAcceptUser.name} ${initialValues.planAcceptUser.surname}` :
+                                        value={initialValues.publicAcceptUser !== undefined && initialValues.publicAcceptUser !== null ?
+                                            `${initialValues.publicAcceptUser.name} ${initialValues.publicAcceptUser.surname}` :
                                                 ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={3}>
+                                <Grid item xs={12} sm={4}>
                                     <InputField
                                         name="directorAcceptUser"
                                         label={constants.ACCOUNTANT_PLAN_COORDINATOR_DIRECTOR_ACCEPT_USER}
@@ -292,7 +307,17 @@ class PlanBasicInfoForm extends Component {
                                                 ''}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={3}>
+                                <Grid item xs={12} sm={6}>
+                                    <InputField
+                                        name="planAcceptUser"
+                                        label={constants.ACCOUNTANT_PLAN_COORDINATOR_ACCOUNTANT_ACCEPT_USER}
+                                        disabled={true}
+                                        value={initialValues.planAcceptUser !== undefined && initialValues.planAcceptUser !== null ?
+                                            `${initialValues.planAcceptUser.name} ${initialValues.planAcceptUser.surname}` :
+                                                ''}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
                                     <InputField
                                         name="chiefAcceptUser"
                                         label={constants.ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER}

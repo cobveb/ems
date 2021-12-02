@@ -67,6 +67,16 @@ class PlanFoundingSourcesForm extends Component {
                     })
                     sourceAmountAgreedGross = parseFloat(sourceAmountAgreedGross - sumSourceAwardedGross).toFixed(2);
                     sourceExpensesPlanAwardedAgreedGross = parseFloat(sourceExpensesPlanAwardedAgreedGross - sumSourceExpenseAwardedGross).toFixed(2);
+                } else {
+                    const source = this.props.targetUnits[0].fundingSources.filter(source => source.type.code === sourceType.code)
+                    console.log(source)
+                    console.log(source.sourceAmountAwardedGross)
+                    if(source.length >0){
+                        if(source.sourceAmountAwardedGross !== null && source.sourceExpensesPlanAwardedGross !== null){
+                            sourceAmountAgreedGross -= source[0].sourceAmountAwardedGross;
+                            sourceExpensesPlanAwardedAgreedGross -= source[0].sourceExpensesPlanAwardedGross;
+                        }
+                    }
                 }
             }
             return {sourceAmountAgreedGross,  sourceExpensesPlanAwardedAgreedGross}

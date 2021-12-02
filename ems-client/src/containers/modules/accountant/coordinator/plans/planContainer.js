@@ -5,7 +5,7 @@ import { loading, setError } from 'actions/';
 import PropTypes from 'prop-types';
 import PlanBasicInfoForm from 'containers/modules/accountant/coordinator/plans/forms/planBasicInfoFormContainer';
 import PlanUpdateFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planUpdateFormContainer';
-import {findSelectFieldPosition, generateExportLink, findIndexElement, getVats, getCoordinatorPlanPositionsStatuses} from 'utils';
+import {findSelectFieldPosition, generateExportLink, findIndexElement, getVats, getCoordinatorPlanPositionsStatuses, publicProcurementEstimationTypes, publicProcurementOrderTypes } from 'utils';
 import PlansApi from 'api/modules/accountant/coordinator/plansApi';
 import DictionaryApi from 'api/common/dictionaryApi';
 
@@ -17,6 +17,8 @@ class PlanContainer extends Component {
         fundingSources:[],
         vats: getVats(),
         statuses: getCoordinatorPlanPositionsStatuses(),
+        orderTypes: publicProcurementOrderTypes(),
+        estimationTypes: publicProcurementEstimationTypes(),
     }
 
     handleGetDictionaryFoundingSources(){
@@ -115,6 +117,25 @@ class PlanContainer extends Component {
                         ))
                         return {initData};
                     });
+                break;
+                case("PZP"):
+                    this.setState( prevState => {
+                        let initData = {...prevState.initData};
+                        Object.assign(initData, this.props.initialValues);
+                        initData.positions = response.data.data;
+                        initData["positions"].map(position => (
+                            Object.assign(position,
+                            {
+                                vat: position.vat = findSelectFieldPosition(this.state.vats, position.vat),
+                                orderType: position.orderType = findSelectFieldPosition(this.state.orderTypes, position.orderType),
+                                status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                                mode: position.mode = findSelectFieldPosition(this.props.modes, position.mode.code),
+                                estimationType: position.estimationType = findSelectFieldPosition(this.state.estimationTypes, position.estimationType),
+                            }
+                        )))
+                        return {initData};
+                    });
+//                    this.handleGetDictionaryAssortmentGroups();
                 break;
                 // no default
             }
@@ -307,7 +328,7 @@ class PlanContainer extends Component {
     }
     render(){
         const {action, handleClose, error, isLoading, levelAccess } = this.props;
-        const {initData, vats, fundingSources } = this.state;
+        const {initData, vats, fundingSources, estimationTypes, orderTypes} = this.state;
         return(
             <>
                 {!initData.isUpdate ?
@@ -328,6 +349,9 @@ class PlanContainer extends Component {
                         onExcelExport={this.handleExcelExport}
                         fundingSources={fundingSources}
                         vats={vats}
+                        modes={this.props.modes}
+                        estimationTypes={estimationTypes}
+                        orderTypes={orderTypes}
                     />
                 :
                     <PlanUpdateFormContainer
