@@ -80,7 +80,7 @@ public class PasswordValidatorImpl implements PasswordValidator {
                 break;
             }
             case "minSpecialChar": {
-                pattern = "(?=(?:.*[@#$%!&*^].*){"+ value +"})";
+                pattern = "(?=(?:.*[@#$%!&*^.].*){" + value + "})";
                 break;
             }
             default:{

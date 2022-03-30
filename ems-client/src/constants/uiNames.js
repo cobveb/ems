@@ -59,6 +59,7 @@ export const ORGANIZATION_UNIT_ECONOMIC = 'Dyrektor Ekonomiczny';
 export const ORGANIZATION_UNIT_CHIEF = 'Dyrektor Naczelny';
 export const ORGANIZATION_UNIT_COORDINATORS = 'Podlegli Koordynatorzy:';
 export const ORGANIZATION_UNIT_COORDINATOR_CODE = 'Kod';
+export const ORGANIZATION_UNIT_COORDINATOR_SYMBOL = 'Symbol kancelaryjny';
 export const ORGANIZATION_UNIT_COORDINATOR_NAME = 'Nazwa';
 export const ORGANIZATION_UNIT_DIRECTOR_REMOVE_COORDINATOR_MESSAGE = 'Koordynator przestanie być podległy Dyrektorowi. Czy kontunuować?';
 /* components/modules/administrator/organizationUnitFormValid.js */
@@ -226,7 +227,7 @@ export const COORDINATOR_MENU_PLANS = 'Obsługa planów';
 export const COORDINATOR_SUBMENU_PLANS = 'Plany';
 export const COORDINATOR_MENU_REGISTERS = 'Rejestry';
 export const COORDINATOR_MENU_PUBLIC_PROCUREMENT = 'Zamówienia publiczne';
-export const COORDINATOR_SUBMENU_PUBLIC_APPLICATION = 'Wnioski';
+export const COORDINATOR_SUBMENU_PUBLIC_APPLICATION = 'Wnioski ZP';
 export const COORDINATOR_SUBMENU_PUBLIC_REGISTER = 'Rejestr';
 export const COORDINATOR_SUBMENU_PUBLIC_REALIZATION = 'Realizacja';
 export const COORDINATOR_MENU_DICTIONARIES = 'Słowniki';
@@ -272,12 +273,11 @@ export const COORDINATOR_PLAN_POSITION_STATUS_EXECUTED = 'Zrealizowana';
 export const COORDINATOR_PLAN_POSITION_STATUS_UPDATED = 'Zaktualizowana';
 export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_DELIVERY = 'Dostawa';
 export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_SERVICE = 'Usługa';
-export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_DO50 = 'Do 50 000 zl netto';
-export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_D0130 = 'Powyżej 50 000 do 130 000 zl netto';
-export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_PO130 = 'Powyżej 130 000 zł netto BZP';
-export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_UE139 = 'Powyżej 139 000 euro netto UZP';
-export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_WR = 'Wolna ręka';
-export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_COVID = 'COVID';
+export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_CONSTRUCTION_WORKS = 'Roboty budowlane';
+export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_DO50 = 'Do 50 000 zł netto';
+export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_D0130 = 'Wyższy niż 50 000 zł netto i niższy niż 130 000 zł netto';
+export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_PO130 = 'Równy lub przekraczający 130 000 zł netto BZP';
+export const COORDINATOR_PLAN_POSITION_ORDER_TYPE_UE139 = 'Równy lub przekraczający progi unijne';
 /* components/modules/coordinator/plans/plan.js */
 export const COORDINATOR_PLAN_CREATE_NEW_PLAN_TITLE = 'Nowy plan';
 export const COORDINATOR_PLAN_EDIT_PLAN_TITLE = 'Edycja planu: ';
@@ -339,7 +339,7 @@ export const COORDINATOR_PLAN_POSITION_PUBLIC_ORDERED_OBJECT = 'Przedmiot zamów
 export const COORDINATOR_PLAN_POSITION_PUBLIC_ORDER_TYPE = 'Rodzaj zamówienia';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP = 'Grupa asortymentowa';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUPS = 'Grupy asortymentowe planu zamówień publicznych';
-export const COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_MODE = 'Tryb udzielenia';
+export const COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_MODE = 'Próg';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_NET = 'Orientacyjna kwota netto';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_INITIATION_TERM = 'Termin wszczęcia';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_COMMENTS = 'Uwagi';
@@ -413,6 +413,16 @@ export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AFTER_CORRECTED_GROSS = "Kw
 export const COORDINATOR_PLAN_UPDATE_PLAN_AMOUNT_AWARDED_EXCEEDED = "Przekroczono zatwierdzoną wartość planu";
 /* containers/modules/coordinator/publicProcurement/applications/applicationsContainer.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_SAVE = 'Zapisany';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_SEND = 'Wysłany';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED_PUBLIC_PROCUREMENT = 'Akceptacja ZP';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED_DIRECTOR = 'Akceptacja - Dyrektor pionu';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED_MEDICAL = 'Akceptacja - Dyrektor medyczny';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED_ACCOUNTANT = 'Akceptacja - Główny księgowy';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED_CHIEF = 'Akceptacja - Dyrektor naczelny';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED = 'Zaakceptowany';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_REALIZED = 'Realizowany';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_EXECUTED = 'Zrealizowany';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_CANCELLED = 'Anulowany';
 /* components/modules/coordinator/publicProcurement/applications/applications.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_TITLE = 'Wnioski o udzielenie zamówień publicznych';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_ORDER_VALUE_NET = 'Wartość wniosku netto';
@@ -431,69 +441,158 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_HEAD_TABLE_CRITERIA_NAME
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_TITLE_CREATE = 'Nowy wniosek o udzielenie zamówienia publicznego';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_TITLE_EDIT = 'Edycja wniosku o udzielenie zamówienia publicznego: ';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_NUMBER = 'Numer wniosku';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MEDICAL_DIRECTOR_ACCEPT_USER = 'Zatwierdzenie Dyrektor Medyczny';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MODE = 'Tryb wniosku';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CREATE_DATE = 'Data utworzenia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SEND_DATE = 'Data przekazania do ZP';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS = 'Status';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_IS_REPLAY = 'Czy obecny wniosek jest powtórką?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SOURCE_APPLICATION = 'Numer wniosku źródłowego';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ACCEPT_PATH = 'Akceptacja wniosku';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_GROUPS = 'Grupy asortymentowe';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDERING_MODE = 'Tryb udzielenia zamówienia';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_THRESHOLD = 'Próg';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VAT = 'Vat';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MODE_PLANNED = 'Planowany';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PARTS = 'Podział zamówienia na części';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_REASON_LACK_PARTS = 'Zamówienie nie zostało podzielone na części, ponieważ';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_CPV = 'CPV (Wspólny Słownik Zamówień)';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_PROCEDURE = 'Tryb udzielenia zamówienia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MODE_UNPLANNED = 'Nie ujęty w planie';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_REASON_NOT_INCLUDED = 'Powód nie ujęcia w planie';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_COMBINED = 'Czy wniosek łączony?';
-export const COORDINATOR_PLAN_POSITION_PUBLIC_COORDINATOR_COMBINED = 'Koordynator z którym wniosek będzie łączony';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE = 'Zamówienie ujęte w:';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_FINANCIAL = 'planie finansowym';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_INVESTMENT = 'planie inwestycyjnym';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ART_30 = 'Zastosowanie art. 30 ust. 4 ustawy PZP?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_COORDINATOR_COMBINED = 'Koordynator z którym wniosek będzie łączony';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_NET = 'Wartość zamówienia netto';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_GROSS = 'Wartość zamówienia brutto';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_YEAR_NET = 'Do wydania w roku bieżącym netto';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_YEAR_GROSS = 'Do wydania w roku bieżącym brutto';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_GROUP_VALUE = 'Wartość grupy netto';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_GROUP_APPLICATION_VALUE = 'Wartość zamówienia w ramach grupy netto';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_BASED = 'Podstawa określenia wartości zamówienia';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_SETTING_VALUE_PERSON = 'Osoba ustalająca wartość';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_DATE_ESTABLISHED_VALUE = 'Ustalenie wartości';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_BASED = 'Podstawa określenia wartości szacunkowej zamówienia';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_SETTING_VALUE_PERSON = 'Z należytą starannością wartość szacunkową zamówienia ustalił/a';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_DATE_ESTABLISHED_VALUE = 'Data ustalenia wartości szacunkowej';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_JUSTIFICATION_PURCHASE = 'Uzasadnienie zakupu';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_DESCRIPTION = 'Opis przedmiotu zamówienia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_PREPARING_DESCRIPTION = 'Osoby przygotowujące opis przedmiotu zamówienia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_REQUIREMENTS_VARIANT_BIDS = 'Wymogi dotyczące ewentualnych ofert wariantowych';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PROPOSED_ORDERING_PROCEDURE = 'Proponowany tryb udzielenia zamówienia (w przypadku proponowania trybu innego niż przetarg nieograniczony'
-                                                                                       + ' lub ograniczony wskazać uzasadnienie formalne)';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PROPOSED_ORDERING_PROCEDURE = 'W przypadku proponowania trybu innego niż przetarg nieograniczony (UE) lub ograniczony (UE), tryb podstawowy (BZP) - wskazać uzasadnienie';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_PREPARING_JUSTIFICATION = 'Osoby przygotowujące uzasadnienie faktyczne i prawne wyboru trybu udzielenia zamówienia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_REALIZATION_TERM = 'Termin realizacji zamówienia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_CONTRACTOR_NAME = 'Nazwa wykonawcy, z którym będą przeprowadzone negocjacje';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_CHOOSING_CONTRACTOR = 'Osoby dokonujące wyboru wykonawcy zaproszonego do negocjacji/dokonujące wyboru wykonawców zaproszonych do składania ofert';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_CONTRACTOR_CONDITIONS = 'Warunki, które musi spełnić wykonawca';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_PREPARING_CONDITIONS = 'Osoby przygotowujące opis sposobu dokonywania oceny spełniania warunków udziału w postępowaniu';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_IMPORTANT_RECORDS = 'Istotne zapisy związane z przedmiotem zamówienia';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_JUSTIFICATION_NON_COMPETITIVE_PROCEDURE = 'Uzasadnienie niekonkurencyjnej procedury';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_CHOOSING_CONTRACTOR = 'Osoba dokonująca wyboru wykonawcy zaproszonego do negocjacji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_CONTRACTOR_CONDITIONS = 'Warunki, które musi spełnić wykonawca, aby móc uczestniczyć w postępowaniu';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_PREPARING_CONDITIONS = 'Osoba przygotowująca opis warunków udziałów w postępowaniu w tym sposobu dokonania ich oceny oraz określająca przedmiotowe środki dowodowe';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONDITIONS_PARTICIPATION = 'Warunki udziału w postępowaniu / przedmiotowe środki dowodowe';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_IMPORTANT_RECORDS_UP_TO_130 = 'Istotne zapisy związane z przedmiotem zamówienia konieczne, do umieszczenia w zaproszeniu do składania ofert lub/i projekcie umowy';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_IMPORTANT_RECORDS_UE = 'Istotne zapisy związane z przedmiotem zamówienia konieczne, do umieszczenia w SWZ lub/i projekcie umowy';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERIA_EVALUATION_OFFERS = 'Kryteria oceny ofert';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_PREPARING_CRITERIA = 'Osoby określające kryteria oceny ofert';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_TENDER_COMMITTEE = 'Osoby proponowane do składu Komisji Przetargowej/przeprowadzenia negocjacji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MARKET_CONSULTATION = 'Informacja o przeprowadzeniu Wstępnych Konsultacji Rynkowych zgodnie z art. 84 ustawy PZP';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_FINANCED = 'Informacja czy przedmiot zamówienia jest finansowany z MZ, UE itp.';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONTRACTOR_PARTICIPATED_PREPARATION = 'Informacja czy istnieje możliwość, że o udzielenie zamówenia będzie ubiegał się podmiot, który uczestniczył w przygotowaniu postępowania';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MEASURES_AVOIDANCE_DISTORTIONS = 'Wskazać środki mające na celu zapobieżenie zakłócenia uczciwej konkurencji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SECURING_CONTRACT = 'Informacja na temat zabezpieczenia należytego wykonania umowy';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WARRANTY_REQUIREMENTS = 'Wymagania dotyczące gwarancji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PROTOCOL = 'Protokół';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONTRACTOR_CONTRACT = 'Po wykonaniu czynności określonych w Regulaminie udzielania zamówień publicznych proponuję udzielić zamówienia Wykonawcy';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT = 'Opis wykonanych czynności - forma rozeznania cenowego';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_EMAIL = 'mailowa';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_PHONE = 'telefoniczna';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_INTERNET = 'cenniki internetowe';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_PAPER = 'oferty papierowe';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_OTHER = 'inna';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_OTHER_DESC = 'tj.';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_RENOUNCEMENT = 'odstąpienie od rozeznania';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_NON_COMPETITIVE= 'uzasanienie niekonkurencyjnej procedury';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PARTS_VALUE_NET= 'Suma części netto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PARTS_VALUE_GROSS= 'Suma części brutto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_OFFER_PRICE = 'Cena wybranej oferty';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_OFFER_PRICE_GROUP_NET = 'Cena wybranej oferty netto w ramach grupy';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_OFFER_PRICE_GROUP_GROSS = 'Cena wybranej oferty brutto w ramach grupy';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERFORMED_ACTIVITIES = 'Opis wykonanych czynności – forma rozeznania cenowego';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_JUSTIFICATION_CHOOSING_OFFER = 'Uzasadnienie wyboru oferty/ustalenia z negocjacji';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_COMMENTS = 'Uwagi';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_SEND_MESSAGE = 'Wniosek zostanie przkazany do Działu Zamówień Publicznych. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_SEND_MSG = 'Wniosek zostanie przkazany do Działu Zamówień Publicznych. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_APPROVE_MSG = 'Wniosek zostanie zaakceptowany. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_APPROVE_DIRECTOR_MSG = 'Wniosek zostanie zaakceptowany na poziomie Dyrektora Pionu. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_APPROVE_MEDICAL_MSG = 'Wniosek zostanie zaakceptowany na poziomie Dyrektora Medycznego. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_APPROVE_ACCOUNTANT_MSG = 'Wniosek zostanie zaakceptowany na poziomie Głównego Księgowego. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_WITHDRAW_MSG = 'Wniosek zostanie anulowany. Kwota realizacji zostanie zwrócona do ponownego wykożystania. Operacja nie będzie możliwa do wycofania. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_SEND_BACK_MSG = 'Wniosek zostanie zwrócony do Koordynatora. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_REALIZATION_MSG = 'Realizacja wniosku zostanie zakończona. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ROLLBACK_REALIZATION_MSG = 'Realizacja wniosku zostanie wycofana. Wniosek zostanie anulowany. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ROLLBACK_PARTS_REALIZATION_MSG = 'Realizacja części wniosku zostanie wycofana. Czy kontyniować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_PROTOCOL = 'Protokół';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_REALIZED = 'Zakończ';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_ROLLBACK_REALIZATION = 'Anuluj wniosek';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_ROLLBACK_PART_REALIZATION = 'Wycofaj część realizacji';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationFormValid.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENTS_GROUPS_NET_EXCEEDED = 'Wartość zamówienia większa niż wartość grup asortymentowych';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_NET_EXCEEDED = 'Wartość w roku bieżącym większa niż wartość zamówienia';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE = 'Wymagane wprowadzenie pozycji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CHECKBOX_FIELD_REQUIRE = 'Wymagane wybranie opcji';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationAssortmentGroupsForm.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP = 'Grupa asortymentowa wniosku o udzielenie zamówienia publicznego';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_GROUP_INFO = 'Dane grupy w ramach planu';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_INFO = 'Dane grupy w ramach wniosku';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_VALUE_NET = 'Wartość grupy w ramach planu';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_GROUP_INFO = 'Dane grupy asortymentowej w ramach planu zamówień publicznych instytucji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_INFO = 'Dane grupy asortymentowej w ramach wniosku';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_VALUE_NET = 'Całkowita wartość netto grupy asortymentowej';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_PLAN_TYPE_FIN = 'Pozycja w ramach planu finansowego';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_FINANCIAL_PLAN_POSITION = 'Numer kosztu rodzajowego z planu finansowego';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_POSITION_NET = 'Wartość pozycji netto w roku bieżącym';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_POSITION_GROSS = 'Wartość pozycji brutto w roku bieżącym';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_PLAN_TYPE_INW = 'Pozycja w ramach planu inwestycyjnego';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_INVESTMENT_PLAN_POSITION = 'Nazwa zadania inwestycyjnego';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_INFERRED_VALUE_NET = 'Wartość złożonych wniosków w ramach grupy';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_VALUE_NET = 'Realizacja grupy w ramach planu';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_VALUE_NET = 'Wartość zamówienia w ramach grupy netto';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_VALUE_GROSS = 'Wartość zamówienia w ramach grupy brutto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_VALUE_NET_50 = 'Wartość udzielanego zamówienia netto / cena wybranej oferty netto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_VALUE_NET_OTHER = 'Szacunkowa wartość udzielanego zamówienia netto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_VALUE_GROSS_50 = 'Wartość udzielanego zamówienia brutto / cena wybranej oferty brutto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_VALUE_GROSS_OTHER = 'Szacunkowa wartość udzielanego zamówienia brutto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_NEXT_YEARS = 'Wydatki w latach kolejnych';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_ART30 = 'Realizacja art. 30 ust. 4';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_NET_ART30 = 'Realizacja netto art. 30 ust. 4';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_GROSS_ART30 = 'Realizacja brutto art. 30 ust. 4';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_VALUE_CONTRACT_AWARDED_NET = 'Wartość udzielonego zamówienia netto w ramach grupy';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_VALUE_CONTRACT_AWARDED_GROSS = 'Wartość udzielonego zamówienia brutto w ramach grupy';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationAssortmentGroupsFormValid.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_GROUP_EXISTS = 'Wybrana grupa asotymentowa istnieje w ramach wniosku';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_YEAR_REQUESTED_INVALID = 'Kwota do wydania w roku większa od wartości zamówienia w ramach grupy';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_REQUESTED_INVALID = 'Kwota do wydania w roku większa od wartości grupy';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_INVALID = 'Kwota do wydania w roku większa od możliwej wartości realizacji grupy';
+/* components/modules/coordinator/publicProcurement/applications/forms/applicationPlanPositionForm.js */
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_TITLE_CREATE = 'Nowa pozycja';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_TITLE_EDIT = 'Edycja pozycji';
+/* components/modules/coordinator/publicProcurement/applications/forms/subsequentYearsForm.js */
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_YEAR_TITLE_CREATE = 'Wydatek w latach kolenych';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_YEAR_TITLE_EDIT = 'Edycja wydatku na rok: ';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_YEAR_EXPENDITURE_NET = 'Wartość wydatku netto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_YEAR_EXPENDITURE_GROSS = 'Wartość wydatku brutto';
+/* components/modules/coordinator/publicProcurement/applications/forms/subsequentYearsFormValid.js */
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_YEAR_EXISTS = 'Wydatek w danym roku już istnieje';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_EQUAL_YEAR = 'Rok wydatku musi być różny od bieżącego';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_PAST_YEAR = 'Rok wydatku nie może być z przeszłości';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_MAX_VALUE = 'Wartość w roku większa od wartości w ramach grupy';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationPartForm.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_TITLE_CREATE = 'Nowa część zamówienia';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_TITLE_EDIT = 'Edycja części zamówienia numer: ';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_TITLE_EDIT = 'Edycja części zamówienia: ';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_OPTION = 'Prawo opcji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_OPTION_PERCENT_VALUE = 'Wartość % opcji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_OPTION_NET = 'Wartość opcji netto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_OPTION_GROSS = 'Wartość opcji brutto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_SUM_NET = 'Suma netto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_SUM_GROSS = 'Suma brutto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_REALIZED_TITLE = 'Informacje o realizacji w ramach wniosku';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_REALIZED = 'Realizacja części w ramach wniosku';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_REASON_NOT_REALIZED = 'Powód nie zrealizowania części';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_DESC_NOT_REALIZED = 'Opis';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_VALUE_CONTRACT_AWARDED_NET = 'Wartość udzielonego zamówienia netto w ramach części';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_VALUE_CONTRACT_AWARDED_GROSS = 'Wartość udzielonego zamówienia brutto w ramach części';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_CONFIRM_WITHDRAW_REALISATION_MSG = 'Realizacja części zostanie anulowana. Modyfikacja części będzie niemożliwa. Czy kontynuować?';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationPartFormValid.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_INVALID_VALUE_NET = 'Kwota większa niż wartość zamówienia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_INVALID_COUNT_VALUE_NET = 'Wartość części większa niż wartość zamówienia';
@@ -504,6 +603,21 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_SCORING_DESCRI
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationCriterionFormValid.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_INVALID_VALUE = 'Maksymalna wartość 100%';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_INVALID_COUNT_VALUE = 'Wartość kryteriów ponad 100%';
+/* components/modules/coordinator/publicProcurement/applications/forms/protocolForm.js */
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_TITLE = 'Protokół z udzielenia zamówienia';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_ACCEPT_PATH = 'Akceptacja protokołu';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPLICATION_NUMBER = 'Dot. wniosku numer';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_PROCEDURE_NUMBER = 'Numer postępowania';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_RECEIVED_OFFERS = 'Otrzymane oferty';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICES_VALUE_NET = 'Suma cen netto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICES_VALUE_GROSS = 'Suma cen brutto';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_CONTRACTOR_CONTRACT = 'Zgodnie z zapisami w Regulaminie udzielania zamówień publicznych proponuję udzielić zamówienia Wykonawcy';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_COMMENTS = 'Uwagi';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_CONFIRM_COORDINATOR_MSG = "Protokół zostanie przekazany do Działu Zamówień Publicznych. Czy kontynuować?";
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_CONFIRM_PUBLIC_MSG = "Protokół zostanie przekazany do Głównego Księgowego. Czy kontynuować?";
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_CONFIRM_ACCOUNTANT_MSG = "Protokół zostanie przekazany do Dyrektora Naczelnego. Czy kontynuować?";
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_CONFIRM_CHIEF_MSG = "Protokół zostanie zaakceptowany. Czy kontynuować?";
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_CONFIRM_SEND_BACK_MSG = "Protokół zostanie wycofany. Czy kontynuować?";
 /* components/modules/coordinator/registers/publicProcurement/publicProcurement.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_REGISTER_TITLE = 'Rejestr zamówień publicznych';
 export const COORDINATOR_PUBLIC_PROCUREMENT_REGISTER_TABLE_HEAD_ROW_START_DATE = 'Data wszczęcia';
@@ -533,7 +647,7 @@ export const COORDINATOR_REGISTER_PUBLIC_PROCUREMENT_POSITIONS_DOCUMENT_REALIZAT
 /* components/modules/coordinator/plans/forms/planPublicProcurementContentPosition */
 export const COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_GROSS = 'Orientacyjna kwota brutto';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_PROCEDURE_MODE = 'Tryb lub procedura udzielenia';
-export const COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_ESTIMATION_TYPE = 'Typ wartości szacukowej';
+export const COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_ESTIMATION_TYPE = 'Próg';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_EURO_EXCHANGE_RATE = 'Kurs Euro';
 export const COORDINATOR_PLAN_POSITION_PUBLIC_EURO_VALUE_NET = 'Wartość Euro netto';
 /* components/modules/accountant/accountant.js */
@@ -543,7 +657,10 @@ export const ACCOUNTANT_MENU_INSTITUTION = 'Instytucja';
 export const ACCOUNTANT_MENU_DICTIONARIES = 'Słowniki';
 export const ACCOUNTANT_SUBMENU_INSTITUTION_PLANS = 'Plany';
 export const ACCOUNTANT_SUBMENU_COORDINATOR_PLANS = 'Plany';
+export const ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_APPLICATIONS = 'Wnioski ZP';
+export const ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_PROTOCOLS = 'Protokoły ZP';
 export const ACCOUNTANT_SUBMENU_DICTIONARIES_COST_TYPES = 'Rodzaje kosztów';
+export const ACCOUNTANT_SUBMENU_DICTIONARIES_CONTRACTORS = 'Kontrahenci';
 /* components/modules/accountant/coordinator/plans/plans.js */
 export const ACCOUNTANT_COORDINATOR_PLANS_TITLE = 'Plany Koordynatorów';
 export const ACCOUNTANT_COORDINATOR_PLANS_TABLE_HEAD_ROW_COORDINATOR = 'Koordynator';
@@ -604,11 +721,23 @@ export const ACCOUNTANT_COST_TYPE_ALL_COORDINATORS = 'Koordynatorzy: ';
 export const ACCOUNTANT_COST_TYPE_YEAR_COORDINATORS = 'Przypisani koordynatorzy: ';
 /*components/modules/accountant/dictionary/forms/costYearFormValid.js*/
 export const ACCOUNTANT_COST_TYPE_YEAR_EXISTS = 'Podany okres obowiązywania istnieje';
+/* components/modules/accountant/dictionary/contractors.js */
+export const ACCOUNTANT_CONTRACTORS_TABLE_HEAD_ROW_CODE = 'Kod';
+export const ACCOUNTANT_CONTRACTORS_TABLE_HEAD_ROW_NAME = 'Nazwa';
+export const ACCOUNTANT_CONTRACTORS_SEARCH_CODE_NAME = 'Kod / Nazwa';
+export const ACCOUNTANT_CONTRACTOR_CONFIRM_DELETE_MESSAGE = 'Kontrahent zostanie usuięty. Czy kontynuować?';
+/* components/modules/accountant/dictionary/forms/contractorForm.js */
+export const ACCOUNTANT_CONTRACTOR_ADD_DETAILS_TITLE = 'Nowy kontrahent';
+export const ACCOUNTANT_CONTRACTOR_EDIT_DETAILS_TITLE = 'Edycja kontrahenta: ';
+export const ACCOUNTANT_CONTRACTOR_CODE = 'Kod';
+export const ACCOUNTANT_CONTRACTOR_NAME = 'Nazwa';
+export const ACCOUNTANT_CONTRACTOR_ACTIVE = 'Aktywny';
 /* components/modules/director/coordinator/plans/plans.js */
-export const DIRECTOR_COORDINATOR_PLAN_TABLE_HEAD_ROW_AMOUNT_REQUESTED_NET = 'Kwota szacowana netto';
+export const DIRECTOR_COORDINATOR_PLAN_TABLE_HEAD_ROW_AMOUNT_REQUESTED_NET = 'Kwota szacowana ZP netto';
+export const DIRECTOR_COORDINATOR_PLAN_TABLE_HEAD_ROW_AMOUNT_REQUESTED_GROSS = 'Kwota szacowana brutto';
 /* components/modules/director/director.js */
 export const DIRECTOR_MENU_PLANS = 'Plany';
-export const DIRECTOR_MENU_COORDINATOR_PLANS = 'Koordynatorzy';
+export const DIRECTOR_MENU_COORDINATOR_PLANS = 'Plany';
 /* components/modules/director/coordinator/plans/planBasicInfoForm.js */
 export const DIRECTOR_COORDINATOR_PLAN_TITLE = 'Szczegóły planu: ';
 export const DIRECTOR_PLAN_COORDINATOR_CONFIRM_RETURN_MESSAGE = 'Plan zostanie wycofany do Koordynatora. Czy kontynuować?';
@@ -633,6 +762,10 @@ export const PUBLIC_PLAN_COORDINATOR_ACCEPT_USER = 'Akceptacja Zamówień Public
 export const PUBLIC_INSTITUTION_PLANS_TITLE = 'Plany';
 /* components/modules/publicProcurement/institution/plans/plan.js */
 export const PUBLIC_INSTITUTION_PLAN_TITLE = 'Plan Zamówień Publicznych';
+export const PUBLIC_INSTITUTION_PLAN_BUTTON_PRINT_DOUBLE_GROUPS = 'Zdublowane grupy';
+/* components/modules/accountant/coordinator/publicProcurement/protocols.js */
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOLS_TITLE = 'Protokoły o udzielenie zamówienia publicznego';
+
 /*components/modules/hr/humanResources.js*/
 export const HR_MENU_STAFF = 'Personel';
 export const HR_MENU_STAFF_WORKERS = 'Pracownicy';
@@ -705,6 +838,9 @@ export const BUTTON_PRINT_DETAILS = 'Wydruk szczegółowy';
 export const BUTTON_UPDATE = 'Aktualizuj';
 export const BUTTON_REMARKS = 'Uwagi';
 export const BUTTON_DETAILS = 'Szczegoły';
+export const BUTTON_SEND_BACK = 'Wycofaj';
+export const RADIO_BUTTON_YES = 'Tak';
+export const RADIO_BUTTON_NO = 'Nie';
 export const TEXTFIELD_SEARCH = 'Szukaj';
 export const DRAWER_MENU_SHOW = 'Pokaż';
 export const DRAWER_MENU_HIDE = 'Ukryj';
@@ -714,6 +850,20 @@ export const TRANSFER_LIST_ALL_RIGHT = '>>';
 export const TRANSFER_LIST_SELECTED_RIGHT = '>';
 export const TRANSFER_LIST_ALL_LEFT = '<<';
 export const TRANSFER_LIST_SELECTED_LEFT = '<';
+
+export const INSTITUTION_PLAN_STATUS_CREATED = 'Utworzony';
+export const INSTITUTION_PLAN_STATUS_APPROVED_ACCOUNTANT = 'Akceptacja - Główny księgowy';
+export const INSTITUTION_PLAN_STATUS_APPROVED_DIRECTOR = 'Akceptacja  - Dyrektor pionu';
+export const INSTITUTION_PLAN_STATUS_APPROVED_ECONOMIC = 'Akceptacja - Dyrektor ekonomiczny';
+export const INSTITUTION_PLAN_STATUS_APPROVED_CHIEF = 'Akceptacja - Dyrektor naczelny';
+export const INSTITUTION_PLAN_STATUS_APPROVED = 'Zaakceptowany';
+export const INSTITUTION_PLAN_STATUS_REALIZED = 'Realizowany';
+export const INSTITUTION_PLAN_STATUS_EXECUTED = 'Zrealizowany';
+export const INSTITUTION_PLAN_STATUS_UPDATE = 'Zaktualizowany';
+/* public procurement protocol statuses */
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPROVE_PUBLIC = 'Akceptacja ZP';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPROVE_ACCOUNTANT = "Akceptacja - Główny księgowy";
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_EXECUTED = 'Zaakceptowany';
 /* common/modalDialog.js */
 export const MODAL_DIALOG_ERROR = 'Błąd';
 export const MODAL_DIALOG_INFORMATION = 'Informacja';
@@ -740,6 +890,7 @@ export const DATE_PICKER_MONTHS_DECEMBER= 'Grudzień';
 export const FORM_AMOUNT_FIELD_DEFAULT_SUFFIX = 'zł.';
 /* Form */
 export const VAT = 'Vat';
+export const YEAR = 'Rok';
 /* Form error names */
 export const FORM_ERROR_MSG_REQUIRED_FIELD = 'Pole wymagane';
 export const FORM_ERROR_MSG_INVALID_EMAIL_ADDRESS = 'Nieprawidłowy adres email';

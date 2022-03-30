@@ -7,7 +7,6 @@ import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.coordinator.plans.*;
 import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.payload.modules.accountant.CoordinatorPlanResponse;
-import pl.viola.ems.payload.modules.coordinator.application.ApplicationProcurementPlanPosition;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,7 +22,7 @@ public interface PlanService {
 
     <T extends CoordinatorPlanPosition> List<T> findPositionsByIdsAndPlanType(List<Long> positionIds, CoordinatorPlan.PlanType planType);
 
-    List<PublicProcurementPosition> getPublicProcurementPositionByYear();
+    List<CoordinatorPlanPosition> getPlanPositionByYearAndPlanType(CoordinatorPlan.PlanType planType);
 
     Optional<PublicProcurementPosition> getPublicProcurementPositionById(Long positionId);
 
@@ -35,7 +34,7 @@ public interface PlanService {
 
     String returnCoordinatorPlan(Long planId);
 
-    void updateInferredPositionValue(ApplicationProcurementPlanPosition planPosition);
+    void updateInferredPositionValue(PublicProcurementPosition position);
 
     CoordinatorPlan approvePlan(Long planId, ApprovePlanType approvePlanType);
 

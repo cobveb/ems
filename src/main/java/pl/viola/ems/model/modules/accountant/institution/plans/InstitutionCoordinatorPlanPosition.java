@@ -3,6 +3,7 @@ package pl.viola.ems.model.modules.accountant.institution.plans;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
+import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
 
 import javax.persistence.*;
@@ -57,6 +58,18 @@ public class InstitutionCoordinatorPlanPosition {
 
     public String getCoordinatorName() {
         return this.coordinatorPlanPosition.getPlan().getCoordinator().getName();
+    }
+
+    public String getCoordinatorCode() {
+        return this.coordinatorPlanPosition.getPlan().getCoordinator().getName();
+    }
+
+    public String getAssortmentGroupId() {
+        if (coordinatorPlanPosition.getPlan().getType().equals(CoordinatorPlan.PlanType.PZP)) {
+            return this.coordinatorPlanPosition.getAssortmentGroup().getCode();
+        } else {
+            return null;
+        }
     }
 
     public BigDecimal getAmountRequestedNet() {

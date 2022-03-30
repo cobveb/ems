@@ -117,7 +117,11 @@ public abstract class CoordinatorPlanPosition implements Serializable {
 
     public abstract BigDecimal getAmountInferredNet();
 
+    public abstract void setAmountInferredNet(BigDecimal amountInferredNet);
+
     public abstract BigDecimal getAmountInferredGross();
+
+    public abstract void setAmountInferredGross(BigDecimal amountInferredGross);
 
     public abstract BigDecimal getExpensesPositionAwardedNet();
 

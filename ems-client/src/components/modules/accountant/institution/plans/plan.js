@@ -160,7 +160,7 @@ class Plan extends Component {
             case "withdraw":
                 return(
                     <ModalDialog
-                        message={constants.ACCOUNTANT_PLAN_COORDINATOR_CONFIRM_APPROVE_MESSAGE}
+                        message={constants.COORDINATOR_PLANS_CONFIRM_WITHDRAW_MESSAGE}
                         variant="confirm"
                         onConfirm={this.handleConfirmWithdrawPlan}
                         onClose={this.handleCloseDialog}

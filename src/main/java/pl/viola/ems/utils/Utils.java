@@ -17,6 +17,8 @@ import pl.viola.ems.service.modules.administrator.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,5 +95,16 @@ public class Utils {
 
         return response;
 
+    }
+
+    public static BigDecimal getArt30percent(BigDecimal amountRealized, BigDecimal amountRealizedArt30) {
+
+        if (amountRealized == null || amountRealized.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        } else if (amountRealizedArt30 == null) {
+            return BigDecimal.ZERO;
+        } else {
+            return amountRealizedArt30.divide(amountRealized, 2, RoundingMode.HALF_DOWN).multiply(new BigDecimal(100));
+        }
     }
 }

@@ -1,8 +1,11 @@
 package pl.viola.ems.model.modules.coordinator.publicProcurement;
 
 import lombok.*;
+import pl.viola.ems.model.common.Text;
+import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
+import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.model.modules.coordinator.plans.PublicProcurementPosition;
 
 import javax.persistence.*;
@@ -12,7 +15,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-
+@ToString(exclude = {"assortmentGroups", "parts", "criteria", "applicationProtocol"})
+@EqualsAndHashCode(exclude = {"assortmentGroups", "parts", "criteria"})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,8 +28,9 @@ import java.util.Set;
                 name = "publicProcurementGenerateApplicationNumber",
                 procedureName = "emsadm.cor_public_procurement_mgmt.generate_application_number",
                 parameters = {
-                        @StoredProcedureParameter(name = "coordinator", type = String.class, mode = ParameterMode.IN),
-                        @StoredProcedureParameter(name = "application_mode", type = String.class, mode = ParameterMode.IN),
+                        @StoredProcedureParameter(name = "p_coordinator", type = String.class, mode = ParameterMode.IN),
+                        @StoredProcedureParameter(name = "p_mode", type = String.class, mode = ParameterMode.IN),
+                        @StoredProcedureParameter(name = "p_estimation_type", type = String.class, mode = ParameterMode.IN),
                         @StoredProcedureParameter(name = "new_number", type = String.class, mode = ParameterMode.OUT)
                 }
         )
@@ -37,7 +42,7 @@ public class Application {
     }
 
     public enum ApplicationStatus {
-        ZP, WY, RE, ZR
+        ZP, WY, AZ, AD, AM, AK, ZA, RE, ZR, AN
     }
 
     @Id
@@ -52,9 +57,9 @@ public class Application {
     @Column(name = "apl_mode")
     private ApplicationMode mode;
 
-    @Size(max = 256)
-    @Column(name = "reason_not_included")
-    private String reasonNotIncluded;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "reason_not_included_id", referencedColumnName = "id")
+    private Text reasonNotIncluded;
 
     @Column(name = "create_date")
     private Date createDate;
@@ -65,10 +70,13 @@ public class Application {
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
+    @Column(name = "is_replay")
+    private Boolean isReplay;
+
     @NonNull
-    @Size(max = 256)
-    @Column(name = "ordered_object")
-    private String orderedObject;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "ordered_object_id", referencedColumnName = "id")
+    private Text orderedObject;
 
     @NonNull
     @Column(name = "is_combined")
@@ -82,6 +90,9 @@ public class Application {
     @Column(name = "estimation_type")
     private PublicProcurementPosition.EstimationType estimationType;
 
+    @Column(name = "is_art30")
+    private Boolean isArt30;
+
     @Column(name = "order_value_net")
     private BigDecimal orderValueNet;
 
@@ -91,81 +102,130 @@ public class Application {
     @Column(name = "is_parts")
     private Boolean isParts;
 
-    @Size(max = 256)
-    @Column(name = "order_reason_lack_parts")
-    private String orderReasonLackParts;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_reason_lack_parts_id", referencedColumnName = "id")
+    private Text orderReasonLackParts;
 
-    @Size(max = 256)
+    @Size(max = 200)
     private String cpv;
 
+    @Size(max = 200)
     @Column(name = "order_value_based")
     private String orderValueBased;
 
-    @Size(max = 100)
+    @Size(max = 200)
     @Column(name = "order_value_setting_person")
     private String orderValueSettingPerson;
 
     @Column(name = "date_established_value")
     private Date dateEstablishedValue;
 
-    @Size(max = 600)
-    @Column(name = "justification_purchase")
-    private String justificationPurchase;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "justification_purchase_id", referencedColumnName = "id")
+    private Text justificationPurchase;
 
-    @Size(max = 600)
-    @Column(name = "order_description")
-    private String orderDescription;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_description_id", referencedColumnName = "id")
+    private Text orderDescription;
 
-    @Size(max = 100)
+    @Size(max = 200)
     @Column(name = "persons_prep_description")
     private String personsPreparingDescription;
 
-    @Size(max = 256)
-    @Column(name = "requirements_variant_bids")
-    private String requirementsVariantBids;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "requirements_variant_bids_id", referencedColumnName = "id")
+    private Text requirementsVariantBids;
 
-    @Size(max = 256)
-    @Column(name = "proposed_ordering_procedure")
-    private String proposedOrderingProcedure;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "proposed_ordering_proc_id", referencedColumnName = "id")
+    private Text proposedOrderingProcedure;
 
-    @Size(max = 100)
+    @Size(max = 200)
     @Column(name = "persons_prep_justification")
     private String personsPreparingJustification;
 
-    @Size(max = 256)
+    @Size(max = 200)
     @Column(name = "order_contractor_name")
     private String orderContractorName;
 
-    @Size(max = 100)
+    @Size(max = 200)
     @Column(name = "persons_choosing_contractor")
     private String personsChoosingContractor;
 
-    @Size(max = 256)
-    @Column(name = "order_contractor_conditions")
-    private String orderContractorConditions;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_contra_conditions_id", referencedColumnName = "id")
+    private Text orderContractorConditions;
 
-    @Size(max = 100)
+    @Size(max = 200)
     @Column(name = "persons_preparing_conditions")
     private String personsPreparingConditions;
 
-    @Size(max = 256)
-    @Column(name = "order_important_records")
-    private String orderImportantRecords;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "order_important_records_id", referencedColumnName = "id")
+    private Text orderImportantRecords;
 
-    @Size(max = 100)
+    @Size(max = 200)
     @Column(name = "persons_preparing_criteria")
     private String personsPreparingCriteria;
 
-    @Size(max = 256)
-    @Column(name = "tender_committee")
-    private String tenderCommittee;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tender_committee_id", referencedColumnName = "id")
+    private Text tenderCommittee;
 
-    @Size(max = 256)
-    @Column(name = "warranty_requirements")
-    private String warrantyRequirements;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "warranty_requirements_id", referencedColumnName = "id")
+    private Text warrantyRequirements;
 
-    @Size(max = 256)
-    private String description;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "description_id", referencedColumnName = "id")
+    private Text description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_included_plan_type")
+    private CoordinatorPlan.PlanType orderIncludedPlanType;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contractor_contract_id", referencedColumnName = "id")
+    private Text contractorContract;
+
+    @Column(name = "offer_price_gross")
+    private BigDecimal offerPriceGross;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "received_offers_id", referencedColumnName = "id")
+    private Text receivedOffers;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "just_choosing_offer_id", referencedColumnName = "id")
+    private Text justificationChoosingOffer;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "just_non_competitive_proc_id", referencedColumnName = "id")
+    private Text justificationNonCompetitiveProcedure;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "conditions_participation_id", referencedColumnName = "id")
+    private Text conditionsParticipation;
+
+    @Column(name = "is_market_consultation")
+    private Boolean isMarketConsultation;
+
+    @Column(name = "is_order_financed")
+    private Boolean isOrderFinanced;
+
+    @Column(name = "is_participated_prep")
+    private Boolean isParticipatedPreparation;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "meas_avoid_dist_id", referencedColumnName = "id")
+    private Text measuresAvoidanceDistortions;
+
+    @Column(name = "is_securing_ctr")
+    private Boolean isSecuringContract;
+
+    @ManyToOne
+    @JoinColumn(name = "ord_proc_id")
+    private DictionaryItem orderProcedure;
 
     @ManyToOne
     @JoinColumn(name = "create_user_id")
@@ -175,6 +235,30 @@ public class Application {
     @JoinColumn(name = "send_user_id")
     private User sendUser;
 
+    @ManyToOne
+    @JoinColumn(name = "public_accept_user_id")
+    private User publicAcceptUser;
+
+    @ManyToOne
+    @JoinColumn(name = "med_dir_accept_user_id")
+    private User medicalDirectorAcceptUser;
+
+    @ManyToOne
+    @JoinColumn(name = "director_accept_user_id")
+    private User directorAcceptUser;
+
+    @ManyToOne
+    @JoinColumn(name = "accountant_accept_user_id")
+    private User accountantAcceptUser;
+
+    @ManyToOne
+    @JoinColumn(name = "chief_accept_user_id")
+    private User chiefAcceptUser;
+
+    @ManyToOne
+    @JoinColumn(name = "cancel_user_id")
+    private User cancelUser;
+
     @NonNull
     @ManyToOne
     @JoinColumn(name = "coordinator_id")
@@ -183,6 +267,14 @@ public class Application {
     @ManyToOne
     @JoinColumn(name = "coordinator_combined_id")
     private OrganizationUnit coordinatorCombined;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "rep_sour_app_id", referencedColumnName = "id")
+    private Application replaySourceApplication;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "apl_protocol_id")
+    private ApplicationProtocol applicationProtocol;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "application", cascade = {CascadeType.REMOVE})
     private Set<ApplicationAssortmentGroup> assortmentGroups = new HashSet<>();

@@ -63,6 +63,7 @@ public class OrganizationUnitServiceImplTest {
             "+48 (32) 123 12 34",
             "+48 (32) 123 12 34",
             "uck@uck.it",
+            null,
             true,
             ou.getCode(),
             null,
@@ -87,6 +88,7 @@ public class OrganizationUnitServiceImplTest {
             "+48 (32) 123 12 34",
             "+48 (32) 123 12 34",
             "uck@uck.it",
+            null,
             true,
             child.getCode(),
             null,
@@ -117,7 +119,7 @@ public class OrganizationUnitServiceImplTest {
 
         Mockito.when(organizationUnitRepository.findAll()).thenReturn(units);
         Mockito.when(organizationUnitRepository.findByActiveTrueAndParentIsNotNullOrderByName()).thenReturn(active);
-        Mockito.when(organizationUnitRepository.findByActiveTrueAndRole(OrganizationUnit.Role.COORDINATOR)).thenReturn(coordinators);
+        Mockito.when(organizationUnitRepository.findByActiveTrueAndRoleOrderByName(OrganizationUnit.Role.COORDINATOR)).thenReturn(coordinators);
         Mockito.when(organizationUnitRepository.findMainOu()).thenReturn(ou);
         Mockito.when(organizationUnitRepository.findById("it")).thenReturn(Optional.of(it));
         Mockito.when(organizationUnitRepository.findByCodeAndActiveTrueAndRole("it", OrganizationUnit.Role.COORDINATOR)).thenReturn(Optional.of(it));
@@ -232,6 +234,7 @@ public class OrganizationUnitServiceImplTest {
                 "+48 (32) 123 12 34",
                 "+48 (32) 123 12 34",
                 "uck@uck.it",
+                null,
                 true,
                 null,
                 null,
@@ -265,6 +268,7 @@ public class OrganizationUnitServiceImplTest {
                 "+48 (32) 123 12 34",
                 "+48 (32) 123 12 34",
                 "uck@uck.it",
+                null,
                 true,
                 null,
                 null,
@@ -299,6 +303,7 @@ public class OrganizationUnitServiceImplTest {
                 "+48 (32) 123 12 34",
                 "+48 (32) 123 12 34",
                 "uck@uck.it",
+                null,
                 true,
                 null,
                 null,

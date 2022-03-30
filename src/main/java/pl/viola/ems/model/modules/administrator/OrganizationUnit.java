@@ -76,7 +76,11 @@ public class OrganizationUnit {
     @NotBlank(message = "{valid.notBlank}")
     @Email(message = "{valid.email}")
     @Size(max = 50, message = "{valid.maxSize}")
+
     private String email;
+
+    @Size(max = 3, message = "{valid.maxSize}")
+    private String officeSymbol;
 
     @NotNull
     @NonNull

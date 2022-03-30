@@ -84,7 +84,7 @@ class OrganizationUnitContainer extends Component {
                 initData: this.props.initialValues,
             });
         }
-        if(this.props.initialValues.role === 'DIRECTOR'){
+        if(['DIRECTOR', 'ECONOMIC'].includes(this.props.initialValues.role)){
             this.handleUnassignedCoordinators();
         }
     }

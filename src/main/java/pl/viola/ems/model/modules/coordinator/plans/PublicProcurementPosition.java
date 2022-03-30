@@ -22,11 +22,11 @@ import java.util.List;
 public class PublicProcurementPosition extends CoordinatorPlanPosition {
 
     public enum OrderType {
-        DST, USL
+        DST, USL, RBD,
     }
 
     public enum EstimationType {
-        DO50, D0130, PO130, UE139, WR, COVID
+        DO50, DO130, PO130, UE139,
     }
 
     @Enumerated(EnumType.STRING)
@@ -92,8 +92,6 @@ public class PublicProcurementPosition extends CoordinatorPlanPosition {
     @Override
     public void setPositionFundingSources(List<FundingSource> fundingSources) {
     }
-
-    ;
 
     @Override
     public DictionaryItem getCategory() {

@@ -1,4 +1,4 @@
-package pl.viola.ems.controller.modules.publicProcurement.Coordinator;
+package pl.viola.ems.controller.modules.publicProcurement.coordinator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

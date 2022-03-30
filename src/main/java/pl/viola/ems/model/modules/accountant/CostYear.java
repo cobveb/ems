@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class CostYear {
     @SequenceGenerator(name = "costYearSequence", sequenceName = "acc_cost_years_seq", schema = "emsadm", allocationSize = 1)
     private Long id;
 
-    @NonNull
+    @NotNull
     private int year;
 
     @JsonIgnore

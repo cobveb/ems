@@ -5,49 +5,45 @@ import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
 import Applications from 'components/modules/coordinator/publicProcurement/applications/applications';
 import PublicProcurementApplicationApi from 'api/modules/coordinator/publicProcurement/publicProcurementApplicationApi';
-import {updateOnCloseDetails, publicProcurementEstimationTypes, getVats, findSelectFieldPosition, generateExportLink} from 'utils/';
+import {updateOnCloseDetails, publicProcurementEstimationTypes, publicProcurementApplicationStatuses, publicProcurementApplicationModes, getVats, findSelectFieldPosition, generateExportLink} from 'utils/';
+import DictionaryApi from 'api/common/dictionaryApi';
 
 class ApplicationsContainer extends Component {
     state = {
         applications:[],
-        estimationTypes: publicProcurementEstimationTypes(),
+        estimationTypes: [
+            {
+                code: '',
+                name: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_MODE,
+            },
+        ].concat(publicProcurementEstimationTypes()),
         vats: getVats(),
         coordinators: [],
-        statuses:[
+        financialPlanPositions:[],
+        investmentPlanPositions:[],
+        reasonsNotRealizedApplication:[],
+        orderProcedures: [],
+        statuses: [
             {
                 code: '',
                 name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS,
-            },
-            {
-                code: 'ZP',
-                name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_SAVE,
-            },
-            {
-                code: 'WY',
-                name: constants.COORDINATOR_PLAN_STATUS_SENT,
-            },
-            {
-                code: 'RE',
-                name: constants.COORDINATOR_PLAN_STATUS_REALIZED,
-            },
-            {
-                code: 'ZR',
-                name: constants.COORDINATOR_PLAN_STATUS_EXECUTED,
-            },
-        ],
-        modes:[
+            }
+        ].concat(publicProcurementApplicationStatuses()),
+        modes: [
             {
                 code: '',
                 name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MODE,
             },
+        ].concat(publicProcurementApplicationModes()),
+        planTypes: [
             {
-                code: 'PL',
-                name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MODE_PLANNED,
+                code: 'FIN',
+                name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_FINANCIAL,
             },
             {
-                code: 'UP',
-                name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MODE_UNPLANNED,
-            }
+                code: 'INW',
+                name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_INVESTMENT,
+            },
         ]
     }
 
@@ -65,6 +61,50 @@ class ApplicationsContainer extends Component {
         });
     }
 
+    handleGetFinancialPlanPositions = () => {
+        PublicProcurementApplicationApi.getPlanPositions('FIN')
+        .then(response => {
+            this.setState( prevState =>{
+                let financialPlanPositions = [...prevState.financialPlanPositions];
+                financialPlanPositions = response.data.data;
+                return {financialPlanPositions}
+            })
+        })
+        .catch(error => {});
+    }
+
+    handleGetInvestmentPlanPositions = () => {
+        PublicProcurementApplicationApi.getPlanPositions('INW')
+        .then(response => {
+            this.setState( prevState =>{
+                let investmentPlanPositions = [...prevState.investmentPlanPositions];
+                investmentPlanPositions = response.data.data;
+                return {investmentPlanPositions}
+            })
+        })
+        .catch(error => {});
+    }
+
+    handleGetReasonsNotRealisedApplication = () => {
+        return DictionaryApi.getDictionary('slPoNiUdZp')
+        .then(response => {
+            this.setState({
+                reasonsNotRealizedApplication: response.data.data.items,
+            })
+        })
+        .catch(error => {});
+    }
+
+    handleGetOrderProcedures = () =>{
+        return DictionaryApi.getDictionary('slTryUdzZp')
+        .then(response => {
+            this.setState({
+                orderProcedures: response.data.data.items,
+            })
+        })
+        .catch(error => {});
+    }
+
     handleGetApplications(){
         this.props.loading(true);
         PublicProcurementApplicationApi.getApplications()
@@ -77,7 +117,7 @@ class ApplicationsContainer extends Component {
                         {
                             status: application.status = findSelectFieldPosition(this.state.statuses, application.status),
                             mode: application.mode = findSelectFieldPosition(this.state.modes, application.mode),
-                            estimationType: application.estimationType = findSelectFieldPosition(this.state.estimationTypes, application.estimationType)
+                            estimationType: application.estimationType = findSelectFieldPosition(this.state.estimationTypes, application.estimationType),
                         }
                     )
                 ))
@@ -112,10 +152,6 @@ class ApplicationsContainer extends Component {
                 let applications = [...prevState.applications];
                 const index = applications.findIndex(application => application.id === response.data.data.id);
                 applications[index].status = findSelectFieldPosition(this.state.statuses, response.data.data.status);
-                applications[index].assortmentGroups.map(group =>{
-                    return group.applicationProcurementPlanPosition.amountInferredNet = response.data.data.assortmentGroups.find(
-                        o => o.id === group.id).applicationProcurementPlanPosition.amountInferredNet
-                })
                 return {applications};
             });
             this.props.loading(false);
@@ -142,19 +178,28 @@ class ApplicationsContainer extends Component {
 
     componentDidMount(){
         this.handleGetApplications();
+        this.handleGetOrderProcedures();
         this.handleGetCoordinators();
+        this.handleGetFinancialPlanPositions();
+        this.handleGetInvestmentPlanPositions();
+        this.handleGetReasonsNotRealisedApplication();
     }
 
     render(){
         const { isLoading, loading, error, clearError } = this.props;
-        const { estimationTypes, vats, coordinators, applications, modes, statuses } = this.state;
+        const { estimationTypes, vats, coordinators, applications, modes, statuses, planTypes, financialPlanPositions, investmentPlanPositions, reasonsNotRealizedApplication, orderProcedures } = this.state;
         return(
             <Applications
                 initialValues={applications}
                 estimationTypes={estimationTypes}
                 vats={vats}
                 modes={modes}
+                planTypes={planTypes}
+                orderProcedures={orderProcedures}
+                financialPlanPositions={financialPlanPositions}
+                investmentPlanPositions={investmentPlanPositions}
                 coordinators={coordinators}
+                reasonsNotRealizedApplication={reasonsNotRealizedApplication}
                 statuses={statuses}
                 onSave={this.handleSaveApplication}
                 onExcelExport={this.handleExcelExport}

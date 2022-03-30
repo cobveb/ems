@@ -9,10 +9,7 @@ import pl.viola.ems.model.modules.administrator.repository.OrganizationUnitRepos
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 import pl.viola.ems.utils.Utils;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class OrganizationUnitServiceImpl implements OrganizationUnitService {
@@ -83,7 +80,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
     @Override
     public List<OrganizationUnit> findCoordinators() {
-        return organizationUnitRepository.findByActiveTrueAndRole(OrganizationUnit.Role.COORDINATOR);
+        return organizationUnitRepository.findByActiveTrueAndRoleOrderByName(OrganizationUnit.Role.COORDINATOR);
     }
 
     @Override
@@ -98,7 +95,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
     @Override
     public Set<OrganizationUnit> addDirectorCoordinators(String directorCode, List<OrganizationUnit> coordinators) {
-        OrganizationUnit director = organizationUnitRepository.findByCodeAndActiveTrueAndRole(directorCode, OrganizationUnit.Role.DIRECTOR)
+        OrganizationUnit director = organizationUnitRepository.findByCodeAndActiveTrueAndRoleIn(directorCode, Arrays.asList(OrganizationUnit.Role.DIRECTOR, OrganizationUnit.Role.ECONOMIC))
                 .orElseThrow(() -> new AppException("Administrator.organizationUnit.directorNotFound", HttpStatus.NOT_FOUND));
         if (!coordinators.isEmpty()) {
             coordinators.forEach(coordinator -> coordinator.setDirector(director));
@@ -111,7 +108,7 @@ public class OrganizationUnitServiceImpl implements OrganizationUnitService {
 
     @Override
     public Set<OrganizationUnit> removeDirectorCoordinators(String directorCode, OrganizationUnit coordinator) {
-        OrganizationUnit director = organizationUnitRepository.findByCodeAndActiveTrueAndRole(directorCode, OrganizationUnit.Role.DIRECTOR)
+        OrganizationUnit director = organizationUnitRepository.findByCodeAndActiveTrueAndRoleIn(directorCode, Arrays.asList(OrganizationUnit.Role.DIRECTOR, OrganizationUnit.Role.ECONOMIC))
                 .orElseThrow(() -> new AppException("Administrator.organizationUnit.directorNotFound", HttpStatus.NOT_FOUND));
         if (coordinator.getRole().equals(OrganizationUnit.Role.COORDINATOR)) {
             coordinator.setDirector(null);

@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
-			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-			  name="PublicProcurementDetailsPlan" pageWidth="842" pageHeight="595" orientation="Landscape"
-			  columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
-			  uuid="a5272129-7684-4ff6-bd6a-ebeb6658ccfc">
-	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.report.description" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="21.162 - ems"/>
-	<style name="Table_TH" mode="Opaque" backcolor="#81B2B8">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="PublicProcurementDetailsPlan" pageWidth="842" pageHeight="595" orientation="Landscape"
+              columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+              uuid="a5272129-7684-4ff6-bd6a-ebeb6658ccfc">
+    <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+    <property name="com.jaspersoft.studio.report.description" value=""/>
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="UCK"/>
+    <style name="Table_TH" mode="Opaque" backcolor="#81B2B8">
+        <box>
+            <pen lineWidth="0.5" lineColor="#000000"/>
+            <topPen lineWidth="0.5" lineColor="#000000"/>
+            <leftPen lineWidth="0.5" lineColor="#000000"/>
+            <bottomPen lineWidth="0.5" lineColor="#000000"/>
+            <rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
 	<style name="Table_CH" mode="Opaque" backcolor="#CFE3E6">
@@ -173,22 +173,21 @@
 	</style>
 	<subDataset name="pubProc" uuid="a5522066-6411-43d2-839a-710f6946a33a">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="21.162 - ems"/>
 		<parameter name="PLAN_ID" class="java.math.BigDecimal"/>
 		<queryString language="SQL">
 			<![CDATA[select 
     (select ou.name from emsadm.organization_units ou, emsadm.cor_plans cp where ou.code = cp.coordinator_id and cp.id = cpp.plan_id) as coordinator,
     (select di.name from EMSARCH.dictionary_items di where di.dictionary_code = 'slAsortGr' and di.id=cpubp.assortment_id) as assortment_group,
+    (select di.name from EMSARCH.dictionary_items di where di.dictionary_code = 'slTryUdzZp' and di.id=cpubp.mode_id) as order_mode,
     DECODE(cpubp.order_type, 
         'USL', 'Usługa',
-        'DST', 'Dostawa') order_type,
+        'DST', 'Dostawa',
+        'RBD', 'Roboty budowlane') order_type,
     DECODE(cpubp.estimation_type, 
         'DO50', 'Do 50 000 zl netto',
-        'D0130', 'Powyżej 50 000 do 130 000 zl netto',
+        'DO130', 'Powyżej 50 000 do 130 000 zl netto',
         'PO130', 'Powyżej 130 000 zł netto BZP',
-        'UE139', 'Powyżej 139 000 euro netto UZP',
-        'WR','Wolna ręka',
-        'COVID', 'COVID') estimation_type,
+        'UE139', 'Równy lub przekrazający progi unijne') estimation_type,
     cpp.am_req_net,
     cpsp.name,
     cpsp.am_net
@@ -198,36 +197,39 @@ from
             left join emsadm.cor_plan_sub_positions cpsp on (cpubp.id = cpsp.plan_position_id)
 where ipp.plan_id = $P{PLAN_ID} 
 order by 1,2]]>
-		</queryString>
-		<field name="COORDINATOR" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.label" value="COORDINATOR"/>
-		</field>
-		<field name="ASSORTMENT_GROUP" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.label" value="ASSORTMENT_GROUP"/>
-		</field>
-		<field name="ORDER_TYPE" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.label" value="ORDER_TYPE"/>
-		</field>
-		<field name="ESTIMATION_TYPE" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.label" value="ESTIMATION_TYPE"/>
-		</field>
-		<field name="AM_REQ_NET" class="java.math.BigDecimal">
-			<property name="com.jaspersoft.studio.field.label" value="AM_REQ_NET"/>
-		</field>
+        </queryString>
+        <field name="COORDINATOR" class="java.lang.String">
+            <property name="com.jaspersoft.studio.field.label" value="COORDINATOR"/>
+        </field>
+        <field name="ASSORTMENT_GROUP" class="java.lang.String">
+            <property name="com.jaspersoft.studio.field.label" value="ASSORTMENT_GROUP"/>
+        </field>
+        <field name="ORDER_MODE" class="java.lang.String">
+            <property name="com.jaspersoft.studio.field.label" value="ORDER_MODE"/>
+        </field>
+        <field name="ORDER_TYPE" class="java.lang.String">
+            <property name="com.jaspersoft.studio.field.label" value="ORDER_TYPE"/>
+        </field>
+        <field name="ESTIMATION_TYPE" class="java.lang.String">
+            <property name="com.jaspersoft.studio.field.label" value="ESTIMATION_TYPE"/>
+        </field>
+        <field name="AM_REQ_NET" class="java.math.BigDecimal">
+            <property name="com.jaspersoft.studio.field.label" value="AM_REQ_NET"/>
+        </field>
 		<field name="NAME" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.label" value="NAME"/>
 		</field>
 		<field name="AM_NET" class="java.math.BigDecimal">
 			<property name="com.jaspersoft.studio.field.label" value="AM_NET"/>
 		</field>
-		<variable name="AM_REQ_PL_COR_NET" class="java.math.BigDecimal" resetType="Group" resetGroup="COORDINATOR"
-				  incrementType="Group" incrementGroup="ASSORTMENT_GROUP" calculation="Sum">
-			<variableExpression><![CDATA[$F{AM_REQ_NET}]]></variableExpression>
-		</variable>
-		<variable name="AM_REQ_PL_INS_NET" class="java.math.BigDecimal" resetType="Master" incrementType="Group"
-				  incrementGroup="COORDINATOR" calculation="Sum">
-			<variableExpression><![CDATA[$V{AM_REQ_PL_COR_NET}]]></variableExpression>
-		</variable>
+        <variable name="AM_REQ_PL_COR_NET" class="java.math.BigDecimal" resetType="Group" resetGroup="COORDINATOR"
+                  incrementType="Group" incrementGroup="ASSORTMENT_GROUP" calculation="Sum">
+            <variableExpression><![CDATA[$F{AM_REQ_NET}]]></variableExpression>
+        </variable>
+        <variable name="AM_REQ_PL_INS_NET" class="java.math.BigDecimal" resetType="Master" incrementType="Group"
+                  incrementGroup="COORDINATOR" calculation="Sum">
+            <variableExpression><![CDATA[$V{AM_REQ_PL_COR_NET}]]></variableExpression>
+        </variable>
 		<group name="COORDINATOR">
 			<groupExpression><![CDATA[$F{COORDINATOR}]]></groupExpression>
 		</group>
@@ -293,8 +295,8 @@ where
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font fontName="PDF_fonts" size="16" isBold="true"/>
 				</textElement>
-				<textFieldExpression>
-					<![CDATA["SZCZEGÓŁOWY PLAN ZAMÓWIEŃ PUBLICZNYCH NA ROK " + $F{YEAR}]]></textFieldExpression>
+                <textFieldExpression>
+                    <![CDATA["SZCZEGÓŁOWY PLAN ZAMÓWIEŃ PUBLICZNYCH NA ROK " + $F{YEAR}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -303,36 +305,36 @@ where
 			<printWhenExpression><![CDATA[$F{PLAN_TYPE}.equals( "PZP" )]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="0" y="0" width="802" height="210" uuid="372b149e-1e66-434d-8e08-ebf31f4dd0c8">
-					<property name="com.jaspersoft.studio.layout"
-							  value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+                    <property name="com.jaspersoft.studio.layout"
+                              value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 5_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 5_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table 5_TD"/>
 					<property name="com.jaspersoft.studio.components.autoresize.proportional" value="true"/>
 					<property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
 				</reportElement>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
-						  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="pubProc" uuid="aeddc898-f0d7-49df-8dcc-1aa00b97f0bf">
-						<datasetParameter name="PLAN_ID">
-							<datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:columnGroup width="802" uuid="218b7d6e-69ce-4ab5-a76a-e7b810034951">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Columns [5]"/>
-						<jr:groupHeader groupName="COORDINATOR">
-							<jr:cell style="Table_CH" height="30" rowSpan="1">
+                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
+                          xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                    <datasetRun subDataset="pubProc" uuid="aeddc898-f0d7-49df-8dcc-1aa00b97f0bf">
+                        <datasetParameter name="PLAN_ID">
+                            <datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+                    </datasetRun>
+                    <jr:columnGroup width="802" uuid="218b7d6e-69ce-4ab5-a76a-e7b810034951">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Columns [6]"/>
+                        <jr:groupHeader groupName="COORDINATOR">
+                            <jr:cell style="Table_CH" height="30" rowSpan="1">
 								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 								<textField textAdjust="StretchHeight">
-									<reportElement x="0" y="0" width="802" height="30"
-												   uuid="56572056-6551-4530-8a3b-f4d6565518c3"/>
+                                    <reportElement x="0" y="0" width="802" height="30"
+                                                   uuid="56572056-6551-4530-8a3b-f4d6565518c3"/>
 									<box padding="5"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" size="12" isBold="true"/>
 									</textElement>
-									<textFieldExpression>
-										<![CDATA["Koordynator - " + $F{COORDINATOR}.toUpperCase()]]></textFieldExpression>
+                                    <textFieldExpression>
+                                        <![CDATA["Koordynator - " + $F{COORDINATOR}.toUpperCase()]]></textFieldExpression>
 								</textField>
 							</jr:cell>
 						</jr:groupHeader>
@@ -340,42 +342,42 @@ where
 							<jr:cell style="Table 1_CH" height="30" rowSpan="1">
 								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 								<textField textAdjust="StretchHeight">
-									<reportElement x="0" y="0" width="802" height="30"
-												   uuid="45fabe46-4aa2-4d8e-8c56-c8966c452e12"/>
+                                    <reportElement x="0" y="0" width="802" height="30"
+                                                   uuid="45fabe46-4aa2-4d8e-8c56-c8966c452e12"/>
 									<box padding="5"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" size="12" isBold="true"/>
 									</textElement>
-									<textFieldExpression>
-										<![CDATA["Grupa asortymentowa: " + $F{ASSORTMENT_GROUP}.toUpperCase()]]></textFieldExpression>
+                                    <textFieldExpression>
+                                        <![CDATA["Grupa asortymentowa: " + $F{ASSORTMENT_GROUP}.toUpperCase()]]></textFieldExpression>
 								</textField>
 							</jr:cell>
 						</jr:groupHeader>
-						<jr:column width="39" uuid="ef483fac-58d4-4f5e-b6ac-c9634194700c">
-							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-							<jr:tableFooter style="Table 5_TH" height="30"/>
-							<jr:groupHeader groupName="ASSORTMENT_GROUP">
-								<jr:cell style="Table 5_CH" height="30">
-									<staticText>
-										<reportElement x="0" y="0" width="39" height="30"
-													   uuid="c129d261-2e8c-4cb8-9e96-74d50af212b7"/>
-										<textElement textAlignment="Center" verticalAlignment="Middle">
-											<font fontName="PDF_fonts" isBold="true"/>
-										</textElement>
-										<text><![CDATA[Lp.]]></text>
-									</staticText>
-								</jr:cell>
+                        <jr:column width="60" uuid="ef483fac-58d4-4f5e-b6ac-c9634194700c">
+                            <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+                            <jr:tableFooter style="Table 5_TH" height="30" rowSpan="1"/>
+                            <jr:groupHeader groupName="ASSORTMENT_GROUP">
+                                <jr:cell style="Table 5_CH" height="30" rowSpan="1">
+                                    <staticText>
+                                        <reportElement x="0" y="0" width="38" height="30"
+                                                       uuid="c129d261-2e8c-4cb8-9e96-74d50af212b7"/>
+                                        <textElement textAlignment="Center" verticalAlignment="Middle">
+                                            <font fontName="PDF_fonts" isBold="true"/>
+                                        </textElement>
+                                        <text><![CDATA[Lp.]]></text>
+                                    </staticText>
+                                </jr:cell>
 							</jr:groupHeader>
 							<jr:groupFooter groupName="COORDINATOR">
-								<jr:cell style="Table_CH" height="30"/>
+                                <jr:cell style="Table_CH" height="30" rowSpan="1"/>
 							</jr:groupFooter>
 							<jr:groupFooter groupName="ASSORTMENT_GROUP">
-								<jr:cell style="Table 1_CH" height="30"/>
+                                <jr:cell style="Table 1_CH" height="30" rowSpan="1"/>
 							</jr:groupFooter>
 							<jr:detailCell style="Table 5_TD" height="30">
 								<textField>
-									<reportElement x="0" y="0" width="39" height="30"
-												   uuid="a13e6c64-4013-4b89-918e-823e36f36f5f"/>
+                                    <reportElement x="0" y="0" width="60" height="30"
+                                                   uuid="a13e6c64-4013-4b89-918e-823e36f36f5f"/>
 									<box topPadding="0" leftPadding="5" bottomPadding="0" rightPadding="0"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="PDF_fonts"/>
@@ -384,18 +386,18 @@ where
 								</textField>
 							</jr:detailCell>
 						</jr:column>
-						<jr:column width="111" uuid="c807c315-776f-4af5-9d7c-0026f145ed02">
-							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-							<jr:tableFooter style="Table 5_TH" height="30" rowSpan="1">
-								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
-							</jr:tableFooter>
-							<jr:groupHeader groupName="ASSORTMENT_GROUP">
-								<jr:cell style="Table 5_CH" height="30" rowSpan="1">
-									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
-									<staticText>
-										<reportElement x="0" y="0" width="111" height="30"
-													   uuid="15a1427d-84e1-453e-b51b-9063442abff3"/>
-										<box padding="5"/>
+                        <jr:column width="108" uuid="c807c315-776f-4af5-9d7c-0026f145ed02">
+                            <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+                            <jr:tableFooter style="Table 5_TH" height="30" rowSpan="1">
+                                <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                            </jr:tableFooter>
+                            <jr:groupHeader groupName="ASSORTMENT_GROUP">
+                                <jr:cell style="Table 5_CH" height="30" rowSpan="1">
+                                    <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                                    <staticText>
+                                        <reportElement x="0" y="0" width="108" height="30"
+                                                       uuid="15a1427d-84e1-453e-b51b-9063442abff3"/>
+                                        <box padding="5"/>
 										<textElement textAlignment="Center" verticalAlignment="Middle">
 											<font fontName="PDF_fonts" isBold="true"/>
 										</textElement>
@@ -416,78 +418,116 @@ where
 							<jr:detailCell style="Table 5_TD" height="30">
 								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 								<textField textAdjust="StretchHeight">
-									<reportElement x="0" y="0" width="111" height="30"
-												   uuid="9e680d07-1cf9-430f-b806-eb768e6030ed"/>
-									<box padding="5"/>
-									<textElement>
-										<font fontName="PDF_fonts"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$F{ORDER_TYPE}]]></textFieldExpression>
-								</textField>
-							</jr:detailCell>
-						</jr:column>
-						<jr:column width="188" uuid="adb8f1f3-76f7-41ad-b6e0-9c8db88d5fa2">
-							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-							<jr:tableFooter style="Table 5_TH" height="30" rowSpan="1">
-								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                                    <reportElement x="0" y="0" width="108" height="30"
+                                                   uuid="9e680d07-1cf9-430f-b806-eb768e6030ed"/>
+                                    <box padding="5"/>
+                                    <textElement>
+                                        <font fontName="PDF_fonts"/>
+                                    </textElement>
+                                    <textFieldExpression><![CDATA[$F{ORDER_TYPE}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
+                        </jr:column>
+                        <jr:column width="89" uuid="751f0eea-0102-46e6-9e4a-c1f2eafa8c7e">
+                            <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+                            <jr:tableFooter style="Table 5_TH" height="30" rowSpan="1"/>
+                            <jr:groupHeader groupName="COORDINATOR">
+                                <jr:cell height="2" rowSpan="1"/>
+                            </jr:groupHeader>
+                            <jr:groupHeader groupName="ASSORTMENT_GROUP">
+                                <jr:cell style="Table 5_CH" height="30" rowSpan="1">
+                                    <staticText>
+                                        <reportElement x="0" y="0" width="89" height="30"
+                                                       uuid="1987cf29-68ae-4871-8ef9-8cd7c4ef871f"/>
+                                        <box padding="5"/>
+                                        <textElement textAlignment="Center" verticalAlignment="Middle">
+                                            <font fontName="PDF_fonts" isBold="true"/>
+                                        </textElement>
+                                        <text><![CDATA[Tryb]]></text>
+                                    </staticText>
+                                </jr:cell>
+                            </jr:groupHeader>
+                            <jr:groupFooter groupName="COORDINATOR">
+                                <jr:cell style="Table_CH" height="30" rowSpan="1"/>
+                            </jr:groupFooter>
+                            <jr:groupFooter groupName="ASSORTMENT_GROUP">
+                                <jr:cell style="Table 1_CH" height="30" rowSpan="1"/>
+                            </jr:groupFooter>
+                            <jr:detailCell style="Table 5_TD" height="30">
+                                <textField textAdjust="StretchHeight">
+                                    <reportElement x="0" y="0" width="89" height="30"
+                                                   uuid="8133f3f6-7fd2-40fd-a74a-f69c98e4e2f7"/>
+                                    <box padding="5"/>
+                                    <textElement>
+                                        <font fontName="PDF_fonts"/>
+                                    </textElement>
+                                    <textFieldExpression><![CDATA[$F{ORDER_MODE}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
+                        </jr:column>
+                        <jr:column width="105" uuid="adb8f1f3-76f7-41ad-b6e0-9c8db88d5fa2">
+                            <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+                            <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                            <jr:tableFooter style="Table 5_TH" height="30" rowSpan="1">
+                                <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                            </jr:tableFooter>
+                            <jr:groupHeader groupName="ASSORTMENT_GROUP">
+                                <jr:cell style="Table 5_CH" height="30" rowSpan="1">
+                                    <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                                    <staticText>
+                                        <reportElement x="0" y="0" width="105" height="30"
+                                                       uuid="fcf479ba-ef10-4508-ac1a-4bef9d6d313e"/>
+                                        <box padding="5"/>
+                                        <textElement textAlignment="Center" verticalAlignment="Middle">
+                                            <font fontName="PDF_fonts" isBold="true"/>
+                                        </textElement>
+                                        <text><![CDATA[Próg]]></text>
+                                    </staticText>
+                                </jr:cell>
+                            </jr:groupHeader>
+                            <jr:groupFooter groupName="COORDINATOR">
+                                <jr:cell style="Table_CH" height="30" rowSpan="1">
+                                    <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                                </jr:cell>
+                            </jr:groupFooter>
+                            <jr:groupFooter groupName="ASSORTMENT_GROUP">
+                                <jr:cell style="Table 1_CH" height="30" rowSpan="1">
+                                    <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                                </jr:cell>
+                            </jr:groupFooter>
+                            <jr:detailCell style="Table 5_TD" height="30">
+                                <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                                <textField textAdjust="StretchHeight">
+                                    <reportElement x="0" y="0" width="105" height="30"
+                                                   uuid="e3767787-f1d5-44ca-a1bd-314a77642487"/>
+                                    <box padding="5"/>
+                                    <textElement>
+                                        <font fontName="PDF_fonts"/>
+                                    </textElement>
+                                    <textFieldExpression><![CDATA[$F{ESTIMATION_TYPE}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
+                        </jr:column>
+                        <jr:column width="307" uuid="d69e7601-2166-4851-a889-e4ccafd8499d">
+                            <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+                            <jr:tableFooter style="Table 5_TH" height="30" rowSpan="1">
+                                <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                                <staticText>
+                                    <reportElement x="0" y="0" width="307" height="30"
+                                                   uuid="fdcbb265-a8a2-4540-ae97-4757f8343610"/>
+                                    <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="5"/>
+                                    <textElement textAlignment="Right" verticalAlignment="Middle">
+                                        <font fontName="PDF_fonts" isBold="true"/>
+                                    </textElement>
+                                    <text><![CDATA[Wartość planu instytucji netto:]]></text>
+                                </staticText>
 							</jr:tableFooter>
 							<jr:groupHeader groupName="ASSORTMENT_GROUP">
 								<jr:cell style="Table 5_CH" height="30" rowSpan="1">
 									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 									<staticText>
-										<reportElement x="0" y="0" width="188" height="30"
-													   uuid="fcf479ba-ef10-4508-ac1a-4bef9d6d313e"/>
-										<box padding="5"/>
-										<textElement textAlignment="Center" verticalAlignment="Middle">
-											<font fontName="PDF_fonts" isBold="true"/>
-										</textElement>
-										<text><![CDATA[Typ wartości szacunkowej]]></text>
-									</staticText>
-								</jr:cell>
-							</jr:groupHeader>
-							<jr:groupFooter groupName="COORDINATOR">
-								<jr:cell style="Table_CH" height="30" rowSpan="1">
-									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
-								</jr:cell>
-							</jr:groupFooter>
-							<jr:groupFooter groupName="ASSORTMENT_GROUP">
-								<jr:cell style="Table 1_CH" height="30" rowSpan="1">
-									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
-								</jr:cell>
-							</jr:groupFooter>
-							<jr:detailCell style="Table 5_TD" height="30">
-								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
-								<textField textAdjust="StretchHeight">
-									<reportElement x="0" y="0" width="188" height="30"
-												   uuid="e3767787-f1d5-44ca-a1bd-314a77642487"/>
-									<box padding="5"/>
-									<textElement>
-										<font fontName="PDF_fonts"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$F{ESTIMATION_TYPE}]]></textFieldExpression>
-								</textField>
-							</jr:detailCell>
-						</jr:column>
-						<jr:column width="318" uuid="d69e7601-2166-4851-a889-e4ccafd8499d">
-							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
-							<jr:tableFooter style="Table 5_TH" height="30" rowSpan="1">
-								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
-								<staticText>
-									<reportElement x="0" y="0" width="318" height="30"
-												   uuid="fdcbb265-a8a2-4540-ae97-4757f8343610"/>
-									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="5"/>
-									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="PDF_fonts" isBold="true"/>
-									</textElement>
-									<text><![CDATA[Wartość planu instytucji netto:]]></text>
-								</staticText>
-							</jr:tableFooter>
-							<jr:groupHeader groupName="ASSORTMENT_GROUP">
-								<jr:cell style="Table 5_CH" height="30" rowSpan="1">
-									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
-									<staticText>
-										<reportElement x="0" y="0" width="318" height="30"
-													   uuid="32158cf7-fb3d-4cd4-91ee-bdf3a2a15f40"/>
+                                        <reportElement x="0" y="0" width="307" height="30"
+                                                       uuid="32158cf7-fb3d-4cd4-91ee-bdf3a2a15f40"/>
 										<box padding="5"/>
 										<textElement textAlignment="Center" verticalAlignment="Middle">
 											<font fontName="PDF_fonts" isBold="true"/>
@@ -500,8 +540,8 @@ where
 								<jr:cell style="Table_CH" height="30" rowSpan="1">
 									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 									<staticText>
-										<reportElement x="0" y="0" width="318" height="30"
-													   uuid="d885f869-34c2-4837-979b-d83fca52d625"/>
+                                        <reportElement x="0" y="0" width="307" height="30"
+                                                       uuid="d885f869-34c2-4837-979b-d83fca52d625"/>
 										<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="5"/>
 										<textElement textAlignment="Right" verticalAlignment="Middle">
 											<font fontName="PDF_fonts" isBold="true"/>
@@ -514,8 +554,8 @@ where
 								<jr:cell style="Table 1_CH" height="30" rowSpan="1">
 									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 									<staticText>
-										<reportElement x="0" y="0" width="318" height="30"
-													   uuid="e404af49-0ba2-41de-b06e-e1883d026313"/>
+                                        <reportElement x="0" y="0" width="307" height="30"
+                                                       uuid="e404af49-0ba2-41de-b06e-e1883d026313"/>
 										<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="5"/>
 										<textElement textAlignment="Right" verticalAlignment="Middle">
 											<font fontName="PDF_fonts" isBold="true"/>
@@ -526,37 +566,37 @@ where
 							</jr:groupFooter>
 							<jr:detailCell style="Table 5_TD" height="30">
 								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
-								<textField textAdjust="StretchHeight">
-									<reportElement x="0" y="0" width="318" height="30"
-												   uuid="4a41bb01-907d-4fd1-bf38-a31727f5bb09"/>
-									<box padding="5"/>
-									<textElement>
-										<font fontName="PDF_fonts"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
-								</textField>
-							</jr:detailCell>
-						</jr:column>
-						<jr:column width="146" uuid="152a12e5-0188-4836-afcf-fe404e3a1da4">
-							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-							<jr:tableFooter style="Table 5_TH" height="30" rowSpan="1">
-								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
-								<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-									<reportElement x="0" y="0" width="146" height="30"
-												   uuid="6c45b5f0-506a-46c8-8273-60ea1a81fa03"/>
-									<box padding="5"/>
-									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font fontName="PDF_fonts" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{AM_REQ_PL_INS_NET}]]></textFieldExpression>
-								</textField>
+                                <textField textAdjust="StretchHeight">
+                                    <reportElement x="0" y="0" width="307" height="30"
+                                                   uuid="4a41bb01-907d-4fd1-bf38-a31727f5bb09"/>
+                                    <box padding="5"/>
+                                    <textElement>
+                                        <font fontName="PDF_fonts"/>
+                                    </textElement>
+                                    <textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
+                        </jr:column>
+                        <jr:column width="133" uuid="152a12e5-0188-4836-afcf-fe404e3a1da4">
+                            <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
+                            <jr:tableFooter style="Table 5_TH" height="30" rowSpan="1">
+                                <box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+                                <textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
+                                    <reportElement x="0" y="0" width="133" height="30"
+                                                   uuid="6c45b5f0-506a-46c8-8273-60ea1a81fa03"/>
+                                    <box padding="5"/>
+                                    <textElement textAlignment="Right" verticalAlignment="Middle">
+                                        <font fontName="PDF_fonts" isBold="true"/>
+                                    </textElement>
+                                    <textFieldExpression><![CDATA[$V{AM_REQ_PL_INS_NET}]]></textFieldExpression>
+                                </textField>
 							</jr:tableFooter>
 							<jr:groupHeader groupName="ASSORTMENT_GROUP">
 								<jr:cell style="Table 5_CH" height="30" rowSpan="1">
 									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 									<staticText>
-										<reportElement x="0" y="0" width="146" height="30"
-													   uuid="9c94366c-ca90-4814-bf1d-8dbed80ebb3b"/>
+                                        <reportElement x="0" y="0" width="133" height="30"
+                                                       uuid="9c94366c-ca90-4814-bf1d-8dbed80ebb3b"/>
 										<box padding="5"/>
 										<textElement textAlignment="Center" verticalAlignment="Middle">
 											<font fontName="PDF_fonts" isBold="true"/>
@@ -569,8 +609,8 @@ where
 								<jr:cell style="Table_CH" height="30" rowSpan="1">
 									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 									<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-										<reportElement x="0" y="0" width="146" height="30"
-													   uuid="a038de79-7e2b-436a-96a4-0adbfdaf17b3"/>
+                                        <reportElement x="0" y="0" width="133" height="30"
+                                                       uuid="a038de79-7e2b-436a-96a4-0adbfdaf17b3"/>
 										<box padding="5"/>
 										<textElement textAlignment="Right" verticalAlignment="Middle">
 											<font fontName="PDF_fonts" isBold="true"/>
@@ -583,8 +623,8 @@ where
 								<jr:cell style="Table 1_CH" height="30" rowSpan="1">
 									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 									<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-										<reportElement x="0" y="0" width="146" height="30"
-													   uuid="c12ac4e1-6fe9-49ba-861b-d97bd54949fa"/>
+                                        <reportElement x="0" y="0" width="133" height="30"
+                                                       uuid="c12ac4e1-6fe9-49ba-861b-d97bd54949fa"/>
 										<box padding="5"/>
 										<textElement textAlignment="Right" verticalAlignment="Middle">
 											<font fontName="PDF_fonts" isBold="true"/>
@@ -596,8 +636,8 @@ where
 							<jr:detailCell style="Table 5_TD" height="30">
 								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 								<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-									<reportElement x="0" y="0" width="146" height="30"
-												   uuid="07bebff4-2ab7-4a5c-9f4c-5304a3bd76e3"/>
+                                    <reportElement x="0" y="0" width="133" height="30"
+                                                   uuid="07bebff4-2ab7-4a5c-9f4c-5304a3bd76e3"/>
 									<box padding="5"/>
 									<textElement textAlignment="Right">
 										<font fontName="PDF_fonts"/>
@@ -636,8 +676,8 @@ where
 				<textElement textAlignment="Center">
 					<font fontName="PDF_fonts" size="8" isItalic="true"/>
 				</textElement>
-				<textFieldExpression>
-					<![CDATA[($F{PLAN_TYPE}.equals( "FIN" ) ?  "(Główny Księgowy)" : "(Dział Zamówień Publicznych)")]]></textFieldExpression>
+                <textFieldExpression>
+                    <![CDATA[($F{PLAN_TYPE}.equals( "FIN" ) ?  "(Główny Księgowy)" : "(Dział Zamówień Publicznych)")]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="550" y="1" width="250" height="21" uuid="53efe042-2656-445a-9f45-a7addd928d22">

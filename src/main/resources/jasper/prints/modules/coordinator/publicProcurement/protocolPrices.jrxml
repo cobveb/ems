@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+			  name="protocolPrices" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0"
+			  topMargin="0" bottomMargin="0" uuid="4f97a336-c124-4ea6-8f56-3d6fcae03673">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="APL_PROTOCOL_ID" class="java.math.BigDecimal"/>
+	<queryString language="SQL">
+		<![CDATA[select 
+    pr.*,
+    (
+		select 
+			name 
+	 	from 
+	 		emsarch.dictionary_items di, 
+	 		emsadm.cor_pub_proc_groups gr left join emsadm.pub_institution_plan_pos ins_pos on (gr.plan_pub_proc_pos_id = ins_pos.id) 
+                left join emsadm.acc_institution_plan_positions in_pl_pos on (ins_pos.id = in_pl_pos.id) 
+ 		where 
+ 			gr.id = pr.apl_pub_proc_gr_id 
+ 			and di.id = ins_pos.assortment_id
+	) as group_name
+from
+    emsadm.cor_pub_proc_prices pr
+where
+    pr.protocol_id =  $P{APL_PROTOCOL_ID}]]>
+	</queryString>
+	<field name="AMOUNT_CONTRACT_AWA_NET" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="AMOUNT_CONTRACT_AWA_NET"/>
+	</field>
+	<field name="AMOUNT_CONTRACT_AWA_GROSS" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="AMOUNT_CONTRACT_AWA_GROSS"/>
+	</field>
+	<field name="GROUP_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="GROUP_NAME"/>
+	</field>
+	<field name="APL_PUB_PROC_GR_ID" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="APL_PUB_PROC_GR_ID"/>
+	</field>
+	<variable name="ORDER_PRICE_SUM_GROSS" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{AMOUNT_CONTRACT_AWA_GROSS}]]></variableExpression>
+	</variable>
+	<group name="APL_PUB_PROC_GR_ID">
+		<groupExpression><![CDATA[$F{APL_PUB_PROC_GR_ID}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="81" splitType="Stretch">
+			<textField textAdjust="StretchHeight">
+				<reportElement x="10" y="21" width="585" height="20" uuid="e76bf283-6331-4f78-8b36-34fed8bdc73c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["Grupa Asortmentowa : <style isBold='true'>" + $F{GROUP_NAME} + "</style>"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="20" y="41" width="575" height="20" uuid="360dbd97-7dc4-4247-a916-a1e16af74c87">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["cena wybranej oferty netto w ramach grupy:  <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_CONTRACT_AWA_NET})) + "</style>"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="20" y="61" width="575" height="20" uuid="59ceb277-81bd-4590-8cfb-2dcdb7e16e67">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["cena wybranej oferty brutto w ramach grupy:  <style isBold='true'>" +  (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_CONTRACT_AWA_GROSS})) + "</style>"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" evaluationTime="Auto">
+				<reportElement x="0" y="0" width="595" height="20" uuid="1f1ee807-9486-45b2-8ec1-ef522f1b894a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["Cena brutto wybranej oferty: <style isBold='true'>" +  (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($V{ORDER_PRICE_SUM_GROSS})) + "</style>"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

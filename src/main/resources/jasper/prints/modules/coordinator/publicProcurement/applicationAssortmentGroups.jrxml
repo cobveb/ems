@@ -3,10 +3,9 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-              name="coordinatorApplicationAssortmentGroups" pageWidth="595" pageHeight="842" columnWidth="595"
+              name="coordinatorApplicationAssortmentGroups" pageWidth="550" pageHeight="842" columnWidth="550"
               leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0e9e3681-3af6-4fe9-94d6-05ee002b912f">
     <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="21.162 - ems"/>
     <property name="com.jaspersoft.studio.unit." value="pixel"/>
     <property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
     <property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -16,7 +15,9 @@
     <property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
     <property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
     <property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-    <parameter name="APPLICATION_ID" class="java.lang.String"/>
+    <parameter name="APPLICATION_ID" class="java.math.BigDecimal"/>
+    <parameter name="ESTIMATION_TYPE" class="java.lang.String"/>
+    <parameter name="ORDER_INCLUDED_PLAN_TYPE" class="java.lang.String"/>
     <queryString language="SQL">
         <![CDATA[select
 	gr.*,
@@ -25,20 +26,18 @@
 			name 
 	 	from 
 	 		emsarch.dictionary_items di, 
-	 		emsadm.cor_pub_procurement_positions pos 
+	 		emsadm.pub_institution_plan_pos ins_pos left join emsadm.acc_institution_plan_positions in_pl_pos on (ins_pos.id = in_pl_pos.id) 
  		where 
- 			gr.plan_position_id = pos.id 
- 			and di.id = pos.assortment_id
+ 			gr.plan_pub_proc_pos_id = ins_pos.id 
+ 			and di.id = ins_pos.assortment_id
 	) as group_name,
 	(
 		select 
-			ppos.am_req_net 
+			in_pl_pos.am_req_net 
 	 	from 
-            emsadm.cor_plan_positions ppos,
-	 		emsadm.cor_pub_procurement_positions pos 
+            emsadm.pub_institution_plan_pos ins_pos left join emsadm.acc_institution_plan_positions in_pl_pos on (ins_pos.id = in_pl_pos.id)
  		where 
- 			gr.plan_position_id = ppos.id
-            and pos.id = ppos.id
+ 			gr.plan_pub_proc_pos_id = in_pl_pos.id
 	) as group_value_net
 from
 	emsadm.cor_pub_proc_groups gr
@@ -63,11 +62,29 @@ where
     <field name="ORDER_VALUE_YEAR_GROSS" class="java.math.BigDecimal">
         <property name="com.jaspersoft.studio.field.label" value="ORDER_VALUE_YEAR_GROSS"/>
     </field>
+    <field name="IS_OPTION" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="IS_OPTION"/>
+    </field>
+    <field name="AM_OPTION_NET" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AM_OPTION_NET"/>
+    </field>
+    <field name="AM_OPTION_GROSS" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AM_OPTION_GROSS"/>
+    </field>
+    <field name="PLAN_PUB_PROC_POS_ID" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="PLAN_PUB_PROC_POS_ID"/>
+    </field>
     <field name="PLAN_POSITION_ID" class="java.math.BigDecimal">
         <property name="com.jaspersoft.studio.field.label" value="PLAN_POSITION_ID"/>
     </field>
     <field name="APPLICATION_ID" class="java.math.BigDecimal">
         <property name="com.jaspersoft.studio.field.label" value="APPLICATION_ID"/>
+    </field>
+    <field name="AM_CTR_AWA_NET" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AM_CTR_AWA_NET"/>
+    </field>
+    <field name="AM_CTR_AWA_GROSS" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AM_CTR_AWA_GROSS"/>
     </field>
     <field name="GROUP_NAME" class="java.lang.String">
         <property name="com.jaspersoft.studio.field.label" value="GROUP_NAME"/>
@@ -75,11 +92,29 @@ where
     <field name="GROUP_VALUE_NET" class="java.math.BigDecimal">
         <property name="com.jaspersoft.studio.field.label" value="GROUP_VALUE_NET"/>
     </field>
-    <variable name="GROUPS_VALUE_YEAR_NET" class="java.math.BigDecimal" calculation="Sum">
-        <variableExpression><![CDATA[$F{ORDER_VALUE_YEAR_NET}]]></variableExpression>
+    <variable name="GROUP_VALUE_YEAR_NET" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression>
+            <![CDATA[$F{ORDER_VALUE_YEAR_NET} != null ? $F{ORDER_VALUE_YEAR_NET} : new BigDecimal(0)]]></variableExpression>
     </variable>
-    <variable name="GROUPS_VALUE_YEAR_GROSS" class="java.math.BigDecimal" calculation="Sum">
-        <variableExpression><![CDATA[$F{ORDER_VALUE_YEAR_GROSS}]]></variableExpression>
+    <variable name="GROUP_VALUE_YEAR_GROSS" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression>
+            <![CDATA[$F{ORDER_VALUE_YEAR_GROSS} != null ? $F{ORDER_VALUE_YEAR_GROSS} : new BigDecimal(0)]]></variableExpression>
+    </variable>
+    <variable name="GROUP_SUM_VALUE_NET" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression>
+            <![CDATA[($F{AM_OPTION_NET} != null ? $F{ORDER_GROUP_VALUE_NET} .add($F{AM_OPTION_NET}) : $F{ORDER_GROUP_VALUE_NET})]]></variableExpression>
+    </variable>
+    <variable name="GROUP_OPTION_VALUE" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression>
+            <![CDATA[($F{IS_OPTION} != null && $F{IS_OPTION}.intValue() ==1 ? $F{AM_OPTION_NET}  : new BigDecimal(0))]]></variableExpression>
+    </variable>
+    <variable name="GROUP_SUM_VALUE_GROSS" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression>
+            <![CDATA[($F{AM_OPTION_GROSS} != null ? $F{ORDER_GROUP_VALUE_GROSS} .add($F{AM_OPTION_GROSS}) : $F{ORDER_GROUP_VALUE_GROSS})]]></variableExpression>
+    </variable>
+    <variable name="GROUP_OPTION_VALUE_GROSS" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression>
+            <![CDATA[($F{IS_OPTION} != null && $F{IS_OPTION}.intValue() ==1 ? $F{AM_OPTION_GROSS}  : new BigDecimal(0))]]></variableExpression>
     </variable>
     <group name="ORDER_VALUE_YEAR_NET">
         <groupExpression><![CDATA[$F{ORDER_VALUE_YEAR_NET}]]></groupExpression>
@@ -88,31 +123,86 @@ where
         <groupExpression><![CDATA[$F{ORDER_VALUE_YEAR_GROSS}]]></groupExpression>
     </group>
     <detail>
-        <band height="37" splitType="Stretch">
+        <band height="81" splitType="Stretch">
             <textField textAdjust="StretchHeight">
-                <reportElement stretchType="ContainerHeight" x="0" y="0" width="595" height="20"
+                <reportElement stretchType="ContainerHeight" x="0" y="0" width="550" height="20"
                                uuid="3db1b4d5-1b9c-49de-aae3-2a50110777ec"/>
                 <textElement>
                     <font fontName="PDF_fonts" isBold="true"/>
                 </textElement>
-                <textFieldExpression><![CDATA[$F{GROUP_NAME}]]></textFieldExpression>
+                <textFieldExpression><![CDATA["\u2022 " +$F{GROUP_NAME}]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤">
-                <reportElement x="227" y="21" width="368" height="16" uuid="aa7f4766-fba6-47de-bfe2-ac0817cbba40"/>
+                <reportElement x="220" y="21" width="330" height="20" uuid="aa7f4766-fba6-47de-bfe2-ac0817cbba40"/>
                 <textElement>
                     <font fontName="PDF_fonts" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA[$F{GROUP_VALUE_NET}]]></textFieldExpression>
             </textField>
             <staticText>
-                <reportElement x="10" y="21" width="216" height="16" uuid="9d009d7b-c701-44f7-ab25-0a4793736e4d">
+                <reportElement x="10" y="21" width="210" height="20" uuid="9d009d7b-c701-44f7-ab25-0a4793736e4d">
                     <property name="com.jaspersoft.studio.unit.width" value="px"/>
                 </reportElement>
                 <textElement>
                     <font fontName="PDF_fonts"/>
                 </textElement>
-                <text><![CDATA[• całkowita wartość netto grupy asortymentowej: ]]></text>
+                <text><![CDATA[całkowita wartość netto grupy asortymentowej: ]]></text>
             </staticText>
+            <textField textAdjust="StretchHeight">
+                <reportElement x="10" y="41" width="540" height="20" uuid="77178f2e-9fc6-4950-b545-bfa41ab5f9bb">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                </reportElement>
+                <textElement markup="styled">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression><![CDATA["szacunkowa wartość udzielanego zamówienia " +
+($P{ESTIMATION_TYPE}.equals( "DO50" ) ? "/cena wybranej oferty:" : ": ") +
+ "netto <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{ORDER_GROUP_VALUE_NET})) + "</style> / brutto <style isBold='true'>" +  (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{ORDER_GROUP_VALUE_GROSS} )) + "</style>"]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement x="10" y="61" width="540" height="20" uuid="1da9072f-509c-47c0-b54e-a7611d401b8f"/>
+                <textElement markup="styled">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression><![CDATA["w tym do wydania w roku bieżącym: " +
+ "<style isBold='true'>" + ($F{ORDER_VALUE_YEAR_NET} != null ? (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{ORDER_VALUE_YEAR_NET})) : new BigDecimal(0)) + "</style> / brutto <style isBold='true'>" + ($F{ORDER_VALUE_YEAR_GROSS} != null ? (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{ORDER_VALUE_YEAR_GROSS})) : new BigDecimal(0)) + "</style>"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="20">
+            <textField>
+                <reportElement x="10" y="0" width="540" height="20" uuid="403a0ef6-ce32-487d-83b7-d5778d3827c9"/>
+                <textElement markup="styled">
+                    <font fontName="PDF_fonts" isBold="true" isItalic="true"/>
+                </textElement>
+                <textFieldExpression>
+                    <![CDATA[($P{ORDER_INCLUDED_PLAN_TYPE}.equals( "FIN" ) ? "Pozycje w ramach planu finansowego:" : "Pozycje w ramach planu inwestycyjnego:")]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="19">
+            <printWhenExpression><![CDATA[$P{ORDER_INCLUDED_PLAN_TYPE}.equals( "FIN" )]]></printWhenExpression>
+            <subreport>
+                <reportElement x="20" y="0" width="530" height="19" uuid="b9619714-7495-4545-a6b8-884bab0929a1">
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
+                <subreportParameter name="ASSORTMENT_GROUP_ID">
+                    <subreportParameterExpression><![CDATA[$F{ID}]]></subreportParameterExpression>
+                </subreportParameter>
+                <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+                <subreportExpression>
+                    <![CDATA["jasper/prints/modules/coordinator/publicProcurement/assortmentGroupPlanFinPositions.jasper"]]></subreportExpression>
+            </subreport>
+        </band>
+        <band height="20">
+            <printWhenExpression><![CDATA[$P{ORDER_INCLUDED_PLAN_TYPE}.equals( "INW" )]]></printWhenExpression>
+            <subreport>
+                <reportElement x="20" y="0" width="530" height="20" uuid="689287b7-9411-48d6-a59a-110d113e6e54"/>
+                <subreportParameter name="ASSORTMENT_GROUP_ID">
+                    <subreportParameterExpression><![CDATA[$F{ID}]]></subreportParameterExpression>
+                </subreportParameter>
+                <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+                <subreportExpression>
+                    <![CDATA["jasper/prints/modules/coordinator/publicProcurement/assortmentGroupPlanInwPositions.jasper"]]></subreportExpression>
+            </subreport>
         </band>
     </detail>
 </jasperReport>

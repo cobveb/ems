@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { LibraryBooks, Style, Timeline, HowToReg, LocationCity} from '@material-ui/icons/';
+import { LibraryBooks, Style, Timeline, HowToReg, LocationCity, PeopleAlt, EuroSymbol, Assignment } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
 import CostsTypesContainer from 'containers/modules/accountant/dictionary/costsTypesContainer';
+import ContractorsContainer from 'containers/modules/accountant/dictionary/contractorsContainer';
 import PlansContainer from 'containers/modules/accountant/coordinator/plans/plansContainer';
+import PublicProcurementApplicationsContainer from 'containers/modules/accountant/coordinator/publicProcurement/applicationsContainer';
+import PublicProcurementProtocolsContainer from 'containers/modules/accountant/coordinator/publicProcurement/protocolsContainer';
 import InstitutionPlansContainer from 'containers/modules/accountant/institution/plans/plansContainer';
 import PropTypes from 'prop-types';
 
@@ -46,6 +49,18 @@ class Accountant extends Component {
                         path: '/modules/accountant/coordinator/plans',
                         icon: <Timeline />
                     },
+                    {
+                        code: 'publicApplications',
+                        name: constants.ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_APPLICATIONS,
+                        path: '/modules/accountant/coordinator/publicApplications',
+                        icon: <EuroSymbol />
+                    },
+                    {
+                        code: 'publicProtocols',
+                        name: constants.ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_PROTOCOLS,
+                        path: '/modules/accountant/coordinator/publicProtocols',
+                        icon: <Assignment />
+                    },
                 ],
             },
             {
@@ -70,6 +85,12 @@ class Accountant extends Component {
                         name: constants.ACCOUNTANT_SUBMENU_DICTIONARIES_COST_TYPES,
                         path: '/modules/accountant/dictionaries/costs',
                         icon: <Style />
+                    },
+                    {
+                        code:'contractor',
+                        name: constants.ACCOUNTANT_SUBMENU_DICTIONARIES_CONTRACTORS,
+                        path: '/modules/accountant/dictionaries/contractors',
+                        icon: <PeopleAlt />
                     }
                 ],
             }
@@ -83,6 +104,15 @@ class Accountant extends Component {
             />
         )
     }
+
+    showPublicProcurementProtocol = () =>{
+        return(
+            <PublicProcurementProtocolsContainer
+                levelAccess="accountant"
+            />
+        )
+    }
+
     render(){
         const {classes} = this.props;
         const {menus} = this.state;
@@ -97,8 +127,11 @@ class Accountant extends Component {
                                 <Switch>
                                     <PrivateRoute exact path='/modules/accountant/' component={this.showInstitutionPlans}/>
                                     <PrivateRoute exact path='/modules/accountant/coordinator/plans' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/accountant/coordinator/publicApplications' component={PublicProcurementApplicationsContainer}/>
+                                    <PrivateRoute exact path='/modules/accountant/coordinator/publicProtocols' component={this.showPublicProcurementProtocol}/>
                                     <PrivateRoute exact path='/modules/accountant/institution/plans' component={this.showInstitutionPlans}/>
                                     <PrivateRoute path='/modules/accountant/dictionaries/costs' component={CostsTypesContainer}/>
+                                    <PrivateRoute path='/modules/accountant/dictionaries/contractors' component={ContractorsContainer}/>
                                 </Switch>
                             </CardContent>
                         </Card>

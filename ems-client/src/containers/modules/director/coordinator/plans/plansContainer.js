@@ -75,6 +75,9 @@ class PlansContainer extends Component {
                     Object.assign(plan,
                         {
                             status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
+                            planAmountRequestedNet: plan.planAmountRequestedNet = plan.type !== 'PZP' ? null : plan.planAmountRequestedNet,
+                            planAmountRequestedGross: plan.planAmountRequestedGross = plan.type !== 'PZP' ? plan.planAmountRequestedGross : null,
+                            planAmountAwardedGross: plan.planAmountAwardedGross = plan.type !== 'PZP' ? plan.planAmountAwardedGross : null,
                             type: plan.type = findSelectFieldPosition( this.state.types, plan.type),
                             isUpdate: plan.isUpdate = plan.correctionPlan === null ? false : true,
                         }

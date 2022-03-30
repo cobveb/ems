@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import * as constants from 'constants/uiNames';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
-import { Timeline, HowToReg, LocationCity } from '@material-ui/icons/';
+import { Timeline, HowToReg, LocationCity, EuroSymbol, Assignment } from '@material-ui/icons/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import PlansContainer from 'containers/modules/director/coordinator/plans/plansContainer';
+import PublicProcurementApplicationsContainer from 'containers/modules/director/coordinator/publicProcurement/applicationsContainer';
+import PublicProcurementProtocolsContainer from 'containers/modules/accountant/coordinator/publicProcurement/protocolsContainer';
 import InstitutionPlansContainer from 'containers/modules/director/institution/plans/plansContainer';
 
 const styles = theme => ({
@@ -35,15 +37,27 @@ class Director extends Component {
     state = {
         menus: [
             {
-                name: constants.DIRECTOR_MENU_PLANS,
-                icon: <Timeline />,
+                name: constants.ACCOUNTANT_MENU_COORDINATOR,
+                icon: <HowToReg />,
                 defaultExpanded: true,
                 items:  [
                     {
                         code: 'plans',
                         name: constants.DIRECTOR_MENU_COORDINATOR_PLANS,
-                        path: '/modules/director/plans/coordinators',
-                        icon: <HowToReg />
+                        path: '/modules/director/coordinator/plans',
+                        icon: <Timeline />
+                    },
+                    {
+                        code: 'publicApplications',
+                        name: constants.ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_APPLICATIONS,
+                        path: '/modules/director/coordinator/publicApplications',
+                        icon: <EuroSymbol />
+                    },
+                    {
+                        code: 'publicProtocols',
+                        name: constants.ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_PROTOCOLS,
+                        path: '/modules/director/coordinator/publicProtocols',
+                        icon: <Assignment />
                     },
                 ],
             },
@@ -71,6 +85,14 @@ class Director extends Component {
         )
     }
 
+    showPublicProcurementProtocol = () =>{
+        return(
+            <PublicProcurementProtocolsContainer
+                levelAccess="director"
+            />
+        )
+    }
+
     render(){
 
         const {classes} = this.props;
@@ -86,7 +108,9 @@ class Director extends Component {
                             <CardContent>
                                 <Switch>
                                     <PrivateRoute exact path='/modules/director/' component={PlansContainer}/>
-                                    <PrivateRoute exact path='/modules/director/plans/coordinators' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/director/coordinator/plans' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/director/coordinator/publicApplications' component={PublicProcurementApplicationsContainer}/>
+                                    <PrivateRoute exact path='/modules/director/coordinator/publicProtocols' component={this.showPublicProcurementProtocol}/>
                                     <PrivateRoute exact path='/modules/director/institution/plans' component={this.showInstitutionPlan}/>
                                 </Switch>
                             </CardContent>

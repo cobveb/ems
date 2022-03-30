@@ -81,7 +81,7 @@ class PlanPublicProcurementContentPosition extends Component {
         if(amountRequestedNet != null && (estimationType.code !== 'WR' && estimationType.code !== 'COVID')){
             if(amountRequestedNet <= 50000 && estimationType.code !== 'DO50'){
                 wrongEstimationType = true
-            } else if (amountRequestedNet > 50000 && amountRequestedNet <= 130000 && estimationType.code !== 'D0130'){
+            } else if (amountRequestedNet > 50000 && amountRequestedNet <= 130000 && estimationType.code !== 'DO130'){
                 wrongEstimationType = true
             } else if(amountRequestedNet > 130000 && amountRequestedNet <= 593432 && estimationType.code !== 'PO130'){
                 wrongEstimationType = true
@@ -197,8 +197,8 @@ class PlanPublicProcurementContentPosition extends Component {
                 }
                 break;
             case "edit":
-                if( (amountRequestedNet !== null && amountRequestedNet !== undefined) && ((euroExchangeRate !== null && prevProps.estimationType !== "UE139" && estimationType.code === 'UE139') ||
-                   (estimationType.code === 'UE139' && euroExchangeRate !== prevProps.euroExchangeRate)))
+                if( (amountRequestedNet !== null && amountRequestedNet !== undefined) && ((euroExchangeRate!== undefined && euroExchangeRate !== null && prevProps.estimationType !== "UE139" && estimationType.code === 'UE139') ||
+                   (estimationType.code === 'UE139' && euroExchangeRate !== undefined && euroExchangeRate !== prevProps.euroExchangeRate)))
                 {
                     this.props.dispatch(change('PlanPublicProcurementContentPositionForm', 'amountRequestedEuroNet', parseFloat((amountRequestedNet / euroExchangeRate.replace(",", ".")).toFixed(2))));
                 }

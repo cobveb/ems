@@ -345,7 +345,7 @@ class PlanBasicInfoForm extends Component {
         const {headFin, headInv, headPzp} = this.state;
         const {initialValues} = this.props;
         this.props.onExcelExport(exportType, initialValues.type !== undefined && initialValues.type.code === "FIN" ?
-            headFin : initialValues.type !== undefined && initialValues.type.code === "INV" ? headInv :
+            headFin : initialValues.type.code === "INW" ? headInv :
                 headPzp)
     }
 
@@ -375,7 +375,6 @@ class PlanBasicInfoForm extends Component {
     renderPlanContent = () =>{
         const {initialValues, levelAccess, vats, modes, estimationTypes, orderTypes} = this.props;
         const {selected} = this.state;
-        console.log(selected)
         switch(initialValues.type.code){
             case("INW"):
                 return(
@@ -667,7 +666,7 @@ class PlanBasicInfoForm extends Component {
                                                         icon=<Done/>
                                                         iconAlign="left"
                                                         variant="submit"
-                                                        disabled={initialValues.status !== undefined && ((initialValues.type.code === 'IWW' && initialValues.status.code !== 'UZ') ||
+                                                        disabled={initialValues.status !== undefined && ((initialValues.type.code === 'INW' && initialValues.status.code !== 'UZ') ||
                                                             (initialValues.type.code ==='PZP' && initialValues.status.code !== 'AD'))}
                                                         onClick={this.handleApprove}
                                                     />

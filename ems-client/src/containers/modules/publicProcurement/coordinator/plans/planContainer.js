@@ -4,9 +4,8 @@ import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import PropTypes from 'prop-types';
 import PlanBasicInfoForm from 'containers/modules/publicProcurement/coordinator/plans/forms/planBasicInfoFormContainer';
-import {findSelectFieldPosition, generateExportLink} from 'utils';
+import {findSelectFieldPosition, generateExportLink, publicProcurementEstimationTypes, getCoordinatorPlanPositionsStatuses, publicProcurementOrderTypes} from 'utils';
 import PlansApi from 'api/modules/publicProcurement/coordinator/plansApi';
-import * as constants from 'constants/uiNames';
 
 class PlanContainer extends Component {
     state = {
@@ -23,72 +22,9 @@ class PlanContainer extends Component {
                 name: "23%",
             },
         ],
-        orderTypes: [
-            {
-                code: 'DST',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_DELIVERY,
-            },
-            {
-                code: 'USL',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_SERVICE,
-            }
-        ],
-        estimationTypes: [
-            {
-                code: 'DO50',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_DO50,
-            },
-            {
-                code: 'D0130',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_D0130,
-            },
-            {
-                code: 'PO130',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_PO130,
-            },
-            {
-                code: 'UE139',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_UE139,
-            },
-            {
-                code: 'WR',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_WR,
-            },
-            {
-                code: 'COVID',
-                name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_COVID,
-            }
-        ],
-        statuses:[
-            {
-                code: 'DO',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_ADDED,
-            },
-            {
-                code: 'ZP',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_SAVED,
-            },
-            {
-                code: 'WY',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_SENT,
-            },
-            {
-                code: 'ZA',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_ACCEPT,
-            },
-            {
-                code: 'SK',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_CORRECT,
-            },
-            {
-                code: 'RE',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_REALIZED,
-            },
-            {
-                code: 'ZR',
-                name: constants.COORDINATOR_PLAN_POSITION_STATUS_EXECUTED,
-            },
-        ],
+        orderTypes: publicProcurementOrderTypes(),
+        estimationTypes: publicProcurementEstimationTypes(),
+        statuses: getCoordinatorPlanPositionsStatuses(),
     }
 
     handleGetPlanPositions = () => {

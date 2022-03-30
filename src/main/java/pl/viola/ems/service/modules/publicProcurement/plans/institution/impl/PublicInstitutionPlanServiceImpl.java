@@ -4,20 +4,26 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.common.export.ExportType;
-import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionCoordinatorPlanPosition;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPosition;
-import pl.viola.ems.model.modules.accountant.institution.plans.repository.InstitutionCoordinatorPlanPositionRepository;
+import pl.viola.ems.model.modules.accountant.institution.plans.repository.InstitutionPlanPositionRepository;
 import pl.viola.ems.model.modules.accountant.institution.plans.repository.InstitutionPlanRepository;
+import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
+import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanSubPosition;
 import pl.viola.ems.model.modules.coordinator.plans.PublicProcurementPosition;
 import pl.viola.ems.model.modules.coordinator.plans.repository.CoordinatorPlanPositionRepository;
+import pl.viola.ems.model.modules.coordinator.plans.repository.CoordinatorPlanRepository;
+import pl.viola.ems.model.modules.publicProcurement.institution.plans.InstitutionPublicProcurementPlanPosition;
 import pl.viola.ems.payload.export.ExcelHeadRow;
+import pl.viola.ems.payload.modules.publicProcurement.plans.PublicInstitutionPlanPositionRequest;
 import pl.viola.ems.payload.modules.publicProcurement.plans.PublicInstitutionPlanPositionResponse;
 import pl.viola.ems.payload.modules.publicProcurement.plans.PublicInstitutionPlanResponse;
 import pl.viola.ems.service.common.JasperPrintService;
@@ -37,13 +43,19 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
     InstitutionPlanRepository institutionPlanRepository;
 
     @Autowired
-    InstitutionCoordinatorPlanPositionRepository institutionCoordinatorPlanPositionRepository;
-
-    @Autowired
     CoordinatorPlanPositionRepository<PublicProcurementPosition> publicProcurementPositionRepository;
 
     @Autowired
+    InstitutionPlanPositionRepository institutionPlanPositionRepository;
+
+    @Autowired
     JasperPrintService jasperPrintService;
+
+    @Autowired
+    MessageSource messageSource;
+
+    @Autowired
+    CoordinatorPlanRepository coordinatorPlanRepository;
 
     @Override
     public List<PublicInstitutionPlanResponse> getPlans(String levelAccess) {
@@ -58,26 +70,31 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
     }
 
     @Override
-    public List<PublicInstitutionPlanPositionResponse> getPlanPositions(final Long planId) {
-        List<PublicInstitutionPlanPositionResponse> publicInstitutionPlanPositions = new ArrayList<>();
+    public Set<InstitutionPlanPosition> getPlanPositions(final Long planId) {
 
         InstitutionPlan institutionPlan = institutionPlanRepository.findById(planId).orElseThrow(() -> new AppException("Coordinator.plan.notFound", HttpStatus.NOT_FOUND));
 
-        List<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions;
+        return institutionPlan.getPlanPositions();
+    }
 
-        institutionCoordinatorPlanPositions = institutionCoordinatorPlanPositionRepository.findByInstitutionPlanPositionIn(institutionPlan.getPlanPositions());
+    @Override
+    public List<PublicInstitutionPlanPositionResponse> getPlanPublicPositions(final Long positionId) {
+        List<PublicInstitutionPlanPositionResponse> publicInstitutionPlanPositions = new ArrayList<>();
 
-        if (!institutionCoordinatorPlanPositions.isEmpty()) {
+        InstitutionPlanPosition institutionPlanPosition = institutionPlanPositionRepository.findById(positionId)
+                .orElseThrow(() -> new AppException("Coordinator.plan.position.notFound", HttpStatus.NOT_FOUND));
 
-            institutionCoordinatorPlanPositions.forEach(institutionPlanPosition -> {
+        if (!institutionPlanPosition.getInstitutionCoordinatorPlanPositions().isEmpty()) {
+
+            institutionPlanPosition.getInstitutionCoordinatorPlanPositions().forEach(institutionCoordinatorPlanPosition -> {
                 PublicInstitutionPlanPositionResponse publicInstitutionPlanPosition = new PublicInstitutionPlanPositionResponse(
-                        institutionPlanPosition.getCoordinatorPlanPosition().getId(),
-                        institutionPlanPosition.getCoordinatorPlanPosition().getAssortmentGroup(),
-                        institutionPlanPosition.getCoordinatorPlanPosition().getOrderType(),
-                        institutionPlanPosition.getCoordinatorPlanPosition().getEstimationType(),
-                        institutionPlanPosition.getCoordinatorPlanPosition().getPlan().getCoordinator(),
-                        institutionPlanPosition.getCoordinatorPlanPosition().getAmountRequestedNet(),
-                        institutionPlanPosition.getCoordinatorPlanPosition().getStatus()
+                        institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getId(),
+                        institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getAssortmentGroup(),
+                        institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getOrderType(),
+                        institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getEstimationType(),
+                        institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getPlan().getCoordinator(),
+                        institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getAmountRequestedNet(),
+                        institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getStatus()
                 );
 
                 publicInstitutionPlanPositions.add(publicInstitutionPlanPosition);
@@ -101,11 +118,93 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
     }
 
     @Override
+    @Transactional
+    public String correctPlanSubPositions(final PublicInstitutionPlanPositionRequest institutionPlanPositionRequest) {
+
+        List<PublicProcurementPosition> procurementPositions = new ArrayList<>();
+        InstitutionPublicProcurementPlanPosition institutionPlanPosition = (InstitutionPublicProcurementPlanPosition) institutionPlanPositionRepository.findById(institutionPlanPositionRequest.getId())
+                .orElseThrow(() -> new AppException("Coordinator.plan.position.notFound", HttpStatus.NOT_FOUND));
+        if (!institutionPlanPosition.getEstimationType().equals(institutionPlanPositionRequest.getEstimationType())) {
+            institutionPlanPosition.setEstimationType(institutionPlanPositionRequest.getEstimationType());
+        }
+
+        if (!institutionPlanPosition.getOrderType().equals(institutionPlanPositionRequest.getOrderType())) {
+            institutionPlanPosition.setOrderType(institutionPlanPositionRequest.getOrderType());
+        }
+        if (!institutionPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.SK)) {
+            institutionPlanPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.SK);
+        }
+
+        institutionPlanPosition.getInstitutionCoordinatorPlanPositions().forEach(institutionCoordinatorPlanPosition -> procurementPositions.add((PublicProcurementPosition) institutionCoordinatorPlanPosition.getCoordinatorPlanPosition()));
+
+        procurementPositions.forEach(publicProcurementPosition -> {
+            if (!publicProcurementPosition.getEstimationType().equals(institutionPlanPositionRequest.getEstimationType())) {
+                publicProcurementPosition.setEstimationType(institutionPlanPositionRequest.getEstimationType());
+                publicProcurementPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.SK);
+            }
+            if (!publicProcurementPosition.getOrderType().equals(institutionPlanPositionRequest.getOrderType())) {
+                publicProcurementPosition.setOrderType(institutionPlanPositionRequest.getOrderType());
+                if (!publicProcurementPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.SK)) {
+                    publicProcurementPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.SK);
+                }
+            }
+        });
+
+        institutionPlanPositionRepository.save(institutionPlanPosition);
+
+        return messageSource.getMessage("Public.institutionPlanPosition.correctMsg", null, Locale.getDefault());
+    }
+
+    @Override
+    public String approvePlanPosition(Long positionId) {
+        InstitutionPlanPosition institutionPlanPosition = institutionPlanPositionRepository.findById(positionId)
+                .orElseThrow(() -> new AppException("Coordinator.plan.position.notFound", HttpStatus.NOT_FOUND));
+
+        institutionPlanPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZA);
+
+        institutionPlanPositionRepository.save(institutionPlanPosition);
+
+        return messageSource.getMessage("Public.institutionPlanPosition.approveMsg", null, Locale.getDefault());
+    }
+
+    @Override
+    public InstitutionPlan.InstitutionPlanStatus updatePlanStatus(Long planId, String action) {
+        InstitutionPlan plan = institutionPlanRepository.findById(planId).orElseThrow(() -> new AppException("Accountant.institution.planNotFound", HttpStatus.NOT_FOUND));
+
+        User user = Utils.getCurrentUser();
+
+        List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusAndTypeAndYear(action.equals("approve") ?
+                CoordinatorPlan.PlanStatus.WY : CoordinatorPlan.PlanStatus.AZ, plan.getType(), plan.getYear());
+
+        coordinatorPlans.forEach(coordinatorPlan -> {
+            if (action.equals("approve")) {
+                coordinatorPlan.setStatus(CoordinatorPlan.PlanStatus.AZ);
+                coordinatorPlan.setPublicAcceptUser(user);
+            } else if (action.equals("withdraw")) {
+                coordinatorPlan.setStatus(CoordinatorPlan.PlanStatus.WY);
+                coordinatorPlan.setPublicAcceptUser(null);
+                coordinatorPlan.setChiefAcceptUser(null);
+                coordinatorPlan.setEconomicAcceptUser(null);
+                coordinatorPlan.setDirectorAcceptUser(null);
+                coordinatorPlan.setPlanAcceptUser(null);
+            }
+        });
+        coordinatorPlanRepository.saveAll(coordinatorPlans);
+
+        plan.setApproveUser(action.equals("approve") ? user : null);
+        plan.setStatus(action.equals("approve") ? InstitutionPlan.InstitutionPlanStatus.AZ : InstitutionPlan.InstitutionPlanStatus.UT);
+
+        return institutionPlanRepository.save(plan).getStatus();
+    }
+
+    @Override
     public void exportPlanToJasper(Long planId, String type, HttpServletResponse response) throws IOException, JRException, SQLException {
         OutputStream outputStream = response.getOutputStream();
         JasperPrint jasperPrint = jasperPrintService.exportPdf(planId, type.equals("details") ?
                 "/jasper/prints/modules/publicProcurement/plans/institutionPlanDetails.jrxml" :
-                "/jasper/prints/modules/publicProcurement/plans/institutionPlan.jrxml");
+                type.equals("double") ?
+                        "/jasper/prints/modules/publicProcurement/plans/duplicateGroups.jrxml" :
+                        "/jasper/prints/modules/publicProcurement/plans/institutionPlan.jrxml");
         JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
     }
 
@@ -115,14 +214,12 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
                 .orElseThrow(() -> new AppException("Coordinator.plan.notFound", HttpStatus.NOT_FOUND));
 
         ArrayList<Map<String, Object>> rows = new ArrayList<>();
-        List<PublicInstitutionPlanPositionResponse> planPositions = this.getPlanPositions(plan.getId());
-        planPositions.forEach(position -> {
+        plan.getPlanPositions().forEach(position -> {
             Map<String, Object> row = new HashMap<>();
-            row.put("coordinator.name", position.getCoordinator().getName());
             row.put("assortmentGroup.name", position.getAssortmentGroup().getName());
-            row.put("orderType.name", position.getOrderType().name());
             row.put("estimationType.name", position.getEstimationType().name());
             row.put("amountRequestedNet", position.getAmountRequestedNet());
+            row.put("status.name", position.getStatus().name());
             rows.add(row);
         });
         Utils.generateExcelExport(exportType, headRow, rows, response);

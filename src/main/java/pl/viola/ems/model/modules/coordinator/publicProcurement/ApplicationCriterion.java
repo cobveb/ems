@@ -2,6 +2,7 @@ package pl.viola.ems.model.modules.coordinator.publicProcurement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import pl.viola.ems.model.common.Text;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -30,9 +31,9 @@ public class ApplicationCriterion {
     @Size(max = 120)
     private String name;
 
-    @Column(name = "scoring_description")
-    @Size(max = 256)
-    private String scoringDescription;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "scoring_description_id", referencedColumnName = "id")
+    private Text scoringDescription;
 
     @JsonIgnore
     @ManyToOne

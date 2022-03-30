@@ -157,8 +157,16 @@ public class InvestmentPosition extends CoordinatorPlanPosition {
     }
 
     @Override
+    public void setAmountInferredNet(BigDecimal amountInferredNet) {
+    }
+
+    @Override
     public BigDecimal getAmountInferredGross() {
         return null;
+    }
+
+    @Override
+    public void setAmountInferredGross(BigDecimal amountInferredGross) {
     }
 
     @Override

@@ -58,6 +58,12 @@ class Plans extends Component {
                 type:'amount',
             },
             {
+                id: 'planAmountRequestedGross',
+                label: constants.DIRECTOR_COORDINATOR_PLAN_TABLE_HEAD_ROW_AMOUNT_REQUESTED_GROSS,
+                suffix: 'zł.',
+                type:'amount',
+            },
+            {
                 id: 'planAmountAwardedGross',
                 label: constants.ACCOUNTANT_COORDINATOR_PLANS_TABLE_HEAD_ROW_AMOUNT_AWARDED_GROSS,
                 suffix: 'zł.',

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+			  name="assortmentGroupPositionSubsequentYears" pageWidth="555" pageHeight="842" columnWidth="555"
+			  leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="838f0aea-01bd-4c5f-a6ec-84ef763b3bb4">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="ASSORTMENT_GROUP_PLAN_POSITIION_ID" class="java.math.BigDecimal"/>
+	<queryString language="SQL">
+		<![CDATA[select
+    year,
+    year_exp_value_net,
+    year_exp_value_gross
+from 
+    emsadm.cor_pub_proc_group_sub_year sub
+where 
+    sub.apl_gr_pl_pos_id =  $P{ASSORTMENT_GROUP_PLAN_POSITIION_ID}]]>
+	</queryString>
+	<field name="YEAR" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="YEAR"/>
+	</field>
+	<field name="YEAR_EXP_VALUE_NET" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="YEAR_EXP_VALUE_NET"/>
+	</field>
+	<field name="YEAR_EXP_VALUE_GROSS" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="YEAR_EXP_VALUE_GROSS"/>
+	</field>
+	<detail>
+		<band height="21">
+			<printWhenExpression><![CDATA[$F{YEAR} != null]]></printWhenExpression>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="1" width="555" height="20" isRemoveLineWhenBlank="true"
+							   uuid="48e8cd5f-57e3-4a9d-b9a6-bbf55b7eed5f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["Rok: <style isBold='true'>"+ $F{YEAR} + " </style> - netto: <style isBold='true'>" +  (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{YEAR_EXP_VALUE_NET})) + "</style> brutto: <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{YEAR_EXP_VALUE_GROSS})) + "</style>"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

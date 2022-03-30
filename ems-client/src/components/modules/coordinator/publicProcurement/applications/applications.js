@@ -4,7 +4,7 @@ import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
 import { Table, Button, SplitButton, SelectField, DatePicker, SearchField } from 'common/gui';
-import { Delete, Add, Edit, Visibility } from '@material-ui/icons/';
+import { Delete, Add, Edit, Visibility, Undo } from '@material-ui/icons/';
 import ApplicationContainer from 'containers/modules/coordinator/publicProcurement/applications/applicationContainer';
 
 const styles = theme => ({
@@ -44,6 +44,7 @@ class Applications extends Component {
         status: '',
         selected:{},
         rows:[],
+        applications:[],
         action: '',
         headCells: [
             {
@@ -58,7 +59,7 @@ class Applications extends Component {
             },
             {
                 id: 'estimationType.name',
-                label: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDERING_MODE,
+                label: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_THRESHOLD,
                 type: 'object',
             },
             {
@@ -78,18 +79,18 @@ class Applications extends Component {
                 type: 'object',
             },
         ],
-        splitOptions:[
-            {
-                label: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WITHDRAW_REALISATION,
-                onClick: ((event) => this.handleAction(event, 'withdrawRealisation')),
-                disabled: false,
-            },
-            {
-                label: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WITHDRAW,
-                onClick: ((event) => this.handleAction(event, 'withdraw')),
-                disabled: false,
-            },
-        ],
+//        splitOptions:[
+////            {
+////                label: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WITHDRAW_REALISATION,
+////                onClick: ((event) => this.handleAction(event, 'withdrawRealisation')),
+////                disabled: false,
+////            },
+//            {
+//                label: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WITHDRAW,
+//                onClick: ((event) => this.handleAction(event, 'withdraw')),
+//                disabled: false,
+//            },
+//        ],
     };
 
     handleSelect = (id) => {
@@ -134,7 +135,6 @@ class Applications extends Component {
     }
 
     filter = () => {
-
         let applications = this.props.initialValues;
         let estimationTypes = this.props.estimationTypes
 
@@ -175,6 +175,27 @@ class Applications extends Component {
         })
     }
 
+    setupApplications = () => {
+        /*
+            Function returns application that can be the source if the current application is the replay
+        */
+        let tmp = this.props.initialValues;
+
+        tmp = tmp.filter(application => application.number !== null && ['RE', 'ZR', 'AN'].includes(application.status.code));
+        if (tmp.length > 0){
+            tmp.forEach(application => {
+                Object.assign(application,
+                {
+                    code: application.code = application.id.toString(),
+                    name: application.name = application.number,
+                })
+            })
+            return (tmp)
+        } else {
+            return [];
+        }
+    }
+
     handleAction = (event, action) => {
         this.setState(state => ({ action: action}));
     }
@@ -185,7 +206,7 @@ class Applications extends Component {
         } else {
             this.props.onWithdraw(this.state.selected.id);
         }
-        this.setState({ action: '' });
+        this.setState({ action: '', selected: []});
     }
 
     handleCloseDialog = () => {
@@ -209,23 +230,24 @@ class Applications extends Component {
     }
 
     componentDidUpdate(prevProps, prevState){
-        if( this.state.selected !== prevState.selected){
-            if(this.state.selected.status !== undefined && this.state.selected.status.code !== 'ZP'){
-                this.setState(prevState => {
-                    const splitOptions = [...prevState.splitOptions];
-                    if(this.state.selected.status.code === 'WY')
-                        splitOptions[0].disabled = true;
-                    if(this.state.selected.status.code !== 'WY'){
-                        splitOptions[1].disabled = true;
-                    }
-                    return {splitOptions}
-                });
-            }
-        }
+//        if( this.state.selected !== prevState.selected){
+//            if(this.state.selected.status !== undefined && this.state.selected.status.code !== 'ZP'){
+//                this.setState(prevState => {
+//                    const splitOptions = [...prevState.splitOptions];
+//                    if(this.state.selected.status.code === 'WY')
+//                        splitOptions[0].disabled = true;
+////                    if(this.state.selected.status.code === 'ZA'){
+////                        splitOptions[1].disabled = true;
+////                    }
+//                    return {splitOptions}
+//                });
+//            }
+//        }
 
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
                 rows: this.filter(),
+                applications: this.setupApplications(),
             });
         } else if (this.state.year !== prevState.year ||
             this.state.status !== prevState.status ||
@@ -241,7 +263,7 @@ class Applications extends Component {
 
     render(){
         const { classes, isLoading, error, estimationTypes, vats, planPositions, coordinators, modes, statuses } = this.props;
-        const { initData, isDetailsVisible, action, year, rows, headCells, selected, estimationType, mode, status, splitOptions } = this.state;
+        const { initData, isDetailsVisible, action, year, rows, headCells, selected, estimationType, mode, status, splitOptions, applications } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -252,10 +274,16 @@ class Applications extends Component {
                         initialValues={action === 'add' ? initData : selected}
                         action={action}
                         estimationTypes={estimationTypes}
+                        applications={applications}
                         vats={vats}
                         planPositions={planPositions}
                         coordinators={coordinators}
                         modes={modes}
+                        planTypes={this.props.planTypes}
+                        orderProcedures={this.props.orderProcedures}
+                        financialPlanPositions={this.props.financialPlanPositions}
+                        investmentPlanPositions={this.props.investmentPlanPositions}
+                        reasonsNotRealizedApplication={this.props.reasonsNotRealizedApplication}
                         statuses={statuses}
                         open={isDetailsVisible}
                         onPrint={this.handlePrintApplication}
@@ -292,6 +320,7 @@ class Applications extends Component {
                                             onChange={this.handleSearch}
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
                                             placeholder={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
+                                            valueType="all"
                                         />
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
@@ -332,7 +361,7 @@ class Applications extends Component {
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
                                             rowKey="id"
-                                            defaultOrderBy="year"
+                                            defaultOrderBy="id"
                                         />
                                     </Grid>
                                 </Grid>
@@ -345,7 +374,7 @@ class Applications extends Component {
                             alignItems="flex-start"
                             className={classes.container}
                         >
-                            <Grid item xs={10}>
+                            <Grid item xs={11}>
                                 <Grid
                                     container
                                     direction="row"
@@ -380,19 +409,26 @@ class Applications extends Component {
 
                                 </Grid>
                             </Grid>
-                            <Grid item xs={2}>
+                            <Grid item xs={1}>
                                 <Grid
                                     container
                                     direction="row"
-                                    justify="flex-start"
+                                    justify="flex-end"
                                     alignItems="flex-start"
                                 >
-
-                                    <SplitButton
+                                    <Button
+                                        label={constants.BUTTON_WITHDRAW}
+                                        icon=<Undo/>
+                                        iconAlign="left"
+                                        disabled={Object.keys(selected).length === 0 || selected.status.code !== 'WY'}
+                                        onClick = {(event) => this.handleAction(event, 'withdraw')}
+                                        variant="cancel"
+                                    />
+                                    {/*<SplitButton
                                         options={splitOptions}
                                         variant="cancel"
                                         disabled={Object.keys(selected).length === 0 || (selected.status !== undefined && selected.status.code !== 'WY')}
-                                    />
+                                    />*/}
                                 </Grid>
                             </Grid>
                         </Grid>

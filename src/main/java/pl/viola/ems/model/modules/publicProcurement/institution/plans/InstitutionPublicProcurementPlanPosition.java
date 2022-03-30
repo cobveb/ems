@@ -34,6 +34,18 @@ public class InstitutionPublicProcurementPlanPosition extends InstitutionPlanPos
     @Column(name = "order_type")
     private PublicProcurementPosition.OrderType orderType;
 
+    @Column(name = "am_inferred_net")
+    private BigDecimal amountInferredNet;
+
+    @Column(name = "am_inferred_gross")
+    private BigDecimal amountInferredGross;
+
+    @Column(name = "am_art30_net")
+    private BigDecimal amountArt30Net;
+
+    @Column(name = "am_art30_gross")
+    private BigDecimal amountArt30Gross;
+
     @NonNull
     @ManyToOne
     @JoinColumn(name = "assortment_id")

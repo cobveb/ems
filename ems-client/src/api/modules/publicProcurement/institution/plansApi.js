@@ -9,8 +9,28 @@ class PlansApi{
         return Axios.get(`/api/public/institution/plans/${planId}/getPlanPositions`)
     }
 
+    static getPositionDetails(positionId){
+        return Axios.get(`/api/public/institution/plans/plan/${positionId}/getPositionDetails`)
+    }
+
     static getSubPositions(positionId){
         return Axios.get(`/api/public/institution/plans/plan/${positionId}/getSubPositions`)
+    }
+
+    static correctPlanPositions(data){
+        return Axios.put(`/api/public/institution/plans/plan/correctPlanPosition`, data)
+    }
+
+    static approvePlanPositions(positionId){
+        return Axios.put(`/api/public/institution/plans/plan/approvePlanPosition/${positionId}`)
+    }
+
+    static approvePlan(planId){
+        return Axios.put(`/api/public/institution/plans/plan/${planId}/approvePlan`)
+    }
+
+    static withdrawPlan(planId){
+        return Axios.put(`/api/public/institution/plans/plan/${planId}/withdrawPlan`)
     }
 
     static printPlan(planId, type){

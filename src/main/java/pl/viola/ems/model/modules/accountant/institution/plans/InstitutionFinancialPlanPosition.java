@@ -69,4 +69,29 @@ public class InstitutionFinancialPlanPosition extends InstitutionPlanPosition {
     public PublicProcurementPosition.OrderType getOrderType() {
         return null;
     }
+
+    @Override
+    public PublicProcurementPosition.EstimationType getEstimationType() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getAmountInferredNet() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getAmountInferredGross() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getAmountArt30Net() {
+        return null;
+    }
+
+    @Override
+    public BigDecimal getAmountArt30Gross() {
+        return null;
+    }
 }

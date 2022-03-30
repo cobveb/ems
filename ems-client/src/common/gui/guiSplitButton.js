@@ -65,7 +65,7 @@ export default function SplitButton(props) {
     const classes = useStyles();
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
-    const [selectedIndex] = React.useState(1);
+    const [selectedIndex] = React.useState(options.length-1);
     const [filteredOptions] = React.useState(options.filter(function(index, option){
         return index !== options[selectedIndex];
     }));
@@ -136,6 +136,7 @@ export default function SplitButton(props) {
                 role={undefined}
                 transition
                 disablePortal
+                style={{zIndex: 1500}}
             >
                 {({ TransitionProps, placement }) => (
                     <Grow
@@ -161,7 +162,7 @@ export default function SplitButton(props) {
                                             }}
                                             disabled={option.disabled}
                                         >
-                                            {options[selectedIndex].icon}
+                                            {option.icon}
                                             <ListItemText primary={option.label} classes={{primary : classes.listItemText}} />
                                         </MenuItem>
                                     ))}

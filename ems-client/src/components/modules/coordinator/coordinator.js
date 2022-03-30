@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Description, LibraryBooks, EventNote, Timeline, EuroSymbol, ListAlt, EventAvailable } from '@material-ui/icons/';
+import { Description, LibraryBooks, EventNote, Timeline, EuroSymbol, ListAlt, EventAvailable, PeopleAlt } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames'
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
@@ -10,6 +10,7 @@ import PlansContainer from 'containers/modules/coordinator/plans/plansContainer'
 import PublicProcurementRegisterContainer from 'containers/modules/coordinator/publicProcurement/register/registerContainer';
 import PublicProcurementApplicationsContainer from 'containers/modules/coordinator/publicProcurement/applications/applicationsContainer';
 import DictionariesContainer from 'containers/modules/coordinator/dictionariesContainer';
+import ContractorsContainer from 'containers/modules/accountant/dictionary/contractorsContainer';
 
 const styles = theme => ({
     root: {
@@ -65,8 +66,6 @@ class Coordinator extends Component {
                     },
                 ],
             },
-            /*
-                TODO: Add in next version
             {
                 name: constants.COORDINATOR_MENU_PUBLIC_PROCUREMENT,
                 icon: <EuroSymbol />,
@@ -77,6 +76,8 @@ class Coordinator extends Component {
                         path: '/modules/coordinator/public/applications',
                         icon: <Description />
                     },
+                    /*
+                    TODO: Add in next version
                     {
                         code: 'register',
                         name: constants.COORDINATOR_SUBMENU_PUBLIC_REGISTER,
@@ -89,9 +90,9 @@ class Coordinator extends Component {
                         path: '/modules/coordinator/public/realization',
                         icon: <EventAvailable />
                     },
+                    */
                 ],
             },
-            */
             {
                 name: constants.COORDINATOR_MENU_DICTIONARIES,
                 icon: <LibraryBooks />,
@@ -101,6 +102,12 @@ class Coordinator extends Component {
                         name: constants.COORDINATOR_SUBMENU_DICTIONARIES,
                         path: '/modules/coordinator/dictionaries',
                         icon: <LibraryBooks />
+                    },
+                    {
+                        code:'contractor',
+                        name: constants.ACCOUNTANT_SUBMENU_DICTIONARIES_CONTRACTORS,
+                        path: '/modules/coordinator/dictionaries/contractors',
+                        icon: <PeopleAlt />
                     }
                 ],
             }
@@ -126,6 +133,7 @@ class Coordinator extends Component {
                                     <PrivateRoute exact path='/modules/coordinator/public/register' component={PublicProcurementRegisterContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/public/realization' component={PublicProcurementRegisterContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/dictionaries' component={DictionariesContainer}/>
+                                    <PrivateRoute exact path='/modules/coordinator/dictionaries/contractors' component={ContractorsContainer}/>
                                 </Switch>
                             </CardContent>
                         </Card>

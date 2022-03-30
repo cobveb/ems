@@ -3,10 +3,10 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-              name="applicationParts" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0"
+              name="applicationParts" pageWidth="550" pageHeight="842" columnWidth="550" leftMargin="0" rightMargin="0"
               topMargin="0" bottomMargin="0" uuid="0a562bf8-5212-4270-a8ad-cf5c5e23605b">
     <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="21.162 - ems"/>
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="UCK"/>
     <property name="com.jaspersoft.studio.unit." value="pixel"/>
     <property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
     <property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
@@ -16,14 +16,17 @@
     <property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
     <property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
     <property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
-    <parameter name="APPLICATION_ID" class="java.lang.String"/>
+    <parameter name="APPLICATION_ID" class="java.math.BigDecimal"/>
+    <parameter name="ESTIMATION_TYPE" class="java.lang.String"/>
     <queryString language="SQL">
         <![CDATA[select
 	* 
 from
-	cor_pub_proc_parts pa
+	emsadm.cor_pub_proc_parts pa
 where
-	pa.application_id =  $P{APPLICATION_ID} ]]>
+	pa.application_id =  $P{APPLICATION_ID}
+order by
+	pa.id]]>
     </queryString>
     <field name="ID" class="java.math.BigDecimal">
         <property name="com.jaspersoft.studio.field.label" value="ID"/>
@@ -40,12 +43,55 @@ where
     <field name="AMOUNT_GROSS" class="java.math.BigDecimal">
         <property name="com.jaspersoft.studio.field.label" value="AMOUNT_GROSS"/>
     </field>
+    <field name="IS_REALIZED" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="IS_REALIZED"/>
+    </field>
+    <field name="AM_CTR_AWA_NET" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AM_CTR_AWA_NET"/>
+    </field>
+    <field name="AM_CTR_AWA_GROSS" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AM_CTR_AWA_GROSS"/>
+    </field>
+    <field name="IS_OPTION" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="IS_OPTION"/>
+    </field>
+    <field name="AM_OPTION_NET" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AM_OPTION_NET"/>
+    </field>
+    <field name="AM_OPTION_GROSS" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="AM_OPTION_GROSS"/>
+    </field>
     <field name="APPLICATION_ID" class="java.math.BigDecimal">
         <property name="com.jaspersoft.studio.field.label" value="APPLICATION_ID"/>
     </field>
-    <variable name="PART_NO" class="java.lang.Integer" incrementType="Group" incrementGroup="NAME" calculation="Sum">
+    <field name="APL_PUB_PROC_GR_ID" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="APL_PUB_PROC_GR_ID"/>
+    </field>
+    <field name="REASON_NOT_REA_ID" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="REASON_NOT_REA_ID"/>
+    </field>
+    <field name="DESC_NOT_REA_ID" class="java.math.BigDecimal">
+        <property name="com.jaspersoft.studio.field.label" value="DESC_NOT_REA_ID"/>
+    </field>
+    <variable name="PART_NO" class="java.lang.Integer" incrementType="Column" calculation="Sum">
         <variableExpression><![CDATA[$V{PART_NO}]]></variableExpression>
         <initialValueExpression><![CDATA[1]]></initialValueExpression>
+    </variable>
+    <variable name="PARTS_OPTION_VALUE_NET" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression>
+            <![CDATA[($F{IS_OPTION} != null && $F{IS_OPTION}.intValue() ==1 ? $F{AM_OPTION_NET} : new BigDecimal(0))]]></variableExpression>
+        <initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+    </variable>
+    <variable name="PARTS_VALUE_NET" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{AMOUNT_NET}]]></variableExpression>
+    </variable>
+    <variable name="PARTS_OPTION_VALUE_GROSS" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression>
+            <![CDATA[($F{IS_OPTION} != null && $F{IS_OPTION}.intValue() ==1 ? $F{AM_OPTION_GROSS} : new BigDecimal(0))]]></variableExpression>
+        <initialValueExpression><![CDATA[new BigDecimal(0)]]></initialValueExpression>
+    </variable>
+    <variable name="PARTS_VALUE_GROSS" class="java.math.BigDecimal" calculation="Sum">
+        <variableExpression><![CDATA[$F{AMOUNT_GROSS}]]></variableExpression>
     </variable>
     <group name="NAME">
         <groupExpression><![CDATA[$F{NAME}]]></groupExpression>
@@ -59,15 +105,45 @@ where
     <detail>
         <band height="20" splitType="Stretch">
             <textField textAdjust="StretchHeight">
-                <reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="595" height="20"
+                <reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="550" height="20"
                                uuid="2f42bd2d-2bf1-40f0-81d2-fbd2a3ae213e">
                     <property name="com.jaspersoft.studio.unit.height" value="px"/>
                 </reportElement>
-                <textElement markup="styled">
+                <textElement verticalAlignment="Middle" markup="styled">
                     <font fontName="PDF_fonts"/>
                 </textElement>
                 <textFieldExpression>
-                    <![CDATA["Część nr "+ $V{PART_NO} + ":  <style isBold='true'>" +$F{NAME} +"</style> - netto: <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_NET})) + "</style> - brutto <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_GROSS})) + "</style>"]]></textFieldExpression>
+                    <![CDATA["\u2022 <style isBold='true'>" +$F{NAME} +"</style> - " +($P{ESTIMATION_TYPE}.equals("DO50") ? "netto" :"netto (podstawa)") +": <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_NET})) + "</style> - " + ($P{ESTIMATION_TYPE}.equals("DO50") ? "brutto" :"brutto (podstawa)") + " <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_GROSS})) + "</style>"]]></textFieldExpression>
+            </textField>
+        </band>
+        <band height="41">
+            <printWhenExpression>
+                <![CDATA[$F{IS_OPTION} != null && $F{IS_OPTION}.intValue() == 1]]></printWhenExpression>
+            <textField textAdjust="StretchHeight">
+                <reportElement positionType="Float" x="9" y="1" width="541" height="20" printWhenGroupChanges="NAME"
+                               uuid="e340dad6-ce91-45a0-b6c8-44801085af3f">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                    <printWhenExpression>
+                        <![CDATA[!$P{ESTIMATION_TYPE}.equals( "DO50" ) ||  !$P{ESTIMATION_TYPE}.equals( "DO130" ) ]]></printWhenExpression>
+                </reportElement>
+                <textElement verticalAlignment="Middle" markup="styled">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression>
+                    <![CDATA["opcji netto: <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AM_OPTION_NET})) + "</style> / opcja brutto: <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AM_OPTION_GROSS})) + "</style>"]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement positionType="Float" stretchType="ElementGroupHeight" x="9" y="21" width="541"
+                               height="20" uuid="b89e3b51-3bda-432a-a584-ac7efb7bcf57">
+                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
+                    <printWhenExpression>
+                        <![CDATA[!$P{ESTIMATION_TYPE}.equals( "DO50" ) ||  !$P{ESTIMATION_TYPE}.equals( "DO130" ) ]]></printWhenExpression>
+                </reportElement>
+                <textElement verticalAlignment="Middle" markup="styled">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression>
+                    <![CDATA["suma netto (postawa + opcja): <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_NET}.add($F{AM_OPTION_NET}))) + "</style> / suma brutto (podstawa + opcja): <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($F{AMOUNT_GROSS}.add($F{AM_OPTION_GROSS}))) + "</style>"]]></textFieldExpression>
             </textField>
         </band>
     </detail>

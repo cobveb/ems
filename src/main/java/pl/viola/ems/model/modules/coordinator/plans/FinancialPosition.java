@@ -59,8 +59,18 @@ public class FinancialPosition extends CoordinatorPlanPosition {
     }
 
     @Override
+    public void setAmountInferredNet(BigDecimal amountInferredNet) {
+
+    }
+
+    @Override
     public BigDecimal getAmountInferredGross() {
         return null;
+    }
+
+    @Override
+    public void setAmountInferredGross(BigDecimal amountInferredGross) {
+
     }
 
     @Override
@@ -99,7 +109,7 @@ public class FinancialPosition extends CoordinatorPlanPosition {
 
     @Override
     public String getName() {
-        return null;
+        return this.costType.getName();
     }
 
     @Override

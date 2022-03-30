@@ -16,6 +16,7 @@ class PlanSubPositionsContainer extends Component {
 
     handleGetSubPositions = () => {
         this.props.loading(true);
+        console.log(this.props.initialValues)
         PlansApi.getSubPositions(this.props.initialValues.id)
         .then(response =>{
             this.setState(prevState => {

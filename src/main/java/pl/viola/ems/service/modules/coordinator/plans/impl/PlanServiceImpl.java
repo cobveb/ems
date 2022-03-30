@@ -21,7 +21,6 @@ import pl.viola.ems.model.modules.coordinator.plans.repository.FundingSourceRepo
 import pl.viola.ems.payload.auth.UserSummary;
 import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.payload.modules.accountant.CoordinatorPlanResponse;
-import pl.viola.ems.payload.modules.coordinator.application.ApplicationProcurementPlanPosition;
 import pl.viola.ems.service.common.JasperPrintService;
 import pl.viola.ems.service.modules.accountant.institution.InstitutionPlanService;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
@@ -113,7 +112,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<PublicProcurementPosition> getPublicProcurementPositionByYear() {
+    public List<CoordinatorPlanPosition> getPlanPositionByYearAndPlanType(final CoordinatorPlan.PlanType planType) {
         List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
                 Utils.getCurrentUser().getOrganizationUnit().getCode()
         ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
@@ -125,10 +124,15 @@ public class PlanServiceImpl implements PlanService {
 
         coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
 
-        CoordinatorPlan plan = coordinatorPlanRepository.findByYearAndCoordinatorInAndStatusIn(Year.now().getValue(),
+        CoordinatorPlan plan = coordinatorPlanRepository.findByYearAndTypeAndCoordinatorInAndStatusIn(Year.now().getValue(), planType,
                 coordinators, statuses);
 
-        return publicProcurementPositionRepository.findByPlan(plan);
+        if (plan == null) {
+//            throw new AppException(planType.name().equals("FIN") ? "Coordinator.plan.financialNotFound" : "Coordinator.plan.investmentNotFound", HttpStatus.BAD_REQUEST);
+            return new ArrayList<>();
+        }
+
+        return this.findPositionsByPlan(plan.getId());
     }
 
     @Override
@@ -257,10 +261,12 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public void updateInferredPositionValue(ApplicationProcurementPlanPosition planPosition) {
-        Optional<PublicProcurementPosition> position = publicProcurementPositionRepository.findById(planPosition.getId());
-        position.get().setAmountInferredNet(planPosition.getAmountInferredNet());
-        publicProcurementPositionRepository.save(position.get());
+    public void updateInferredPositionValue(final PublicProcurementPosition position) {
+//        Optional<PublicProcurementPosition> position = publicProcurementPositionRepository.findById(planPosition.getId());
+//        position.get().setAmountInferredNet(planPosition.getAmountInferredNet());
+//        position.get().setAmountInferredGross(planPosition.getAmountInferredGross());
+//        position.get().setStatus(CoordinatorPlanPosition.PlanPositionStatus.RE);
+        publicProcurementPositionRepository.save(position);
     }
 
     @Transactional
@@ -304,7 +310,7 @@ public class PlanServiceImpl implements PlanService {
                 return coordinatorPlanRepository.save(plan);
             case CHIEF:
                 plan.getPositions().forEach(position -> position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZA));
-                if (!plan.getType().equals(CoordinatorPlan.PlanType.INW)) {
+                if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
                     plan.setStatus(CoordinatorPlan.PlanStatus.AN);
                     institutionPlanService.updateInstitutionPlan(plan, "approveChief");
                 } else {
@@ -541,6 +547,7 @@ public class PlanServiceImpl implements PlanService {
                 CoordinatorPlan.PlanStatus.WY,
                 CoordinatorPlan.PlanStatus.AK,
                 CoordinatorPlan.PlanStatus.AD,
+                CoordinatorPlan.PlanStatus.AE,
                 CoordinatorPlan.PlanStatus.ZA,
                 CoordinatorPlan.PlanStatus.RO,
                 CoordinatorPlan.PlanStatus.PK,

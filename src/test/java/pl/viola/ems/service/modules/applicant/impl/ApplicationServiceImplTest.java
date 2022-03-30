@@ -77,6 +77,7 @@ class ApplicationServiceImplTest {
             "+48 (32) 123 12 34",
             "+48 (32) 123 12 34",
             "uck@uck.it",
+            null,
             true,
             applicant.getCode(),
             null,

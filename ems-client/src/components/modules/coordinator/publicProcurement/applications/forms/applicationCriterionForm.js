@@ -115,10 +115,10 @@ class ApplicationCriterionForm extends Component {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <FormTextField
-                                            name="scoringDescription"
+                                            name="scoringDescription.content"
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_SCORING_DESCRIPTION}
                                             multiline
-                                            inputProps={{ maxLength: 256 }}
+                                            inputProps={{ maxLength: 500 }}
                                             disabled = {applicationStatus !== undefined && applicationStatus.code !== 'ZP'}
                                         />
                                     </Grid>

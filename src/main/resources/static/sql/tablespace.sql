@@ -54,3 +54,11 @@ CREATE TABLESPACE ems_access_control
 	autoextend on next 50M maxsize unlimited
 	ONLINE
 ;
+
+/*Create tablespace for application text*/
+CREATE TABLESPACE ems_texts
+	DATAFILE
+	SIZE 200M
+	autoextend on next 200M maxsize unlimited
+	ONLINE
+;

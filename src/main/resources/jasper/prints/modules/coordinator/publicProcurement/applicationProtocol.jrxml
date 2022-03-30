@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+			  name="applicationProtocol" pageWidth="550" pageHeight="842" columnWidth="550" leftMargin="0"
+			  rightMargin="0" topMargin="0" bottomMargin="0" uuid="73e047ba-6f1e-4a8a-ad6d-00249200c1c2">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="UCK"/>
+	<parameter name="APL_PROTOCOL_ID" class="java.math.BigDecimal"/>
+	<parameter name="ESTIMATION_TYPE" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select 
+    pr.id,
+    pr.email,
+    pr.phone,
+    pr.internet,
+    pr.paper,
+    pr.other,
+    (select content from emsadm.texts txt where txt.id = pr.other_desc_id) as other_desc,
+    pr.renouncement,
+    (select content from emsadm.texts txt where txt.id = pr.non_comp_id) as non_comp,
+    (select content from emsadm.texts txt where txt.id = pr.received_offers_id) as received_offers,
+    (select content from emsadm.texts txt where txt.id = pr.just_choosing_off_id) as just_choosing_off,
+    (select name from emsadm.acc_contractors con where con.id = pr.contractor_id ) as contractor,
+    (select content from emsadm.texts txt where txt.id = pr.contractor_desc_id) as contractor_desc
+from
+    emsadm.cor_pub_proc_protocol pr
+where 
+    pr.id = $P{APL_PROTOCOL_ID}]]>
+	</queryString>
+	<field name="ID" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="ID"/>
+	</field>
+	<field name="EMAIL" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="EMAIL"/>
+	</field>
+	<field name="PHONE" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="PHONE"/>
+	</field>
+	<field name="INTERNET" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="INTERNET"/>
+	</field>
+	<field name="PAPER" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="PAPER"/>
+	</field>
+	<field name="OTHER" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="OTHER"/>
+	</field>
+	<field name="OTHER_DESC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="OTHER_DESC"/>
+	</field>
+	<field name="RENOUNCEMENT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="RENOUNCEMENT"/>
+	</field>
+	<field name="NON_COMP" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="NON_COMP"/>
+	</field>
+	<field name="RECEIVED_OFFERS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="RECEIVED_OFFERS"/>
+	</field>
+	<field name="JUST_CHOOSING_OFF" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="JUST_CHOOSING_OFF"/>
+	</field>
+	<field name="CONTRACTOR" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="CONTRACTOR"/>
+	</field>
+	<field name="CONTRACTOR_DESC" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="CONTRACTOR_DESC"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="0" width="550" height="20" uuid="4bc39c77-73cd-48c6-b608-8e267ad8022d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["15. Po wykonaniu czynności określonych w Regulaminie udzielania zamówień publicznych proponuję udzielić zamówienia Wykonawcy: <style isBold='true'>" + ($F{CONTRACTOR} != null ? $F{CONTRACTOR} : $F{CONTRACTOR_DESC} != null ? $F{CONTRACTOR_DESC} : "") + "</style>"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="20">
+			<printWhenExpression><![CDATA[$P{ESTIMATION_TYPE}.equals( "DO130" )]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="550" height="20" isRemoveLineWhenBlank="true"
+							   uuid="9e207116-3b6d-4af0-a6c6-4d69135b0dc1"/>
+				<subreportParameter name="APL_PROTOCOL_ID">
+					<subreportParameterExpression><![CDATA[$P{APL_PROTOCOL_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression>
+					<![CDATA["jasper/prints/modules/coordinator/publicProcurement/protocolPrices.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="188">
+			<staticText>
+				<reportElement x="0" y="2" width="550" height="20" uuid="544ed964-018e-40a6-a23f-f86691702ca2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<text><![CDATA[16. Opis wykonanych czynności – forma rozeznania cenowego:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="20" y="22" width="530" height="18" isRemoveLineWhenBlank="true"
+							   uuid="4a3477b7-062e-4042-aa0b-4892e181d83d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression>
+						<![CDATA[($F{EMAIL} != null && $F{EMAIL}.intValue() == 1)]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["\u2022 mailowa"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="20" y="40" width="530" height="18" isRemoveLineWhenBlank="true"
+							   uuid="4b7f6ed1-a432-4b6c-9973-4c7d83c6635c">
+					<printWhenExpression>
+						<![CDATA[($F{PHONE} != null && $F{PHONE}.intValue() == 1)]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["\u2022 telefoniczna"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="20" y="58" width="530" height="18" isRemoveLineWhenBlank="true"
+							   uuid="2331ad1d-d248-4d78-a0e5-4f23257a6724">
+					<printWhenExpression>
+						<![CDATA[($F{INTERNET} != null && $F{INTERNET}.intValue() == 1)]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["\u2022 cenniki internetowe"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="20" y="94" width="530" height="18" isRemoveLineWhenBlank="true"
+							   uuid="e627c37a-5b4f-4ebf-80c2-45354a3a3a59">
+					<printWhenExpression>
+						<![CDATA[($F{OTHER} != null && $F{OTHER}.intValue() == 1)]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["\u2022 inna tj. <style isBold='true'>" + $F{OTHER_DESC} + "</style>"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="20" y="76" width="530" height="18" isRemoveLineWhenBlank="true"
+							   uuid="8613771d-e0d2-4953-ac0e-32f7040e1579">
+					<printWhenExpression>
+						<![CDATA[($F{PAPER} != null && $F{PAPER}.intValue() == 1)]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["\u2022 oferty papierowe"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="20" y="112" width="530" height="18" isRemoveLineWhenBlank="true"
+							   uuid="a9685abe-dec9-4407-ac01-b80333ff3b70">
+					<printWhenExpression>
+						<![CDATA[$F{RENOUNCEMENT} != null && $F{RENOUNCEMENT}.intValue() ==1]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["\u2022 odstąpienie od rozeznania"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="30" y="130" width="520" height="18" isRemoveLineWhenBlank="true"
+							   uuid="34b434c7-d155-4b98-9441-44a7075d0bc7">
+					<printWhenExpression>
+						<![CDATA[($F{RENOUNCEMENT} != null && $F{RENOUNCEMENT}.intValue() == 1)]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["uzasadnienie niekonkurencyjnej procedury (jeśli dotyczy): <style isBold='true'>" + $F{NON_COMP} + "</style>"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="148" width="550" height="20"
+							   uuid="78a29325-7dda-4338-901c-337a1fb3e71b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["17. Otrzymane oferty: <b>" + $F{RECEIVED_OFFERS} + "</b>"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="168" width="550" height="20"
+							   uuid="f1b460a2-f0b6-4d1a-a754-fb013927c051">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["18. Uzasadnienie wyboru oferty/ustalenia z negocjacji: <b>" + $F{JUST_CHOOSING_OFF} +"</b>"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

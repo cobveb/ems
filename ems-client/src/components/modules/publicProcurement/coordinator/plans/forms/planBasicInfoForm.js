@@ -94,6 +94,7 @@ class PlanBasicInfoForm extends Component {
     renderPlanContent = () =>{
         const { initialValues, vats, units, modes, assortmentGroups, orderTypes, estimationTypes} = this.props;
         const { positionAction, selected } = this.state;
+        console.log(selected)
         switch(initialValues.type.code){
             case("PZP"):
                 return(

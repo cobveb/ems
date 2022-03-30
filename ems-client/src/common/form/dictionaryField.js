@@ -176,13 +176,23 @@ function DictionaryView(props){
 
 export default function DictionaryField({classes, inputProps, labelWidth, disabled, dictionaryName, items,  ...input}){
     const [openDictionary, setOpenDictionary] = React.useState(false);
-    const [value, setValue] = React.useState(input.value ? input.value : {code: '', name: ''});
+    const [value, setValue] = React.useState(input.value.name !== undefined ? input.value : {code: 'err', name: ''});
     const [action, setAction] = React.useState(null);
     const [searchValue, setSearchValue] = React.useState(null);
 
     React.useEffect(() => {
         if (action === 'blur'){
-            input.onBlur(value);
+            if(value.code.length > 0){
+                input.onBlur(value);
+            } else {
+                setValue({code: 'err', name: ''})
+            }
+        } else {
+            if(value !== input.value && value.code === 'err' && input.value.name !== undefined && input.value.name.length> 0){
+                setValue(input.value)
+            } else {
+                setValue(value)
+            }
         }
     },  [value, input, action])
 
@@ -218,8 +228,8 @@ export default function DictionaryField({classes, inputProps, labelWidth, disabl
     }
 
     function handleChange(event){
-        setValue({code: 'chg', name: event.target.value});
         setAction('change');
+        setValue({code: '', name: event.target.value});
     }
 
     const onSelect = (value) =>{
@@ -242,7 +252,7 @@ export default function DictionaryField({classes, inputProps, labelWidth, disabl
             }
             <OutlinedInput
                 fullWidth
-                value={value.name}
+                value={value !== null ? value.name : ''}
                 className={classes}
                 classes={inputProps}
                 labelWidth={labelWidth}

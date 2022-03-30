@@ -25,7 +25,7 @@ public class CostTypeController {
     CostTypeService costTypeService;
 
     @GetMapping("/getAll")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('1013')")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1014')")
     public ApiResponse getCostTypeAll() {
         return new ApiResponse(HttpStatus.FOUND, costTypeService.findAll());
     }
@@ -36,19 +36,19 @@ public class CostTypeController {
     }
 
     @GetMapping("/getYears/{costId}")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('1013')")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1014')")
     public ApiResponse getYearsByCostType(@PathVariable final long costId) {
         return new ApiResponse(HttpStatus.FOUND, costTypeService.findYearsByCostType(costId));
     }
 
     @PutMapping("/saveCostType")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('2013')")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('2014')")
     public ApiResponse saveCostType(@RequestBody @Valid CostType costType) {
         return new ApiResponse(HttpStatus.CREATED, costTypeService.saveCostType(costType));
     }
 
     @DeleteMapping("/deleteCostType/{costId}")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('3013')")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('3014')")
     public ApiResponse deleteCostType(@PathVariable Long costId) {
         return new ApiResponse(HttpStatus.ACCEPTED, costTypeService.deleteCostType(costId));
     }

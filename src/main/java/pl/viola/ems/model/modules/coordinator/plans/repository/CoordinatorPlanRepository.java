@@ -13,7 +13,7 @@ public interface CoordinatorPlanRepository extends JpaRepository<CoordinatorPlan
 
     List<CoordinatorPlan> findByCoordinatorIn(List<OrganizationUnit> organizationUnits);
 
-    CoordinatorPlan findByYearAndCoordinatorInAndStatusIn(Integer year, List<OrganizationUnit> organizationUnits, List<CoordinatorPlan.PlanStatus> statuses);
+    CoordinatorPlan findByYearAndTypeAndCoordinatorInAndStatusIn(Integer year, CoordinatorPlan.PlanType type, List<OrganizationUnit> organizationUnits, List<CoordinatorPlan.PlanStatus> statuses);
 
     List<CoordinatorPlan> findByStatusIn(List<CoordinatorPlan.PlanStatus> statuses);
 

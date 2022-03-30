@@ -143,7 +143,7 @@ class OrganizationUnitForm extends Component {
                                 />
                             </Grid>
                             <Grid container spacing={1} justify="center" className={classes.container}>
-                                <Grid item xs={12} sm={3}>
+                                <Grid item xs={12} sm={2}>
                                     <FormTextField
                                         name="code"
                                         label={constants.INSTITUTION_BASIC_INFORMATION_CODE}
@@ -152,7 +152,14 @@ class OrganizationUnitForm extends Component {
                                         disabled={edit}
                                     />
                                 </Grid>
-                                <Grid item xs={12} sm={9}>
+                                <Grid item xs={12} sm={2}>
+                                    <FormTextField
+                                        name="officeSymbol"
+                                        label={constants.ORGANIZATION_UNIT_COORDINATOR_SYMBOL}
+                                        inputProps={{ maxLength: 3 }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={8}>
                                     <FormTextField
                                         name="shortName"
                                         label={constants.INSTITUTION_BASIC_INFORMATION_SHORT_NAME}
@@ -176,7 +183,7 @@ class OrganizationUnitForm extends Component {
                                         options={roles}
                                     />
                                 </Grid>
-                                { role === 'DIRECTOR' &&
+                                { ['DIRECTOR', 'ECONOMIC'].includes(role) &&
                                     <Grid item xs={12} sm={12} >
                                         <Toolbar className={classes.toolbar}>
                                             <PeopleAlt className={classes.subHeaderIcon} fontSize="small" />

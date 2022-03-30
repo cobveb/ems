@@ -1,8 +1,6 @@
 package pl.viola.ems.payload.modules.coordinator.application;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -20,7 +18,7 @@ public class ApplicationProcurementPlanPosition {
 
     private String orderType;
 
-    private String initiationTerm;
+//    private String initiationTerm;
 
     private BigDecimal amountRequestedNet;
 
@@ -28,8 +26,11 @@ public class ApplicationProcurementPlanPosition {
 
     private BigDecimal amountInferredNet;
 
-    private BigDecimal vat;
+    private BigDecimal percentArt30;
 
-//    private String mode;
+    private BigDecimal amountArt30Net;
 
+    private BigDecimal amountArt30Gross;
+
+//    private BigDecimal vat;
 }

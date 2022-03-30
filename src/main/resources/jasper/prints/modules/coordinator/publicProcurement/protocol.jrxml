@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+			  name="protocol" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20"
+			  topMargin="20" bottomMargin="20" uuid="50107402-3fc9-4f54-9ac5-21c683e4539d">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="21.162 - ems"/>
+	<parameter name="MAIN_ID" class="java.lang.Long"/>
+	<queryString language="SQL">
+		<![CDATA[select 
+    apl.apl_number,
+    (select content from emsadm.texts txt where txt.id = apl.ordered_object_id) as ordered_object,
+    (select name from emsadm.organization_units ou where ou.code = apl.coordinator_id) as coordinator,
+    apl.apl_protocol_id,
+    apl.estimation_type,
+    (select usr.name || ' ' || usr.surname from emsarch.users usr where usr.id = pro.send_user_id) as coordinator_usr,
+	(select usr.name || ' ' || usr.surname from emsarch.users usr where usr.id = pro.public_accept_user_id) as zp_usr,
+	(select usr.name || ' ' || usr.surname from emsarch.users usr where usr.id = pro.accountant_accept_user_id) as accountant_usr,
+	(select usr.name || ' ' || usr.surname from emsarch.users usr where usr.id = pro.chief_accept_user_id) as chief_usr
+from 
+    emsadm.cor_pub_proc_protocol pro,
+    emsadm.cor_pub_proc_application apl
+where
+    apl.apl_protocol_id = pro.id and
+    pro.id = $P{MAIN_ID} ]]>
+	</queryString>
+	<field name="APL_NUMBER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="APL_NUMBER"/>
+	</field>
+	<field name="ORDERED_OBJECT" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ORDERED_OBJECT"/>
+	</field>
+	<field name="COORDINATOR" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="COORDINATOR"/>
+	</field>
+	<field name="APL_PROTOCOL_ID" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.label" value="APL_PROTOCOL_ID"/>
+	</field>
+	<field name="ESTIMATION_TYPE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ESTIMATION_TYPE"/>
+	</field>
+	<field name="COORDINATOR_USR" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="COORDINATOR_USR"/>
+	</field>
+	<field name="ZP_USR" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ZP_USR"/>
+	</field>
+	<field name="ACCOUNTANT_USR" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="ACCOUNTANT_USR"/>
+	</field>
+	<field name="CHIEF_USR" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="CHIEF_USR"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="112" splitType="Stretch">
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="ElementGroupHeight" x="20" y="16" width="259" height="18"
+							   uuid="d0e05fee-cace-4916-ba8e-4f0c2615b765"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="PDF_fonts" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{COORDINATOR}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement stretchType="ElementGroupHeight" x="0" y="60" width="555" height="20"
+							   uuid="d0c1d307-aace-4408-87db-d999eb253721"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="PDF_fonts" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PROTOKÓŁ\n z udzielenia zamówienia publicznego"
+]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="41" splitType="Stretch">
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="0" width="555" height="20" uuid="198e6a2e-97b5-4656-a7a8-d6dc71c5d335"/>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["Dotyczy wniosku nr: <style isBold='true'>" + $F{APL_NUMBER} + "</style>"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="21" width="555" height="20" uuid="f86e6b35-ee1a-4258-9f90-24b2689cecc7"/>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["Przedmot zamówienia: <style isBold='true'>" + $F{ORDERED_OBJECT} + "</style>"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="20">
+			<subreport>
+				<reportElement x="0" y="0" width="554" height="20" uuid="9f99c893-bb75-49fb-802a-63ceb8a00946"/>
+				<subreportParameter name="APL_PROTOCOL_ID">
+					<subreportParameterExpression><![CDATA[$F{APL_PROTOCOL_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ESTIMATION_TYPE">
+					<subreportParameterExpression><![CDATA[$F{ESTIMATION_TYPE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression>
+					<![CDATA["jasper/prints/modules/coordinator/publicProcurement/applicationProtocol.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement x="351" y="1" width="100" height="30" uuid="4c5fcdf2-424b-45bc-9149-8d51506cfb44"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Strona " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="452" y="1" width="100" height="30" uuid="636b2e58-3dcf-490b-a9d6-db3f7efe959b"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" z " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="245">
+			<textField>
+				<reportElement x="1" y="20" width="186" height="20" uuid="698ebdf9-a277-441d-a02e-8eae7354f909">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Koordynator"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="2" y="51" width="184" height="20" uuid="078bd8de-d4ad-46f5-a3a2-e9e4a5b7fbca"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["<style isBold='true'>" +$F{COORDINATOR_USR} + "</style>\n..............................................................."]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="6" y="101" width="184" height="20" uuid="6d03e703-58c1-46f8-bbeb-0a628d4712f6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Akceptacja Główny Księgowy:"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="5" y="132" width="190" height="20" isRemoveLineWhenBlank="true"
+							   uuid="705750d9-15fc-4b36-b83b-c27d6b6f23c6"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["<style isBold='true'>"+($F{ACCOUNTANT_USR} != null ? $F{ACCOUNTANT_USR} : "") +"</style>\n..............................................................."]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="189" y="181" width="186" height="20" uuid="92daa595-45ab-4d89-bb59-2d81f1491937">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="PDF_fonts" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ZATWIERDZAM\nDyrektor Szpitala lub Zastępca"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="189" y="215" width="186" height="20" uuid="ffdd93a2-626d-4642-9f31-14586878d8d1"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="PDF_fonts" isBold="true"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["<style isBold='true'>"+($F{CHIEF_USR} != null ? $F{CHIEF_USR} : "") +"</style>\n..............................................................."]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="360" y="20" width="194" height="20" uuid="3375e2dd-f939-40f7-b4a2-a33a4d72ed90">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Akceptacja Działu ZP"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement x="364" y="52" width="190" height="20" uuid="bc4416d8-5d0c-41c8-bfb3-3f5a7d8f00cb"/>
+				<textElement textAlignment="Center" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["<style isBold='true'>" + ($F{ZP_USR} != null ? $F{ZP_USR} : "") + "</style>\n..............................................................."]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -4,12 +4,13 @@ import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import Plans from 'components/modules/publicProcurement/institution/plans/plans';
 import PlansApi from 'api/modules/publicProcurement/institution/plansApi';
-import {updateOnCloseDetails, findSelectFieldPosition, getCoordinatorPlanTypes, generateExportLink} from 'utils';
+import {updateOnCloseDetails, findSelectFieldPosition, getCoordinatorPlanTypes, generateExportLink, getInstitutionPlanStatuses} from 'utils';
 
 class PlansContainer extends Component {
     state = {
         plans: [],
         types: getCoordinatorPlanTypes(),
+        statuses: getInstitutionPlanStatuses(),
     }
 
     handleGetPlans(){
@@ -23,6 +24,7 @@ class PlansContainer extends Component {
                     Object.assign(plan,
                         {
                             type: plan.type = findSelectFieldPosition(this.state.types, plan.type),
+                            status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
                         }
                     )
                 ))

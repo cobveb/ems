@@ -30,7 +30,7 @@ import java.util.Set;
         visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = FinancialPosition.class, name = "fin"),
-        @JsonSubTypes.Type(value = PublicProcurementPosition.class, name = "inw"),
+        @JsonSubTypes.Type(value = PublicProcurementPosition.class, name = "pzp"),
 })
 @DynamicUpdate
 public abstract class InstitutionPlanPosition {
@@ -96,5 +96,15 @@ public abstract class InstitutionPlanPosition {
     public abstract DictionaryItem getAssortmentGroup();
 
     public abstract PublicProcurementPosition.OrderType getOrderType();
+
+    public abstract PublicProcurementPosition.EstimationType getEstimationType();
+
+    public abstract BigDecimal getAmountInferredNet();
+
+    public abstract BigDecimal getAmountInferredGross();
+
+    public abstract BigDecimal getAmountArt30Net();
+
+    public abstract BigDecimal getAmountArt30Gross();
 
 }

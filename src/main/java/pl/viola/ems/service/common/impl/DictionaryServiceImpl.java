@@ -12,10 +12,7 @@ import pl.viola.ems.model.common.dictionary.repository.DictionaryItemRepository;
 import pl.viola.ems.model.common.dictionary.repository.DictionaryRepository;
 import pl.viola.ems.service.common.DictionaryService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class DictionaryServiceImpl implements DictionaryService {
@@ -49,6 +46,7 @@ public class DictionaryServiceImpl implements DictionaryService {
             case "publicProcurements":
                 dictionaries.add("slAsortGr");
                 dictionaries.add("slTryUdzZp");
+                dictionaries.add("slPoNiUdZp");
                 break;
             case "coordinator":
                 dictionaries.add("jedMiar");

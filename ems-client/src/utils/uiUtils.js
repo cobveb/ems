@@ -202,6 +202,17 @@ export const getCoordinatorPlanTypes = () => [
     },
 ]
 
+export const publicProcurementPlanTypes = () => [
+    {
+        code: 'FIN',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_FINANCIAL,
+    },
+    {
+        code: 'INW',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_INVESTMENT,
+    },
+]
+
 export const publicProcurementOrderTypes = () => [
     {
         code: 'DST',
@@ -210,6 +221,10 @@ export const publicProcurementOrderTypes = () => [
     {
         code: 'USL',
         name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_SERVICE,
+    },
+    {
+        code: 'RBD',
+        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_CONSTRUCTION_WORKS,
     }
 ]
 
@@ -219,7 +234,7 @@ export const  publicProcurementEstimationTypes = () => [
         name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_DO50,
     },
     {
-        code: 'D0130',
+        code: 'DO130',
         name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_D0130,
     },
     {
@@ -230,16 +245,61 @@ export const  publicProcurementEstimationTypes = () => [
         code: 'UE139',
         name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_UE139,
     },
-    {
-        code: 'WR',
-        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_WR,
-    },
-    {
-        code: 'COVID',
-        name: constants.COORDINATOR_PLAN_POSITION_ORDER_TYPE_COVID,
-    }
 ]
 
+export const publicProcurementApplicationStatuses = () => [
+    {
+        code: 'ZP',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_SAVE,
+    },
+    {
+        code: 'WY',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_SEND,
+    },
+    {
+        code: 'AZ',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED_PUBLIC_PROCUREMENT,
+    },
+    {
+        code: 'AD',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED_DIRECTOR,
+    },
+    {
+        code: 'AM',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED_MEDICAL,
+    },
+    {
+        code: 'AK',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED_ACCOUNTANT,
+    },
+    {
+        code: 'ZA',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_APPROVED,
+    },
+    {
+        code: 'RE',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_REALIZED,
+    },
+    {
+        code: 'ZR',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_EXECUTED,
+    },
+    {
+        code: 'AN',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS_CANCELLED,
+    },
+]
+
+export const publicProcurementApplicationModes = () => [
+    {
+        code: 'PL',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MODE_PLANNED,
+    },
+    {
+        code: 'UP',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MODE_UNPLANNED,
+    }
+]
 
 export const getCoordinatorPlanStatuses = () => [
     {
@@ -301,6 +361,49 @@ export const getCoordinatorPlanStatuses = () => [
 
 ];
 
+export const getInstitutionPlanStatuses = () => [
+    {
+        code: 'UT',
+        name: constants.INSTITUTION_PLAN_STATUS_CREATED,
+    },
+    {
+        code: 'AK',
+        name: constants.INSTITUTION_PLAN_STATUS_APPROVED_ACCOUNTANT,
+    },
+    {
+        code: 'AZ',
+        name: constants.COORDINATOR_PLAN_STATUS_APPROVED_PUBLIC_PROCUREMENT,
+    },
+    {
+        code: 'AD',
+        name: constants.INSTITUTION_PLAN_STATUS_APPROVED_DIRECTOR,
+    },
+    {
+        code: 'AE',
+        name: constants.INSTITUTION_PLAN_STATUS_APPROVED_ECONOMIC,
+    },
+    {
+        code: 'AN',
+        name: constants.INSTITUTION_PLAN_STATUS_APPROVED_CHIEF,
+    },
+    {
+        code: 'ZA',
+        name: constants.INSTITUTION_PLAN_STATUS_APPROVED,
+    },
+    {
+        code: 'RE',
+        name: constants.INSTITUTION_PLAN_STATUS_REALIZED,
+    },
+    {
+        code: 'ZR',
+        name: constants.INSTITUTION_PLAN_STATUS_EXECUTED,
+    },
+    {
+        code: 'AA',
+        name: constants.INSTITUTION_PLAN_STATUS_UPDATE,
+    },
+];
+
 export const getCoordinatorPlanPositionsStatuses = () => [
     {
         code: 'DO',
@@ -340,8 +443,26 @@ export const getCoordinatorPlanPositionsStatuses = () => [
     },
 ];
 
+export const getPublicProcurementProtocolStatuses = () => [
+    {
+        code: 'AZ',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPROVE_PUBLIC,
+    },
+    {
+        code: 'AK',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPROVE_ACCOUNTANT,
+    },
+    {
+        code: 'ZA',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_EXECUTED,
+    },
+];
 
 export const getVats = () =>  [
+    {
+        code: 1.00,
+        name: "0%",
+    },
     {
         code: 1.05,
         name: "5%",

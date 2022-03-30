@@ -22,7 +22,7 @@ import java.util.Set;
 public class InstitutionPlan {
 
     public enum InstitutionPlanStatus {
-        UT, AK, AD, AE, AN, ZA, RE, ZR, AA
+        UT, AZ, AK, AD, AE, AN, ZA, RE, ZR, AA
     }
 
     @Id

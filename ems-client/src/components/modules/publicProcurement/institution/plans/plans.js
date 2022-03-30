@@ -51,6 +51,11 @@ class Plans extends Component {
                 suffix: 'zł.',
                 type:'amount',
             },
+            {
+                id: 'status.name',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS,
+                type:'object',
+            },
         ],
         rows: [],
         year: null,
@@ -116,7 +121,6 @@ class Plans extends Component {
     render(){
         const { classes, isLoading, error, types, levelAccess } = this.props;
         const { headCells, rows, year, selected, isDetailsVisible } = this.state;
-
         return(
             <>
                 {isLoading && <Spinner />}

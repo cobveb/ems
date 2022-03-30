@@ -4,18 +4,22 @@ export const validate =  ( values, props ) => {
     const errors = {}
 
     const requiredFields = [
-        'applicationProcurementPlanPosition', 'orderGroupValueNet', 'orderValueYearNet', 'vat'
+        'applicationProcurementPlanPosition', 'orderGroupValueNet', 'vat', 'optionValue',
     ]
 
     requiredFields.forEach(field => {
-        if (!values[field]) {
+        if(field === "optionValue"){
+            if(!values.optionValue && values.isOption){
+                errors["optionValue"] = constants.FORM_ERROR_MSG_REQUIRED_FIELD;
+            }
+        } else if (!values[field]) {
             errors[field] = constants.FORM_ERROR_MSG_REQUIRED_FIELD
         }
     })
 
     if(values.applicationProcurementPlanPosition){
         if( props.assortmentGroups.find(obj => {
-             return (obj.applicationProcurementPlanPosition.code === values.applicationProcurementPlanPosition.code && obj.id !== values.id)
+             return (obj.applicationProcurementPlanPosition.code === values.applicationProcurementPlanPosition.code &&  obj.vat === values.vat && obj.id !== values.id)
             }) !== undefined){
                 errors.applicationProcurementPlanPosition = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_GROUP_EXISTS;
         }
@@ -32,6 +36,12 @@ export const validate =  ( values, props ) => {
     if(values.orderValueYearNet && values.orderGroupValueNet !== undefined){
         if(values.orderGroupValueNet < values.orderValueYearNet){
             errors.orderValueYearNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_YEAR_REQUESTED_INVALID;
+        }
+    }
+
+    if(values.optionValue){
+        if( values.optionValue > 100){
+                errors.optionValue = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_INVALID_VALUE;
         }
     }
 

@@ -183,7 +183,7 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
             } else if (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP)) {
                 /*
                     Public Procurement Institution Plan
-                    Create Institution plan on approve Public Procurement first coordinator plan
+                    Create Institution plan on send Public Procurement first coordinator plan
                 */
                 institutionPlan = new InstitutionPlan(coordinatorPlan.getYear(), InstitutionPlan.InstitutionPlanStatus.UT, coordinatorPlan.getType());
                 List<InstitutionPublicProcurementPlanPosition> institutionPublicProcurementPlanPositions = new ArrayList<>();
@@ -276,8 +276,8 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                             InstitutionPlan institutionPlanUpd = institutionPlan;
                             if (!institutionPlan.getPlanPositions().isEmpty()) {
                                 coordinatorPlan.getPositions().forEach(coordinatorPlanPosition -> {
-                                    if (institutionPlanUpd.getPlanPositions().stream().anyMatch(institutionPlanUpdPosition -> (institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()) && institutionPlanUpdPosition.getOrderType().equals(coordinatorPlanPosition.getOrderType())))) {
-                                        InstitutionPlanPosition institutionPlanPosition = institutionPlanUpd.getPlanPositions().stream().filter(institutionPlanUpdPosition -> (institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()) && institutionPlanUpdPosition.getOrderType().equals(coordinatorPlanPosition.getOrderType()))).findFirst().orElse(null);
+                                    if (institutionPlanUpd.getPlanPositions().stream().anyMatch(institutionPlanUpdPosition -> institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()))) {
+                                        InstitutionPlanPosition institutionPlanPosition = institutionPlanUpd.getPlanPositions().stream().filter(institutionPlanUpdPosition -> institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup())).findFirst().orElse(null);
                                         institutionPlanPosition.getInstitutionCoordinatorPlanPositions().add(new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition));
                                         institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
                                         institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedGross).reduce(BigDecimal.ZERO, BigDecimal::add));

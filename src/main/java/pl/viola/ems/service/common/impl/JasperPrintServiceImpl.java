@@ -29,7 +29,7 @@ public class JasperPrintServiceImpl implements JasperPrintService {
             parameters.put("MAIN_ID", mainId);
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, connection);
-
+            connection.close();
             return jasperPrint;
         } catch (Exception exception) {
             exception.printStackTrace();
