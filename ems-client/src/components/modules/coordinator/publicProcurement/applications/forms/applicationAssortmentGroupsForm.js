@@ -227,7 +227,8 @@ class ApplicationAssortmentGroupsForm extends Component {
     }
 
     render(){
-        const { classes, isLoading, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, publicProcurementPlanPositions, planPositions, vats, orderGroupValueNet, applicationProcurementPlanPosition, applicationStatus, orderIncludedPlanType, action, isOption, levelAccess } = this.props;
+        const { classes, isLoading, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, publicProcurementPlanPositions, planPositions, vats, orderGroupValueNet, applicationProcurementPlanPosition,
+            applicationStatus, orderIncludedPlanType, action, isOption, levelAccess, isParts } = this.props;
         const { tableHeadYears, positionAction, tableHeadPositionsFin, tableHeadPositionsInw, openApplicationPositionDetails, selected, applicationAssortmentGroupPlanPositions } = this.state;
         return(
             <>
@@ -474,7 +475,7 @@ class ApplicationAssortmentGroupsForm extends Component {
                                                 <FormCheckBox
                                                     name="isOption"
                                                     label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_OPTION}
-                                                    disabled = {(applicationStatus !== undefined && applicationStatus.code !== 'ZP') || (applicationStatus !== undefined && applicationStatus.code === 'ZP' && orderGroupValueNet === undefined)}
+                                                    disabled = {(applicationStatus !== undefined && applicationStatus.code !== 'ZP') || (applicationStatus !== undefined && applicationStatus.code === 'ZP' && orderGroupValueNet === undefined) || isParts}
                                                 />
                                             </Grid>
                                             { isOption &&
@@ -487,7 +488,7 @@ class ApplicationAssortmentGroupsForm extends Component {
                                                                 maxLength: 3,
                                                             }}
                                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_HEAD_TABLE_CRITERIA_VALUE}
-                                                            disabled = {applicationStatus.code !== 'ZP'}
+                                                            disabled = {applicationStatus.code !== 'ZP' || isParts}
                                                         />
                                                     </Grid>
                                                     <Grid item xs={5}>

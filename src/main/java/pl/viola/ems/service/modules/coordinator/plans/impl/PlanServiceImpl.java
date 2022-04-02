@@ -128,7 +128,6 @@ public class PlanServiceImpl implements PlanService {
                 coordinators, statuses);
 
         if (plan == null) {
-//            throw new AppException(planType.name().equals("FIN") ? "Coordinator.plan.financialNotFound" : "Coordinator.plan.investmentNotFound", HttpStatus.BAD_REQUEST);
             return new ArrayList<>();
         }
 

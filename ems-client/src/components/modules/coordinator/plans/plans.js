@@ -356,7 +356,7 @@ class Plans extends Component {
                                                 label={constants.BUTTON_UPDATE}
                                                 icon=<DynamicFeed/>
                                                 iconAlign="left"
-                                                disabled={(Object.keys(selected).length === 0 || !['ZA','RE'].includes(selected.status.code) || selected.type.code !== 'FIN')}
+                                                disabled={(Object.keys(selected).length === 0 || ['ZA','RE'].includes(selected.status.code))}
                                                 onClick = {(event) => this.handleUpdate(event, 'update', )}
                                                 variant="cancel"
                                             />

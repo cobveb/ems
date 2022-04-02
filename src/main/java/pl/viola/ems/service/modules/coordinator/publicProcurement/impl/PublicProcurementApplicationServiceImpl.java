@@ -471,10 +471,10 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
             if (assortmentGroup != null) {
                 InstitutionPublicProcurementPlanPosition planPosition = assortmentGroup.getInstitutionPublicProcurementPlanPosition();
 
-                List<ApplicationPart> parts = application.getParts().stream().filter(part -> part.getApplicationAssortmentGroup().getInstitutionPublicProcurementPlanPosition().equals(planPosition)).collect(Collectors.toList());
+                List<ApplicationPart> parts = application.getParts().stream().filter(part -> part.getApplicationAssortmentGroup().getInstitutionPublicProcurementPlanPosition().equals(planPosition) && part.getAmountOptionNet() != null && !applicationPart.getId().equals(part.getId())).collect(Collectors.toList());
                 if (!parts.isEmpty()) {
-                    assortmentGroup.setAmountOptionNet(parts.stream().map(ApplicationPart::getAmountOptionNet).reduce(BigDecimal.ZERO, BigDecimal::add));
-                    assortmentGroup.setAmountOptionGross(parts.stream().map(ApplicationPart::getAmountOptionGross).reduce(BigDecimal.ZERO, BigDecimal::add));
+                    assortmentGroup.setAmountOptionNet(parts.stream().map(ApplicationPart::getAmountOptionNet).reduce(BigDecimal.ZERO, BigDecimal::add).add(applicationPart.getAmountOptionNet()));
+                    assortmentGroup.setAmountOptionGross(parts.stream().map(ApplicationPart::getAmountOptionGross).reduce(BigDecimal.ZERO, BigDecimal::add).add(applicationPart.getAmountOptionGross()));
                 } else {
                     assortmentGroup.setAmountOptionNet(applicationPart.getAmountOptionNet());
                     assortmentGroup.setAmountOptionGross(applicationPart.getAmountOptionGross());
