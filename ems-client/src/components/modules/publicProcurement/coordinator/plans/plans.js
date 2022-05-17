@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { Table, Button, SelectField, DatePicker } from 'common/gui';
 import { PostAdd, Visibility } from '@material-ui/icons/';
 import PlanContainer from 'containers/modules/publicProcurement/coordinator/plans/planContainer';
+import PlanUpdateContainer from 'containers/modules/publicProcurement/coordinator/plans/planUpdateContainer';
 
 const styles = theme => ({
     root: {
@@ -64,6 +65,41 @@ class Plans extends Component {
                 type: 'object',
             },
         ],
+        headCellsUpdates: [
+            {
+                id: 'year',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR,
+                type:'date',
+                dateFormat: 'yyyy',
+            },
+            {
+                id: 'updateNumber',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE_NUMBER,
+                type:'number',
+            },
+            {
+                id: 'coordinator.name',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_COORDINATOR,
+                type:'object',
+            },
+            {
+                id: 'planAmountRequestedNet',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_AMOUNT_REQUESTED_GROSS,
+                suffix: 'zł.',
+                type:'amount',
+            },
+            {
+                id: 'planAmountRealizedNet',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_AMOUNT_REALIZED_GROSS,
+                suffix: 'zł.',
+                type:'amount',
+            },
+            {
+                id: 'status.name',
+                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS,
+                type: 'object',
+            },
+        ],
         selected: {},
         isDetailsVisible: false,
         action: null,
@@ -79,6 +115,18 @@ class Plans extends Component {
             action: '',
             rows: this.props.onClose(plan),
         }));
+    }
+
+    handleSendBack = (plan) => {
+        this.setState(prevState => {
+            let rows = [...prevState.rows];
+            let selected = {...prevState.rows};
+            let isDetailsVisible = prevState.isDetailsVisible;
+            isDetailsVisible = !isDetailsVisible;
+            selected = {};
+            rows = rows.filter(row => row.id !== plan.id);
+            return {rows, selected, isDetailsVisible}
+        })
     }
 
     handleSelect = (id) => {
@@ -177,9 +225,9 @@ class Plans extends Component {
         }
     }
     render(){
-        const { classes, initialValues, isLoading, error, coordinators, statuses, types, modes, onSubmitPlan } = this.props;
-        const { headCells, rows, selected, isDetailsVisible, action, year, coordinator, status } = this.state;
-        return(
+        const { classes, initialValues, isLoading, error, coordinators, statuses, types, modes, onSubmitPlan, isUpdatesPlansAccess } = this.props;
+        const { headCells, headCellsUpdates, rows, selected, isDetailsVisible, action, year, coordinator, status } = this.state;
+            return(
             <>
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
@@ -211,18 +259,33 @@ class Plans extends Component {
                 }
                 <div>
                     { isDetailsVisible ?
-                        <PlanContainer
-                            initialValues={action === "add" ? {} : selected}
-                            changeVisibleDetails={this.handleChangeVisibleDetails}
-                            action={action}
-                            changeAction={this.handleChangeAction}
-                            handleClose={this.handleClose}
-                            types={types}
-                            statuses={statuses}
-                            modes={modes}
-                            plans={initialValues}
-                            onSubmitPlan={onSubmitPlan}
-                        />
+                        !isUpdatesPlansAccess ?
+                            <PlanContainer
+                                initialValues={action === "add" ? {} : selected}
+                                changeVisibleDetails={this.handleChangeVisibleDetails}
+                                action={action}
+                                changeAction={this.handleChangeAction}
+                                handleClose={this.handleClose}
+                                types={types}
+                                statuses={statuses}
+                                modes={modes}
+                                plans={initialValues}
+                                onSubmitPlan={onSubmitPlan}
+                            />
+                        :
+                            <PlanUpdateContainer
+                                initialValues={selected}
+                                changeVisibleDetails={this.handleChangeVisibleDetails}
+                                action={action}
+                                changeAction={this.handleChangeAction}
+                                handleClose={this.handleClose}
+                                types={types}
+                                statuses={statuses}
+                                modes={modes}
+                                levelAccess={this.props.levelAccess}
+                                onSubmitPlan={onSubmitPlan}
+                                onSendBack={this.handleSendBack}
+                            />
                     :
                         <>
                             <Grid
@@ -230,7 +293,7 @@ class Plans extends Component {
                                 direction="column"
                                 spacing={0}
                             >
-                                <Typography variant="h6">{constants.ACCOUNTANT_COORDINATOR_PLANS_TITLE}</Typography>
+                                <Typography variant="h6">{isUpdatesPlansAccess ? constants.PUBLIC_COORDINATOR_PLANS_UPDATES_TITLE : constants.PUBLIC_COORDINATOR_PLANS_TITLE}</Typography>
                                 <Divider />
                                 <div className={classes.content}>
                                     <Grid container spacing={0} direction="row" justify="center" className={classes.container}>
@@ -269,12 +332,12 @@ class Plans extends Component {
                                         <Table
                                             className={classes.tableWrapper}
                                             rows={rows}
-                                            headCells={headCells}
+                                            headCells={isUpdatesPlansAccess ? headCellsUpdates : headCells}
                                             onSelect={this.handleSelect}
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
                                             rowKey="id"
-                                            defaultOrderBy="number"
+                                            defaultOrderBy="id"
                                         />
                                     </Grid>
                                 </div>

@@ -4,6 +4,7 @@ import net.sf.jasperreports.engine.JRException;
 import pl.viola.ems.model.common.export.ExportType;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPosition;
+import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanSubPosition;
 import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.payload.modules.publicProcurement.plans.PublicInstitutionPlanPositionRequest;
@@ -32,6 +33,8 @@ public interface PublicInstitutionPlanService {
     String approvePlanPosition(Long positionId);
 
     InstitutionPlan.InstitutionPlanStatus updatePlanStatus(Long planId, String actions);
+
+    void updateInstitutionPublicProcurementPlan(CoordinatorPlan plan);
 
     void exportPlanToJasper(Long planId, String type, HttpServletResponse response) throws IOException, JRException, SQLException;
 

@@ -9,7 +9,10 @@ import java.util.List;
 
 @Repository
 public interface InstitutionPlanRepository extends JpaRepository<InstitutionPlan, Long> {
+
     InstitutionPlan findByYearAndType(Integer year, CoordinatorPlan.PlanType type);
+
+    InstitutionPlan findByYearAndTypeAndStatus(Integer year, CoordinatorPlan.PlanType type, InstitutionPlan.InstitutionPlanStatus status);
 
     List<InstitutionPlan> findByStatusIn(List<InstitutionPlan.InstitutionPlanStatus> status);
 

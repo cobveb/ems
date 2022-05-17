@@ -33,6 +33,12 @@ public class AccountantPlanCoordinatorController {
         return new ApiResponse(HttpStatus.FOUND, planService.getPlansByCoordinatorInAccountant());
     }
 
+    @GetMapping("/plans/getCoordinatorsPlanUpdates")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1024')")
+    public ApiResponse getCoordinatorsPlanUpdates() {
+        return new ApiResponse(HttpStatus.FOUND, planService.getCoordinatorsPlanUpdates("accountant", CoordinatorPlan.PlanType.PZP));
+    }
+
     @GetMapping("/plans/getPlan/{planId}")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1024')")
     public ApiResponse getPlansById(@PathVariable Long planId) {
@@ -42,6 +48,12 @@ public class AccountantPlanCoordinatorController {
     @PutMapping("/plan/approvePlan/{planId}")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('3024')")
     public ApiResponse accountantApprove(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.OK, planService.approvePlan(planId, ApprovePlanType.ACCOUNTANT));
+    }
+
+    @PutMapping("/plan/{planId}/accountantApprove")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('3024')")
+    public ApiResponse accountantPlanUpdateApprove(@PathVariable Long planId) {
         return new ApiResponse(HttpStatus.OK, planService.approvePlan(planId, ApprovePlanType.ACCOUNTANT));
     }
 

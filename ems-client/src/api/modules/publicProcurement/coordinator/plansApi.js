@@ -5,8 +5,20 @@ class PlansApi {
         return Axios.get(`/api/public/coordinator/plans/getAll`)
     }
 
+    static getPlanUpdates(levelAccess){
+        return Axios.get(`/api/${levelAccess}/coordinator/plans/getCoordinatorsPlanUpdates`)
+    }
+
     static approvePlan(planId){
         return Axios.put(`/api/public/coordinator/plan/${planId}/publicApprove`)
+    }
+
+    static approveUpdatePlan(planId, levelAccess){
+        return Axios.put(`/api/${levelAccess === 'chief' ? "director" : levelAccess}/coordinator/plan/${planId}/${levelAccess}Approve`)
+    }
+
+    static sendBack(planId){
+        return Axios.put(`/api/public/coordinator/plan/${planId}/returnPlan`)
     }
 
     static getPlanPositions(planId){

@@ -85,18 +85,27 @@ class PlanContainer extends Component {
     }
 
     setUpPlanValue = (values) =>{
-        let planAmountAwardedNet = 0;
-        let planAmountAwardedGross = 0;
-
-        values.positions.map(position => {
-            planAmountAwardedNet += position.amountAwardedNet;
-            planAmountAwardedGross += position.amountAwardedGross;
-
-            return position;
-        })
-
-        values.planAmountAwardedNet = planAmountAwardedNet
-        values.planAmountAwardedGross = planAmountAwardedGross
+        let planAmountNet = 0;
+        let planAmountGross = 0;
+        if(this.state.initData.type !== undefined){
+            if(this.state.initData.type.code === 'FIN'){
+                values.positions.map(position => {
+                    planAmountNet += position.amountAwardedNet;
+                    planAmountGross += position.amountAwardedGross;
+                    return position;
+                })
+                values.planAmountAwardedNet = planAmountNet
+                values.planAmountAwardedGross = planAmountGross
+            } else if (this.state.initData.type.code === 'PZP'){
+                values.positions.map(position => {
+                    planAmountNet += position.amountRequestedNet;
+                    planAmountGross += position.amountRequestedGross;
+                    return position;
+                })
+                values.planAmountRequestedNet = planAmountNet
+                values.planAmountAwardedGross = planAmountGross
+            }
+        }
     }
 
     handleGetPlanPositions = (planId) => {
@@ -139,7 +148,10 @@ class PlanContainer extends Component {
                 case("PZP"):
                     this.setState( prevState => {
                         let initData = {...prevState.initData};
-                        Object.assign(initData, this.props.initialValues);
+                        //If current action plan is not update
+                        if(this.props.action !== 'update'){
+                            Object.assign(initData, this.props.initialValues);
+                        }
                         initData.positions = response.data.data;
                         initData["positions"].map(position => (
                             Object.assign(position,
@@ -151,6 +163,19 @@ class PlanContainer extends Component {
                                 estimationType: position.estimationType = findSelectFieldPosition(this.state.estimationTypes, position.estimationType),
                             }
                         )))
+                        if(initData.isUpdate){
+                            initData["positions"].map(position => (
+                                Object.assign(position,
+                                    {
+                                        amountCorrect: position.correctionPlanPosition !== null ?
+                                            position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet === 0 ?
+                                                null : position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet :
+                                            position.amountRequestedNet,
+                                    }
+                                )
+                            ))
+                            this.setUpPlanValue(initData);
+                        }
                         return {initData};
                     });
                     this.handleGetDictionaryAssortmentGroups();
@@ -196,11 +221,19 @@ class PlanContainer extends Component {
         } else if (action ==='correct'){
             const index = findIndexElement(values, initData.positions, "positionId");
             if(index !== null){
-                initData.planAmountAwardedNet = parseFloat((initData.planAmountAwardedNet - initData.positions[index].amountAwardedNet).toFixed(2))
-                initData.planAmountAwardedGross = parseFloat((initData.planAmountAwardedGross - initData.positions[index].amountAwardedGross).toFixed(2))
-                initData.positions.splice(index, 1, tmp);
-                initData.planAmountAwardedNet = parseFloat((initData.planAmountAwardedNet + tmp.amountAwardedNet).toFixed(2))
-                initData.planAmountAwardedGross = parseFloat((initData.planAmountAwardedGross + tmp.amountAwardedGross).toFixed(2))
+                if(this.state.initData.type.code === 'FIN'){
+                    initData.planAmountAwardedNet = initData.planAmountAwardedNet - initData.positions[index].amountAwardedNet
+                    initData.planAmountAwardedGross = initData.planAmountAwardedGross - initData.positions[index].amountAwardedGross
+                    initData.positions.splice(index, 1, tmp);
+                    initData.planAmountAwardedNet = initData.planAmountAwardedNet + tmp.amountAwardedNet
+                    initData.planAmountAwardedGross = initData.planAmountAwardedGross + tmp.amountAwardedGross
+                } else if (this.state.initData.type.code === 'PZP') {
+                    initData.planAmountRequestedNet = initData.planAmountRequestedNet - initData.positions[index].amountRequestedNet
+                    initData.planAmountRequestedGross = initData.planAmountRequestedGross - initData.positions[index].amountRequestedGross
+                    initData.positions.splice(index, 1, tmp);
+                    initData.planAmountRequestedNet = initData.planAmountRequestedNet + tmp.amountRequestedNet
+                    initData.planAmountRequestedGross = initData.planAmountRequestedGross + tmp.amountRequestedGross
+                }
             }
         } else {
             const index = findIndexElement(values, initData.positions, "positionId");
@@ -215,14 +248,28 @@ class PlanContainer extends Component {
     }
 
     setUpCorrectValue = (values) =>{
-        values.map(position => (
-            Object.assign(position,
-                {
-                    amountCorrect: position.correctionPlanPosition !== null ?
-                        position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross : position.amountAwardedGross,
-                }
-            )
-        ))
+        if(this.state.initData.type.code === 'FIN'){
+            values.map(position => (
+                Object.assign(position,
+                    {
+                        amountCorrect: position.correctionPlanPosition !== null ?
+                            position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross : position.amountAwardedGross,
+                    }
+                )
+            ))
+        }
+        else if (this.state.initData.type.code === 'PZP'){
+            values.map(position => (
+                Object.assign(position,
+                    {
+                        amountCorrect: position.correctionPlanPosition !== null ?
+                            position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet === 0 ?
+                                null : position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet :
+                            position.amountRequestedNet,
+                    }
+                )
+            ))
+        }
     }
 
     handleSubmitPlanPosition = (values, action) => {
@@ -293,6 +340,13 @@ class PlanContainer extends Component {
                         tmp.estimationType = findSelectFieldPosition(this.state.estimationTypes, tmp.estimationType);
                         newPosition = tmp;
                         this.setUpPlanValueOnSubmitPosition(values, initData, tmp, action);
+                        if(action === 'add' && initData.isUpdate){
+                            this.setUpCorrectValue(initData.positions)
+                            this.setUpPlanValue(initData)
+                        }
+                        if(action === 'correct'){
+                            this.setUpCorrectValue(initData.positions)
+                        }
                         return {initData, newPosition};
                     });
                 break;
@@ -360,6 +414,16 @@ class PlanContainer extends Component {
                         response.data.data.estimationType = findSelectFieldPosition(this.state.estimationTypes, response.data.data.estimationType)
                         response.data.data.orderType = findSelectFieldPosition(this.state.orderTypes, response.data.data.orderType)
                         response.data.data.mode = findSelectFieldPosition(this.props.modes, response.data.data.mode.code)
+                    }
+                    if(initData.isUpdate){
+                        Object.assign(response.data.data,
+                            {
+                                amountCorrect: position.correctionPlanPosition !== null ?
+                                    position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet === 0 ?
+                                        null : position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet :
+                                    position.amountRequestedNet,
+                            }
+                        )
                     }
                     initData.positions.splice(indexPosition, 1, response.data.data);
                     initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet - subPosition.amountNet).toFixed(2))
@@ -631,6 +695,7 @@ class PlanContainer extends Component {
                         isLoading={isLoading}
                         onSubmitPlanPosition={this.handleSubmitPlanPosition}
                         onSubmitPlanSubPosition={this.handleSubmitPlanPosition}
+                        onDeletePlanSubPosition={this.handleDeletePlanSubPosition}
                         onSubmitPlan={this.handleSubmitPlan}
                         onSendPlan={this.handleSendPlan}
                         onPrintPlan={this.handlePrintPlan}

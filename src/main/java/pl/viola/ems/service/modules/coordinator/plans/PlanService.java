@@ -52,6 +52,8 @@ public interface PlanService {
 
     List<CoordinatorPlan> getPlansByCoordinatorInPublicProcurement();
 
+    List<CoordinatorPlan> getCoordinatorsPlanUpdates(String accessLevel, CoordinatorPlan.PlanType plan);
+
     List<CoordinatorPlan> getPlansCoordinatorInDirector();
 
     CoordinatorPlanPosition deleteSubPosition(CoordinatorPlanSubPosition subPosition, Long positionId);

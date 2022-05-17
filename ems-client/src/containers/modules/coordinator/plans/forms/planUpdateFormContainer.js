@@ -14,7 +14,7 @@ let PlanUpdateFormContainer = reduxForm({
 
 PlanUpdateFormContainer = connect(state => {
         const formFinancialValues = getFormValues('PlanUpdateFinancialContentPositionForm')(state)
-        const formPublicProcurementValues = getFormValues('PlanUpdatePublicProcurementContentPositionForm')(state)
+        const formPublicProcurementValues = getFormValues('PlanPublicProcurementContentPositionForm')(state)
         const formInvestmentValues = getFormValues('PlanUpdateInvestmentContentPositionForm')(state)
 
         return{

@@ -52,9 +52,9 @@ class Plans extends Component {
                 type:'amount',
             },
             {
-                id: 'status.name',
-                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS,
-                type:'object',
+                id: 'isUpdate',
+                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE,
+                type: 'boolean',
             },
         ],
         rows: [],
@@ -163,8 +163,8 @@ class Plans extends Component {
                                             onSelect={this.handleSelect}
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
-                                            rowKey='year'
-                                            defaultOrderBy="year"
+                                            rowKey='id'
+                                            defaultOrderBy="id"
                                         />
                                     </Grid>
                                 </Grid>

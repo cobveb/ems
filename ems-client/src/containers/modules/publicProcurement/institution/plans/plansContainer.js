@@ -25,6 +25,7 @@ class PlansContainer extends Component {
                         {
                             type: plan.type = findSelectFieldPosition(this.state.types, plan.type),
                             status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
+                            isUpdate: plan.isUpdate = plan.correctionPlan === null ? false : true,
                         }
                     )
                 ))
@@ -37,7 +38,7 @@ class PlansContainer extends Component {
 
     handleUpdateOnCloseDetails = (plan) => {
         let plans = this.state.plans;
-        return updateOnCloseDetails(plans, plan, "year");
+        return updateOnCloseDetails(plans, plan, "id");
     }
 
     handleExcelExport = (exportType, headRow) =>{

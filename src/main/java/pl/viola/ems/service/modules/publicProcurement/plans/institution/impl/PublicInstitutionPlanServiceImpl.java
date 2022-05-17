@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.common.export.ExportType;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionCoordinatorPlanPosition;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPosition;
+import pl.viola.ems.model.modules.accountant.institution.plans.repository.InstitutionCoordinatorPlanPositionRepository;
 import pl.viola.ems.model.modules.accountant.institution.plans.repository.InstitutionPlanPositionRepository;
 import pl.viola.ems.model.modules.accountant.institution.plans.repository.InstitutionPlanRepository;
 import pl.viola.ems.model.modules.administrator.User;
@@ -27,6 +29,7 @@ import pl.viola.ems.payload.modules.publicProcurement.plans.PublicInstitutionPla
 import pl.viola.ems.payload.modules.publicProcurement.plans.PublicInstitutionPlanPositionResponse;
 import pl.viola.ems.payload.modules.publicProcurement.plans.PublicInstitutionPlanResponse;
 import pl.viola.ems.service.common.JasperPrintService;
+import pl.viola.ems.service.modules.coordinator.plans.PlanService;
 import pl.viola.ems.service.modules.publicProcurement.plans.institution.PublicInstitutionPlanService;
 import pl.viola.ems.utils.Utils;
 
@@ -56,6 +59,12 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
 
     @Autowired
     CoordinatorPlanRepository coordinatorPlanRepository;
+
+    @Autowired
+    PlanService coordinatorPlanServices;
+
+    @Autowired
+    InstitutionCoordinatorPlanPositionRepository institutionCoordinatorPlanPositionRepository;
 
     @Override
     public List<PublicInstitutionPlanResponse> getPlans(String levelAccess) {
@@ -156,6 +165,7 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
     }
 
     @Override
+    @Transactional
     public String approvePlanPosition(Long positionId) {
         InstitutionPlanPosition institutionPlanPosition = institutionPlanPositionRepository.findById(positionId)
                 .orElseThrow(() -> new AppException("Coordinator.plan.position.notFound", HttpStatus.NOT_FOUND));
@@ -168,33 +178,180 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
     }
 
     @Override
+    @Transactional
     public InstitutionPlan.InstitutionPlanStatus updatePlanStatus(Long planId, String action) {
         InstitutionPlan plan = institutionPlanRepository.findById(planId).orElseThrow(() -> new AppException("Accountant.institution.planNotFound", HttpStatus.NOT_FOUND));
 
         User user = Utils.getCurrentUser();
 
-        List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusAndTypeAndYear(action.equals("approve") ?
-                CoordinatorPlan.PlanStatus.WY : CoordinatorPlan.PlanStatus.AZ, plan.getType(), plan.getYear());
+        if (!plan.getIsCorrected()) {
+            List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusAndTypeAndYear(action.equals("approve") ?
+                    CoordinatorPlan.PlanStatus.WY : CoordinatorPlan.PlanStatus.AZ, plan.getType(), plan.getYear());
 
-        coordinatorPlans.forEach(coordinatorPlan -> {
-            if (action.equals("approve")) {
-                coordinatorPlan.setStatus(CoordinatorPlan.PlanStatus.AZ);
-                coordinatorPlan.setPublicAcceptUser(user);
-            } else if (action.equals("withdraw")) {
-                coordinatorPlan.setStatus(CoordinatorPlan.PlanStatus.WY);
-                coordinatorPlan.setPublicAcceptUser(null);
-                coordinatorPlan.setChiefAcceptUser(null);
-                coordinatorPlan.setEconomicAcceptUser(null);
-                coordinatorPlan.setDirectorAcceptUser(null);
-                coordinatorPlan.setPlanAcceptUser(null);
-            }
-        });
-        coordinatorPlanRepository.saveAll(coordinatorPlans);
+            coordinatorPlans.forEach(coordinatorPlan -> {
+                if (action.equals("approve")) {
+                    coordinatorPlan.setStatus(CoordinatorPlan.PlanStatus.AZ);
+                    coordinatorPlan.setPublicAcceptUser(user);
+                } else if (action.equals("withdraw")) {
+                    coordinatorPlan.setStatus(CoordinatorPlan.PlanStatus.WY);
+                    coordinatorPlan.setPublicAcceptUser(null);
+                    coordinatorPlan.setChiefAcceptUser(null);
+                    coordinatorPlan.setEconomicAcceptUser(null);
+                    coordinatorPlan.setDirectorAcceptUser(null);
+                    coordinatorPlan.setPlanAcceptUser(null);
+                }
+            });
+            coordinatorPlanRepository.saveAll(coordinatorPlans);
 
-        plan.setApproveUser(action.equals("approve") ? user : null);
-        plan.setStatus(action.equals("approve") ? InstitutionPlan.InstitutionPlanStatus.AZ : InstitutionPlan.InstitutionPlanStatus.UT);
+            plan.setApproveUser(action.equals("approve") ? user : null);
+            plan.setStatus(action.equals("approve") ? InstitutionPlan.InstitutionPlanStatus.AZ : InstitutionPlan.InstitutionPlanStatus.UT);
 
+        } else {
+            List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusAndTypeAndYear(CoordinatorPlan.PlanStatus.AN, plan.getType(), plan.getYear());
+
+            coordinatorPlans.forEach(coordinatorPlan -> {
+                coordinatorPlan.setStatus(CoordinatorPlan.PlanStatus.ZA);
+            });
+
+            coordinatorPlanRepository.saveAll(coordinatorPlans);
+            plan.setStatus(InstitutionPlan.InstitutionPlanStatus.AD);
+        }
         return institutionPlanRepository.save(plan).getStatus();
+    }
+
+    @Override
+    @Transactional
+    public void updateInstitutionPublicProcurementPlan(CoordinatorPlan coordinatorPlan) {
+        InstitutionPlan institutionPlan = institutionPlanRepository.findByYearAndTypeAndStatus(coordinatorPlan.getYear(), CoordinatorPlan.PlanType.PZP, InstitutionPlan.InstitutionPlanStatus.UT);
+
+        //Institution plan not exist
+        if (institutionPlan == null) {
+            /*
+                Create copy Institution plan on approve chief Public Procurement first coordinator plan update
+            */
+
+            InstitutionPlan oldInstitutionPlan = institutionPlanRepository.findByYearAndTypeAndStatus(coordinatorPlan.getYear(), CoordinatorPlan.PlanType.PZP, InstitutionPlan.InstitutionPlanStatus.AD);
+            oldInstitutionPlan.setStatus(InstitutionPlan.InstitutionPlanStatus.AA);
+            oldInstitutionPlan.getPlanPositions().forEach(planPositions -> planPositions.setStatus(CoordinatorPlanPosition.PlanPositionStatus.AA));
+            institutionPlanRepository.save(oldInstitutionPlan);
+
+            institutionPlan = new InstitutionPlan(coordinatorPlan.getYear(), InstitutionPlan.InstitutionPlanStatus.UT, coordinatorPlan.getType());
+            institutionPlan.setCorrectionPlan(oldInstitutionPlan);
+            institutionPlan.setUpdateNumber(oldInstitutionPlan.getUpdateNumber() != null ? oldInstitutionPlan.getUpdateNumber() + 1 : 1);
+            List<InstitutionPublicProcurementPlanPosition> institutionPublicProcurementPlanPositions = new ArrayList<>();
+
+            InstitutionPlan finalInstitutionPlan = institutionPlan;
+            institutionPlan.setUpdateNumber(oldInstitutionPlan.getUpdateNumber() == null ? 1 : oldInstitutionPlan.getUpdateNumber() + 1);
+            oldInstitutionPlan.getPlanPositions().forEach(oldPlanPosition -> {
+                InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition = new InstitutionPublicProcurementPlanPosition(
+                        CoordinatorPlanPosition.PlanPositionStatus.ZA,
+                        oldPlanPosition.getAmountRequestedNet(),
+                        oldPlanPosition.getAmountRequestedGross(),
+                        finalInstitutionPlan,
+                        oldPlanPosition.getEstimationType(),
+                        oldPlanPosition.getOrderType(),
+                        oldPlanPosition.getAssortmentGroup()
+                );
+                institutionPublicProcurementPlanPosition.setAmountAwardedNet(oldPlanPosition.getAmountAwardedNet());
+                institutionPublicProcurementPlanPosition.setAmountAwardedGross(oldPlanPosition.getAmountAwardedGross());
+                institutionPublicProcurementPlanPosition.setAmountRealizedNet(oldPlanPosition.getAmountRealizedNet());
+                institutionPublicProcurementPlanPosition.setAmountRealizedGross(oldPlanPosition.getAmountRealizedGross());
+                institutionPublicProcurementPlanPosition.setAmountInferredNet(oldPlanPosition.getAmountInferredNet());
+                institutionPublicProcurementPlanPosition.setAmountInferredGross(oldPlanPosition.getAmountInferredGross());
+                institutionPublicProcurementPlanPosition.setAmountArt30Net(oldPlanPosition.getAmountArt30Net());
+                institutionPublicProcurementPlanPosition.setAmountArt30Gross(oldPlanPosition.getAmountArt30Gross());
+                institutionPublicProcurementPlanPosition.setCorrectionPlanPosition(oldPlanPosition);
+                institutionPublicProcurementPlanPositions.add(institutionPublicProcurementPlanPosition);
+                List<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new ArrayList<>();
+                oldPlanPosition.getInstitutionCoordinatorPlanPositions().forEach(oldInstitutionCoordinatorPlanPosition -> {
+                    InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(
+                            oldInstitutionCoordinatorPlanPosition.getCoordinatorPlanPosition(), institutionPublicProcurementPlanPosition);
+
+                    institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+                });
+                institutionPublicProcurementPlanPosition.setInstitutionCoordinatorPlanPositions(new HashSet<>(institutionCoordinatorPlanPositions));
+
+            });
+            institutionPlan.setPlanPositions(new HashSet<>(institutionPublicProcurementPlanPositions));
+
+
+            /*List<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new ArrayList<>();
+            List<PublicProcurementPosition> publicProcurementPositions = coordinatorPlanServices.findPositionsByPlan(coordinatorPlan.getId());
+            InstitutionPlan institutionPublicProcurementPlan = institutionPlan;
+            publicProcurementPositions.forEach(publicProcurementPosition -> {
+                InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition = new InstitutionPublicProcurementPlanPosition(
+                    publicProcurementPosition.getStatus(),
+                    publicProcurementPosition.getAmountRequestedNet(),
+                    publicProcurementPosition.getAmountRequestedGross(),
+                    institutionPublicProcurementPlan,
+                    publicProcurementPosition.getEstimationType(),
+                    publicProcurementPosition.getOrderType(),
+                    publicProcurementPosition.getAssortmentGroup()
+                );
+//                institutionPublicProcurementPlanPositions.add(institutionPublicProcurementPlanPosition);
+                InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(publicProcurementPosition, institutionPublicProcurementPlanPosition);
+                institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+                institutionPublicProcurementPlanPosition.setInstitutionCoordinatorPlanPositions(new HashSet<>(institutionCoordinatorPlanPositions));
+            });
+            institutionPlan.setPlanPositions(new HashSet<>(institutionPublicProcurementPlanPositions));*/
+        }
+//        else {
+            /*
+                Update Institution plan on approve by chief Public Procurement coordinator plan update
+            */
+//            InstitutionPlan institutionPlanUpd = institutionPlan;
+//            if (!institutionPlan.getPlanPositions().isEmpty()) {
+//                coordinatorPlan.getPositions().forEach(coordinatorPlanPosition -> {
+//                    if (institutionPlanUpd.getPlanPositions().stream().anyMatch(institutionPlanUpdPosition -> institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()))) {
+//                        InstitutionPlanPosition institutionPlanPosition = institutionPlanUpd.getPlanPositions().stream().filter(institutionPlanUpdPosition -> institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup())).findFirst().orElse(null);
+//                        institutionPlanPosition.getInstitutionCoordinatorPlanPositions().add(new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition));
+//                        institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
+//                        institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedGross).reduce(BigDecimal.ZERO, BigDecimal::add));
+//                    } else {
+//                        Set<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new HashSet<>();
+//                        InstitutionPublicProcurementPlanPosition institutionPlanPosition = new InstitutionPublicProcurementPlanPosition(
+//                            coordinatorPlanPosition.getStatus(),
+//                            coordinatorPlanPosition.getAmountRequestedNet(),
+//                            coordinatorPlanPosition.getAmountRequestedGross(),
+//                            institutionPlanUpd,
+//                            coordinatorPlanPosition.getEstimationType(),
+//                            coordinatorPlanPosition.getOrderType(),
+//                            coordinatorPlanPosition.getAssortmentGroup()
+//                        );
+//
+//                        InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition);
+//                        institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+//                        institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions);
+//                        institutionPlanUpd.getPlanPositions().add(institutionPlanPosition);
+//                    }
+//                });
+//            } else {
+//                List<InstitutionPublicProcurementPlanPosition> institutionPublicProcurementPlanPositions = new ArrayList<>();
+//                List<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new ArrayList<>();
+//
+//                coordinatorPlan.getPositions().forEach(financialPosition -> {
+//                    InstitutionPublicProcurementPlanPosition institutionPlanPosition = new InstitutionPublicProcurementPlanPosition(
+//                            financialPosition.getStatus(),
+//                            financialPosition.getAmountRequestedNet(),
+//                            financialPosition.getAmountRequestedGross(),
+//                            institutionPlanUpd,
+//                            financialPosition.getEstimationType(),
+//                            financialPosition.getOrderType(),
+//                            financialPosition.getAssortmentGroup()
+//                    );
+//                    institutionPublicProcurementPlanPositions.add(institutionPlanPosition);
+//
+//                    InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(financialPosition, institutionPlanPosition);
+//
+//                    institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+//                    institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions.stream().collect(Collectors.toSet()));
+//
+//                });
+//                institutionPlan.setPlanPositions(institutionPublicProcurementPlanPositions.stream().collect(Collectors.toSet()));
+//            }
+//        }
+//        updatePlanPositions(coordinatorPlan, institutionPlan);
+        institutionPlanRepository.save(updatePlanPositions(coordinatorPlan, institutionPlan));
     }
 
     @Override
@@ -204,7 +361,9 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
                 "/jasper/prints/modules/publicProcurement/plans/institutionPlanDetails.jrxml" :
                 type.equals("double") ?
                         "/jasper/prints/modules/publicProcurement/plans/duplicateGroups.jrxml" :
-                        "/jasper/prints/modules/publicProcurement/plans/institutionPlan.jrxml");
+                        type.equals("update") ?
+                                "/jasper/prints/modules/publicProcurement/plans/institutionPlanUpdate.jrxml" :
+                                "/jasper/prints/modules/publicProcurement/plans/institutionPlan.jrxml");
         JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
     }
 
@@ -240,5 +399,41 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
             institutionPlan.setAmountRealizedNet(plan.getPlanPositions().stream().map(InstitutionPlanPosition::getAmountRealizedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
         }
         return institutionPlan;
+    }
+
+    private InstitutionPlan updatePlanPositions(CoordinatorPlan coordinatorPlan, InstitutionPlan institutionPlanUpd) {
+
+        coordinatorPlan.getPositions().forEach(coordinatorPlanPosition -> {
+            if (institutionPlanUpd.getPlanPositions().stream().anyMatch(institutionPlanUpdPosition -> institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()))) {
+                InstitutionPlanPosition institutionPlanPosition = institutionPlanUpd.getPlanPositions().stream().filter(institutionPlanUpdPosition -> institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup())).findFirst().orElse(null);
+                InstitutionCoordinatorPlanPosition oldInstitutionCoordinatorPlanPosition = institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().filter(institutionCoordinatorPlanPosition -> institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getId().equals(coordinatorPlanPosition.getCorrectionPlanPosition().getId())).findFirst().orElse(null);
+                InstitutionCoordinatorPlanPosition correctedInstitutionCoordinatorPlanPosition = institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().filter(institutionCoordinatorPlanPosition -> institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getId().equals(coordinatorPlanPosition.getCorrectionPlanPosition().getId()) && coordinatorPlanPosition.getAmountRequestedNet().compareTo(coordinatorPlanPosition.getCorrectionPlanPosition().getAmountRequestedNet()) != 0).findFirst().orElse(null);
+                institutionPlanPosition.getInstitutionCoordinatorPlanPositions().add(new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition));
+                if (correctedInstitutionCoordinatorPlanPosition != null) {
+                    institutionPlanPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.WY);
+                }
+                institutionPlanPosition.getInstitutionCoordinatorPlanPositions().remove(oldInstitutionCoordinatorPlanPosition);
+                institutionCoordinatorPlanPositionRepository.delete(oldInstitutionCoordinatorPlanPosition);
+                institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
+                institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedGross).reduce(BigDecimal.ZERO, BigDecimal::add));
+            } else {
+                Set<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new HashSet<>();
+                InstitutionPublicProcurementPlanPosition institutionPlanPosition = new InstitutionPublicProcurementPlanPosition(
+                        coordinatorPlanPosition.getStatus(),
+                        coordinatorPlanPosition.getAmountRequestedNet(),
+                        coordinatorPlanPosition.getAmountRequestedGross(),
+                        institutionPlanUpd,
+                        coordinatorPlanPosition.getEstimationType(),
+                        coordinatorPlanPosition.getOrderType(),
+                        coordinatorPlanPosition.getAssortmentGroup()
+                );
+                institutionPlanPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.WY);
+                InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition);
+                institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+                institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions);
+                institutionPlanUpd.getPlanPositions().add(institutionPlanPosition);
+            }
+        });
+        return institutionPlanUpd;
     }
 }

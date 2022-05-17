@@ -29,10 +29,22 @@ public class PublicPlanCoordinatorController {
         return new ApiResponse(HttpStatus.FOUND, planService.getPlansByCoordinatorInPublicProcurement());
     }
 
+    @GetMapping("/plans/getCoordinatorsPlanUpdates")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1013')")
+    public ApiResponse getCoordinatorsPlanUpdates() {
+        return new ApiResponse(HttpStatus.FOUND, planService.getCoordinatorsPlanUpdates("public", CoordinatorPlan.PlanType.PZP));
+    }
+
     @PutMapping("/plan/{planId}/publicApprove")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('2013')")
     public ApiResponse publicApprove(@PathVariable Long planId) {
         return new ApiResponse(HttpStatus.OK, planService.approvePlan(planId, ApprovePlanType.PUBLIC_PROCUREMENT));
+    }
+
+    @PutMapping("/plan/{planId}/returnPlan")
+    @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('3013', '4024', '6015')")
+    public ApiResponse returnPlanToCoordinator(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.OK, planService.returnCoordinatorPlan(planId));
     }
 
     @GetMapping("/plan/{planId}/getPositions")

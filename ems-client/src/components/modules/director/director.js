@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as constants from 'constants/uiNames';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
-import { Timeline, HowToReg, LocationCity, EuroSymbol, Assignment } from '@material-ui/icons/';
+import { Timeline, HowToReg, LocationCity, EuroSymbol, Assignment, DynamicFeed } from '@material-ui/icons/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
@@ -10,6 +10,7 @@ import PlansContainer from 'containers/modules/director/coordinator/plans/plansC
 import PublicProcurementApplicationsContainer from 'containers/modules/director/coordinator/publicProcurement/applicationsContainer';
 import PublicProcurementProtocolsContainer from 'containers/modules/accountant/coordinator/publicProcurement/protocolsContainer';
 import InstitutionPlansContainer from 'containers/modules/director/institution/plans/plansContainer';
+import PlansUpdatesContainer from 'containers/modules/publicProcurement/coordinator/plans/plansUpdatesContainer';
 
 const styles = theme => ({
     root: {
@@ -59,6 +60,12 @@ class Director extends Component {
                         path: '/modules/director/coordinator/publicProtocols',
                         icon: <Assignment />
                     },
+                    {
+                        code: 'updates',
+                        name: constants.ACCOUNTANT_SUBMENU_COORDINATOR_UPDATES,
+                        path: '/modules/director/coordinator/plans/updates',
+                        icon: <DynamicFeed />
+                    },
                 ],
             },
             {
@@ -93,6 +100,14 @@ class Director extends Component {
         )
     }
 
+    showCoordinatorPlansUpdates = () =>{
+        return(
+            <PlansUpdatesContainer
+                levelAccess="director"
+            />
+        )
+    }
+
     render(){
 
         const {classes} = this.props;
@@ -109,6 +124,7 @@ class Director extends Component {
                                 <Switch>
                                     <PrivateRoute exact path='/modules/director/' component={PlansContainer}/>
                                     <PrivateRoute exact path='/modules/director/coordinator/plans' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/director/coordinator/plans/updates' component={this.showCoordinatorPlansUpdates}/>
                                     <PrivateRoute exact path='/modules/director/coordinator/publicApplications' component={PublicProcurementApplicationsContainer}/>
                                     <PrivateRoute exact path='/modules/director/coordinator/publicProtocols' component={this.showPublicProcurementProtocol}/>
                                     <PrivateRoute exact path='/modules/director/institution/plans' component={this.showInstitutionPlan}/>

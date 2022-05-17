@@ -114,6 +114,9 @@ public class CoordinatorPlan {
     @JoinColumn(name = "plan_correction_id", referencedColumnName = "id")
     private CoordinatorPlan correctionPlan;
 
+    @JoinColumn(name = "update_number")
+    private Integer updateNumber;
+
     public void removePosition(CoordinatorPlanPosition position) {
         positions.remove(position);
     }

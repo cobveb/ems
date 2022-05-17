@@ -73,14 +73,55 @@ class Plan extends Component {
                 type: 'object',
             },
         ],
+        headPzpUpd: [
+            {
+                id: 'assortmentGroup.name',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP,
+                type: 'object',
+            },
+            {
+                id: 'estimationType.name',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_ESTIMATION_TYPE,
+                type: 'object',
+            },
+            {
+                id: 'correctionPlanPosition.amountRequestedNet',
+                label: constants.COORDINATOR_PLAN_UPDATE_PUBLIC_POSITION_VALUE,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrect',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRequestedNet',
+                label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INDICATIVE_ORDER_VALUE_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'status.name',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS,
+                type: 'object',
+            },
+        ],
         splitOptions:[
+            {
+                label: constants.PUBLIC_INSTITUTION_PLAN_BUTTON_PRINT_UPDATE,
+                onClick: ((event) => this.props.onPrintPlan(event, "update")),
+                disabled: false,
+                icon:<Print className={this.props.classes.splitButtonIcon} />,
+            },
             {
                 label: constants.PUBLIC_INSTITUTION_PLAN_BUTTON_PRINT_DOUBLE_GROUPS,
                 onClick: ((event) => this.props.onPrintPlan(event, "double")),
                 disabled: false,
                 icon:<Print className={this.props.classes.splitButtonIcon} />,
             },
-
             {
                 label: constants.BUTTON_PRINT_DETAILS,
                 onClick: ((event) => this.props.onPrintPlan(event, "details")),
@@ -230,7 +271,8 @@ class Plan extends Component {
 
     render(){
         const { classes, isLoading, error, initialValues, levelAccess } = this.props;
-        const { selected, headPzp, rows, isDetailsVisible, splitOptions, disabledApprove, planAction } = this.state;
+        const { selected, headPzp, headPzpUpd, rows, isDetailsVisible, splitOptions, disabledApprove, planAction } = this.state;
+        console.log(initialValues.planPositions)
         return(
             <>
                 {isLoading && <Spinner />}
@@ -331,7 +373,7 @@ class Plan extends Component {
                                             <Table
                                                 className={classes.tableWrapper}
                                                 rows={rows}
-                                                headCells={headPzp}
+                                                headCells={initialValues.isUpdate !== undefined && initialValues.isUpdate ? headPzpUpd : headPzp}
                                                 onSelect={this.handleSelect}
                                                 onDoubleClick={this.handleDoubleClick}
                                                 onExcelExport={this.handleExcelExport}

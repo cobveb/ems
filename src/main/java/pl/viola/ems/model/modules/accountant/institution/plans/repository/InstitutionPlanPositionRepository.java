@@ -7,4 +7,6 @@ import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPo
 @Repository
 public interface InstitutionPlanPositionRepository extends JpaRepository<InstitutionPlanPosition, Long> {
 
+    InstitutionPlanPosition findByCorrectionPlanPosition(InstitutionPlanPosition correctedInstitutionPlanPosition);
+
 }

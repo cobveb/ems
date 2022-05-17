@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import Plans from 'components/modules/publicProcurement/coordinator/plans/plans';
+import PlansUpdates from 'components/modules/publicProcurement/coordinator/plans/plans';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
-import {updateOnCloseDetails, findSelectFieldPosition, generateExportLink, getCoordinatorPlanStatuses} from 'utils';
+import {updateOnCloseDetails, findSelectFieldPosition, getCoordinatorPlanStatuses} from 'utils';
 import PlansApi from 'api/modules/publicProcurement/coordinator/plansApi';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import DictionaryApi from 'api/common/dictionaryApi';
 
+class PlansUpdatesContainer extends Component {
 
-class PlansContainer extends Component {
     state = {
         plans: [],
         modes:[],
@@ -67,9 +67,9 @@ class PlansContainer extends Component {
         .catch(error => {});
     }
 
-     handleGetPlans(){
+    handleGetPlanUpdates(){
         this.props.loading(true);
-        PlansApi.getPlans()
+        PlansApi.getPlanUpdates(this.props.levelAccess === undefined ? "public" : this.props.levelAccess)
         .then(response =>{
             this.setState(prevState => {
                 let plans = [...prevState.plans];
@@ -89,43 +89,37 @@ class PlansContainer extends Component {
         .catch(error =>{});
     }
 
-    handleExcelExport = (exportType, headRow) =>{
-        this.props.loading(true);
-        PlansApi.exportPlansToExcel(exportType, headRow)
-        .then(response => {
-            generateExportLink(response);
-            this.props.loading(false);
-        })
-        .catch(error => {});
-    }
-
     componentDidMount() {
-        this.handleGetPlans();
+        this.handleGetPlanUpdates();
         this.handleGetCoordinators();
         this.handleGetDictionaryModes();
     }
 
     render(){
-        const {isLoading, loading, error, clearError} = this.props;
+
+        const { isLoading, loading, error, clearError, levelAccess } = this.props;
         const { types, modes, statuses, plans, coordinators } = this.state;
+
         return(
-            <Plans
+            <PlansUpdates
                 initialValues={plans}
                 types={types}
                 coordinators={coordinators}
                 statuses={statuses}
                 modes={modes}
                 isLoading={isLoading}
-                isUpdatesPlansAccess={false}
+                isUpdatesPlansAccess={true}
+                levelAccess={levelAccess === undefined ? "public" : levelAccess}
                 loading={loading}
                 error={error}
                 clearError={clearError}
                 onClose={this.handleUpdateOnCloseDetails}
                 onExcelExport={this.handleExcelExport}
             />
-        )
-    }
-}
+        );
+    };
+};
+
 
 const mapStateToProps = (state) => {
 	return {
@@ -141,4 +135,4 @@ function mapDispatchToProps (dispatch) {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PlansContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(PlansUpdatesContainer);

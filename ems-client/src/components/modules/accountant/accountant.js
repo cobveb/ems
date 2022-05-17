@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { LibraryBooks, Style, Timeline, HowToReg, LocationCity, PeopleAlt, EuroSymbol, Assignment } from '@material-ui/icons/';
+import { LibraryBooks, Style, Timeline, HowToReg, LocationCity, PeopleAlt, EuroSymbol, Assignment, DynamicFeed } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
@@ -11,6 +11,7 @@ import PlansContainer from 'containers/modules/accountant/coordinator/plans/plan
 import PublicProcurementApplicationsContainer from 'containers/modules/accountant/coordinator/publicProcurement/applicationsContainer';
 import PublicProcurementProtocolsContainer from 'containers/modules/accountant/coordinator/publicProcurement/protocolsContainer';
 import InstitutionPlansContainer from 'containers/modules/accountant/institution/plans/plansContainer';
+import PlansUpdatesContainer from 'containers/modules/publicProcurement/coordinator/plans/plansUpdatesContainer';
 import PropTypes from 'prop-types';
 
 const styles = theme => ({
@@ -60,6 +61,12 @@ class Accountant extends Component {
                         name: constants.ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_PROTOCOLS,
                         path: '/modules/accountant/coordinator/publicProtocols',
                         icon: <Assignment />
+                    },
+                    {
+                        code: 'updates',
+                        name: constants.ACCOUNTANT_SUBMENU_COORDINATOR_UPDATES,
+                        path: '/modules/accountant/coordinator/plans/updates',
+                        icon: <DynamicFeed />
                     },
                 ],
             },
@@ -113,6 +120,15 @@ class Accountant extends Component {
         )
     }
 
+    showCoordinatorPlansUpdates = () =>{
+        return(
+            <PlansUpdatesContainer
+                levelAccess="accountant"
+            />
+        )
+    }
+
+
     render(){
         const {classes} = this.props;
         const {menus} = this.state;
@@ -127,6 +143,7 @@ class Accountant extends Component {
                                 <Switch>
                                     <PrivateRoute exact path='/modules/accountant/' component={this.showInstitutionPlans}/>
                                     <PrivateRoute exact path='/modules/accountant/coordinator/plans' component={PlansContainer}/>
+                                    <PrivateRoute exact path='/modules/accountant/coordinator/plans/updates' component={this.showCoordinatorPlansUpdates}/>
                                     <PrivateRoute exact path='/modules/accountant/coordinator/publicApplications' component={PublicProcurementApplicationsContainer}/>
                                     <PrivateRoute exact path='/modules/accountant/coordinator/publicProtocols' component={this.showPublicProcurementProtocol}/>
                                     <PrivateRoute exact path='/modules/accountant/institution/plans' component={this.showInstitutionPlans}/>

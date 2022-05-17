@@ -94,7 +94,7 @@ public class ExportServiceImpl implements ExportService {
                     break;
                 case "date":
                     CellStyle dateStyle = xlsxWorkbook.createCellStyle();
-                    dateStyle.setDataFormat(xlsxWorkbook.createDataFormat().getFormat(dateFormat));
+                    dateStyle.setDataFormat((short) 14);
 
                     SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 
@@ -105,8 +105,9 @@ public class ExportServiceImpl implements ExportService {
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
-                    cell.setCellValue(date);
+
                     cell.setCellStyle(dateStyle);
+                    cell.setCellValue(date);
                     break;
                 case "numeric":
                     cell.setCellValue((Integer) value);

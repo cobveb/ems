@@ -77,6 +77,9 @@ public class InstitutionPlan {
     @JoinColumn(name = "plan_correction_id", referencedColumnName = "id")
     private InstitutionPlan correctionPlan;
 
+    @JoinColumn(name = "update_number")
+    private Integer updateNumber;
+
     public Boolean getIsCorrected() {
         return correctionPlan != null;
     }

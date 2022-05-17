@@ -33,6 +33,12 @@ public class DirectorPlanCoordinatorController {
         return new ApiResponse(HttpStatus.FOUND, planService.getPlansCoordinatorInDirector());
     }
 
+    @GetMapping("/plans/getCoordinatorsPlanUpdates")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1015')")
+    public ApiResponse getCoordinatorsPlanUpdates() {
+        return new ApiResponse(HttpStatus.FOUND, planService.getCoordinatorsPlanUpdates("director", CoordinatorPlan.PlanType.PZP));
+    }
+
     @PutMapping("/plan/{planId}/directorApprove")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('2015')")
     public ApiResponse directorApprove(@PathVariable Long planId) {

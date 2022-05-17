@@ -26,12 +26,17 @@ class PlanContainer extends Component {
                 let initData = {...prevState.initData};
                 Object.assign(initData, this.props.initialValues);
                 initData.planPositions = response.data.data;
+                console.log(response.data.data)
                 initData["planPositions"].map(position => (
                     Object.assign(position,
                     {
                         orderType: position.orderType = findSelectFieldPosition(this.state.orderTypes, position.orderType),
                         estimationType: position.estimationType = findSelectFieldPosition(this.state.estimationTypes, position.estimationType),
                         status: position.status = findSelectFieldPosition(this.state.positionStatuses, position.status),
+                        amountCorrect: position.correctionPlanPosition !== null ?
+                        position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet === 0 ?
+                            null : position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet :
+                        position.amountRequestedNet,
                     }
                 )))
                 return {initData}
