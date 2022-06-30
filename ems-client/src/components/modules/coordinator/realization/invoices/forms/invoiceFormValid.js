@@ -1,11 +1,10 @@
 import * as constants from 'constants/uiNames';
 
-
-export const validate = (values, props) => {
+export const validate =  ( values ) => {
     const errors = {}
 
     const requiredFields = [
-        'name', 'nip'
+        'number', 'sellDate', 'contractor'
     ]
 
     requiredFields.forEach(field => {
@@ -14,5 +13,5 @@ export const validate = (values, props) => {
         }
     })
 
-    return errors
+    return errors;
 }

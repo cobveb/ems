@@ -26,6 +26,7 @@ const styles = theme => ({
         paddingRight: theme.spacing(2),
     },
 });
+const nipMask = [/\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/];
 
 class ContractorForm extends Component {
 
@@ -85,8 +86,8 @@ class ContractorForm extends Component {
                                 label={constants.ACCOUNTANT_CONTRACTOR_ACTIVE}
                             />
                         </Grid>
-                        <Grid container spacing={1} justify="center" className={classes.container}>
-                            <Grid item xs={2} >
+                        <Grid container spacing={1} justify="flex-start" className={classes.container}>
+                            <Grid item xs={2}>
                                 <InputField
                                     name="code"
                                     label={constants.ACCOUNTANT_CONTRACTOR_CODE}
@@ -94,12 +95,20 @@ class ContractorForm extends Component {
                                     value={initialValues.code !== undefined ? initialValues.code : ''}
                                 />
                             </Grid>
-                            <Grid item xs={10} >
+                            <Grid item xs={10}>
                                 <FormTextField
                                     name="name"
                                     label={constants.ACCOUNTANT_CONTRACTOR_NAME}
                                     isRequired
                                     inputProps={{ maxLength: 250 }}
+                                />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <FormTextField
+                                    name="nip"
+                                    label={constants.INSTITUTION_BASIC_INFORMATION_NIP}
+                                    isRequired
+                                    mask={nipMask}
                                 />
                             </Grid>
                         </Grid>

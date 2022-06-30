@@ -4,6 +4,7 @@ import lombok.*;
 import pl.viola.ems.model.common.dictionary.DictItem;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 
 @Data
 @RequiredArgsConstructor
@@ -21,6 +22,9 @@ public class Contractor implements DictItem {
     private String name;
 
     private Boolean active;
+
+    @Pattern(regexp = "^$|[0-9]{10}$", message = "{valid.nip}")
+    private String nip;
 
     @Override
     public String getCode() {

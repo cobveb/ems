@@ -357,12 +357,14 @@ create TABLE emsadm.acc_contractors(
     id NUMBER(19,0) NOT NULL,
     name VARCHAR2(300) NOT NULL,
     active NUMBER(1),
+    nip varchar2(10),
     CONSTRAINT acc_contractors_pk PRIMARY KEY(id)
 )TABLESPACE ems_data;
 
 COMMENT on COLUMN acc_contractors.id is 'Accountant contractors PK';
 COMMENT on COLUMN acc_contractors.name is 'Accountant contractors name';
 COMMENT on COLUMN acc_contractors.active is 'Is contractors active';
+COMMENT on COLUMN acc_contractors.nip is 'Contractor nip number';
 /*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   SEQUENCE                                            			   */
 /*---------------------------------------------------------------------------------------------------------------------*/
