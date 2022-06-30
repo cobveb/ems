@@ -5,10 +5,10 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
 @Entity
 @Table(name = "texts", schema = "emsadm")
 public class Text {
@@ -17,9 +17,12 @@ public class Text {
     @SequenceGenerator(name = "textSequence", sequenceName = "text_seq", schema = "emsadm", allocationSize = 1)
     private Long id;
 
-    @NonNull
     @Lob
     private String content;
+
+    public Text(final String content) {
+        this.content = content;
+    }
 
     @Override
     public boolean equals(Object o) {

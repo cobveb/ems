@@ -24,7 +24,7 @@ from
     emsadm.cor_pub_proc_application apl
 where
     apl.apl_protocol_id = pro.id and
-    pro.id = $P{MAIN_ID} ]]>
+    pro.id = $P{MAIN_ID}]]>
 	</queryString>
 	<field name="APL_NUMBER" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="APL_NUMBER"/>
@@ -72,8 +72,7 @@ where
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="PDF_fonts" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["PROTOKÓŁ\n z udzielenia zamówienia publicznego"
-]]></textFieldExpression>
+				<textFieldExpression><![CDATA["PROTOKÓŁ\n z udzielenia zamówienia publicznego"]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -96,9 +95,9 @@ where
 					<![CDATA["Przedmot zamówienia: <style isBold='true'>" + $F{ORDERED_OBJECT} + "</style>"]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="20">
+		<band height="22">
 			<subreport>
-				<reportElement x="0" y="0" width="554" height="20" uuid="9f99c893-bb75-49fb-802a-63ceb8a00946"/>
+				<reportElement x="0" y="1" width="554" height="20" uuid="9f99c893-bb75-49fb-802a-63ceb8a00946"/>
 				<subreportParameter name="APL_PROTOCOL_ID">
 					<subreportParameterExpression><![CDATA[$F{APL_PROTOCOL_ID}]]></subreportParameterExpression>
 				</subreportParameter>

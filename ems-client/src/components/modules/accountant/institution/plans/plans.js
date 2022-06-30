@@ -62,6 +62,16 @@ class Plans extends Component {
                 suffix: 'zł.',
                 type:'amount',
             },
+            {
+                id: 'isCorrected',
+                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE,
+                type: 'boolean',
+            },
+            {
+                id: 'updateNumber',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE_NUMBER,
+                type:'number',
+            },
         ],
         rows: [],
         year: null,
@@ -170,8 +180,8 @@ class Plans extends Component {
                                             onSelect={this.handleSelect}
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
-                                            rowKey='year'
-                                            defaultOrderBy="year"
+                                            rowKey='id'
+                                            defaultOrderBy="id"
                                         />
                                     </Grid>
                                 </Grid>

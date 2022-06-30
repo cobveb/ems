@@ -39,7 +39,7 @@ import java.util.Set;
 public abstract class CoordinatorPlanPosition implements Serializable {
 
     public enum PlanPositionStatus {
-        ZP, WY, UZ, ZA, SK, RE, ZR, AA,
+        ZP, WY, UZ, ZA, SK, RE, ZR, AA, KR
     }
 
     @Id

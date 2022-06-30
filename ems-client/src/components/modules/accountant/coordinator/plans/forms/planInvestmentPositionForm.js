@@ -308,7 +308,8 @@ class PlanInvestmentPositionsForm extends Component {
                                                 checkedRows = {selectedSource}
                                                 toolbar={true}
                                                 addButtonProps={{
-                                                    disabled: !['WY', 'RO'].includes(planStatus.code) || initialValues.status.code !== 'SK' ? true : false
+                                                    disabled: !['WY', 'RO'].includes(planStatus.code) || !['SK', 'KR'].includes(initialValues.status.code) ? true :
+                                                        initialValues.status.code === 'KR' && initialValues.name === null  ? true : false
                                                 }}
                                                 editButtonProps={{
                                                     disabled: !['WY', 'RO'].includes(planStatus.code) || initialValues.status.code !== 'SK'  ? true :

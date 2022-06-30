@@ -39,6 +39,7 @@ class FormDictionaryField extends Component{
                 }
             }}
             validate={isRequired ? [isValid, required] : isValid}
+            isRequired={isRequired}
             {...other}
         />
     );

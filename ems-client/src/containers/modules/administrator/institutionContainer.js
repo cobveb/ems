@@ -12,7 +12,7 @@ class InstitutionContainer extends Component {
     }
 
     handelSubmitSucceeded = (data) => {
-        OrganizationUnitsApi.saveOu(data)
+        OrganizationUnitsApi.saveOu('edit', data)
         .then(response => {
             this.setState({
                 data: response.data.data,

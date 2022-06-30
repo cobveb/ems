@@ -11,6 +11,7 @@ import java.util.Set;
 
 @Repository
 public interface InstitutionCoordinatorPlanPositionRepository extends JpaRepository<InstitutionCoordinatorPlanPosition, Long> {
+
     List<InstitutionCoordinatorPlanPosition> findByInstitutionPlanPosition(InstitutionPlanPosition institutionPlanPosition);
 
     List<InstitutionCoordinatorPlanPosition> findByInstitutionPlanPositionIn(Set<InstitutionPlanPosition> planPositions);
@@ -18,4 +19,5 @@ public interface InstitutionCoordinatorPlanPositionRepository extends JpaReposit
     InstitutionCoordinatorPlanPosition findByCoordinatorPlanPosition(CoordinatorPlanPosition coordinatorPlanPosition);
 
     List<InstitutionCoordinatorPlanPosition> findByCoordinatorPlanPositionIn(List<CoordinatorPlanPosition> coordinatorPlanPositions);
+
 }

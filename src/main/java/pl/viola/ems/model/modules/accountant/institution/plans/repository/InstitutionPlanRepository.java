@@ -12,7 +12,7 @@ public interface InstitutionPlanRepository extends JpaRepository<InstitutionPlan
 
     InstitutionPlan findByYearAndType(Integer year, CoordinatorPlan.PlanType type);
 
-    InstitutionPlan findByYearAndTypeAndStatus(Integer year, CoordinatorPlan.PlanType type, InstitutionPlan.InstitutionPlanStatus status);
+    InstitutionPlan findByYearAndTypeAndStatusIn(Integer year, CoordinatorPlan.PlanType type, List<InstitutionPlan.InstitutionPlanStatus> statuses);
 
     List<InstitutionPlan> findByStatusIn(List<InstitutionPlan.InstitutionPlanStatus> status);
 

@@ -18,6 +18,7 @@ public interface PublicProcurementApplicationRepository extends JpaRepository<Ap
     List<Application> findByStatusIn(List<Application.ApplicationStatus> statuses);
 
     List<Application> findByStatusInAndCoordinatorIn(List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> organizationUnits);
+//    Set<Application> findByStatusInAndCoordinatorIn(List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> organizationUnits);
 
     List<Application> findByEstimationTypeAndApplicationProtocolIsNotNull(PublicProcurementPosition.EstimationType estimationType);
 

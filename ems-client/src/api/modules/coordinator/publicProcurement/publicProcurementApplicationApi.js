@@ -18,6 +18,10 @@ class PublicProcurementApplicationApi {
         return Axios.get(`/api/coordinator/publicProcurement/application/getApplications`)
     }
 
+    static getApplicationsInRealization(){
+        return Axios.get(`/api/coordinator/publicProcurement/application/getApplicationsInRealization`)
+    }
+
     static getApplication(applicationId){
         return Axios.get(`/api/coordinator/publicProcurement/application/getApplication/${applicationId}`)
     }

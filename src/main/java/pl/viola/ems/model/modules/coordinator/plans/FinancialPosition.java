@@ -5,10 +5,7 @@ import lombok.experimental.SuperBuilder;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.accountant.CostType;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +24,24 @@ public class FinancialPosition extends CoordinatorPlanPosition {
     @ManyToOne
     @JoinColumn(name = "cost_type_id")
     private CostType costType;
+
+    @Transient
+    private BigDecimal amountCorrectGross;
+
+    @Transient
+    private BigDecimal amountAwardedCorrectGross;
+
+    public BigDecimal getAmountCorrectGross() {
+        return super.getCorrectionPlanPosition() != null ?
+                super.getAmountRequestedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
+                : null;
+    }
+
+    public BigDecimal getAmountAwardedCorrectGross() {
+        return super.getCorrectionPlanPosition() != null ?
+                super.getAmountAwardedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
+                : null;
+    }
 
     @Override
     public PublicProcurementPosition.EstimationType getEstimationType() {

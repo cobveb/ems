@@ -15,9 +15,9 @@ public interface CoordinatorPlanRepository extends JpaRepository<CoordinatorPlan
 
     CoordinatorPlan findByYearAndTypeAndCoordinatorInAndStatusIn(Integer year, CoordinatorPlan.PlanType type, List<OrganizationUnit> organizationUnits, List<CoordinatorPlan.PlanStatus> statuses);
 
-    List<CoordinatorPlan> findByStatusIn(List<CoordinatorPlan.PlanStatus> statuses);
+    List<CoordinatorPlan> findByStatusInAndCorrectionPlanIsNull(List<CoordinatorPlan.PlanStatus> statuses);
 
-    List<CoordinatorPlan> findByStatusInAndCoordinatorIn(List<CoordinatorPlan.PlanStatus> statuses, Set<OrganizationUnit> coordinator);
+    List<CoordinatorPlan> findByStatusInAndCoordinatorInAndCorrectionPlanIsNull(List<CoordinatorPlan.PlanStatus> statuses, Set<OrganizationUnit> coordinator);
 
     List<CoordinatorPlan> findByStatusInAndTypeIn(List<CoordinatorPlan.PlanStatus> statuses, List<CoordinatorPlan.PlanType> types);
 
@@ -25,7 +25,7 @@ public interface CoordinatorPlanRepository extends JpaRepository<CoordinatorPlan
 
     List<CoordinatorPlan> findByStatusInAndTypeAndCorrectionPlanIsNull(List<CoordinatorPlan.PlanStatus> statuses, CoordinatorPlan.PlanType type);
 
-    List<CoordinatorPlan> findByStatusInAndTypeAndCorrectionPlanIsNotNull(List<CoordinatorPlan.PlanStatus> statuses, CoordinatorPlan.PlanType type);
+    List<CoordinatorPlan> findByStatusInAndTypeInAndCorrectionPlanIsNotNull(List<CoordinatorPlan.PlanStatus> statuses, List<CoordinatorPlan.PlanType> types);
 
     List<CoordinatorPlan> findByStatusAndTypeAndYear(CoordinatorPlan.PlanStatus status, CoordinatorPlan.PlanType type, int year);
 

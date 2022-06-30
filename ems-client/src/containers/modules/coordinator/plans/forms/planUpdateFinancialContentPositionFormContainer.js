@@ -1,16 +1,19 @@
 import { reduxForm, formValueSelector, getFormValues } from 'redux-form';
 import { connect } from 'react-redux';
-import PlanUpdateFinancialContentPositionForm from 'components/modules/coordinator/plans/forms/planUpdateFinancialContentPositionForm';
-import {validate} from 'components/modules/coordinator/plans/forms/planUpdateFinancialContentPositionFormValid';
+//import PlanUpdateFinancialContentPositionForm from 'components/modules/coordinator/plans/forms/planUpdateFinancialContentPositionForm';
+//import {validate} from 'components/modules/coordinator/plans/forms/planUpdateFinancialContentPositionFormValid';
+
+import PlanFinancialContentPositionForm from 'components/modules/coordinator/plans/forms/planFinancialContentPositionForm';
+import {validate} from 'components/modules/coordinator/plans/forms/planFinancialContentPositionFormValid';
 
 
 let PlanUpdateFinancialContentPositionFormContainer = reduxForm({
-    form: 'PlanUpdateFinancialContentPositionForm',
+    form: 'PlanFinancialContentPositionForm',
     validate,
     enableReinitialize: true,
-}) (PlanUpdateFinancialContentPositionForm)
+}) (PlanFinancialContentPositionForm)
 
-const selector = formValueSelector('PlanUpdateFinancialContentPositionForm') // <-- same as form name
+const selector = formValueSelector('PlanFinancialContentPositionForm') // <-- same as form name
 const planSelector = formValueSelector('PlanUpdateForm') // <-- same as form name
 
 PlanUpdateFinancialContentPositionFormContainer = connect(

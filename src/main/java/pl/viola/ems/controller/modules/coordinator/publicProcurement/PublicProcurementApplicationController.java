@@ -49,6 +49,12 @@ public class PublicProcurementApplicationController {
         return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByCoordinator());
     }
 
+    @GetMapping("/getApplicationsInRealization")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1032')")
+    public ApiResponse getApplicationsInRealization() {
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByCoordinatorInRealization());
+    }
+
     @GetMapping("/getApplication/{applicationId}")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1032')")
     public ApiResponse getApplication(@PathVariable Long applicationId) {
@@ -137,7 +143,7 @@ public class PublicProcurementApplicationController {
     public void exportApplicationsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
                                          @PathVariable ExportType exportType, HttpServletResponse response) throws IOException {
 
-        publicProcurementApplicationService.exportApplicationsToExcel(exportType, headRow, generateExportResponse(response, exportType));
+        publicProcurementApplicationService.exportApplicationsToExcel(exportType, headRow, generateExportResponse(response, exportType), "coordinator");
     }
 
     @PutMapping("/{applicationId}/export/parts/{exportType}")

@@ -33,6 +33,8 @@ public class PublicInstitutionPlanResponse {
 
     private Boolean isCorrected;
 
+    private Integer updateNumber;
+
     private User approveUser;
 
     private User chiefAcceptUser;

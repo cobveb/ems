@@ -150,11 +150,20 @@ class ContainedTable extends Component {
     desc(a, b, orderBy) {
         switch(this.state.cellType){
             case 'object' :
-                if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] < a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
-                    return -1;
-                }
-                if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] > a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
-                    return 1;
+                if(b[orderBy.substring(0, orderBy.indexOf('.'))] === null || a[orderBy.substring(0, orderBy.indexOf('.'))] === null){
+                    if (b[orderBy.substring(0, orderBy.indexOf('.'))] === null && (a[orderBy.substring(0, orderBy.indexOf('.'))] !== null)) {
+                        return -1;
+                    }
+                    if (b[orderBy.substring(0, orderBy.indexOf('.'))] !== null && (a[orderBy.substring(0, orderBy.indexOf('.'))] === null)) {
+                        return 1;
+                    }
+                } else {
+                    if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] < a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
+                        return -1;
+                    }
+                    if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] > a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
+                        return 1;
+                    }
                 }
                 break;
             case 'text':
@@ -336,7 +345,14 @@ class ContainedTable extends Component {
                                                                 disabled={true}
                                                             />
                                                         :
-                                                            cell.type === 'object' ? row[cell.id.substring(0, cell.id.indexOf('.'))] !== undefined ?row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)] : null
+                                                            cell.type === 'object' ?
+                                                                cell.subtype === 'amount'
+                                                                    ?
+                                                                        row[cell.id.substring(0, cell.id.lastIndexOf('.'))] !== null ?
+                                                                            `${numberWithSpaces((row[cell.id.substring(0, cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.') +1)]))}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}` :
+                                                                                `${numberWithSpaces(0)}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
+                                                                    :
+                                                                    row[cell.id.substring(0, cell.id.indexOf('.'))] !== undefined ?row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1)] : null
                                                                 :
                                                                     cell.type === 'date' && row[cell.id] !== null
                                                                         ?

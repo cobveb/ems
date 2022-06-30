@@ -10,7 +10,7 @@ import PlansContainer from 'containers/modules/director/coordinator/plans/plansC
 import PublicProcurementApplicationsContainer from 'containers/modules/director/coordinator/publicProcurement/applicationsContainer';
 import PublicProcurementProtocolsContainer from 'containers/modules/accountant/coordinator/publicProcurement/protocolsContainer';
 import InstitutionPlansContainer from 'containers/modules/director/institution/plans/plansContainer';
-import PlansUpdatesContainer from 'containers/modules/publicProcurement/coordinator/plans/plansUpdatesContainer';
+import PlansUpdatesContainer from 'containers/modules/director/coordinator/plans/plansUpdatesContainer';
 
 const styles = theme => ({
     root: {

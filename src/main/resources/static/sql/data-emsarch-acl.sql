@@ -43,9 +43,28 @@ insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (39,'2032','Modyfikacja 
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (40,'3032','Wysłanie wniosku o udzielenie zamówienia publicznego do jesnostki nadrzędnej');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (41,'4032','Wycofanie wysłanego wniosku o udzielenie zamówienia publicznego');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (42,'5032','Usuwanie wniosku o udzielenie zamówienia publicznego');
-insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (43,'3013','Odczyt wniosków o udzielenie zamówienia publicznego');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (43,'3113','Odczyt wniosków o udzielenie zamówienia publicznego');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (44,'4013','Akceptacja wniosku o udzielenie zamówienia publicznego');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (45,'5013','Wycofanie wniosku o udzielenie zamwienia publicznego do Koordynatora');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (46,'1124','Odczyt wniosków o udzielenie zamówienia publicznego');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (47,'2124','Akceptacja wniosku o udzielenie zamówienia publicznego');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (48,'3124','Wycofanie wniosku o udzielenie zamwienia publicznego do Koordynatora');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (49,'1115','Odczyt wniosków o udzielenie zamówienia publicznego');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (50,'2115','Akceptacja wniosku ZP Dyrektor pionu');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (51,'3115','Akceptacja wniosku ZP Dyrektor medyczny');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (52,'4115','Akceptacja wniosku ZP Dyrektor naczelny');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (53,'5115','Wycofanie wniosku o udzielenie zamwienia publicznego do Koordynatora');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (54,'4113','Zatwierdzenie realizacji wniosku o udzielenie zamwienia publicznego');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (55,'5113','Wycofanie realizacji wniosku o udzielenie zamwienia publicznego');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (56,'3013','Wycofanie planu koordynatora');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (57,'4024','Wycofanie planu koordynatora');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (58,'1142','Odczyt faktur');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (59,'2142','Modyfikacja faktury');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (60,'3142','Usuwanie faktury');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (61,'1242','Odczyt umów');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (62,'2242','Modyfikacja umowy');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (63,'3242','Usuwanie umowy');
+
 
 REM INSERTING into EMSARCH.AC_OBJECTS
 SET DEFINE OFF;
@@ -108,3 +127,21 @@ insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (3,43);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (3,44);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (3,45);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,46);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,47);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,48);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,49);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,50);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,51);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,52);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,53);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (3,54);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (3,55);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (3,56);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,57);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,58);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,59);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,60);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,61);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,62);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,63);

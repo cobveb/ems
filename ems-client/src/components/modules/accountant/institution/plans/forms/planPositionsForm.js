@@ -66,6 +66,50 @@ class PlanPositionsForm extends Component {
                 type: 'amount',
             },
         ],
+        headCellsUpd:[
+            {
+                id: 'coordinatorName',
+                label: constants.ACCOUNTANT_MENU_COORDINATOR,
+                type: 'text',
+            },
+            {
+                id: 'correctionPlanCoordinatorPosition.amountAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_GROSS,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRequestedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_REQUESTED_AFTER_CORRECTED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountAwardedCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AWARDED_AFTER_CORRECTED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRealizedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+        ],
         selected: [],
         planPositions:[],
         action: null,
@@ -170,8 +214,8 @@ class PlanPositionsForm extends Component {
     }
 
     render(){
-        const {handleSubmit, classes, isLoading, error, initValues, planStatus, levelAccess} = this.props;
-        const {headCells, selected, planPositions, action, openPlanDetails, acceptDisabled} = this.state;
+        const {handleSubmit, classes, isLoading, error, initValues, planStatus, levelAccess, isPlanUpdate} = this.props;
+        const {headCells, headCellsUpd, selected, planPositions, action, openPlanDetails, acceptDisabled} = this.state;
         if(initValues === undefined) {
             return null;
         }
@@ -246,7 +290,7 @@ class PlanPositionsForm extends Component {
                                             <FormTableField
                                                 className={classes.tableWrapper}
                                                 name="planPositions"
-                                                head={headCells}
+                                                head={isPlanUpdate ? headCellsUpd : headCells}
                                                 allRows={planPositions}
                                                 checkedRows={selected}
                                                 toolbar={false}

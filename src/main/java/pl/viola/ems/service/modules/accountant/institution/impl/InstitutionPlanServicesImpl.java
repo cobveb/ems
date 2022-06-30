@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.common.export.ExportType;
-import pl.viola.ems.model.modules.accountant.institution.plans.*;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionCoordinatorPlanPosition;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionFinancialPlanPosition;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPosition;
 import pl.viola.ems.model.modules.accountant.institution.plans.repository.InstitutionCoordinatorPlanPositionRepository;
 import pl.viola.ems.model.modules.accountant.institution.plans.repository.InstitutionFinancialPlanPositionRepository;
 import pl.viola.ems.model.modules.accountant.institution.plans.repository.InstitutionPlanPositionRepository;
@@ -67,7 +70,8 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                 InstitutionPlan.InstitutionPlanStatus.AE,
                 InstitutionPlan.InstitutionPlanStatus.AN,
                 InstitutionPlan.InstitutionPlanStatus.ZA,
-                InstitutionPlan.InstitutionPlanStatus.AA
+                InstitutionPlan.InstitutionPlanStatus.AA,
+                InstitutionPlan.InstitutionPlanStatus.RE
         );
 
         List<CoordinatorPlan.PlanType> types = new ArrayList<>();
@@ -120,7 +124,7 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
 
                 CoordinatorPlanPosition coordinatorPlanPosition = coordinatorPlanPositions.stream().filter(coordinatorPosition -> coordinatorPosition.getId().equals(position.getCoordinatorPlanPosition().getId())).findFirst().get();
 
-                if (!coordinatorPlanPosition.equals(null)) {
+                if (coordinatorPlanPosition != null) {
 
                     institutionPlanPosition.setAmountAwardedNet(institutionPlanPosition.getAmountAwardedNet() == null ?
                             position.getAmountAwardedNet() : institutionPlanPosition.getAmountAwardedNet().subtract(coordinatorPlanPosition.getAmountAwardedNet() != null ?
@@ -219,7 +223,7 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                                 InstitutionPlan finalInstitutionPlan3 = institutionPlan;
                                 coordinatorPlan.getPositions().forEach(coordinatorPlanPosition -> {
                                     if (finalInstitutionPlan2.getPlanPositions().stream().anyMatch(institutionPlanPosition1 -> institutionPlanPosition1.getCostType().equals(coordinatorPlanPosition.getCostType()))) {
-                                        InstitutionPlanPosition institutionPlanPosition = finalInstitutionPlan2.getPlanPositions().stream().filter(institutionPlanPosition1 -> institutionPlanPosition1.getCostType().equals(coordinatorPlanPosition.getCostType())).findFirst().get();
+                                        InstitutionPlanPosition institutionPlanPosition = finalInstitutionPlan2.getPlanPositions().stream().filter(institutionPlanPosition1 -> institutionPlanPosition1.getCostType().equals(coordinatorPlanPosition.getCostType())).findFirst().orElse(null);
                                         institutionPlanPosition.getInstitutionCoordinatorPlanPositions().add(new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition));
                                         institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
                                         institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedGross).reduce(BigDecimal.ZERO, BigDecimal::add));
@@ -262,10 +266,10 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                                     InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(financialPosition, institutionPlanPosition);
 
                                     institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
-                                    institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions.stream().collect(Collectors.toSet()));
+                                    institutionPlanPosition.setInstitutionCoordinatorPlanPositions(new HashSet<>(institutionCoordinatorPlanPositions));
 
                                 });
-                                institutionPlan.setPlanPositions(institutionFinancialPlanPositions.stream().collect(Collectors.toSet()));
+                                institutionPlan.setPlanPositions(new HashSet<>(institutionFinancialPlanPositions));
                             }
                         }
                     } else if (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP)) {
@@ -278,7 +282,9 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                                 coordinatorPlan.getPositions().forEach(coordinatorPlanPosition -> {
                                     if (institutionPlanUpd.getPlanPositions().stream().anyMatch(institutionPlanUpdPosition -> institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup()))) {
                                         InstitutionPlanPosition institutionPlanPosition = institutionPlanUpd.getPlanPositions().stream().filter(institutionPlanUpdPosition -> institutionPlanUpdPosition.getAssortmentGroup().equals(coordinatorPlanPosition.getAssortmentGroup())).findFirst().orElse(null);
-                                        institutionPlanPosition.getInstitutionCoordinatorPlanPositions().add(new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition));
+                                        if (institutionPlanPosition != null) {
+                                            institutionPlanPosition.getInstitutionCoordinatorPlanPositions().add(new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition));
+                                        }
                                         institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
                                         institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedGross).reduce(BigDecimal.ZERO, BigDecimal::add));
                                     } else {
@@ -318,10 +324,10 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                                     InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(financialPosition, institutionPlanPosition);
 
                                     institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
-                                    institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions.stream().collect(Collectors.toSet()));
+                                    institutionPlanPosition.setInstitutionCoordinatorPlanPositions(new HashSet<>(institutionCoordinatorPlanPositions));
 
                                 });
-                                institutionPlan.setPlanPositions(institutionPublicProcurementPlanPositions.stream().collect(Collectors.toSet()));
+                                institutionPlan.setPlanPositions(new HashSet<>(institutionPublicProcurementPlanPositions));
                             }
                         }
                     }
@@ -363,32 +369,21 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                     break;
                 case "approveDirector":
                     if (!institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.AD)) {
-                        if (!existsPlanToApprove(institutionPlan, "AK") && !institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
+                        if (!Utils.existsPlanToApprove(institutionPlan, "AK") && !institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
                             institutionPlan.setStatus(InstitutionPlan.InstitutionPlanStatus.AD);
                         }
                     }
                     break;
                 case "approveEconomic":
                     if (!institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.AE)) {
-                        if (!existsPlanToApprove(institutionPlan, "AD") && !institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
+                        if (!Utils.existsPlanToApprove(institutionPlan, "AD") && !institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
                             institutionPlan.setStatus(InstitutionPlan.InstitutionPlanStatus.AE);
                         }
                     }
                     break;
                 case "approveChief":
                     if (!institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.AN)) {
-                        boolean existsEconomicApprovePlan = false;
-                        for (InstitutionPlanPosition institutionPlanPosition : institutionPlan.getPlanPositions()) {
-                            InstitutionCoordinatorPlanPosition position = institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().filter(
-                                    institutionCoordinatorPlanPosition ->
-                                            institutionCoordinatorPlanPosition.getPlanStatus().equals("AE") || institutionCoordinatorPlanPosition.getPlanStatus().equals("AD")
-                            ).findAny().orElse(null);
-                            if (position != null) {
-                                existsEconomicApprovePlan = true;
-                                break;
-                            }
-                        }
-                        if (!existsEconomicApprovePlan && !institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
+                        if (!Utils.existsEconomicApprovePlan(institutionPlan) && !institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
                             institutionPlan.setStatus(InstitutionPlan.InstitutionPlanStatus.AN);
                         }
                     }
@@ -398,6 +393,157 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
 
         if (institutionPlan != null) {
             institutionPlanRepository.save(institutionPlan);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void correctInstitutionPlan(final CoordinatorPlan coordinatorPlan, final String action) {
+
+        InstitutionPlan institutionPlan = institutionPlanRepository.findByYearAndTypeAndStatusIn(coordinatorPlan.getYear(), CoordinatorPlan.PlanType.FIN, Arrays.asList(
+                InstitutionPlan.InstitutionPlanStatus.UT,
+                InstitutionPlan.InstitutionPlanStatus.AK,
+                InstitutionPlan.InstitutionPlanStatus.AE)
+        );
+
+        switch (action) {
+            case "send":
+                //If send first coordinator update plan and not exist institution update plan
+                if (institutionPlan == null) {
+                    /*
+                        Create copy Institution plan on send first coordinator plan update
+                    */
+                    InstitutionPlan oldInstitutionPlan = institutionPlanRepository.findByYearAndTypeAndStatusIn(coordinatorPlan.getYear(), CoordinatorPlan.PlanType.FIN, Arrays.asList(InstitutionPlan.InstitutionPlanStatus.ZA, InstitutionPlan.InstitutionPlanStatus.RE));
+                    oldInstitutionPlan.setStatus(InstitutionPlan.InstitutionPlanStatus.AA);
+                    oldInstitutionPlan.getPlanPositions().forEach(planPositions -> planPositions.setStatus(CoordinatorPlanPosition.PlanPositionStatus.AA));
+                    institutionPlanRepository.save(oldInstitutionPlan);
+
+                    institutionPlan = new InstitutionPlan(coordinatorPlan.getYear(), InstitutionPlan.InstitutionPlanStatus.UT, coordinatorPlan.getType());
+                    institutionPlan.setCorrectionPlan(oldInstitutionPlan);
+                    institutionPlan.setUpdateNumber(oldInstitutionPlan.getUpdateNumber() != null ? oldInstitutionPlan.getUpdateNumber() + 1 : 1);
+                    List<InstitutionFinancialPlanPosition> institutionFinancialPlanPositions = new ArrayList<>();
+                    final InstitutionPlan finalInstitutionPlan = institutionPlan;
+                    oldInstitutionPlan.getPlanPositions().forEach(oldPlanPosition -> {
+                        InstitutionFinancialPlanPosition institutionFinancialPlanPosition = new InstitutionFinancialPlanPosition(
+                                CoordinatorPlanPosition.PlanPositionStatus.ZA,
+                                oldPlanPosition.getAmountRequestedNet(),
+                                oldPlanPosition.getAmountRequestedGross(),
+                                oldPlanPosition.getAmountAwardedNet(),
+                                oldPlanPosition.getAmountAwardedGross(),
+                                oldPlanPosition.getAmountRealizedNet(),
+                                oldPlanPosition.getAmountRealizedGross(),
+                                finalInstitutionPlan,
+                                oldPlanPosition.getCostType()
+                        );
+                        institutionFinancialPlanPosition.setCorrectionPlanPosition(oldPlanPosition);
+                        institutionFinancialPlanPositions.add(institutionFinancialPlanPosition);
+                        List<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new ArrayList<>();
+                        oldPlanPosition.getInstitutionCoordinatorPlanPositions().forEach(oldInstitutionCoordinatorPlanPosition -> {
+                            InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(
+                                    oldInstitutionCoordinatorPlanPosition.getCoordinatorPlanPosition(), institutionFinancialPlanPosition);
+                            institutionCoordinatorPlanPosition.setCorrectionPlanCoordinatorPosition(oldInstitutionCoordinatorPlanPosition);
+                            institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+                        });
+                        institutionFinancialPlanPosition.setInstitutionCoordinatorPlanPositions(new HashSet<>(institutionCoordinatorPlanPositions));
+                    });
+                    institutionPlan.setPlanPositions(new HashSet<>(institutionFinancialPlanPositions));
+                }
+
+                final InstitutionPlan finalInstitutionPlan1 = institutionPlan;
+                coordinatorPlan.getPositions().forEach(coordinatorPlanPosition -> {
+                    if (finalInstitutionPlan1.getPlanPositions().stream().anyMatch(institutionPlanPosition1 -> institutionPlanPosition1.getCostType().equals(coordinatorPlanPosition.getCostType()))) {
+                        InstitutionPlanPosition institutionPlanPosition = finalInstitutionPlan1.getPlanPositions().stream().filter(institutionPlanPosition1 -> institutionPlanPosition1.getCostType().equals(coordinatorPlanPosition.getCostType())).findFirst().orElse(null);
+                        InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = null;
+                        if (institutionPlanPosition != null) {
+                            institutionCoordinatorPlanPosition = institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().filter(institutionCoordinatorPlanPosition1 -> institutionCoordinatorPlanPosition1.getCoordinatorPlanPosition().getPlan().getCoordinator().equals(coordinatorPlan.getCoordinator())).findAny().orElse(null);
+                        }
+                        if (institutionCoordinatorPlanPosition != null) {
+                            institutionCoordinatorPlanPosition.setCoordinatorPlanPosition(coordinatorPlanPosition);
+                        } else {
+                            institutionPlanPosition.getInstitutionCoordinatorPlanPositions().add(new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition));
+                        }
+                        institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
+                        institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedGross).reduce(BigDecimal.ZERO, BigDecimal::add));
+                        if (!institutionPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.KR)) {
+                            institutionPlanPosition.setStatus(coordinatorPlanPosition.getStatus());
+                        }
+                    } else {
+                        Set<InstitutionCoordinatorPlanPosition> institutionCoordinatorPlanPositions = new HashSet<>();
+                        InstitutionFinancialPlanPosition institutionPlanPosition = new InstitutionFinancialPlanPosition(
+                                coordinatorPlanPosition.getStatus(),
+                                coordinatorPlanPosition.getAmountRequestedNet(),
+                                coordinatorPlanPosition.getAmountRequestedGross(),
+                                finalInstitutionPlan1,
+                                coordinatorPlanPosition.getCostType()
+                        );
+
+                        InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = new InstitutionCoordinatorPlanPosition(coordinatorPlanPosition, institutionPlanPosition);
+                        institutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+                        institutionPlanPosition.setInstitutionCoordinatorPlanPositions(institutionCoordinatorPlanPositions);
+                        finalInstitutionPlan1.getPlanPositions().add(institutionPlanPosition);
+                    }
+                });
+
+                institutionPlanRepository.save(institutionPlan);
+                break;
+            case "return":
+            case "withdraw":
+                //Update on withdraw or return coordinator plan
+                List<InstitutionPlanPosition> removedInstitutionPlanPositions = new ArrayList<>();
+                List<InstitutionCoordinatorPlanPosition> removedInstitutionCoordinatorPlanPositions = new ArrayList<>();
+                institutionPlan.getPlanPositions().forEach(institutionPlanPosition -> institutionPlanPosition.getInstitutionCoordinatorPlanPositions().forEach(institutionCoordinatorPlanPosition -> {
+                    if (coordinatorPlan.getPositions().contains(institutionCoordinatorPlanPosition.getCoordinatorPlanPosition())) {
+                        CoordinatorPlanPosition coordinatorPlanPosition = coordinatorPlan.getPositions().stream().filter(coordinatorPlanPosition1 -> coordinatorPlanPosition1.getCostType().equals(institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getCostType())).findAny().orElse(null);
+                        if (coordinatorPlanPosition != null) {
+                            if (coordinatorPlanPosition.getCorrectionPlanPosition() != null) {
+                                institutionCoordinatorPlanPosition.setCoordinatorPlanPosition(coordinatorPlanPosition.getCorrectionPlanPosition());
+                                institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedNet).reduce(BigDecimal.ZERO, BigDecimal::add));
+                                institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRequestedGross).reduce(BigDecimal.ZERO, BigDecimal::add));
+                            } else {
+                                removedInstitutionCoordinatorPlanPositions.add(institutionCoordinatorPlanPosition);
+                                institutionPlanPosition.setAmountRequestedNet(institutionPlanPosition.getAmountRequestedNet().subtract(institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getAmountRequestedNet()));
+                                institutionPlanPosition.setAmountRequestedGross(institutionPlanPosition.getAmountRequestedGross().subtract(institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getAmountRequestedGross()));
+
+                                if (institutionPlanPosition.getInstitutionCoordinatorPlanPositions().size() == 1) {
+                                    removedInstitutionPlanPositions.add(institutionPlanPosition);
+                                }
+                            }
+                        }
+                    }
+                }));
+                if (action.equals("return")) {
+                    institutionPlan.setStatus(InstitutionPlan.InstitutionPlanStatus.UT);
+                    institutionPlan.setApproveUser(null);
+                }
+                if (!removedInstitutionCoordinatorPlanPositions.isEmpty()) {
+                    institutionCoordinatorPlanPositionRepository.deleteInBatch(removedInstitutionCoordinatorPlanPositions);
+                }
+                if (!removedInstitutionPlanPositions.isEmpty()) {
+                    institutionPlanPositionRepository.deleteInBatch(removedInstitutionPlanPositions);
+                }
+                break;
+            case "approveDirector":
+                if (!institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.AD)) {
+                    if (!Utils.existsPlanToApprove(institutionPlan, "AK") && !institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
+                        institutionPlan.setStatus(InstitutionPlan.InstitutionPlanStatus.AD);
+                    }
+                }
+                break;
+            case "approveEconomic":
+                if (!institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.AE)) {
+                    if (!Utils.existsPlanToApprove(institutionPlan, "AD") && !institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
+                        institutionPlan.setStatus(InstitutionPlan.InstitutionPlanStatus.AE);
+                    }
+                }
+                break;
+            case "approveChief":
+                if (!institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.AN)) {
+
+                    if (!Utils.existsEconomicApprovePlan(institutionPlan) && !institutionPlan.getStatus().equals(InstitutionPlan.InstitutionPlanStatus.UT)) {
+                        institutionPlan.setStatus(InstitutionPlan.InstitutionPlanStatus.AN);
+                    }
+                }
+                break;
         }
     }
 
@@ -465,7 +611,7 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
                 CoordinatorPlan.PlanStatus.AN
         );
         List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusInAndTypeAndYear(statuses, plan.getType(), plan.getYear());
-        return coordinatorPlans.isEmpty() ? false : true;
+        return !coordinatorPlans.isEmpty();
     }
 
     @Override
@@ -562,19 +708,5 @@ public class InstitutionPlanServicesImpl implements InstitutionPlanService {
         }
     }
 
-    private boolean existsPlanToApprove(InstitutionPlan institutionPlan, String status) {
-        boolean existPlanToApprove = false;
-        for (InstitutionPlanPosition institutionPlanPosition : institutionPlan.getPlanPositions()) {
-            InstitutionCoordinatorPlanPosition position = institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().filter(
-                    institutionCoordinatorPlanPosition ->
-                            institutionCoordinatorPlanPosition.getPlanStatus().equals(status)
-            ).findAny().orElse(null);
-            if (position != null) {
-                existPlanToApprove = true;
-                break;
-            }
-        }
-        return existPlanToApprove;
-    }
 
 }

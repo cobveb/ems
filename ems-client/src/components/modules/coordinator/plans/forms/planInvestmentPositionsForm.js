@@ -155,7 +155,7 @@ class PlanInvestmentPositionsForm extends Component {
 
     handleConfirmDelete = () => {
         this.props.onDeleteSource(this.state.selected[0]);
-        this.setState(state => ({ positionAction: null}));
+        this.setState(state => ({ positionAction: null, selected: []}));
     }
 
     renderSourceDialog = () => {

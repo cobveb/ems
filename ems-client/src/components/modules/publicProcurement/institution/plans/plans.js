@@ -56,6 +56,11 @@ class Plans extends Component {
                 label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE,
                 type: 'boolean',
             },
+            {
+                id: 'updateNumber',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE_NUMBER,
+                type:'number',
+            },
         ],
         rows: [],
         year: null,

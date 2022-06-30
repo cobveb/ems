@@ -9,8 +9,8 @@ import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@ToString(exclude = {"institutionPlanPosition"})
-@EqualsAndHashCode(exclude = {"institutionPlanPosition"})
+@ToString(exclude = {"institutionPlanPosition", "coordinatorPlanPosition", "correctionPlanCoordinatorPosition"})
+@EqualsAndHashCode(exclude = {"institutionPlanPosition", "coordinatorPlanPosition", "correctionPlanCoordinatorPosition"})
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -28,6 +28,12 @@ public class InstitutionCoordinatorPlanPosition {
 
     @Transient
     private BigDecimal amountAwardedGross;
+
+    @Transient
+    private BigDecimal amountCorrectGross;
+
+    @Transient
+    private BigDecimal amountAwardedCorrectGross;
 
     @NonNull
     @OneToOne(cascade = CascadeType.PERSIST)
@@ -94,6 +100,18 @@ public class InstitutionCoordinatorPlanPosition {
         } else {
             return this.coordinatorPlanPosition.getAmountAwardedGross();
         }
+    }
+
+    public BigDecimal getAmountCorrectGross() {
+        return correctionPlanCoordinatorPosition != null ?
+                coordinatorPlanPosition.getAmountRequestedGross().subtract(correctionPlanCoordinatorPosition.getCoordinatorPlanPosition().getAmountAwardedGross())
+                : coordinatorPlanPosition.getAmountRequestedGross();
+    }
+
+    public BigDecimal getAmountAwardedCorrectGross() {
+        return correctionPlanCoordinatorPosition != null ?
+                coordinatorPlanPosition.getAmountAwardedGross().subtract(correctionPlanCoordinatorPosition.getCoordinatorPlanPosition().getAmountAwardedGross())
+                : coordinatorPlanPosition.getAmountAwardedGross();
     }
 
     public BigDecimal getAmountRealizedNet() {

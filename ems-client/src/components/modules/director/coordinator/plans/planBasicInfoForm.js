@@ -87,6 +87,65 @@ class PlanBasicInfoForm extends Component {
                 type: 'boolean',
             },
         ],
+        headFinUpd: [
+            {
+                id: 'costType.code',
+                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_TYPE,
+                type: 'object',
+            },
+            {
+                id: 'costType.name',
+                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_NAME,
+                type: 'object',
+            },
+            {
+                id: 'correctionPlanPosition.amountAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_GROSS,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRequestedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountAwardedCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountAwardedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRealizedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'isDescCor',
+                label: constants.COORDINATOR_PLAN_POSITION_HEAD_COORDINATOR_DESCRIPTION,
+                type: 'boolean',
+            },
+            {
+                id: 'isDescMan',
+                label: constants.COORDINATOR_PLAN_POSITION_HEAD_MANAGEMENT_DESCRIPTION,
+                type: 'boolean',
+            },
+        ],
         headInv: [
             {
                 id: 'task',
@@ -126,6 +185,57 @@ class PlanBasicInfoForm extends Component {
                 id: 'isDescMan',
                 label: constants.COORDINATOR_PLAN_POSITION_HEAD_MANAGEMENT_DESCRIPTION,
                 type: 'boolean',
+            },
+        ],
+        headInvUpd: [
+            {
+                id: 'task',
+                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_TASK,
+                type: 'text',
+            },
+            {
+                id: 'correctionPlanPosition.taskPositionGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_TASK,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'correctionPlanPosition.expensesPositionAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_EXPENSES,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrect',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_TASK_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'expensesAmountCorrect',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_EXPENSES_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'taskPositionGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_TASK_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'expensesPositionAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_EXPENSES_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRealizedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_REALIZED_PLAN_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
             },
         ],
         headPzp: [
@@ -240,6 +350,14 @@ class PlanBasicInfoForm extends Component {
                 openRemarks = true;
                 return {selected, openRemarks}
             });
+        } else if(['INW', 'PZP'].includes(this.props.initialValues.type.code)){
+            this.setState(prevState =>{
+                const selected = [...prevState.selected];
+                let isDetailsVisible: {...prevState.isDetailsVisible};
+                selected[0] = row;
+                isDetailsVisible = true;
+                return {selected, isDetailsVisible}
+            })
         }
     }
 
@@ -265,7 +383,7 @@ class PlanBasicInfoForm extends Component {
 
     render(){
         const { handleSubmit, submitting, classes, initialValues } = this.props
-        const { headFin, headInv, headPzp, selected, positions, planAction, openRemarks, isDetailsVisible, returnCoordinator } = this.state;
+        const { headFin, headFinUpd, headInv, headInvUpd, headPzp, selected, positions, planAction, openRemarks, isDetailsVisible, returnCoordinator } = this.state;
         return(
             <>
                 { planAction &&
@@ -466,7 +584,12 @@ class PlanBasicInfoForm extends Component {
                                         <FormTableField
                                             className={classes.tableWrapper}
                                             name="positions"
-                                            head={ initialValues.type !== undefined && initialValues.type.code === "FIN" ? headFin : initialValues.type !== undefined && initialValues.type.code === "INW" ? headInv : headPzp}
+                                            head={initialValues.type !== undefined && initialValues.type.code === "FIN" ?
+                                                    initialValues.isUpdate ? headFinUpd : headFin
+                                                : initialValues.type !== undefined && initialValues.type.code === "INW" ?
+                                                    initialValues.isUpdate ? headInvUpd : headInv
+                                                    : headPzp
+                                            }
                                             allRows={positions}
                                             checkedRows={selected}
                                             toolbar={false}

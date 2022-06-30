@@ -73,6 +73,60 @@ class Plan extends Component {
                 type: 'amount',
             },
         ],
+        headCellsUpd:[
+            {
+                id: 'costType.code',
+                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_TYPE,
+                type: 'object',
+            },
+            {
+                id: 'costType.name',
+                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_NAME,
+                type: 'object',
+            },
+            {
+                id: 'correctionPlanPosition.amountAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_GROSS,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRequestedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountAwardedCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountAwardedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRealizedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'status.name',
+                label: constants.ACCOUNTANT_INSTITUTION_POSITION_STATUS,
+                type: 'object',
+            },
+        ],
         selected:{},
         isDetailsVisible: false,
         codeNameSearch: '',
@@ -182,7 +236,7 @@ class Plan extends Component {
                 let selected = {...prevState.selected};
                 let disabledApprove = {...prevState.disabledApprove}
                 rows = this.props.initialValues.planPositions;
-                if(rows.filter(row => {return row.status==='WY'}).length > 0){
+                if(rows.filter(row => {return ['WY', 'KR'].includes(row.status.code)}).length > 0){
                     disabledApprove = true;
                 } else {
                     disabledApprove = false;
@@ -204,7 +258,7 @@ class Plan extends Component {
 
     render(){
         const { classes, isLoading, error, initialValues, levelAccess, disableWithdraw } = this.props;
-        const { headCells, rows, selected, isDetailsVisible, disabledApprove, planAction } = this.state;
+        const { headCells, headCellsUpd, rows, selected, isDetailsVisible, disabledApprove, planAction } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -217,6 +271,7 @@ class Plan extends Component {
                         initialValues={selected}
                         planType={initialValues.type}
                         planStatus={initialValues.status}
+                        isPlanUpdate={initialValues.isCorrected}
                         levelAccess={levelAccess}
                         onClosePosition={this.props.onClosePosition}
                         onClose={this.handleClosePlanPosition}
@@ -229,7 +284,10 @@ class Plan extends Component {
                             direction="column"
                             spacing={0}
                         >
-                            <Typography variant="h6">{constants.ACCOUNTANT_INSTITUTION_PLANS_TITLE + ` ${initialValues.type !== undefined &&initialValues.type.name} ${initialValues.year} `}</Typography>
+                            <Typography variant="h6">{ initialValues.isCorrected ?
+                                constants.ACCOUNTANT_INSTITUTION_PLANS_TITLE + ` ${initialValues.type !== undefined &&initialValues.type.name} ${initialValues.year} - ${constants.ACCOUNTANT_INSTITUTION_PLANS_UPDATE_TITLE} ${initialValues.updateNumber}`
+                                :
+                                    constants.ACCOUNTANT_INSTITUTION_PLANS_TITLE + ` ${initialValues.type !== undefined &&initialValues.type.name} ${initialValues.year} `}</Typography>
                             <Divider />
                             <div className={classes.content}>
                                 <div className={classes.section}>
@@ -289,7 +347,7 @@ class Plan extends Component {
                                                 name="amountRealizedGross"
                                                 label={constants.ACCOUNTANT_COORDINATOR_PLANS_TABLE_HEAD_ROW_AMOUNT_REALIZED_GROSS}
                                                 disabled
-                                                value={isNaN(numberWithSpaces(initialValues.amountRealizedGross)) ? "" : numberWithSpaces(initialValues.amountRealizedGross)}
+                                                value={numberWithSpaces(initialValues.amountRealizedGross) === 'NaN' ? "" : numberWithSpaces(initialValues.amountRealizedGross)}
                                                 InputProps={{
                                                     endAdornment: <InputAdornment position="end">zł.</InputAdornment>,
                                                     classes: {
@@ -350,7 +408,7 @@ class Plan extends Component {
                                             <Table
                                                 className={classes.tableWrapper}
                                                 rows={rows}
-                                                headCells={headCells}
+                                                headCells={initialValues.isCorrected ? headCellsUpd : headCells}
                                                 onSelect={this.handleSelect}
                                                 onDoubleClick={this.handleDoubleClick}
                                                 onExcelExport={this.handleExcelExport}
@@ -434,7 +492,7 @@ class Plan extends Component {
                                         icon=<Undo/>
                                         iconAlign="left"
                                         disabled={levelAccess === "accountant" ?
-                                            ( disableWithdraw)
+                                            disableWithdraw || ['UT','ZA', 'RE', 'AA'].includes(initialValues.status)
                                                 : !['AE', 'AN'].includes(initialValues.status)
                                         }
                                         onClick = {(event) => this.handlePlanAction(event, 'withdraw')}

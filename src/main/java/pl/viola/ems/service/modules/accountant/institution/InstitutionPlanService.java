@@ -26,6 +26,8 @@ public interface InstitutionPlanService {
 
     void updateInstitutionPlan(CoordinatorPlan coordinatorPlan, String action);
 
+    void correctInstitutionPlan(CoordinatorPlan coordinatorPlan, String action);
+
     void updateInstitutionPlanPositions(List<FinancialPosition> positions);
 
     InstitutionPlan updatePlanStatus(Long planId, String action, String levelAccess);

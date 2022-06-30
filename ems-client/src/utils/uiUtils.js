@@ -441,6 +441,10 @@ export const getCoordinatorPlanPositionsStatuses = () => [
         code: 'AA',
         name: constants.COORDINATOR_PLAN_POSITION_STATUS_UPDATED,
     },
+    {
+        code: 'KR',
+        name: constants.COORDINATOR_PLAN_POSITION_STATUS_CORRECT,
+    },
 ];
 
 export const getPublicProcurementProtocolStatuses = () => [
@@ -542,5 +546,16 @@ export const getInvestmentPositionUnitsHead = () => [
         label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS,
         suffix: 'zł.',
         type: 'amount',
+    },
+];
+
+export const getPlanTypes = () => [
+    {
+        code: 'FIN',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_FINANCIAL,
+    },
+    {
+        code: 'INW',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_INVESTMENT,
     },
 ];

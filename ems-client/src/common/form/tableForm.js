@@ -118,11 +118,20 @@ function desc(a, b, orderBy, cellType) {
 
     switch(cellType){
         case 'object' :
-            if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] < a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
-                return -1;
-            }
-            if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] > a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
-                return 1;
+            if(b[orderBy.substring(0, orderBy.indexOf('.'))] === null || a[orderBy.substring(0, orderBy.indexOf('.'))] === null){
+                if (b[orderBy.substring(0, orderBy.indexOf('.'))] === null && (a[orderBy.substring(0, orderBy.indexOf('.'))] !== null)) {
+                    return -1;
+                }
+                if (b[orderBy.substring(0, orderBy.indexOf('.'))] !== null && (a[orderBy.substring(0, orderBy.indexOf('.'))] === null)) {
+                    return 1;
+                }
+            } else {
+                if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] < a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
+                    return -1;
+                }
+                if (b[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)] > a[orderBy.substring(0, orderBy.indexOf('.'))][orderBy.substring(orderBy.indexOf('.') +1)]) {
+                    return 1;
+                }
             }
             break;
         case 'text':
@@ -456,7 +465,7 @@ function EnhancedTable(props) {
                                                                         ?
                                                                             cell.subtype === 'amount'
                                                                                 ?
-                                                                                    row[cell.id.substring(0, cell.id.lastIndexOf('.'))] !== null ?
+                                                                                    row[cell.id.substring(0, cell.id.lastIndexOf('.'))] !== null && row[cell.id.substring(0, cell.id.lastIndexOf('.'))] !== undefined ?
                                                                                         `${numberWithSpaces((row[cell.id.substring(0, cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.') +1)]))}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}` :
                                                                                          `${numberWithSpaces(0)}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
                                                                                 :
@@ -471,7 +480,6 @@ function EnhancedTable(props) {
                                                                                         else
                                                                                             return row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1,cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.')+1)]
                                                                                     })()
-
                                                                         :
                                                                             cell.type==='amount' && row[cell.id] !== undefined
                                                                                 ?

@@ -35,7 +35,7 @@ class PlansContainer extends Component {
 
     handleUpdateOnCloseDetails = (plan) => {
         let plans = this.state.plans;
-        return updateOnCloseDetails(plans, plan, "year");
+        return updateOnCloseDetails(plans, plan, "id");
     }
 
     handleExcelExport = (exportType, headRow) =>{

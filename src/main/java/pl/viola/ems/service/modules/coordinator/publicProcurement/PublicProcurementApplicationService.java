@@ -26,6 +26,8 @@ public interface PublicProcurementApplicationService {
 
     List<ApplicationPayload> getApplicationsByCoordinator();
 
+    Set<ApplicationPayload> getApplicationsByCoordinatorInRealization();
+
     List<ApplicationPayload> getApplicationsByAccessLevel(String accessLevel);
 
     ApplicationDetailsPayload getApplication(Long applicationId);
@@ -60,7 +62,7 @@ public interface PublicProcurementApplicationService {
 
     String deleteApplication(Long applicationId);
 
-    void exportApplicationsToExcel(ExportType exportType, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
+    void exportApplicationsToExcel(ExportType exportType, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response, String accessLevel) throws IOException;
 
     void exportApplicationsPartsToExcel(ExportType exportType, Long applicationId, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
 

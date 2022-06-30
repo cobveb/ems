@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Plan from 'components/modules/accountant/institution/plans/plan';
 import PlansApi from 'api/modules/accountant/institution/plansApi';
 import DirectorPlansApi from 'api/modules/director/institution/plansApi';
-import { findSelectFieldPosition, generateExportLink } from 'utils';
+import { findSelectFieldPosition, generateExportLink, getCoordinatorPlanPositionsStatuses } from 'utils';
 
 class PlanContainer extends Component {
     state = {
@@ -15,6 +15,7 @@ class PlanContainer extends Component {
             planPositions:[],
         },
         disableWithdraw: true,
+        statuses: getCoordinatorPlanPositionsStatuses(),
     }
 
     checkDisableWithdraw = () => {
@@ -33,6 +34,15 @@ class PlanContainer extends Component {
                 let initData = {...prevState.initData};
                 initData = response.data.data;
                 initData.type = findSelectFieldPosition(this.props.types, response.data.data.type);
+                if(initData.isCorrected){
+                    initData.planPositions.map(position => (
+                        Object.assign(position,
+                            {
+                                status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                            }
+                        )
+                    ))
+                }
                 return {initData};
             });
             this.checkDisableWithdraw();

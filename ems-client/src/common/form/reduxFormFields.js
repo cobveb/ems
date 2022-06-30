@@ -258,6 +258,7 @@ export function RenderDictionaryField({ label, input, value, meta, meta: { touch
                 disabled={custom.disabled}
                 items={custom.items}
                 error={error}
+                isRequired={custom.isRequired}
                 {...input}
             />
 

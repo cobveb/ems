@@ -92,6 +92,55 @@ class PlanBasicInfoForm extends Component {
                 type: 'boolean',
             },
         ],
+        headFinUpd: [
+            {
+                id: 'costType.code',
+                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_TYPE,
+                type: 'object',
+            },
+            {
+                id: 'costType.name',
+                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_NAME,
+                type: 'object',
+            },
+            {
+                id: 'correctionPlanPosition.amountAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_GROSS,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRequestedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_REQUESTED_AFTER_CORRECTED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountAwardedCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AWARDED_AFTER_CORRECTED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRealizedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+        ],
         headInv: [
             {
                 id: 'task',
@@ -131,6 +180,57 @@ class PlanBasicInfoForm extends Component {
                 id: 'isDescMan',
                 label: constants.COORDINATOR_PLAN_POSITION_HEAD_MANAGEMENT_DESCRIPTION,
                 type: 'boolean',
+            },
+        ],
+        headInvUpd: [
+            {
+                id: 'task',
+                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_TASK,
+                type: 'text',
+            },
+            {
+                id: 'correctionPlanPosition.taskPositionGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_TASK,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'correctionPlanPosition.expensesPositionAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_EXPENSES,
+                suffix: 'zł.',
+                type: 'object',
+                subtype: 'amount',
+            },
+            {
+                id: 'amountCorrect',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_TASK_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'expensesAmountCorrect',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_EXPENSES_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'taskPositionGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_TASK_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'expensesPositionAwardedGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_EXPENSES_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRealizedGross',
+                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_REALIZED_PLAN_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
             },
         ],
         headPzp: [
@@ -456,7 +556,7 @@ class PlanBasicInfoForm extends Component {
 
     render(){
         const { handleSubmit, submitting, classes, initialValues, isLoading, levelAccess } = this.props
-        const { headFin, headInv, headPzp, selected, positions, planAction, isDetailsVisible, disabledForward } = this.state;
+        const { headFin, headFinUpd, headInv, headInvUpd, headPzp, selected, positions, planAction, isDetailsVisible, disabledForward } = this.state;
         return(
             <>
                 {(submitting || isLoading) && <Spinner /> }
@@ -509,18 +609,21 @@ class PlanBasicInfoForm extends Component {
                                             value={initialValues.status !== undefined ? initialValues.status.name : ''}
                                         />
                                     </Grid>
-
-                                    <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
-                                        <FormAmountField
-                                            name={initialValues.type !== undefined && (initialValues.type.code === 'FIN' ||  initialValues.type.code === 'INW')?
-                                                "planAmountRequestedGross" : "planAmountRequestedNet"}
-                                            label={initialValues.type !== undefined && (initialValues.type.code === 'FIN' || initialValues.type.code === 'INW') ?
-                                                constants.COORDINATOR_PLAN_FINANCIAL_REQUESTED_VALUE : constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REQUESTED_VALUE}
-                                            suffix={'zł.'}
-                                            disabled
-                                        />
-                                    </Grid>
-                                    {(initialValues.type !== undefined && initialValues.type.code === 'FIN') &&
+                                    { (initialValues.isUpdate === undefined || !initialValues.isUpdate) &&
+                                    <>
+                                        <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
+                                            <FormAmountField
+                                                name={initialValues.type !== undefined && (initialValues.type.code === 'FIN' ||  initialValues.type.code === 'INW')?
+                                                    "planAmountRequestedGross" : "planAmountRequestedNet"}
+                                                label={initialValues.type !== undefined && (initialValues.type.code === 'FIN' || initialValues.type.code === 'INW') ?
+                                                    constants.COORDINATOR_PLAN_FINANCIAL_REQUESTED_VALUE : constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REQUESTED_VALUE}
+                                                suffix={'zł.'}
+                                                disabled
+                                            />
+                                        </Grid>
+                                    </>
+                                    }
+                                    {(initialValues.type !== undefined && initialValues.type.code === 'FIN' && !initialValues.isUpdate) &&
                                         <Grid item xs={12} sm={4}>
                                             <FormAmountField
                                                 name={"planAmountAwardedGross"}
@@ -529,6 +632,27 @@ class PlanBasicInfoForm extends Component {
                                                 disabled
                                             />
                                         </Grid>
+                                    }
+                                    {
+                                        (initialValues.type !== undefined && initialValues.type.code !== 'PZP' && initialValues.isUpdate !== undefined && initialValues.isUpdate) &&
+                                        <>
+                                            <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 3}>
+                                                <FormAmountField
+                                                    name="correctionPlan.planAmountAwardedGross"
+                                                    label={constants.COORDINATOR_PLAN_UPDATE_PLAN_AWARDED_VALUE}
+                                                    suffix={'zł.'}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 3}>
+                                                <FormAmountField
+                                                    name="planAmountAwardedGross"
+                                                    label={constants.COORDINATOR_PLAN_UPDATE_PLAN_AWARDED_CORRECT_VALUE}
+                                                    suffix={'zł.'}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                        </>
                                     }
                                     <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'FIN' ? 4 : 6}>
                                         <FormAmountField
@@ -625,7 +749,12 @@ class PlanBasicInfoForm extends Component {
                                         <FormTableField
                                             className={classes.tableWrapper}
                                             name="positions"
-                                            head={initialValues.type !== undefined && initialValues.type.code === "FIN" ? headFin : initialValues.type !== undefined && initialValues.type.code === "INW" ? headInv : headPzp}
+                                            head={initialValues.type !== undefined && initialValues.type.code === "FIN" ?
+                                                    initialValues.isUpdate? headFinUpd : headFin
+                                                :   initialValues.type !== undefined && initialValues.type.code === "INW" ?
+                                                    initialValues.isUpdate ? headInvUpd : headInv
+                                                : headPzp
+                                            }
                                             allRows={positions}
                                             checkedRows={selected}
                                             toolbar={false}

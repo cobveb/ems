@@ -88,7 +88,7 @@ class PlanContainer extends Component {
         let planAmountNet = 0;
         let planAmountGross = 0;
         if(this.state.initData.type !== undefined){
-            if(this.state.initData.type.code === 'FIN'){
+            if(this.state.initData.type.code !== 'PZP'){
                 values.positions.map(position => {
                     planAmountNet += position.amountAwardedNet;
                     planAmountGross += position.amountAwardedGross;
@@ -129,15 +129,7 @@ class PlanContainer extends Component {
                             )
                         ))
                         if(initData.isUpdate){
-                            initData["positions"].map(position => (
-                                Object.assign(position,
-                                    {
-                                        amountCorrect: position.correctionPlanPosition !== null ?
-                                            position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross :
-                                            position.amountAwardedGross,
-                                    }
-                                )
-                            ))
+                            this.setUpCorrectValue(initData.positions)
                             this.setUpPlanValue(initData);
                         }
                         return {initData};
@@ -164,16 +156,7 @@ class PlanContainer extends Component {
                             }
                         )))
                         if(initData.isUpdate){
-                            initData["positions"].map(position => (
-                                Object.assign(position,
-                                    {
-                                        amountCorrect: position.correctionPlanPosition !== null ?
-                                            position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet === 0 ?
-                                                null : position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet :
-                                            position.amountRequestedNet,
-                                    }
-                                )
-                            ))
+                            this.setUpCorrectValue(initData.positions)
                             this.setUpPlanValue(initData);
                         }
                         return {initData};
@@ -183,7 +166,9 @@ class PlanContainer extends Component {
                 case('INW'):
                     this.setState( prevState => {
                         let initData = {...prevState.initData};
-                        Object.assign(initData, this.props.initialValues);
+                        if(this.props.action !== "update"){
+                            Object.assign(initData, this.props.initialValues);
+                        }
                         initData.positions = response.data.data;
                         initData["positions"].map(position => (
                             Object.assign(position,
@@ -203,6 +188,9 @@ class PlanContainer extends Component {
                                 ))
                             )
                         ))
+                        if(initData.isUpdate && initData.positions.length > 0){
+                            this.setUpCorrectValue(initData.positions)
+                        }
                         return {initData};
                     });
                 break;
@@ -227,7 +215,7 @@ class PlanContainer extends Component {
                     initData.positions.splice(index, 1, tmp);
                     initData.planAmountAwardedNet = initData.planAmountAwardedNet + tmp.amountAwardedNet
                     initData.planAmountAwardedGross = initData.planAmountAwardedGross + tmp.amountAwardedGross
-                } else if (this.state.initData.type.code === 'PZP') {
+                } else if (this.state.initData.type.code !== 'FIN') {
                     initData.planAmountRequestedNet = initData.planAmountRequestedNet - initData.positions[index].amountRequestedNet
                     initData.planAmountRequestedGross = initData.planAmountRequestedGross - initData.positions[index].amountRequestedGross
                     initData.positions.splice(index, 1, tmp);
@@ -248,17 +236,16 @@ class PlanContainer extends Component {
     }
 
     setUpCorrectValue = (values) =>{
-        if(this.state.initData.type.code === 'FIN'){
+        if(this.props.initialValues.type.code === 'FIN'){
             values.map(position => (
                 Object.assign(position,
                     {
                         amountCorrect: position.correctionPlanPosition !== null ?
-                            position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross : position.amountAwardedGross,
+                            position.amountRequestedGross - position.correctionPlanPosition.amountAwardedGross : position.amountRequestedGross,
                     }
                 )
             ))
-        }
-        else if (this.state.initData.type.code === 'PZP'){
+        } else if (this.props.initialValues.type.code === 'PZP'){
             values.map(position => (
                 Object.assign(position,
                     {
@@ -266,6 +253,21 @@ class PlanContainer extends Component {
                             position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet === 0 ?
                                 null : position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet :
                             position.amountRequestedNet,
+                    }
+                )
+            ))
+        } else if (this.props.initialValues.type.code === 'INW') {
+            values.map(position => (
+                Object.assign(position,
+                    {
+                        amountCorrect: position.correctionPlanPosition !== null ?
+                            position.taskPositionGross - position.correctionPlanPosition.taskPositionGross === 0 ?
+                                null : position.taskPositionGross - position.correctionPlanPosition.taskPositionGross :
+                            position.taskPositionGross,
+                        expensesAmountCorrect: position.correctionPlanPosition !== null ?
+                            position.expensesPositionAwardedGross - position.correctionPlanPosition.expensesPositionAwardedGross === 0 ?
+                                null : position.expensesPositionAwardedGross - position.correctionPlanPosition.expensesPositionAwardedGross :
+                            position.expensesPositionAwardedGross,
                     }
                 )
             ))
@@ -369,6 +371,9 @@ class PlanContainer extends Component {
                             ))
                         ))
                         this.setUpPlanValueOnSubmitPosition(values, initData, tmp, action);
+                        if(action === 'correct'){
+                            this.setUpCorrectValue(initData.positions)
+                        }
                         return {initData, newPosition};
                     });
                 break;
@@ -453,11 +458,12 @@ class PlanContainer extends Component {
         }
     }
 
-    handleDeleteInvestmentTargetUnit = (unit) => {
+    handleDeleteInvestmentTargetUnit = (unit, action) => {
         PlansApi.deleteTargetUnit(unit.id)
         .then(response => {
             this.setState( prevState => {
                 let initData = {...prevState.initData};
+                let newPosition = {...prevState.newPosition};
                 const tmp =  response.data.data;
                 tmp.vat = findSelectFieldPosition(this.state.vats, tmp.vat);
                 tmp.category = findSelectFieldPosition(this.props.investmentCategories, tmp.category.code);
@@ -479,17 +485,24 @@ class PlanContainer extends Component {
                     initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet + tmp.amountRequestedNet).toFixed(2))
                     initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross + tmp.amountRequestedGross).toFixed(2))
                 }
-                return {initData};
+
+                if(action === "correct"){
+                    this.setUpCorrectValue(initData.positions)
+                    newPosition = tmp;
+                }
+
+                return {initData, newPosition};
             });
         })
         .catch(error => {})
     }
 
-    handleDeleteInvestmentPositionSource = (source, position) => {
+    handleDeleteInvestmentPositionSource = (source, position, action) => {
         PlansApi.deleteInvestmentSource(position[0].id, source.id)
         .then(response => {
             this.setState( prevState => {
                 let initData = {...prevState.initData};
+                let newPosition = {...prevState.newPosition};
                 const tmp =  response.data.data;
                 tmp.vat = findSelectFieldPosition(this.state.vats, tmp.vat);
                 tmp.category = findSelectFieldPosition(this.props.investmentCategories, tmp.category.code);
@@ -511,7 +524,11 @@ class PlanContainer extends Component {
                     initData.planAmountRequestedNet = parseFloat((initData.planAmountRequestedNet + tmp.amountRequestedNet).toFixed(2))
                     initData.planAmountRequestedGross = parseFloat((initData.planAmountRequestedGross + tmp.amountRequestedGross).toFixed(2))
                 }
-                return {initData};
+                if(action === "correct"){
+                    this.setUpCorrectValue(initData.positions)
+                    newPosition = tmp;
+                }
+                return {initData, newPosition};
             });
         })
         .catch(error => {})
@@ -696,6 +713,8 @@ class PlanContainer extends Component {
                         onSubmitPlanPosition={this.handleSubmitPlanPosition}
                         onSubmitPlanSubPosition={this.handleSubmitPlanPosition}
                         onDeletePlanSubPosition={this.handleDeletePlanSubPosition}
+                        onDeleteTargetUnit={this.handleDeleteInvestmentTargetUnit}
+                        onDeleteSource={this.handleDeleteInvestmentPositionSource}
                         onSubmitPlan={this.handleSubmitPlan}
                         onSendPlan={this.handleSendPlan}
                         onPrintPlan={this.handlePrintPlan}
@@ -708,6 +727,8 @@ class PlanContainer extends Component {
                         modes={modes}
                         assortmentGroups={assortmentGroups}
                         foundingSources={foundingSources}
+                        unassignedUnits={unassignedUnits}
+                        investmentCategories={this.props.investmentCategories}
                         orderTypes={orderTypes}
                         estimationTypes={estimationTypes}
                         euroExchangeRate={this.props.euroExchangeRate}

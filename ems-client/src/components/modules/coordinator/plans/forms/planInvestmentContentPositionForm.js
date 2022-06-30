@@ -111,8 +111,8 @@ class PlanInvestmentContentPosition extends Component {
     }
 
     handleConfirmDelete = () => {
-        this.props.onDeleteTargetUnit(this.state.selected[0]);
-        this.setState(state => ({ positionAction: ''}));
+        this.props.onDeleteTargetUnit(this.state.selected[0], this.props.action);
+        this.setState(state => ({ positionAction: '', selected: []}));
     }
 
     handleCloseDetails = () => {
@@ -120,7 +120,7 @@ class PlanInvestmentContentPosition extends Component {
     };
 
     handleDeleteSource = (values) => {
-        this.props.onDeleteSource(values, this.state.selected)
+        this.props.onDeleteSource(values, this.state.selected, this.props.action)
     }
 
     handleDoubleClick = (row) =>{
@@ -137,7 +137,7 @@ class PlanInvestmentContentPosition extends Component {
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues.subPositions !== prevProps.initialValues.subPositions){
-            if(this.state.positionAction === 'edit'){
+            if(this.state.positionAction !== 'add'){
                 if(this.state.selected.length > 0){
                 this.setState(prevState =>{
                     let selected = [...prevState.selected];
@@ -352,7 +352,7 @@ class PlanInvestmentContentPosition extends Component {
                                                         checkedRows={selected}
                                                         toolbar={true}
                                                         addButtonProps={{
-                                                            disabled : (initialValues.status === undefined || initialValues.status.code !== 'ZP') ? true : false
+                                                            disabled : (initialValues.status === undefined || !['ZP', 'KR'].includes(initialValues.status.code)) ? true : false
                                                         }}
                                                         editButtonProps={{
                                                             label : (planStatus === 'ZP') ?  constants.BUTTON_EDIT : constants.BUTTON_PREVIEW,

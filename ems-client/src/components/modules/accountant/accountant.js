@@ -11,7 +11,7 @@ import PlansContainer from 'containers/modules/accountant/coordinator/plans/plan
 import PublicProcurementApplicationsContainer from 'containers/modules/accountant/coordinator/publicProcurement/applicationsContainer';
 import PublicProcurementProtocolsContainer from 'containers/modules/accountant/coordinator/publicProcurement/protocolsContainer';
 import InstitutionPlansContainer from 'containers/modules/accountant/institution/plans/plansContainer';
-import PlansUpdatesContainer from 'containers/modules/publicProcurement/coordinator/plans/plansUpdatesContainer';
+import PlansUpdatesContainer from 'containers/modules/accountant/coordinator/plans/plansUpdatesContainer';
 import PropTypes from 'prop-types';
 
 const styles = theme => ({

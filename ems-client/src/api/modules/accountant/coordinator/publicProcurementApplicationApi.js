@@ -13,6 +13,9 @@ class PublicProcurementApplicationApi {
         return Axios.put(`/api/accountant/coordinator/publicProcurement/applications/application/sendBack/${applicationId}`)
     }
 
+    static exportApplicationsToExcel(exportType, data){
+        return Axios.put(`/api/accountant/coordinator/publicProcurement/applications/export/${exportType}`, data, {responseType: 'blob'})
+    }
 }
 
 export default PublicProcurementApplicationApi;

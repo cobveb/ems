@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.common.export.ExportType;
 import pl.viola.ems.model.common.export.JasperExportType;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionCoordinatorPlanPosition;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPosition;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.payload.export.ExcelHeadRow;
@@ -106,5 +109,37 @@ public class Utils {
         } else {
             return amountRealizedArt30.divide(amountRealized, 2, RoundingMode.HALF_DOWN).multiply(new BigDecimal(100));
         }
+    }
+
+    public static boolean existsPlanToApprove(InstitutionPlan institutionPlan, String status) {
+        boolean existPlanToApprove = false;
+        for (InstitutionPlanPosition institutionPlanPosition : institutionPlan.getPlanPositions()) {
+            InstitutionCoordinatorPlanPosition position = institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().filter(
+                    institutionCoordinatorPlanPosition ->
+                            institutionCoordinatorPlanPosition.getPlanStatus().equals(status)
+            ).findAny().orElse(null);
+            if (position != null) {
+                existPlanToApprove = true;
+                break;
+            }
+        }
+        return existPlanToApprove;
+    }
+
+    public static boolean existsEconomicApprovePlan(InstitutionPlan institutionPlan) {
+        boolean existsEconomicApprovePlan = false;
+
+        for (InstitutionPlanPosition institutionPlanPosition : institutionPlan.getPlanPositions()) {
+            InstitutionCoordinatorPlanPosition position = institutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().filter(
+                    institutionCoordinatorPlanPosition ->
+                            institutionCoordinatorPlanPosition.getPlanStatus().equals("AE") || institutionCoordinatorPlanPosition.getPlanStatus().equals("AD")
+            ).findAny().orElse(null);
+            if (position != null) {
+                existsEconomicApprovePlan = true;
+                break;
+            }
+        }
+
+        return existsEconomicApprovePlan;
     }
 }

@@ -14,4 +14,6 @@ public interface CoordinatorPlanPositionRepository<T extends CoordinatorPlanPosi
     List<T> findByPlanIn(List<CoordinatorPlan> plans);
 
     List<T> findByIdIn(List<Long> ids);
+
+    CoordinatorPlanPosition findByCorrectionPlanPosition(CoordinatorPlanPosition coordinatorPlanPosition);
 }

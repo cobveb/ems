@@ -1,15 +1,13 @@
 package pl.viola.ems.model.modules.accountant.institution.plans;
 
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.accountant.CostType;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
 import pl.viola.ems.model.modules.coordinator.plans.PublicProcurementPosition;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,13 +27,30 @@ public class InstitutionFinancialPlanPosition extends InstitutionPlanPosition {
     @JoinColumn(name = "cost_type_id")
     private CostType costType;
 
+    @Transient
+    private BigDecimal amountCorrectGross;
 
-    public InstitutionFinancialPlanPosition(CoordinatorPlanPosition.PlanPositionStatus planPositionStatus, BigDecimal amountRequestedNet, BigDecimal amountRequestedGross, BigDecimal amountAwardedNet, BigDecimal amountAwardedGross, BigDecimal amountRealizedNet, BigDecimal amountRealizedGross, InstitutionPlan institutionPlan, CostType costType) {
+    @Transient
+    private BigDecimal amountAwardedCorrectGross;
+
+    public BigDecimal getAmountCorrectGross() {
+        return super.getCorrectionPlanPosition() != null ?
+                super.getAmountRequestedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
+                : null;
+    }
+
+    public BigDecimal getAmountAwardedCorrectGross() {
+        return super.getCorrectionPlanPosition() != null ?
+                super.getAmountAwardedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
+                : null;
+    }
+
+    public InstitutionFinancialPlanPosition(CoordinatorPlanPosition.PlanPositionStatus planPositionStatus, BigDecimal amountRequestedNet, BigDecimal amountRequestedGross, BigDecimal amountAwardedNet, BigDecimal amountAwardedGross, BigDecimal amountRealizedNet, BigDecimal amountRealizedGross, InstitutionPlan institutionPlan, @NotNull CostType costType) {
         super(planPositionStatus, amountRequestedNet, amountRequestedGross, amountAwardedNet, amountAwardedGross, amountRealizedNet, amountRealizedGross, institutionPlan);
         this.costType = costType;
     }
 
-    public InstitutionFinancialPlanPosition(CoordinatorPlanPosition.PlanPositionStatus planPositionStatus, BigDecimal amountRequestedNet, BigDecimal amountRequestedGross, InstitutionPlan institutionPlan, CostType costType) {
+    public InstitutionFinancialPlanPosition(CoordinatorPlanPosition.PlanPositionStatus planPositionStatus, BigDecimal amountRequestedNet, BigDecimal amountRequestedGross, InstitutionPlan institutionPlan, @NotNull CostType costType) {
         super(planPositionStatus, amountRequestedNet, amountRequestedGross, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, institutionPlan);
         this.costType = costType;
     }

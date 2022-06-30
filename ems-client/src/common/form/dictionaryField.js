@@ -49,7 +49,7 @@ function DictionaryView(props){
     const classes = useDictionaryViewStyles();
     const {open, setOpen, dictionaryName, onSelectValue, searchValue, rows} = props;
     const [selected, setSelected] = React.useState(null);
-    const [search, setSearch] = React.useState(searchValue);
+    const [search, setSearch] = React.useState(searchValue !== null ? searchValue : "");
     const [positions, setPositions] = React.useState(search ? filter(search, rows) : (rows));
     const headRows = [
         {
@@ -174,34 +174,43 @@ function DictionaryView(props){
     );
 }
 
-export default function DictionaryField({classes, inputProps, labelWidth, disabled, dictionaryName, items,  ...input}){
+export default function DictionaryField({classes, inputProps, labelWidth, disabled, dictionaryName, isRequired, items,  ...input}){
     const [openDictionary, setOpenDictionary] = React.useState(false);
-    const [value, setValue] = React.useState(input.value.name !== undefined ? input.value : {code: 'err', name: ''});
+    const [value, setValue] = React.useState(input.value.name !== undefined && isRequired ? input.value : {code: 'err', name: ''});
     const [action, setAction] = React.useState(null);
     const [searchValue, setSearchValue] = React.useState(null);
 
     React.useEffect(() => {
         if (action === 'blur'){
-            if(value.code.length > 0){
+            if(value !== null && value.code.length > 0){
                 input.onBlur(value);
-            } else {
-                setValue({code: 'err', name: ''})
+            } else  {
+                if (isRequired === true){
+                    setValue({code: 'err', name: ''})
+                } else {
+                    setValue(null)
+                }
             }
         } else {
             if(value !== input.value && value.code === 'err' && input.value.name !== undefined && input.value.name.length> 0){
                 setValue(input.value)
             } else {
                 setValue(value)
+                if (isRequired !== true && value.code !== undefined && value.code.length === 0){
+                    input.onBlur(null)
+                }
             }
         }
-    },  [value, input, action])
+    },  [value, input, action, isRequired])
 
 
     const handleOpenDictionary = () =>{
         if(openDictionary === true){
             setSearchValue(null);
         } else {
-            setSearchValue(value.name);
+            if(value !== null){
+                setSearchValue(value.name);
+            }
         }
 
         setOpenDictionary(!openDictionary);
@@ -216,7 +225,9 @@ export default function DictionaryField({classes, inputProps, labelWidth, disabl
         } else if (positions.length === 0 && event.target.value.length === 0) {
             setValue({code: '', name: event.target.value})
         } else if (positions.length === 1){
-            setValue(positions[0]);
+            if (isRequired === true){
+                setValue(positions[0]);
+            }
         } else if (positions.length > 1 && event.target.value.length > 0) {
             setValue({code: 'err', name: event.target.value})
             setOpenDictionary(true)

@@ -64,6 +64,46 @@ class PlanContainer extends Component {
         .catch(error => {});
     };
 
+    setUpCorrectValue = (values) =>{
+        if(this.props.initialValues.type.code === 'FIN'){
+            values.map(position => (
+                Object.assign(position,
+                    {
+                        amountCorrect: position.correctionPlanPosition !== null ?
+                            position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross : position.amountAwardedGross,
+                    }
+                )
+            ))
+//        }
+//        else if (this.props.initialValues.type.code === 'PZP'){
+//            values.map(position => (
+//                Object.assign(position,
+//                    {
+//                        amountCorrect: position.correctionPlanPosition !== null ?
+//                            position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet === 0 ?
+//                                null : position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet :
+//                            position.amountRequestedNet,
+//                    }
+//                )
+//            ))
+        } else if (this.props.initialValues.type.code === 'INW') {
+            values.map(position => (
+                Object.assign(position,
+                    {
+                        amountCorrect: position.correctionPlanPosition !== null ?
+                            position.taskPositionGross - position.correctionPlanPosition.taskPositionGross === 0 ?
+                                null : position.taskPositionGross - position.correctionPlanPosition.taskPositionGross :
+                            position.taskPositionGross,
+                        expensesAmountCorrect: position.correctionPlanPosition !== null ?
+                            position.expensesPositionAwardedGross - position.correctionPlanPosition.expensesPositionAwardedGross === 0 ?
+                                null : position.expensesPositionAwardedGross - position.correctionPlanPosition.expensesPositionAwardedGross :
+                            position.expensesPositionAwardedGross,
+                    }
+                )
+            ))
+        }
+    }
+
     handleGetPlanPositions = () => {
         this.props.loading(true);
         PlansApi.getPlanPositions(this.props.initialValues.id)
@@ -112,7 +152,6 @@ class PlanContainer extends Component {
                         let initData = {...prevState.initData};
                         Object.assign(initData, this.props.initialValues);
                         initData.positions = response.data.data;
-                        console.log(response.data.data)
                         initData["positions"].map(position => (
                             Object.assign(position,
                                 {
@@ -130,6 +169,9 @@ class PlanContainer extends Component {
                                 ))
                             )
                         ))
+                        if(initData.isUpdate && initData.positions.length > 0){
+                            this.setUpCorrectValue(initData.positions)
+                        }
                         return {initData};
                     });
                 break;

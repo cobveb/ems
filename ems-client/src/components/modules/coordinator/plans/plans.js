@@ -38,6 +38,16 @@ class Plans extends Component {
         rows: [],
         headCells: [
             {
+                id: 'isUpdate',
+                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE,
+                type: 'boolean',
+            },
+            {
+                id: 'updateNumber',
+                label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE_NUMBER,
+                type:'number',
+            },
+            {
                 id: 'year',
                 label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR,
                 type:'date',
@@ -52,11 +62,6 @@ class Plans extends Component {
                 id: 'status.name',
                 label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS,
                 type: 'object',
-            },
-            {
-                id: 'isUpdate',
-                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE,
-                type: 'boolean',
             },
         ],
         selected: {},
@@ -356,7 +361,7 @@ class Plans extends Component {
                                                 label={constants.BUTTON_UPDATE}
                                                 icon=<DynamicFeed/>
                                                 iconAlign="left"
-                                                disabled={(Object.keys(selected).length === 0 || !['ZA','RE'].includes(selected.status.code) || selected.type.code !== 'PZP')}
+                                                disabled={Object.keys(selected).length === 0 || !['ZA','RE'].includes(selected.status.code)}
                                                 onClick = {(event) => this.handleUpdate(event, 'update', )}
                                                 variant="cancel"
                                             />

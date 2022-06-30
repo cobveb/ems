@@ -45,6 +45,7 @@ class PlanBasicInfoForm extends Component {
         send: false,
         formChanged : false,
         notExistCorrectedPositions: false,
+        isAgreed: false,
         approveLevel: null,
         headFin: [
             {
@@ -59,20 +60,32 @@ class PlanBasicInfoForm extends Component {
             },
             {
                 id: 'correctionPlanPosition.amountAwardedGross',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS,
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_GROSS,
                 suffix: 'zł.',
                 type: 'object',
                 subtype: 'amount',
             },
             {
-                id: 'amountCorrect',
+                id: 'amountCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountRequestedGross',
                 label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
+                id: 'amountAwardedCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
                 id: 'amountAwardedGross',
-                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECTED,
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AWARDED_AFTER_CORRECTED_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -90,33 +103,40 @@ class PlanBasicInfoForm extends Component {
                 type: 'text',
             },
             {
-                id: 'taskPositionGross',
-                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_TASK_GROSS,
+                id: 'correctionPlanPosition.taskPositionGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_TASK,
                 suffix: 'zł.',
-                type: 'amount',
-            },
-            {
-                id: 'amountRequestedGross',
-                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_GROSS,
-                suffix: 'zł.',
-                type: 'amount',
+                type: 'object',
+                subtype: 'amount',
             },
             {
                 id: 'correctionPlanPosition.expensesPositionAwardedGross',
-                label: constants.COORDINATOR_PLAN_POSITION_INVESTMENT_HEAD_EXPENSES_PLAN_AWARDED_GROSS,
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_EXPENSES,
                 suffix: 'zł.',
                 type: 'object',
                 subtype: 'amount',
             },
             {
                 id: 'amountCorrect',
-                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_TASK_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'expensesAmountCorrect',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_EXPENSES_CORRECTED,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'taskPositionGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_TASK_CORRECTED,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
                 id: 'expensesPositionAwardedGross',
-                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_CORRECTED,
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_INVESTMENT_AMOUNT_EXPENSES_CORRECTED,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -164,7 +184,7 @@ class PlanBasicInfoForm extends Component {
             },
             {
                 id: 'amountRealizedNet',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_NET,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -191,13 +211,15 @@ class PlanBasicInfoForm extends Component {
     }
 
     handleSubmitPosition = (values, action) =>{
-        this.setState({
-            openPositionDetails: !this.state.openPositionDetails,
-            selected: [],
-            positionAction: '',
-            notExistCorrectedPositions: (((values.correctionPlanPosition === undefined && values.amountAwardedGross !== undefined)
-                || values.amountAwardedGross !== values.correctionPlanPosition) ? false : true),
-        });
+        if(this.props.initialValues.type.code === 'PZP'){
+            this.setState({
+                openPositionDetails: !this.state.openPositionDetails,
+                selected: [],
+                positionAction: '',
+                notExistCorrectedPositions: (((values.correctionPlanPosition === undefined && values.amountAwardedGross !== undefined)
+                    || values.amountAwardedGross !== values.correctionPlanPosition) ? false : true),
+            });
+        }
         this.props.onSubmitPlanPosition(values, this.state.positionAction);
     }
 
@@ -296,11 +318,14 @@ class PlanBasicInfoForm extends Component {
                     <PlanUpdateFinancialContentPositionFormContainer
                         initialValues={positionAction === 'add' ? {vat: vats[1]} : selected[0]}
                         planStatus={initialValues.status.code}
+                        planUpdate={initialValues.isUpdate}
                         correctedPlanValue={initialValues.correctionPlan.planAmountAwardedGross}
                         action={positionAction}
                         vats={vats}
                         costsTypes={costsTypes}
+                        units={units}
                         onSubmitPlanSubPosition={this.handleSubmitSubPosition}
+                        onDeletePlanSubPosition={this.handleDeleteSubPosition}
                         onExcelExport={this.handleExcelExport}
                         onClose={this.handleCloseDetails}
                         onSubmit={this.handleSubmitPosition}
@@ -309,11 +334,17 @@ class PlanBasicInfoForm extends Component {
             case("INW"):
                 return (
                     <PlanUpdateInvestmentContentPositionFormContainer
-                        initialValues={positionAction === 'add' ? {vat: vats[1]} : selected[0]}
+                        initialValues={positionAction === 'add' ? {vat: vats[2], subPositions:[], positionFundingSources:[]} : selected[0]}
                         planStatus={initialValues.status.code}
+                        planYear={initialValues.year}
                         action={positionAction}
                         foundingSources={foundingSources}
+                        unassignedUnits={this.props.unassignedUnits}
+                        investmentCategories={this.props.investmentCategories}
                         vats={vats}
+                        onSubmitPlanSubPosition={this.handleSubmitSubPosition}
+                        onDeleteTargetUnit={this.props.onDeleteTargetUnit}
+                        onDeleteSource={this.props.onDeleteSource}
                         onExcelExport={this.handleExcelExport}
                         onClose={this.handleCloseDetails}
                         onSubmit={this.handleSubmitPosition}
@@ -382,6 +413,9 @@ class PlanBasicInfoForm extends Component {
 
     handleCloseDetails = () => {
         this.setState({openPositionDetails: !this.state.openPositionDetails, selected: [], positionAction: '',});
+        if(this.props.initialValues.type.code !== "PZP"){
+            this.props.setNewPositionToNull();
+        }
     };
 
     handleExcelExport = (exportType, level, headRow, positionId) => {
@@ -392,7 +426,7 @@ class PlanBasicInfoForm extends Component {
             head = headRow;
         } else {
            head = initialValues.type !== undefined && initialValues.type.code === "FIN" ?
-                headFin : initialValues.type !== undefined && initialValues.type.code === "INV" ? headInv :
+                headFin : initialValues.type !== undefined && initialValues.type.code === "INW" ? headInv :
                     headPzp;
         }
         this.props.onExcelExport(exportType, head, level === undefined ? "position" : "subPositions", positionId)
@@ -403,8 +437,27 @@ class PlanBasicInfoForm extends Component {
         return correctedPositions.length > 0 ? false : true;
     }
 
+    setupAgreedPlan = (positions) => {
+        if(positions.filter(position => position.status.code !== 'UZ').length === 0){
+            if(!this.state.isAgreed){
+                this.setState({ isAgreed: true });
+            }
+        }
+    }
+
     componentDidUpdate(prevProps, prevState){
-        if(this.state.selected.length > 0 && this.state.positionAction === 'correct' ){
+        // Used in investments plan
+        if(this.state.positionAction === 'add' && this.props.newPosition !== null){
+            this.setState(prevState =>{
+                const selected =  [...prevState.selected];
+                let positionAction = {...prevState.positionAction}
+                selected[0] = this.props.newPosition;
+                positionAction = 'correct';
+                return {selected, positionAction}
+            })
+        }
+
+        if(this.state.selected.length > 0 && this.state.positionAction === 'correct'){
             const index = findIndexElement(this.state.selected[0], this.props.initialValues.positions, "positionId");
             if(index !== null){
                 if(this.props.initialValues.positions[index] !== this.state.selected[0] ){
@@ -412,21 +465,33 @@ class PlanBasicInfoForm extends Component {
                         let positions = [...prevState.positions];
                         let notExistCorrectedPositions = prevState.notExistCorrectedPositions;
                         const selected = [...prevState.selected];
+                        positions= this.props.initialValues.positions;
                         notExistCorrectedPositions = this.findCorrectedPosition();
                         selected[0] = positions[index];
-                        return {selected, notExistCorrectedPositions}
+                        return {positions, selected, notExistCorrectedPositions}
                    })
                 }
             }
         }
+
         if(this.props.initialValues.positions !== prevProps.initialValues.positions){
             this.setState({
                 positions: this.props.initialValues.positions,
                 notExistCorrectedPositions: this.findCorrectedPosition(),
             });
+            if(this.props.initialValues.type !== undefined && this.props.initialValues.type.code === "INW"){
+                this.setupAgreedPlan(this.props.initialValues.positions);
+            }
         }
         if(this.props.submitAction === true){
             this.handleCloseDetails();
+        }
+
+        /* Check if exist non agreed position in investment plan,
+            if not allow forward to accountant after agreed  */
+        if(this.props.initialValues.type !== undefined && this.props.initialValues.type.code === "INW"
+            && this.props.initialValues.status.code === 'PK'){
+            this.setupAgreedPlan(this.props.initialValues.positions);
         }
     }
 
@@ -467,7 +532,7 @@ class PlanBasicInfoForm extends Component {
                         variant="h6"
                     >
                         {
-                            Object.keys(initialValues).length > 1 && constants.COORDINATOR_PLAN_UPDATE_PLAN_TITLE + ` ${initialValues.type.name} ${new Date(initialValues.year).getFullYear()} `
+                            Object.keys(initialValues).length > 1 && constants.COORDINATOR_PLAN_UPDATE_PLAN_TITLE + ` ${initialValues.updateNumber} - ${initialValues.type.name} ${new Date(initialValues.year).getFullYear()} `
                         }
                     </Typography>
                     <Divider />
@@ -509,8 +574,18 @@ class PlanBasicInfoForm extends Component {
                                         value={initialValues.status !== undefined ? initialValues.status.name : ''}
                                     />
                                 </Grid>
+                                { (initialValues.type !== undefined && initialValues.type.code === 'PZP' && !initialValues.isUpdate) &&
+                                    <Grid item xs={12} sm={6}>
+                                        <FormAmountField
+                                            name="planAmountRequestedNet"
+                                            label={constants.COORDINATOR_PLAN_PUBLIC_PROCUREMENT_REQUESTED_VALUE}
+                                            suffix={'zł.'}
+                                            disabled
+                                        />
+                                    </Grid>
+                                }
                                 {
-                                    (initialValues.type !== undefined && initialValues.type.code === 'PZP') &&
+                                    (initialValues.type !== undefined && initialValues.type.code === 'PZP' && initialValues.isUpdate) &&
                                     <>
                                         <Grid item xs={12} sm={4}>
                                             <FormAmountField
@@ -551,7 +626,7 @@ class PlanBasicInfoForm extends Component {
                                         </Grid>
                                     </>
                                 }
-                                <Grid item xs={12} sm={4}>
+                                <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code === 'PZP' && !initialValues.isUpdate ? 6 : 4}>
                                     <FormAmountField
                                         name={initialValues.type !== undefined && initialValues.type.code === 'FIN' ?
                                             "planAmountRealizedGross" : "planAmountRealizedNet"}
@@ -670,7 +745,7 @@ class PlanBasicInfoForm extends Component {
                                         onSelect={this.handleSelect}
                                         onDoubleClick={this.handleDoubleClick}
                                         onExcelExport={this.handleExcelExport}
-                                        orderBy="id"
+                                        defaultOrderBy="id"
                                     />
                                 </Grid>
                             </Grid>
@@ -719,13 +794,15 @@ class PlanBasicInfoForm extends Component {
                                             disabled={pristine || submitting || invalid || submitSucceeded  }
                                         />
                                     }
-                                    {(Object.keys(initialValues).length === 1 || (initialValues.status !== undefined && initialValues.status.code === 'ZP')) &&
+                                    {(Object.keys(initialValues).length === 1 || (initialValues.status !== undefined && (initialValues.status.code === 'ZP' || initialValues.status.code === 'PK'))) &&
                                         <Button
                                             label={constants.BUTTON_SEND}
                                             icon=<Send/>
                                             iconAlign="left"
                                             variant="submit"
-                                            disabled={!pristine || submitting || invalid || initialValues.positions === undefined || positions.length === 0 || notExistCorrectedPositions}
+                                            disabled={!pristine || submitting || invalid || initialValues.positions === undefined
+                                                || positions.length === 0 || notExistCorrectedPositions
+                                            }
                                             onClick={this.handleSend}
                                         />
                                     }

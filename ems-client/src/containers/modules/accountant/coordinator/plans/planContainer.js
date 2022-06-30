@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import PropTypes from 'prop-types';
 import PlanBasicInfoForm from 'containers/modules/accountant/coordinator/plans/forms/planBasicInfoFormContainer';
-import PlanUpdateFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planUpdateFormContainer';
 import {findSelectFieldPosition, generateExportLink, findIndexElement, getVats, getCoordinatorPlanPositionsStatuses, publicProcurementEstimationTypes, publicProcurementOrderTypes } from 'utils';
 import PlansApi from 'api/modules/accountant/coordinator/plansApi';
 import DictionaryApi from 'api/common/dictionaryApi';
@@ -31,6 +30,44 @@ class PlanContainer extends Component {
         .catch(error => {});
     };
 
+    setUpCorrectValue = (values) =>{
+        if(this.props.initialValues.type.code === 'FIN'){
+            values.map(position => (
+                Object.assign(position,
+                    {
+                        amountCorrect: position.correctionPlanPosition !== null ?
+                            position.amountRequestedGross - position.correctionPlanPosition.amountAwardedGross : position.amountRequestedGross,
+                    }
+                )
+            ))
+        } else if (this.props.initialValues.type.code === 'PZP'){
+            values.map(position => (
+                Object.assign(position,
+                    {
+                        amountCorrect: position.correctionPlanPosition !== null ?
+                            position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet === 0 ?
+                                null : position.amountRequestedNet - position.correctionPlanPosition.amountRequestedNet :
+                            position.amountRequestedNet,
+                    }
+                )
+            ))
+        } else if (this.props.initialValues.type.code === 'INW') {
+            values.map(position => (
+                Object.assign(position,
+                    {
+                        amountCorrect: position.correctionPlanPosition !== null ?
+                            position.taskPositionGross - position.correctionPlanPosition.taskPositionGross === 0 ?
+                                null : position.taskPositionGross - position.correctionPlanPosition.taskPositionGross :
+                            position.taskPositionGross,
+                        expensesAmountCorrect: position.correctionPlanPosition !== null ?
+                            position.expensesPositionAwardedGross - position.correctionPlanPosition.expensesPositionAwardedGross === 0 ?
+                                null : position.expensesPositionAwardedGross - position.correctionPlanPosition.expensesPositionAwardedGross :
+                            position.expensesPositionAwardedGross,
+                    }
+                )
+            ))
+        }
+    }
 
     handleGetPlan = () => {
         this.props.loading(true);
@@ -80,15 +117,18 @@ class PlanContainer extends Component {
                                 }
                             )
                         ))
-                        if(initData.isUpdate){
-                            initData["positions"].map(position => (
-                                Object.assign(position,
-                                    {
-                                        amountCorrect: position.correctionPlanPosition !== null ?
-                                            position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross : position.amountAwardedGross,
-                                    }
-                                )
-                            ))
+//                        if(initData.isUpdate){
+//                            initData["positions"].map(position => (
+//                                Object.assign(position,
+//                                    {
+//                                        amountCorrect: position.correctionPlanPosition !== null ?
+//                                            position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross : position.amountAwardedGross,
+//                                    }
+//                                )
+//                            ))
+//                        }
+if(initData.isUpdate && initData.positions.length > 0){
+                            this.setUpCorrectValue(initData.positions)
                         }
                         return {initData};
                     });
@@ -115,6 +155,9 @@ class PlanContainer extends Component {
                                 ))
                             )
                         ))
+                        if(initData.isUpdate && initData.positions.length > 0){
+                            this.setUpCorrectValue(initData.positions)
+                        }
                         return {initData};
                     });
                 break;
@@ -213,8 +256,11 @@ class PlanContainer extends Component {
                                 type: source.type = findSelectFieldPosition(this.state.fundingSources, source.type.code),
                             }
                         )
-                   ));
-                   this.setUpPlanValueOnSubmitPosition(values, initData, response.data.data);
+                    ));
+                    this.setUpPlanValueOnSubmitPosition(values, initData, response.data.data);
+                    if(initData.isUpdate && initData.positions.length > 0){
+                        this.setUpCorrectValue(initData.positions)
+                    }
                 }
                 return {initData};
             })
@@ -331,39 +377,27 @@ class PlanContainer extends Component {
         const {initData, vats, fundingSources, estimationTypes, orderTypes} = this.state;
         return(
             <>
-                {!initData.isUpdate ?
-                    <PlanBasicInfoForm
-                        initialValues={initData}
-                        levelAccess={levelAccess}
-                        action={action}
-                        error={error}
-                        isLoading={isLoading}
-                        onAcceptPlanPositions={this.handleAcceptPlanPositions}
-                        onCorrectPlanPosition={this.handleCorrectPlanPosition}
-                        onRemarksPlanPosition={this.handleRemarksPlanPosition}
-                        onUpdateInvestmentPosition={this.handleUpdateInvestmentPosition}
-                        onApprovePlan={this.handleApprovePlan}
-                        onForwardPlan={this.handleForwardPlan}
-                        onWithdrawPlan={this.handleWithdrawPlan}
-                        onClose={handleClose}
-                        onExcelExport={this.handleExcelExport}
-                        fundingSources={fundingSources}
-                        vats={vats}
-                        modes={this.props.modes}
-                        estimationTypes={estimationTypes}
-                        orderTypes={orderTypes}
-                    />
-                :
-                    <PlanUpdateFormContainer
-                        initialValues={initData}
-                        onSubmit={this.handleApprovePlan}
-                        vats={vats}
-                        onSubmitPlanPosition={this.handleCorrectPlanPosition}
-                        onClose={handleClose}
-                        error={error}
-                        isLoading={isLoading}
-                    />
-                }
+                <PlanBasicInfoForm
+                    initialValues={initData}
+                    levelAccess={levelAccess}
+                    action={action}
+                    error={error}
+                    isLoading={isLoading}
+                    onAcceptPlanPositions={this.handleAcceptPlanPositions}
+                    onCorrectPlanPosition={this.handleCorrectPlanPosition}
+                    onRemarksPlanPosition={this.handleRemarksPlanPosition}
+                    onUpdateInvestmentPosition={this.handleUpdateInvestmentPosition}
+                    onApprovePlan={this.handleApprovePlan}
+                    onForwardPlan={this.handleForwardPlan}
+                    onWithdrawPlan={this.handleWithdrawPlan}
+                    onClose={handleClose}
+                    onExcelExport={this.handleExcelExport}
+                    fundingSources={fundingSources}
+                    vats={vats}
+                    modes={this.props.modes}
+                    estimationTypes={estimationTypes}
+                    orderTypes={orderTypes}
+                />
             </>
         );
     };

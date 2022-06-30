@@ -172,6 +172,7 @@ class PlanPositionsContainer extends Component {
                     statuses={this.state.statuses}
                     planStatus={planStatus}
                     levelAccess={levelAccess}
+                    isPlanUpdate={this.props.isPlanUpdate}
                     onAcceptPlanPositions={this.handleAcceptPositions}
                     onCorrectPlanPosition={this.handleCorrectPosition}
                     onClosePlanDetails={this.props.onClosePosition}

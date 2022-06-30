@@ -140,7 +140,7 @@ class PlanFinancialContentPosition extends Component {
 
     handleConfirmDelete = () => {
         this.props.onDeletePlanSubPosition(this.state.selected[0]);
-        this.setState(state => ({ positionAction: ''}));
+        this.setState(state => ({ positionAction: '', selected: []}));
     }
 
     componentDidUpdate(prevProps){
@@ -176,7 +176,7 @@ class PlanFinancialContentPosition extends Component {
     }
 
     render(){
-        const {handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, action, planStatus, units, costsTypes, vats} = this.props;
+        const {handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, action, planStatus, planUpdate, units, costsTypes, vats} = this.props;
         const {head, selected, openPositionDetails, positionAction, positions, formChanged } = this.state;
         return(
             <>
@@ -214,7 +214,7 @@ class PlanFinancialContentPosition extends Component {
                     >
                         { action === "add" ?
                             constants.COORDINATOR_PLAN_POSITION_CREATE_DETAILS_TITLE
-                                :  constants.COORDINATOR_PLAN_POSITION_EDIT_DETAILS_TITLE + `  ${initialValues.costType.code}  - ${initialValues.costType.name}`
+                                :  constants.COORDINATOR_PLAN_POSITION_EDIT_DETAILS_TITLE + `  ${initialValues.costType !== undefined && initialValues.costType.code}  - ${initialValues.costType !== undefined && initialValues.costType.name}`
                         }
                     </Typography>
                     <Divider />
@@ -235,7 +235,7 @@ class PlanFinancialContentPosition extends Component {
                                         name="costType"
                                         dictionaryName={constants.ACCOUNTANT_SUBMENU_DICTIONARIES_COST_TYPES}
                                         label={constants.COORDINATOR_PLAN_POSITION_FINANCIAL_COST_TYPES}
-                                        disabled={planStatus!=='ZP' && true}
+                                        disabled={(planStatus!=='ZP' || (planUpdate && action === 'correct')) && true}
                                         items={costsTypes}
                                     />
                                 </Grid>
@@ -289,19 +289,19 @@ class PlanFinancialContentPosition extends Component {
                                     />
                                 </Grid>
                                 <Grid item xs={3} >
-                                    <InputField
+                                    <FormAmountField
                                         name="amountRealizedNet"
                                         label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_NET}
                                         disabled
-                                        value={ Object.keys(initialValues).length !== 0 && initialValues.amountAwarded ? initialValues.amountAwarded : ''}
+                                        suffix={'zł.'}
                                     />
                                 </Grid>
                                 <Grid item xs={3} >
-                                    <InputField
+                                    <FormAmountField
                                         name="amountRealizedGross"
                                         label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS}
                                         disabled
-                                        value={ Object.keys(initialValues).length !== 0 && initialValues.amountAwarded ? initialValues.amountAwarded : ''}
+                                        suffix={'zł.'}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
@@ -339,7 +339,7 @@ class PlanFinancialContentPosition extends Component {
                                             checkedRows={selected}
                                             toolbar={true}
                                             addButtonProps={{
-                                                disabled : (initialValues.status === undefined || initialValues.status.code !== 'ZP') ? true : false
+                                                disabled : (initialValues.status === undefined || !['ZP', 'KR'].includes(initialValues.status.code)) ? true : false
                                             }}
                                             editButtonProps={{
                                                 label : (planStatus === 'ZP') ?  constants.BUTTON_EDIT : constants.BUTTON_PREVIEW,
@@ -357,6 +357,7 @@ class PlanFinancialContentPosition extends Component {
                                             onSelect={this.handleSelect}
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
+                                            defaultOrderBy="id"
                                         />
                                     </div>
                                 </Grid>
