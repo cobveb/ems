@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @ToString(exclude = {"institutionPlanPosition", "coordinatorPlanPosition", "correctionPlanCoordinatorPosition"})
-@EqualsAndHashCode(exclude = {"institutionPlanPosition", "coordinatorPlanPosition", "correctionPlanCoordinatorPosition"})
+@EqualsAndHashCode(exclude = {"institutionPlanPosition"})
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor

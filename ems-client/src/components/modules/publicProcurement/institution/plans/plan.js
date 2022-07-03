@@ -298,7 +298,9 @@ class Plan extends Component {
                             direction="column"
                             spacing={0}
                         >
-                            <Typography variant="h6">{constants.PUBLIC_INSTITUTION_PLAN_TITLE + ` - ${initialValues.year}`}</Typography>
+                            <Typography variant="h6">{initialValues.isUpdate !== undefined && initialValues.isUpdate ?
+                                constants.PUBLIC_INSTITUTION_PLAN_TITLE + ` - ${initialValues.year} - ${constants.ACCOUNTANT_INSTITUTION_PLANS_UPDATE_TITLE} ${initialValues.updateNumber}`
+                                    : constants.PUBLIC_INSTITUTION_PLAN_TITLE + ` - ${initialValues.year}`}</Typography>
                             <Divider />
                             <div className={classes.content}>
                                 <div className={classes.section}>
