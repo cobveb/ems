@@ -11,22 +11,23 @@ import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.service.modules.coordinator.publicProcurement.ApplicationProtocolService;
 
 @RestController
-@RequestMapping("/api/public/coordinator/publicProcurement/protocol")
+@RequestMapping({"/api/public/coordinator/publicProcurement/protocol"})
 public class PublicApplicationProtocolController {
-
     @Autowired
     ApplicationProtocolService applicationProtocolService;
 
-    @PutMapping("/approveProtocol/{protocolId}")
+    public PublicApplicationProtocolController() {
+    }
+
+    @PutMapping({"/approveProtocol/{protocolId}"})
     @PreAuthorize("hasGroup('admin') or hasPrivilege('2113')")
     public ApiResponse approveProtocol(@PathVariable Long protocolId) {
-        return new ApiResponse(HttpStatus.ACCEPTED, applicationProtocolService.approveProtocol(protocolId, "public"));
+        return new ApiResponse(HttpStatus.ACCEPTED, this.applicationProtocolService.approveProtocol(protocolId, "public"));
     }
 
-    @PutMapping("/sendBackProtocol/{protocolId}")
+    @PutMapping({"/sendBackProtocol/{protocolId}"})
     @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('2113', '4115', '2124')")
     public ApiResponse sendBackProtocol(@PathVariable Long protocolId) {
-        return new ApiResponse(HttpStatus.ACCEPTED, applicationProtocolService.sendBackProtocol(protocolId));
+        return new ApiResponse(HttpStatus.ACCEPTED, this.applicationProtocolService.sendBackProtocol(protocolId));
     }
-
 }

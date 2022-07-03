@@ -81,7 +81,7 @@ where
 					<font fontName="PDF_fonts"/>
 				</textElement>
 				<textFieldExpression>
-					<![CDATA["15. Po wykonaniu czynności określonych w Regulaminie udzielania zamówień publicznych proponuję udzielić zamówienia Wykonawcy: <style isBold='true'>" + ($F{CONTRACTOR} != null ? $F{CONTRACTOR} : $F{CONTRACTOR_DESC} != null ? $F{CONTRACTOR_DESC} : "") + "</style>"]]></textFieldExpression>
+					<![CDATA[($P{ESTIMATION_TYPE}.equals( "DO50" ) ? "16. " : "1. " ) + "Po wykonaniu czynności określonych w Regulaminie udzielania zamówień publicznych proponuję udzielić zamówienia Wykonawcy: <style isBold='true'>" + ($F{CONTRACTOR} != null ? $F{CONTRACTOR} : $F{CONTRACTOR_DESC} != null ? $F{CONTRACTOR_DESC} : "") + "</style>"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="20">
@@ -98,15 +98,16 @@ where
 			</subreport>
 		</band>
 		<band height="188">
-			<staticText>
-				<reportElement x="0" y="2" width="550" height="20" uuid="544ed964-018e-40a6-a23f-f86691702ca2">
+			<textField>
+				<reportElement x="0" y="2" width="550" height="20" uuid="6f0046ee-7ae1-4677-a4e8-54887165df15">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
-				<text><![CDATA[16. Opis wykonanych czynności – forma rozeznania cenowego:]]></text>
-			</staticText>
+				<textFieldExpression>
+					<![CDATA[($P{ESTIMATION_TYPE}.equals( "DO50" ) ? "17. " : "2. " ) +"Opis wykonanych czynności – forma rozeznania cenowego:"]]></textFieldExpression>
+			</textField>
 			<textField>
 				<reportElement x="20" y="22" width="530" height="18" isRemoveLineWhenBlank="true"
 							   uuid="4a3477b7-062e-4042-aa0b-4892e181d83d">
@@ -196,7 +197,7 @@ where
 					<font fontName="PDF_fonts"/>
 				</textElement>
 				<textFieldExpression>
-					<![CDATA["17. Otrzymane oferty: <b>" + $F{RECEIVED_OFFERS} + "</b>"]]></textFieldExpression>
+					<![CDATA[($P{ESTIMATION_TYPE}.equals( "DO50" ) ? "18. " : "3. " ) +"Otrzymane oferty: <b>" + $F{RECEIVED_OFFERS} + "</b>"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement positionType="Float" x="0" y="168" width="550" height="20"
@@ -207,7 +208,7 @@ where
 					<font fontName="PDF_fonts"/>
 				</textElement>
 				<textFieldExpression>
-					<![CDATA["18. Uzasadnienie wyboru oferty/ustalenia z negocjacji: <b>" + $F{JUST_CHOOSING_OFF} +"</b>"]]></textFieldExpression>
+					<![CDATA[($P{ESTIMATION_TYPE}.equals( "DO50" ) ? "19. " : "4. " ) +"Uzasadnienie wyboru oferty/ustalenia z negocjacji: <b>" + $F{JUST_CHOOSING_OFF} +"</b>"]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -5,7 +5,7 @@ import { loading, setError } from 'actions/';
 import * as constants from 'constants/uiNames';
 import Applications from 'components/modules/coordinator/publicProcurement/applications/applications';
 import PublicProcurementApplicationApi from 'api/modules/coordinator/publicProcurement/publicProcurementApplicationApi';
-import {updateOnCloseDetails, publicProcurementEstimationTypes, publicProcurementApplicationStatuses, publicProcurementApplicationModes, getVats, findSelectFieldPosition, generateExportLink} from 'utils/';
+import {updateOnCloseDetails, publicProcurementEstimationTypes, publicProcurementApplicationStatuses, publicProcurementApplicationModes, getVats, findSelectFieldPosition, generateExportLink, getPlanTypes } from 'utils/';
 import DictionaryApi from 'api/common/dictionaryApi';
 
 class ApplicationsContainer extends Component {
@@ -35,16 +35,7 @@ class ApplicationsContainer extends Component {
                 name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_MODE,
             },
         ].concat(publicProcurementApplicationModes()),
-        planTypes: [
-            {
-                code: 'FIN',
-                name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_FINANCIAL,
-            },
-            {
-                code: 'INW',
-                name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_INVESTMENT,
-            },
-        ]
+        planTypes: getPlanTypes(),
     }
 
     handleGetCoordinators(){

@@ -1025,7 +1025,6 @@ class ApplicationContainer extends Component {
                 onRollbackRealisation={this.props.handleRollbackRealization}
                 onSend={this.handleSendApplication}
                 onRealized={this.handleConfirmRealization}
-                onRollbackRealisation={this.handleRollbackRealization}
                 onExcelPartsExport={this.handlePartsExcelExport}
                 onClose={this.handleClose}
             />

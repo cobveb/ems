@@ -58,9 +58,7 @@ class ApplicationPriceForm extends Component {
     }
 
     render(){
-        const { classes, pristine, invalid, submitting, submitSucceeded, handleSubmit, isLoading, open, applicationStatus, assortmentGroups, vats } = this.props;
-                console.log(applicationStatus)
-
+        const { classes, pristine, invalid, submitting, submitSucceeded, handleSubmit, isLoading, open, applicationStatus, applicationEstimationType, protocolStatus, assortmentGroups, vats } = this.props;
         return(
             <>
                 <Dialog
@@ -115,7 +113,9 @@ class ApplicationPriceForm extends Component {
                                             name="amountContractAwardedNet"
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_OFFER_PRICE_GROUP_NET}
                                             isRequired
-                                            disabled={applicationStatus !== undefined && applicationStatus !== 'ZP'}
+                                            disabled={applicationEstimationType !== undefined && (applicationEstimationType === "DO50" ?
+                                                    (applicationStatus !== undefined && applicationStatus !== 'ZP') ? true : false
+                                                : (protocolStatus !== undefined &&  protocolStatus !== 'ZP') ? true : false )}
                                         />
                                     </Grid>
                                     <Grid item xs={2}>
@@ -124,7 +124,9 @@ class ApplicationPriceForm extends Component {
                                             label={constants.VAT}
                                             options={vats}
                                             isRequired
-                                            disabled={applicationStatus !== undefined && applicationStatus !== 'ZP'}
+                                            disabled={applicationEstimationType !== undefined && (applicationEstimationType === "DO50" ?
+                                                    (applicationStatus !== undefined && applicationStatus !== 'ZP') ? true : false
+                                                : (protocolStatus !== undefined &&  protocolStatus !== 'ZP') ? true : false )}
                                         />
                                     </Grid>
                                     <Grid item xs={5}>
@@ -148,7 +150,9 @@ class ApplicationPriceForm extends Component {
                                 <Grid item xs={12} >
                                     <Divider />
                                 </Grid>
-                                {(applicationStatus !== undefined && applicationStatus === 'ZP') &&
+                                {(applicationEstimationType !== undefined && (applicationEstimationType === "DO50" ?
+                                        (applicationStatus !== undefined && applicationStatus !== 'ZP') ? false : true
+                                    : (protocolStatus !== undefined &&  protocolStatus !== 'ZP') ? false : true )) &&
                                     <Button
                                         label={constants.BUTTON_SAVE}
                                         icon=<Save/>
