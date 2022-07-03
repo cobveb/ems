@@ -292,7 +292,7 @@ class ApplicationProtocolContainer extends Component {
     }
 
     render(){
-        const { contractors, assortmentGroups, vats, applicationStatus, levelAccess } = this.props;
+        const { contractors, assortmentGroups, vats, applicationStatus, applicationEstimationType, levelAccess } = this.props;
         const { initData } = this.state;
 
         return(
@@ -302,6 +302,7 @@ class ApplicationProtocolContainer extends Component {
                 vats={vats}
                 contractors={contractors}
                 applicationStatus={applicationStatus}
+                applicationEstimationType={applicationEstimationType}
                 levelAccess={levelAccess}
                 onSubmit={this.handleSubmit}
                 onSavePrice={this.handleSaveProtocolPrice}

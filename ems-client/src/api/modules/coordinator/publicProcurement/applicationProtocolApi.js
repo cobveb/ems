@@ -39,7 +39,7 @@ class ApplicationProtocolApi {
     }
 
     static sendBackProtocol(protocolId){
-        return Axios.put(`/api/public/publicProcurement/protocol/sendBackProtocol/${protocolId}`)
+        return Axios.put(`/api/public/coordinator/publicProcurement/protocol/sendBackProtocol/${protocolId}`)
     }
 
     static printProtocol(protocolId){

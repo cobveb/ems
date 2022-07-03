@@ -366,7 +366,7 @@ class ApplicationForm extends Component {
         return(
             <ModalDialog
                 message={this.state.splitAction === "confirm" ? constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_REALIZATION_MSG :
-                    this.state.applicationAction === "rollbackAll" ? constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ROLLBACK_REALIZATION_MSG :
+                    this.state.splitAction === "rollbackAll" ? constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ROLLBACK_REALIZATION_MSG :
                         constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ROLLBACK_PARTS_REALIZATION_MSG
                 }
                 variant="confirm"
@@ -590,7 +590,7 @@ class ApplicationForm extends Component {
             if(this.props.initialValues.parts.length === 0){
                 this.setState(prevState => {
                     const splitOptions = [...prevState.splitOptions];
-                    splitOptions[0].disabled = true;
+                    splitOptions[0].disabled = false;
                     if(this.props.formCurrentValues.assortmentGroups.filter(group => group.amountContractAwardedNet === null).length > 0){
                         splitOptions[1].disabled = true;
                     } else if(splitOptions[1].disabled && this.props.formCurrentValues.assortmentGroups.filter(group => group.amountContractAwardedNet === null).length === 0){
@@ -742,6 +742,8 @@ class ApplicationForm extends Component {
                             assortmentGroups={this.state.assortmentGroupsParts}
                             prices={this.props.initialValues.prices}
                             applicationStatus={initialValues.status.code}
+                            applicationEstimationType={initialValues.estimationType.code}
+                            application={initialValues.status.code}
                             onClose={this.handleClosePriceDetails}
                             onSubmit={this.handleSubmitPrice}
                         />
@@ -754,6 +756,7 @@ class ApplicationForm extends Component {
                             vats={vats}
                             contractors={contractors}
                             applicationStatus={initialValues.status.code}
+                            applicationEstimationType={initialValues.estimationType.code}
                             onClose={this.handleShowProtocol}
                         />
                     :
@@ -1330,7 +1333,7 @@ class ApplicationForm extends Component {
                                                         name="conditionsParticipation"
                                                         label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONDITIONS_PARTICIPATION}
                                                         isRequired={true}
-                                                        inputProps={{ maxLength: 3000 }}
+                                                        inputProps={{ maxLength: 10000 }}
                                                         disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
                                                     />
                                                 </Grid>
@@ -1357,7 +1360,7 @@ class ApplicationForm extends Component {
                                                         }
                                                         multiline
                                                         isRequired={initialValues.status !== undefined ? true : null}
-                                                        inputProps={{ maxLength: 10000 }}
+                                                        inputProps={{ maxLength: 11000 }}
                                                         disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
                                                     />
                                                 </Grid>

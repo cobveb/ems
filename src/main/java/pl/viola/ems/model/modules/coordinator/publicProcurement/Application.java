@@ -2,6 +2,7 @@ package pl.viola.ems.model.modules.coordinator.publicProcurement;
 
 import lombok.*;
 import pl.viola.ems.model.common.Text;
+import pl.viola.ems.model.common.dictionary.DictItem;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
@@ -35,7 +36,7 @@ import java.util.Set;
                 }
         )
 })
-public class Application {
+public class Application implements DictItem {
 
     public enum ApplicationMode {
         PL, UP
@@ -284,4 +285,14 @@ public class Application {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "application", cascade = {CascadeType.REMOVE})
     private Set<ApplicationCriterion> criteria = new HashSet<>();
+
+    @Override
+    public String getCode() {
+        return this.number;
+    }
+
+    @Override
+    public String getName() {
+        return this.orderedObject.getContent();
+    }
 }

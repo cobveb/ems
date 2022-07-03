@@ -50,7 +50,7 @@ where
 				<textFieldExpression>
 					<![CDATA["<style isBold='true'>\u2022 " + $F{COST_NUMBER} + " - "  + $F{COST_NAME} +"</style>"]]></textFieldExpression>
 			</textField>
-			<textField evaluationTime="Report">
+			<textField evaluationTime="Auto">
 				<reportElement positionType="Float" x="10" y="20" width="510" height="20"
 							   uuid="d78e0d65-0567-463c-a840-eb14efa7071e"/>
 				<textElement verticalAlignment="Middle" markup="styled">

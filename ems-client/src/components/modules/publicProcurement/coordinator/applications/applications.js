@@ -23,7 +23,7 @@ const styles = theme => ({
         margin: 0,
     },
     tableWrapper: {
-        minHeight: `calc(100vh - ${theme.spacing(32)}px)`,
+        minHeight: `calc(100vh - ${theme.spacing(37.8)}px)`,
     },
     item: {
         paddingRight: theme.spacing(1),
@@ -39,6 +39,7 @@ class Applications extends Component {
         mode: '',
         number: '',
         status: '',
+        orderedObject: '',
         coordinator:'',
         rows:[],
         headCells: [
@@ -152,6 +153,14 @@ class Applications extends Component {
                     : application
                 ) &&
                 (
+                    this.state.orderedObject !== '' ?
+                    application.orderedObject !== null ?
+                        application.orderedObject.toLowerCase().search(
+                            this.state.orderedObject.toLowerCase()) !== -1
+                        : null
+                    : application
+                ) &&
+                (
                     this.state.number !== '' ?
                         application.number !== null ?
                             application.number.toLowerCase().search(
@@ -159,11 +168,11 @@ class Applications extends Component {
                         : null
                     : application
                 )  &&
-            (
-                this.state.year === null ?
-                    application :
-                        new Date(application.createDate).getFullYear() === this.state.year.getFullYear()
-            )
+                (
+                    this.state.year === null ?
+                        application :
+                            new Date(application.createDate).getFullYear() === this.state.year.getFullYear()
+                )
         })
     }
 
@@ -175,6 +184,9 @@ class Applications extends Component {
         this.props.clearError(null);
     }
 
+    handleExcelExport = (exportType) => {
+        this.props.onExcelExport(exportType, this.state.headCells)
+    }
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues !== prevProps.initialValues){
@@ -185,6 +197,7 @@ class Applications extends Component {
             this.state.coordinator !== prevState.coordinator ||
             this.state.status !== prevState.status ||
             this.state.mode !== prevState.mode ||
+            this.state.orderedObject !== prevState.orderedObject ||
             this.state.estimationType !== prevState.estimationType ||
             this.state.number !== prevState.number)
         {
@@ -292,6 +305,14 @@ class Applications extends Component {
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS}
                                             options={statuses}
                                             value={status}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} className={classes.item}>
+                                        <SearchField
+                                            name="orderedObject"
+                                            onChange={this.handleSearch}
+                                            label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERED_OBJECT}
+                                            valueType="all"
                                         />
                                     </Grid>
                                     <Grid item xs={12} className={classes.item}>

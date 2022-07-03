@@ -170,7 +170,6 @@ class ProtocolForm extends Component {
     render(){
         const { classes, isLoading, vats, handleSubmit, initialValues, pristine, invalid, submitting, submitSucceeded, contractors, formCurrentValues, formErrors, levelAccess } = this.props;
         const { selected, tableHeadPrices, openPriceDetails, action, isDelete, protocolSendLevel } = this.state;
-        console.log(this.props.applicationStatus)
         return(
             <>
                 {protocolSendLevel && this.renderSendActionDialog()}
@@ -195,6 +194,8 @@ class ProtocolForm extends Component {
                         assortmentGroups={this.props.assortmentGroups}
                         prices={this.props.initialValues.prices}
                         applicationStatus={this.props.applicationStatus}
+                        applicationEstimationType={this.props.applicationEstimationType}
+                        protocolStatus={this.props.initialValues.status}
                         onClose={this.handleClosePriceDetails}
                         onSubmit={this.handleSubmitPrice}
                     />

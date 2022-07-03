@@ -8,6 +8,7 @@ import pl.viola.ems.model.modules.coordinator.plans.PublicProcurementPosition;
 import pl.viola.ems.model.modules.coordinator.publicProcurement.Application;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -28,5 +29,7 @@ public class ApplicationPayload {
     private Application.ApplicationStatus status;
 
     private OrganizationUnit coordinator;
+
+    private Date createDate;
 
 }

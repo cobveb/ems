@@ -235,7 +235,7 @@ public class ApplicationProtocolServiceImpl implements ApplicationProtocolServic
         ApplicationProtocol protocol = applicationProtocolRepository.findById(protocolId)
                 .orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND));
 
-        protocol.setStatus(ApplicationProtocol.ProtocolStatus.ZA);
+        protocol.setStatus(ApplicationProtocol.ProtocolStatus.ZP);
         protocol.setSendUser(null);
         protocol.setPublicAcceptUser(null);
         protocol.setAccountantAcceptUser(null);
