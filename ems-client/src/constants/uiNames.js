@@ -689,6 +689,8 @@ export const COORDINATOR_REALIZATION_CONTRACT_ORDER_INVOICES_VALUE_NET = 'Realiz
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_INVOICES_VALUE_GROSS = 'Realizacja umowy z faktur brutto';
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_VALUE_NET = 'Realizacja umowy netto';
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_VALUE_GROSS = 'Realizacja umowy brutto';
+export const COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_TO_REALIZE_NET = 'Pozostała do realizacji netto';
+export const COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_TO_REALIZE_GROSS = 'Pozostała do realizacji brutto';
 export const COORDINATOR_REALIZATION_CONTRACT_CONTRACTOR_REPRESENTATIVE = 'Przedstawiciel dostawcy';
 export const COORDINATOR_REALIZATION_CONTRACT_CHANGES = 'Zmiany';
 /* components/modules/coordinator/realization/invoices/invoices.js */
@@ -725,12 +727,15 @@ export const COORDINATOR_REALIZATION_EXPENSES_TITLE = 'Wydatki jednorazowe';
 export const ACCOUNTANT = "Księgowy";
 export const ACCOUNTANT_MENU_COORDINATOR = 'Koordynator';
 export const ACCOUNTANT_MENU_INSTITUTION = 'Instytucja';
+export const ACCOUNTANT_MENU_REALIZATION = 'Realizacja';
 export const ACCOUNTANT_MENU_DICTIONARIES = 'Słowniki';
 export const ACCOUNTANT_SUBMENU_INSTITUTION_PLANS = 'Plany';
 export const ACCOUNTANT_SUBMENU_COORDINATOR_PLANS = 'Plany';
 export const ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_APPLICATIONS = 'Wnioski ZP';
 export const ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_PROTOCOLS = 'Protokoły ZP';
 export const ACCOUNTANT_SUBMENU_COORDINATOR_UPDATES = 'Aktualizacje planów';
+export const ACCOUNTANT_SUBMENU_REALIZATION_CONTRACTS = 'Umowy';
+export const ACCOUNTANT_SUBMENU_REALIZATION_INVOICES = 'Faktury';
 export const ACCOUNTANT_SUBMENU_DICTIONARIES_COST_TYPES = 'Rodzaje kosztów';
 export const ACCOUNTANT_SUBMENU_DICTIONARIES_CONTRACTORS = 'Kontrahenci';
 /* components/modules/accountant/coordinator/plans/plans.js */

@@ -43,6 +43,8 @@ class ContractContainer extends Component {
 
             contract.realizedValueNet = contract.realPrevYearsValueNet + contract.invoicesValueNet;
             contract.realizedValueGross = contract.realPrevYearsValueGross + contract.invoicesValueGross;
+            contract.valueToRealizeNet = contract.contractValueNet - contract.realizedValueNet;
+            contract.valueToRealizeGross = contract.contractValueGross - contract.realizedValueGross;
         }
     }
 

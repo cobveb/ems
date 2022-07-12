@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { LibraryBooks, Style, Timeline, HowToReg, LocationCity, PeopleAlt, EuroSymbol, Assignment, DynamicFeed } from '@material-ui/icons/';
+import { LibraryBooks, Style, Timeline, HowToReg, LocationCity, PeopleAlt, EuroSymbol, Assignment, DynamicFeed, FolderOpen, Description } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
@@ -13,6 +13,8 @@ import PublicProcurementProtocolsContainer from 'containers/modules/accountant/c
 import InstitutionPlansContainer from 'containers/modules/accountant/institution/plans/plansContainer';
 import PlansUpdatesContainer from 'containers/modules/accountant/coordinator/plans/plansUpdatesContainer';
 import PropTypes from 'prop-types';
+import ContractsContainer from 'containers/modules/accountant/realization/contracts/contractsContainer';
+import InvoicesContainer from 'containers/modules/accountant/realization/invoices/invoicesContainer';
 
 const styles = theme => ({
     root: {
@@ -84,6 +86,25 @@ class Accountant extends Component {
                 ],
             },
             {
+                name: constants.ACCOUNTANT_MENU_REALIZATION,
+                icon: <FolderOpen />,
+                items: [
+                    {
+                        code: 'contracts',
+                        name: constants.ACCOUNTANT_SUBMENU_REALIZATION_CONTRACTS,
+                        path: '/modules/accountant/realization/contracts',
+                        icon: <Description />
+                    },
+                    /*{
+                        code: 'invoices',
+                        name: constants.ACCOUNTANT_SUBMENU_REALIZATION_INVOICES,
+                        path: '/modules/accountant/realization/invoices',
+                        icon: <Description />
+                    },*/
+
+                ],
+            },
+            {
                 name: constants.ACCOUNTANT_MENU_DICTIONARIES,
                 icon: <LibraryBooks />,
                 items: [
@@ -147,6 +168,8 @@ class Accountant extends Component {
                                     <PrivateRoute exact path='/modules/accountant/coordinator/publicApplications' component={PublicProcurementApplicationsContainer}/>
                                     <PrivateRoute exact path='/modules/accountant/coordinator/publicProtocols' component={this.showPublicProcurementProtocol}/>
                                     <PrivateRoute exact path='/modules/accountant/institution/plans' component={this.showInstitutionPlans}/>
+                                    <PrivateRoute exact path='/modules/accountant/realization/contracts' component={ContractsContainer}/>
+                                    <PrivateRoute exact path='/modules/accountant/realization/invoices' component={InvoicesContainer}/>
                                     <PrivateRoute path='/modules/accountant/dictionaries/costs' component={CostsTypesContainer}/>
                                     <PrivateRoute path='/modules/accountant/dictionaries/contractors' component={ContractorsContainer}/>
                                 </Switch>

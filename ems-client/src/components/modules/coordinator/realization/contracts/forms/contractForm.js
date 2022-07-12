@@ -252,31 +252,45 @@ class ContractForm extends Component {
                                             label={constants.COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_PREV_YEARS_VALUE_GROSS}
                                         />
                                     </Grid>
-                                    <Grid item xs={3}>
+                                    <Grid item xs={2}>
                                         <FormAmountField
                                             name="invoicesValueNet"
                                             label={constants.COORDINATOR_REALIZATION_CONTRACT_ORDER_INVOICES_VALUE_NET}
                                             disabled
                                         />
                                     </Grid>
-                                    <Grid item xs={3}>
+                                    <Grid item xs={2}>
                                         <FormAmountField
                                             name="invoicesValueGross"
                                             label={constants.COORDINATOR_REALIZATION_CONTRACT_ORDER_INVOICES_VALUE_GROSS}
                                             disabled
                                         />
                                     </Grid>
-                                    <Grid item xs={3}>
+                                    <Grid item xs={2}>
                                         <FormAmountField
                                             name="realizedValueNet"
                                             label={constants.COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_VALUE_NET}
                                             disabled
                                         />
                                     </Grid>
-                                    <Grid item xs={3}>
+                                    <Grid item xs={2}>
                                         <FormAmountField
                                             name="realizedValueGross"
                                             label={constants.COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_VALUE_GROSS}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <FormAmountField
+                                            name="valueToRealizeNet"
+                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_TO_REALIZE_NET}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <FormAmountField
+                                            name="valueToRealizeGross"
+                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_TO_REALIZE_GROSS}
                                             disabled
                                         />
                                     </Grid>

@@ -146,6 +146,20 @@ public class Contract implements DictItem {
         return realizedValueGross;
     }
 
+    public BigDecimal getValueToRealizeNet() {
+        if (this.getRealizedValueNet() != null) {
+            return contractValueNet.subtract(this.getRealizedValueNet());
+        }
+        return contractValueNet;
+    }
+
+    public BigDecimal getValueToRealizeGross() {
+        if (this.getRealizedValueGross() != null) {
+            return contractValueGross.subtract(this.getRealizedValueGross());
+        }
+        return contractValueGross;
+    }
+
     @Override
     public String getCode() {
         return this.number;

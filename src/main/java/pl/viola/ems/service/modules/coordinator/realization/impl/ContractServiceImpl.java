@@ -15,7 +15,12 @@ import pl.viola.ems.service.modules.coordinator.realization.ContractService;
 import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
 import pl.viola.ems.utils.Utils;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
+
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
 @Service
 public class ContractServiceImpl implements ContractService {
@@ -40,6 +45,21 @@ public class ContractServiceImpl implements ContractService {
         coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
 
         return contractRepository.findByCoordinatorIn(coordinators);
+    }
+
+    @Override
+    public List<Contract> getAllContracts() {
+        return contractRepository.findAll();
+    }
+
+
+    @Override
+    public Set<Contract> getContractsByYear(final int year) {
+
+        LocalDate curYear = LocalDate.of(year, Month.JANUARY, 01);
+        Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
+        Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
+        return contractRepository.findBySigningDateBetween(firstDay, lastDay);
     }
 
     @Transactional

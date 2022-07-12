@@ -10,6 +10,10 @@ public interface ContractService {
 
     Set<Contract> getContracts();
 
+    List<Contract> getAllContracts();
+
+    Set<Contract> getContractsByYear(int year);
+
     Contract saveContract(Contract contract, String action);
 
     String deleteContract(Long contractId);
