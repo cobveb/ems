@@ -10,6 +10,8 @@ public interface InvoiceService {
 
     Set<Invoice> getInvoices();
 
+    List<Invoice> getInvoicesByYear(int year);
+
     Invoice saveInvoice(Invoice invoice, String action);
 
     String deleteInvoice(Long invoiceId);

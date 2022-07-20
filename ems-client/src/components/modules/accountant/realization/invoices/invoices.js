@@ -3,9 +3,9 @@ import * as constants from 'constants/uiNames';
 import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
-import { Visibility, } from '@material-ui/icons/';
+import { Visibility } from '@material-ui/icons/';
 import { Button, Table, SearchField, DatePicker, SelectField } from 'common/gui';
-import ContractContainer from 'containers/modules/coordinator/realization/contracts/contractContainer';
+import InvoiceContainer from 'containers/modules/coordinator/realization/invoices/invoiceContainer';
 
 const styles = theme => ({
     root: {
@@ -23,29 +23,28 @@ const styles = theme => ({
         margin: 0,
     },
     tableWrapper: {
-        minHeight: `calc(100vh - ${theme.spacing(38)}px)`,
+        minHeight: `calc(100vh - ${theme.spacing(32)}px)`,
     },
     item: {
         paddingRight: theme.spacing(1),
     },
 });
 
-class Contracts extends Component {
+class Invoices extends Component {
     state = {
         selected: [],
         rows: [],
         number: '',
-        contractObject: '',
-        signedFrom: null,
-        signedTo: null,
+        saleFrom: null,
+        saleTo: null,
         action: null,
-        isDetailsVisible: false,
         year: new Date(),
         coordinator:'',
+        isDetailsVisible: false,
         headCells: [
             {
                 id: 'number',
-                label: constants.COORDINATOR_REALIZATION_CONTRACTS_NUMBER,
+                label: constants.COORDINATOR_REALIZATION_INVOICE_NUMBER,
                 type: 'text',
             },
             {
@@ -54,30 +53,25 @@ class Contracts extends Component {
                 type:'object',
             },
             {
-                id: 'contractObject.content',
-                label: constants.COORDINATOR_REALIZATION_CONTRACT_OBJECTS,
-                type: 'object',
-            },
-            {
-                id: 'signingDate',
-                label: constants.COORDINATOR_REALIZATION_CONTRACT_SIGNED_DATE,
+                id: 'sellDate',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_SALE_DATE,
                 type:'date',
                 dateFormat: 'dd-MM-yyyy',
             },
             {
-                id: 'contractValueGross',
-                label: constants.COORDINATOR_REALIZATION_CONTRACT_VALUE_GROSS,
+                id: 'invoiceValueGross',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_VALUE_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
-                id: 'realizedValueGross',
-                label: constants.COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_VALUE_GROSS,
-                suffix: 'zł.',
-                type: 'amount',
+                id: 'contractor.name',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_CONTRACTOR,
+                type: 'object',
+                subtype: 'text'
             },
         ],
-    };
+    }
 
     handleSelect = (id) => {
         this.setState({selected: id});
@@ -95,10 +89,6 @@ class Contracts extends Component {
         this.props.clearError(null);
     }
 
-    handleChangeVisibleDetails = (event, action) =>{
-        this.setState({isDetailsVisible: !this.state.isDetailsVisible, action: action});
-    }
-
     handleDoubleClick = (id) => {
         this.setState({
             selected: id,
@@ -107,48 +97,41 @@ class Contracts extends Component {
         });
     }
 
-    handleCloseDetails = (contract) => {
+    handleCloseDetails = (invoice) => {
         this.setState({
             isDetailsVisible: !this.state.isDetailsVisible,
             selected: [],
             action: null,
-            rows: this.props.onClose(contract),
+            rows: this.props.onClose(invoice),
         });
     };
 
     filter = () => {
-        let contracts = this.props.initialValues;
-        return contracts.filter((contract) => {
+        let invoices = this.props.initialValues;
+        return invoices.filter((invoice) => {
             return this.state.number !== '' ?
-                contract.number !== null ?
-                    contract.number.toLowerCase().search(
+                invoice.number !== null ?
+                    invoice.number.toLowerCase().search(
                         this.state.number.toLowerCase()) !== -1
                 : null
-            : contract
+            : invoice
             && (
-                (this.state.signedFrom !== null && this.state.signedTo !== null) ?
-                    new Date(contract.signingDate) >= this.state.signedFrom && new Date(contract.signingDate) <= this.state.signedTo :
-                     this.state.signedFrom !== null ?
-                        new Date(contract.signingDate) >= this.state.signedFrom :
-                            this.state.signedFrom === null && this.state.signedTo === null ?
-                                contract :
-                                    new Date(contract.signingDate) <= this.state.signedTo
+                (this.state.saleFrom !== null && this.state.saleTo !== null) ?
+                    new Date(invoice.sellDate) >= this.state.saleFrom && new Date(invoice.sellDate) <= this.state.saleTo :
+                     this.state.saleFrom !== null ?
+                        new Date(invoice.sellDate) >= this.state.saleFrom :
+                            this.state.saleFrom === null && this.state.saleTo === null ?
+                                invoice :
+                                    new Date(invoice.sellDate) <= this.state.saleTo
             )
-            && (
-                this.state.contractObject !== '' ?
-                contract.contractObject.content !== null ?
-                    contract.contractObject.content.toLowerCase().search(
-                        this.state.contractObject.toLowerCase()) !== -1
-                : null
-            : contract
-            ) &&
-            contract.coordinator.code.toLowerCase().search(
+            &&
+            invoice.coordinator.code.toLowerCase().search(
                 this.state.coordinator.toLowerCase()) !== -1
         })
 
     }
 
-    componentDidUpdate(prevProps, prevState){
+    componentDidUpdate(prevProps, prevState) {
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
                 rows: this.filter(),
@@ -158,10 +141,9 @@ class Contracts extends Component {
                 rows: this.filter(),
             })
         } else if (this.state.number !== prevState.number ||
-            this.state.contractObject !== prevState.contractObject ||
-            this.state.signedFrom !== prevState.signedFrom ||
-            this.state.signedTo !== prevState.signedTo ||
-            this.state.coordinator !== prevState.coordinator
+             this.state.saleFrom !== prevState.saleFrom ||
+             this.state.saleTo !== prevState.saleTo ||
+             this.state.coordinator !== prevState.coordinator
         ){
             this.setState({
                 rows: this.filter(),
@@ -172,20 +154,20 @@ class Contracts extends Component {
     }
 
     render(){
-        const { classes, isLoading, error, coordinators } = this.props;
-        const { headCells, rows, selected, year, signedFrom, signedTo, isDetailsVisible, action, coordinator } = this.state;
-        return (
+        const { classes, isLoading, error, coordinators} = this.props;
+        const { headCells, rows, selected, saleFrom, saleTo, year, isDetailsVisible, action, coordinator } = this.state;
+        return(
             <>
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialogError} variant="error"/>}
                 { isDetailsVisible ?
-                    <ContractContainer
-                        initialValues={selected}
+                    <InvoiceContainer
+                        initialValues={action === 'add' ? {} : selected}
                         action={action}
+                        applications={this.props.applications}
+                        contracts={this.props.contracts}
                         financialPlanPositions={this.props.financialPlanPositions}
                         investmentPlanPositions={this.props.investmentPlanPositions}
-                        contracts={this.props.initialValues}
-                        applications={this.props.applications}
                         onClose={this.handleCloseDetails}
                     />
                 :
@@ -196,7 +178,7 @@ class Contracts extends Component {
                             spacing={0}
                             className={classes.root}
                         >
-                            <Typography variant="h6">{constants.COORDINATOR_REALIZATION_CONTRACTS_TITLE}</Typography>
+                            <Typography variant="h6">{constants.COORDINATOR_REALIZATION_INVOICES_TITLE}</Typography>
                             <Divider />
                             <div className={classes.content}>
                                 <Grid container spacing={0} direction="row" justify="center" className={classes.container}>
@@ -216,7 +198,7 @@ class Contracts extends Component {
                                         <SearchField
                                             name="number"
                                             onChange={this.handleSearch}
-                                            label={constants.COORDINATOR_REALIZATION_CONTRACTS_NUMBER}
+                                            label={constants.COORDINATOR_REALIZATION_INVOICE_NUMBER}
                                             valueType="all"
                                         />
                                     </Grid>
@@ -231,26 +213,18 @@ class Contracts extends Component {
                                     </Grid>
                                     <Grid item xs={2} className={classes.item}>
                                         <DatePicker
-                                            id="signedFrom"
-                                            onChange={this.handleDataChange('signedFrom')}
-                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_SIGNED_FROM}
-                                            value={signedFrom}
+                                            id="saleFrom"
+                                            onChange={this.handleDataChange('saleFrom')}
+                                            label={constants.COORDINATOR_REALIZATION_INVOICE_SALE_FROM}
+                                            value={saleFrom}
                                         />
                                     </Grid>
                                     <Grid item xs={2} className={classes.item}>
                                         <DatePicker
-                                            id="signedTo"
-                                            onChange={this.handleDataChange('signedTo')}
-                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_SIGNED_TO}
-                                            value={signedTo}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} className={classes.item}>
-                                        <SearchField
-                                            name="contractObject"
-                                            onChange={this.handleSearch}
-                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_OBJECTS}
-                                            valueType="all"
+                                            id="saleTo"
+                                            onChange={this.handleDataChange('saleTo')}
+                                            label={constants.COORDINATOR_REALIZATION_INVOICE_SALE_TO}
+                                            value={saleTo}
                                         />
                                     </Grid>
                                 </Grid>
@@ -288,9 +262,9 @@ class Contracts extends Component {
             </>
         );
     };
-}
+};
 
-Contracts.propTypes = {
+Invoices.propTypes = {
 	classes: PropTypes.object.isRequired,
 	error: PropTypes.string,
 	isLoading: PropTypes.bool,
@@ -298,4 +272,4 @@ Contracts.propTypes = {
     loading: PropTypes.func,
 };
 
-export default withStyles(styles)(Contracts);
+export default withStyles(styles)(Invoices);

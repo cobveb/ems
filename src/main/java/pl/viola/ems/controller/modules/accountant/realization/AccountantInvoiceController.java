@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.viola.ems.payload.api.ApiResponse;
-import pl.viola.ems.service.modules.coordinator.realization.ContractService;
+import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
 
 @RestController
-@RequestMapping("/api/accountant/realization/contract/")
-public class AccountantContractController {
+@RequestMapping("/api/accountant/realization/invoice/")
+public class AccountantInvoiceController {
     @Autowired
-    ContractService contractService;
+    InvoiceService invoiceService;
 
-    @GetMapping("/{year}/getContracts")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('1144')")
-    public ApiResponse getContracts(@PathVariable int year) {
-        return new ApiResponse(HttpStatus.FOUND, contractService.getContractsByYear(year));
+    @GetMapping("/{year}/getInvoices")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1244')")
+    public ApiResponse getInvoices(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, invoiceService.getInvoicesByYear(year));
     }
 }

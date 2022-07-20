@@ -27,7 +27,12 @@ import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
 import pl.viola.ems.utils.Utils;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
+
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
@@ -71,6 +76,18 @@ public class InvoiceServiceImpl implements InvoiceService {
         coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
 
         return invoiceRepository.findByCoordinatorIn(coordinators);
+    }
+
+    @Override
+    public List<Invoice> getInvoicesByYear(final int year) {
+        if (year != 0) {
+            LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
+            Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
+            Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
+            return invoiceRepository.findBySellDateBetween(firstDay, lastDay);
+        } else {
+            return invoiceRepository.findAll();
+        }
     }
 
     @Transactional
@@ -142,7 +159,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
 
         if (invoicePosition.getPositionIncludedPlanType().equals(CoordinatorPlan.PlanType.FIN)) {
-            InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPosition(invoicePosition.getCoordinatorPlanPosition());
+            InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPositionIn(Collections.singletonList(invoicePosition.getCoordinatorPlanPosition()))
+                    .stream().filter(institutionCoordinatorPlanPosition1 -> !institutionCoordinatorPlanPosition1.getInstitutionPlanPosition().getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA))
+                    .findAny().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
             if (action.equals("add")) {
                 this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition, invoicePosition);
             } else if (action.equals("edit")) {
@@ -166,7 +185,9 @@ public class InvoiceServiceImpl implements InvoiceService {
         this.setCoordinatorPlanPositionAmountRealizedSubtract(invoicePosition);
 
         if (invoicePosition.getPositionIncludedPlanType().equals(CoordinatorPlan.PlanType.FIN)) {
-            InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPosition(invoicePosition.getCoordinatorPlanPosition());
+            InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPositionIn(Collections.singletonList(invoicePosition.getCoordinatorPlanPosition()))
+                    .stream().filter(institutionCoordinatorPlanPosition1 -> !institutionCoordinatorPlanPosition1.getInstitutionPlanPosition().getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA))
+                    .findAny().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
 
             this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition, invoicePosition);
         }
@@ -213,7 +234,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getAmountRealizedGross().add(invoicePosition.getAmountGross())
         );
 
-        if (!Arrays.asList(InstitutionPlan.InstitutionPlanStatus.RE, InstitutionPlan.InstitutionPlanStatus.AA).contains(institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().getStatus())) {
+        if (!Arrays.asList(InstitutionPlan.InstitutionPlanStatus.RE, InstitutionPlan.InstitutionPlanStatus.UT, InstitutionPlan.InstitutionPlanStatus.AA).contains(institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().getStatus())) {
             institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().setStatus(InstitutionPlan.InstitutionPlanStatus.RE);
         }
 

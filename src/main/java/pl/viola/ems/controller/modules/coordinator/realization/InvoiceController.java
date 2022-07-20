@@ -37,7 +37,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{invoiceId}/getInvoicePositions")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('1142')")
+    @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('1244', '1142')")
     public ApiResponse getInvoicePositions(@PathVariable Long invoiceId) {
         return new ApiResponse(HttpStatus.FOUND, invoiceService.getInvoicePositions(invoiceId));
     }

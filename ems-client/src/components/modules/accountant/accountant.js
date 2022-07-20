@@ -95,13 +95,12 @@ class Accountant extends Component {
                         path: '/modules/accountant/realization/contracts',
                         icon: <Description />
                     },
-                    /*{
+                    {
                         code: 'invoices',
                         name: constants.ACCOUNTANT_SUBMENU_REALIZATION_INVOICES,
                         path: '/modules/accountant/realization/invoices',
                         icon: <Description />
-                    },*/
-
+                    },
                 ],
             },
             {

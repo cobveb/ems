@@ -48,18 +48,15 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public List<Contract> getAllContracts() {
-        return contractRepository.findAll();
-    }
-
-
-    @Override
-    public Set<Contract> getContractsByYear(final int year) {
-
-        LocalDate curYear = LocalDate.of(year, Month.JANUARY, 01);
-        Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-        Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-        return contractRepository.findBySigningDateBetween(firstDay, lastDay);
+    public List<Contract> getContractsByYear(final int year) {
+        if (year != 0) {
+            LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
+            Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
+            Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
+            return contractRepository.findBySigningDateBetween(firstDay, lastDay);
+        } else {
+            return contractRepository.findAll();
+        }
     }
 
     @Transactional

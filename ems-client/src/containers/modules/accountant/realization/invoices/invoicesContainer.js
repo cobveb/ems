@@ -3,17 +3,18 @@ import { connect } from "react-redux";
 import * as constants from 'constants/uiNames';
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
-import Contracts from 'components/modules/accountant/realization/contracts/contracts';
-import {updateOnCloseDetails} from 'utils/';
-import ContractApi from 'api/modules/accountant/realization/contractApi';
+import Invoices from 'components/modules/accountant/realization/invoices/invoices';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
+import InvoiceApi from 'api/modules/accountant/realization/invoiceApi';
+import {updateOnCloseDetails} from 'utils/';
 
-class ContractsContainer extends Component {
+class InvoicesContainer extends Component {
     state = {
-        contracts: [],
+        applications:[],
+        invoices:[],
         financialPlanPositions:[],
         investmentPlanPositions:[],
-        applications:[],
+        contracts:[],
         coordinators: [
             {
                 code: '',
@@ -22,12 +23,12 @@ class ContractsContainer extends Component {
         ],
     }
 
-    handleGetContracts = () =>{
+    handleGetInvoices = () =>{
         this.props.loading(true);
-        ContractApi.getContracts(new Date().getFullYear())
+        InvoiceApi.getInvoices(new Date().getFullYear())
         .then(response =>{
             this.setState({
-                contracts: response.data.data,
+                invoices: response.data.data,
             })
             this.props.loading(false);
         })
@@ -35,7 +36,6 @@ class ContractsContainer extends Component {
     }
 
     handleGetCoordinators(){
-        this.props.loading(true);
         return OrganizationUnitsApi.getCoordinators()
         .then(response => {
             this.setState(prevState => {
@@ -43,61 +43,51 @@ class ContractsContainer extends Component {
                 coordinators =  coordinators.concat(response.data.data);
                 return {coordinators};
             });
-            this.props.loading(false)
         })
         .catch(error => {});
     }
 
     handleChangeYear = (year) => {
         if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
-        this.props.loading(true);
-            ContractApi.getContracts(year instanceof Date ? year.getFullYear() : 0)
+            this.props.loading(true);
+            InvoiceApi.getInvoices(year instanceof Date ? year.getFullYear() : 0)
             .then(response =>{
                 this.setState({
-                    contracts: response.data.data,
+                    invoices: response.data.data,
                 })
                 this.props.loading(false);
             })
             .catch(error => {})
         }
-//        else {
-//            ContractApi.getAllContracts()
-//            .then(response =>{
-//                this.setState({
-//                    contracts: response.data.data,
-//                })
-//                this.props.loading(false);
-//            })
-//            .catch(error => {})
-//        }
     }
 
-    handleUpdateOnCloseDetails = (contract) => {
-        return updateOnCloseDetails(this.state.contracts, contract);
+    handleUpdateOnCloseDetails = (invoice) => {
+        return updateOnCloseDetails(this.state.invoices, invoice);
     }
 
     componentDidMount(){
-        this.handleGetContracts();
+        this.handleGetInvoices();
         this.handleGetCoordinators();
     }
 
     render(){
         const { isLoading, error, clearError } = this.props;
-        return(
-            <>
-                <Contracts
-                    initialValues={this.state.contracts}
-                    financialPlanPositions={this.state.financialPlanPositions}
-                    investmentPlanPositions={this.state.investmentPlanPositions}
-                    applications={this.state.applications}
-                    coordinators={this.state.coordinators}
-                    isLoading={isLoading}
-                    error={error}
-                    clearError={clearError}
-                    onChangeYear={this.handleChangeYear}
-                    onClose={this.handleUpdateOnCloseDetails}
-                />
-            </>
+        return (
+            <Invoices
+                initialValues={this.state.invoices}
+                levelAccess="accountant"
+                isLoading={isLoading}
+                applications={this.state.applications}
+                coordinators={this.state.coordinators}
+                contracts={this.state.contracts}
+                financialPlanPositions={this.state.financialPlanPositions}
+                investmentPlanPositions={this.state.investmentPlanPositions}
+                coordinators={this.state.coordinators}
+                error={error}
+                clearError={clearError}
+                onChangeYear={this.handleChangeYear}
+                onClose={this.handleUpdateOnCloseDetails}
+            />
         );
     };
 }
@@ -116,4 +106,4 @@ function mapDispatchToProps (dispatch) {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ContractsContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(InvoicesContainer);
