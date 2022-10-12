@@ -54,13 +54,15 @@ public interface PlanService {
 
     List<CoordinatorPlan> getCoordinatorsPlanUpdates(String accessLevel, CoordinatorPlan.PlanType plan);
 
-    List<CoordinatorPlan> getPlansCoordinatorInDirector();
+    List<CoordinatorPlan> getPlansCoordinatorInDirector(boolean isPlanUpdates);
 
     CoordinatorPlanPosition deleteSubPosition(CoordinatorPlanSubPosition subPosition, Long positionId);
 
     void exportPlansToExcel(ExportType exportType, String accessLevel, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
 
     void exportPlanPositionsToExcel(ExportType exportType, CoordinatorPlan.PlanType planType, Long planId, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
+
+    void exportPlanPositionsInvoicesPositionsToXlsx(ExportType exportType, CoordinatorPlan.PlanType planType, Long planId, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
 
     void exportSubPositionsToExcel(ExportType exportType, CoordinatorPlan.PlanType planType, Long positionId, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
 
@@ -71,4 +73,6 @@ public interface PlanService {
     CoordinatorPlanPosition deleteTargetUnit(Long unitId);
 
     CoordinatorPlanPosition deleteInvestmentSource(Long positionId, Long sourceId);
+
+    List<CoordinatorPlanPosition> findCorrectedPlanPositions(CoordinatorPlanPosition coordinatorPlanPosition);
 }

@@ -93,8 +93,10 @@ public abstract class CoordinatorPlanPosition implements Serializable {
     private Set<CoordinatorPlanSubPosition> subPositions = new HashSet<>();
 
     public BigDecimal getAmountRequestedGross() {
-        if (!this.subPositions.isEmpty()) {
-            this.setAmountRequestedGross(this.getSubPositions().stream().map(CoordinatorPlanSubPosition::getAmountGross).reduce(BigDecimal.ZERO, BigDecimal::add));
+        if (!this.plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
+            if (!this.subPositions.isEmpty()) {
+                this.setAmountRequestedGross(this.getSubPositions().stream().map(CoordinatorPlanSubPosition::getAmountGross).reduce(BigDecimal.ZERO, BigDecimal::add));
+            }
         }
         return this.amountRequestedGross;
     }

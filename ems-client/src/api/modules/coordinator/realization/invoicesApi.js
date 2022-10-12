@@ -18,6 +18,10 @@ class InvoicesApi {
         return Axios.get(`/api/coordinator/realization/invoice/${invoiceId}/getInvoicePositions`)
     }
 
+    static getInvoicesPositionsByCoordinatorPlanPosition(planType, planPositionId){
+        return Axios.get(`/api/coordinator/realization/invoice/planPosition/${planType}/${planPositionId}/getInvoicePositions`)
+    }
+
     static saveInvoicePosition(invoiceId, action, data){
         return Axios.put(`/api/coordinator/realization/invoice/${invoiceId}/${action}/saveInvoicePosition`, data)
     }

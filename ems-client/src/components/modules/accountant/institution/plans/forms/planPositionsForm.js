@@ -80,20 +80,14 @@ class PlanPositionsForm extends Component {
                 subtype: 'amount',
             },
             {
-                id: 'amountCorrectGross',
+                id: 'amountRequestedGross',
                 label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
-                id: 'amountRequestedGross',
-                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_REQUESTED_AFTER_CORRECTED_GROSS,
-                suffix: 'zł.',
-                type: 'amount',
-            },
-            {
-                id: 'amountAwardedCorrectGross',
-                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
+                id: 'amountCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -103,6 +97,13 @@ class PlanPositionsForm extends Component {
                 suffix: 'zł.',
                 type: 'amount',
             },
+            {
+                id: 'amountAwardedCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+
             {
                 id: 'amountRealizedGross',
                 label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,

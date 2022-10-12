@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import { withStyles, Grid, Typography, Divider, Toolbar }  from '@material-ui/core/';
 import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
-import { Button, InputField } from 'common/gui';
+import { Button, InputField, SearchField } from 'common/gui';
 import * as constants from 'constants/uiNames';
 import { FormTableField, FormAmountField} from 'common/form';
-import { Cancel, Description, LibraryBooks, CheckCircle, DoneAll, PriorityHigh, Visibility, Redo } from '@material-ui/icons/';
+import { Cancel, Description, LibraryBooks, CheckCircle, DoneAll, PriorityHigh, Visibility, Redo, FolderOpen, Info } from '@material-ui/icons/';
 import PlanPositionRemarksFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planPositionRemarksFormContainer.js';
 import PlanInvestmentPositionFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planInvestmentPositionFormContainer.js';
+import PlanPositionRealizationContainer from 'containers/modules/coordinator/plans/planPositionRealizationContainer';
+import { escapeSpecialCharacters } from 'utils/';
+import PlanFinancialContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planFinancialContentPositionFormContainer';
 
 const styles = theme => ({
     content: {
@@ -34,7 +37,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(60.6)}px)`,
+        height: `calc(100vh - ${theme.spacing(66.5)}px)`,
     },
 });
 
@@ -45,7 +48,10 @@ class PlanBasicInfoForm extends Component {
         approveType: null,
         openRemarks: false,
         returnCoordinator: false,
+        openRealization: false,
+        openFinancialPositionDetails: false,
         positions: this.props.initialValues.positions,
+        codeNameSearch: '',
         selected:[],
         headFin: [
             {
@@ -327,12 +333,28 @@ class PlanBasicInfoForm extends Component {
     }
 
     handleRemarksPosition = (values) =>{
-            this.props.onRemarksPlanPosition(values);
-            this.setState({
-                openRemarks: !this.state.openRemarks,
-                selected: [],
-            });
-        }
+        this.props.onRemarksPlanPosition(values);
+        this.setState({
+            openRemarks: !this.state.openRemarks,
+            selected: [],
+        });
+    }
+
+    handleOpenRealization = () => {
+        this.setState({openRealization: !this.state.openRealization})
+    }
+
+    handleCloseRealization = () => {
+        this.setState({openRealization: !this.state.openRealization, selected: [],})
+    }
+
+    handleOpenFinancialPositionDetails = () => {
+        this.setState({openFinancialPositionDetails: !this.state.openFinancialPositionDetails})
+    }
+
+    handleCloseFinancialPositionDetails = () => {
+        this.setState({openFinancialPositionDetails: !this.state.openFinancialPositionDetails, selected: []})
+    }
 
     handleCloseDialog = () => {
         this.setState({
@@ -365,6 +387,39 @@ class PlanBasicInfoForm extends Component {
         this.setState(state => ({isDetailsVisible: !state.isDetailsVisible}));
     }
 
+    handleChangeSearch = (event) => {
+        this.setState({[event.target.name]: event.target.value})
+    }
+
+    filter = () => {
+        const {initialValues} = this.props;
+        let planPositions = this.props.initialValues.positions;
+        const codeNameSearch = escapeSpecialCharacters(this.state.codeNameSearch)
+        if(initialValues.type !== undefined && planPositions.length > 0){
+            switch(initialValues.type.code){
+                case("FIN"):
+                    return planPositions.filter(position => {
+                        return position.costType.code.toLowerCase().search(
+                            codeNameSearch.toLowerCase()) !== -1 ||
+                            position.costType.name.toLowerCase().search(
+                            codeNameSearch.toLowerCase()) !== -1
+                    });
+                case("INW"):
+                    return planPositions.filter(position => {
+                        return position.task.toLowerCase().search(
+                            codeNameSearch.toLowerCase()) !== -1
+                    });
+                case("PZP"):
+                    return planPositions.filter(position => {
+                        return position.assortmentGroup.name.toLowerCase().search(
+                            codeNameSearch.toLowerCase()) !== -1
+                    });
+                default:
+                    return null;
+            };
+        }
+    }
+
     handleExcelExport = (exportType) => {
         const {initialValues} = this.props;
         const {headFin, headInv, headPzp} = this.state;
@@ -373,17 +428,31 @@ class PlanBasicInfoForm extends Component {
                 headPzp)
     }
 
-    componentDidUpdate(prevProps){
+    componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues.positions !== prevProps.initialValues.positions){
             this.setState({
                 positions: this.props.initialValues.positions,
+            });
+        }
+
+        /* Filter position */
+        if (this.state.codeNameSearch !== prevState.codeNameSearch){
+            this.setState({
+                positions: this.filter(),
+            })
+        }
+        /* Filter positions on close position details */
+        if(this.state.action === '' && this.state.action !== prevState.action){
+            this.setState({
+                positions: this.filter(),
             });
         }
     }
 
     render(){
         const { handleSubmit, submitting, classes, initialValues } = this.props
-        const { headFin, headFinUpd, headInv, headInvUpd, headPzp, selected, positions, planAction, openRemarks, isDetailsVisible, returnCoordinator } = this.state;
+        const { headFin, headFinUpd, headInv, headInvUpd, headPzp, selected, positions, planAction, openRemarks,
+            isDetailsVisible, returnCoordinator, openRealization, codeNameSearch, openFinancialPositionDetails } = this.state;
         return(
             <>
                 { planAction &&
@@ -398,6 +467,7 @@ class PlanBasicInfoForm extends Component {
                     <PlanPositionRemarksFormContainer
                         initialValues={this.state.selected[0]}
                         planStatus={initialValues.status.code}
+                        planType={initialValues.type.code}
                         open={openRemarks}
                         level="director"
                         onSubmit={this.handleRemarksPosition}
@@ -410,6 +480,30 @@ class PlanBasicInfoForm extends Component {
                         variant="confirm"
                         onConfirm={this.handleConfirmReturn}
                         onClose={this.handleReturnCoordinator}
+                    />
+                }
+                {openRealization &&
+                    <PlanPositionRealizationContainer
+                        initialValues={selected[0]}
+                        planType={initialValues.type.code}
+                        open={openRealization}
+                        onClose={this.handleCloseRealization}
+                    />
+                }
+                {openFinancialPositionDetails &&
+                    <PlanFinancialContentPositionFormContainer
+                        initialValues={selected[0]}
+                        planStatus={initialValues.status.code}
+                        planUpdate={initialValues.isUpdate}
+                        action={"edit"}
+                        vats={this.props.vats}
+                        units={[]}
+                        costsTypes={[]}
+                        onSubmitPlanSubPosition={()=>{}}
+                        onDeletePlanSubPosition={()=>{}}
+                        onExcelExport={this.handleExcelExport}
+                        onClose={this.handleCloseFinancialPositionDetails}
+                        onSubmit={()=>{}}
                     />
                 }
                 {isDetailsVisible ?
@@ -580,6 +674,19 @@ class PlanBasicInfoForm extends Component {
                                     </Typography>
                                 </Toolbar>
                                 <Grid container spacing={0} justify="center" className={classes.container}>
+                                    <Grid item xs={12}>
+                                        <SearchField
+                                            name="codeNameSearch"
+                                            onChange={this.handleChangeSearch}
+                                            label={this.props.initialValues.type !== undefined && (
+                                                this.props.initialValues.type.code === 'FIN' ? constants.ACCOUNTANT_INSTITUTION_POSITION_SEARCH_COST_TYPE :
+                                                    this.props.initialValues.type.code === 'PZP' ? constants.COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP :
+                                                        constants.COORDINATOR_PLAN_POSITIONS_HEAD_TASK
+                                            )}
+                                            valueType='all'
+                                            value={codeNameSearch}
+                                        />
+                                    </Grid>
                                     <Grid item xs={12} sm={12} >
                                         <FormTableField
                                             className={classes.tableWrapper}
@@ -678,6 +785,26 @@ class PlanBasicInfoForm extends Component {
                                                 variant="cancel"
                                                 disabled={selected.length === 0 ||  selected.length > 1}
                                                 onClick={this.handleRemarks}
+                                            />
+                                        }
+                                        {initialValues.type !== undefined &&
+                                            <Button
+                                                label={constants.ACCOUNTANT_MENU_REALIZATION}
+                                                icon=<FolderOpen />
+                                                iconAlign="left"
+                                                variant="add"
+                                                disabled={selected.length === 0}
+                                                onClick={this.handleOpenRealization}
+                                            />
+                                        }
+                                        { (initialValues.type !== undefined && initialValues.type.code === "FIN") &&
+                                            <Button
+                                                label={constants.BUTTON_DETAILS}
+                                                icon=<Info />
+                                                iconAlign="left"
+                                                variant="cancel"
+                                                disabled={selected.length === 0 || selected.length > 1}
+                                                onClick={this.handleOpenFinancialPositionDetails}
                                             />
                                         }
                                     </Grid>

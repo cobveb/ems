@@ -42,6 +42,7 @@ class CostType extends Component {
                             initialValues={initialValues}
                             coordinators={coordinators}
                             onSubmit={this.handleSubmit}
+                            onDeleteYear={this.props.onDeleteYear}
                             onClose={this.handleClose}
                             onExcelExport={this.props.onExcelExport}
                             action={action}

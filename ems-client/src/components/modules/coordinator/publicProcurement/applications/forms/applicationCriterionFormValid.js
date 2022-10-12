@@ -7,7 +7,14 @@ export const validate =  ( values, props ) => {
         'value', 'name'
     ]
     requiredFields.forEach(field => {
-        if (!values[field]) {
+        // Allow 0 to value criterion
+        if (field === "value"){
+            if(values["value"] !== 0){
+                if(!values[field] ){
+                    errors.value = constants.FORM_ERROR_MSG_REQUIRED_FIELD
+                }
+            }
+        } else if (!values[field]) {
             errors[field] = constants.FORM_ERROR_MSG_REQUIRED_FIELD
         }
     })
@@ -17,6 +24,9 @@ export const validate =  ( values, props ) => {
                 errors.value = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_INVALID_VALUE;
         } else {
             const curCriteriaValue = props.criteria.reduce((prev, cur) => prev + cur.value, 0)
+            console.log(curCriteriaValue)
+            console.log(values.value)
+            console.log(props.initialValues.value)
             if(props.action === 'add'){
                 if( curCriteriaValue + values.value > 100){
                     errors.value = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_INVALID_COUNT_VALUE;

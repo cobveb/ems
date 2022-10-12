@@ -33,6 +33,10 @@ class PlansApi {
         return  Axios.put(`/api/accountant/coordinator/plan/withdrawPlan/${planId}`)
     }
 
+    static returnPlan(planId){
+        return  Axios.put(`/api/accountant/coordinator/plan/returnPlan/${planId}`)
+    }
+
     static exportPlansToExcel(exportType, data){
         return Axios.put(`/api/accountant/coordinator/export/plans/${exportType}`, data, {responseType: 'blob'})
     }

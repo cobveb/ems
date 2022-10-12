@@ -3,7 +3,7 @@ import { change } from 'redux-form';
 import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { Spinner, ModalDialog } from 'common/';
-import { withStyles, Grid, Divider, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Typography, Toolbar } from '@material-ui/core/';
+import { withStyles, Grid, Divider, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Typography, Toolbar, FormControl, FormHelperText } from '@material-ui/core/';
 import { Button, InputField } from 'common/gui';
 import { Save, Cancel, Close, Description, Edit, LibraryBooks } from '@material-ui/icons/';
 import { FormAmountField, FormDictionaryField, FormSelectField, FormTableField, FormDigitsField, FormCheckBox } from 'common/form';
@@ -210,7 +210,6 @@ class ApplicationAssortmentGroupsForm extends Component {
         }
 
         if(this.state.selected.length > 0 && this.props.initialValues.applicationAssortmentGroupPlanPositions !== undefined){
-            console.log(this.state.selected)
             const idx = this.props.initialValues.applicationAssortmentGroupPlanPositions.findIndex(planPosition => planPosition.id === this.state.selected[0].id)
             if(this.state.selected[0] !== this.props.initialValues.applicationAssortmentGroupPlanPositions[idx]){
                 this.setState(prevState =>{
@@ -228,7 +227,7 @@ class ApplicationAssortmentGroupsForm extends Component {
 
     render(){
         const { classes, isLoading, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, publicProcurementPlanPositions, planPositions, vats, orderGroupValueNet, applicationProcurementPlanPosition,
-            applicationStatus, orderIncludedPlanType, action, isOption, levelAccess, isParts } = this.props;
+            applicationStatus, orderIncludedPlanType, action, isOption, levelAccess, isParts, formErrors } = this.props;
         const { tableHeadYears, positionAction, tableHeadPositionsFin, tableHeadPositionsInw, openApplicationPositionDetails, selected, applicationAssortmentGroupPlanPositions } = this.state;
         return(
             <>
@@ -414,12 +413,17 @@ class ApplicationAssortmentGroupsForm extends Component {
                                 <Grid container spacing={1} justify="center" className={classes.container}>
                                     <Grid item xs={12} >
                                         <Toolbar className={classes.toolbarTable}>
-                                            <LibraryBooks className={classes.subHeaderIcon} fontSize="small" />
-                                            <Typography variant="subtitle1" >
-                                                {orderIncludedPlanType === 'FIN' ? constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_PLAN_TYPE_FIN
-                                                    : constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_PLAN_TYPE_INW
+                                            <FormControl error>
+                                                <Typography variant="subtitle1" >
+                                                    <LibraryBooks className={classes.subHeaderIcon} fontSize="small" />
+                                                    {orderIncludedPlanType === 'FIN' ? constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_PLAN_TYPE_FIN
+                                                        : constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_PLAN_TYPE_INW
+                                                    }
+                                                </Typography>
+                                                { formErrors.planPositions !== undefined &&
+                                                    <FormHelperText>{formErrors.planPositions}</FormHelperText>
                                                 }
-                                         </Typography>
+                                            </FormControl>
                                         </Toolbar>
                                         <FormTableField
                                             className={classes.tableWrapper}

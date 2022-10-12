@@ -50,6 +50,10 @@ class PlansApi {
         return Axios.put(`/api/coordinator/export/planPositionSubPositions/${planType}/${positionId}/${exportType}`, data, {responseType: 'blob'})
     }
 
+    static exportPlanPositionInvoicesPositionToExcel(exportType, planType, positionId, data){
+        return Axios.put(`/api/coordinator/export/planPositionInvoicesPositions/${planType}/${positionId}/${exportType}`, data, {responseType: 'blob'})
+    }
+
     static printPlan(planId){
         return Axios.get(`/api/coordinator/plan/print/${planId}`, {responseType: 'blob'})
     }

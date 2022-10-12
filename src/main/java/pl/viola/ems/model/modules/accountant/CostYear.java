@@ -33,7 +33,7 @@ public class CostYear {
 
     @JsonIgnore
     @NonNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "cost_type_id")
     private CostType costType;
 

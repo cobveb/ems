@@ -107,7 +107,7 @@ public class Application implements DictItem {
     @JoinColumn(name = "order_reason_lack_parts_id", referencedColumnName = "id")
     private Text orderReasonLackParts;
 
-    @Size(max = 200)
+    @Size(max = 250)
     private String cpv;
 
     @Size(max = 200)

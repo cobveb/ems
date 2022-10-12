@@ -140,6 +140,18 @@ class Plans extends Component {
         }));
     }
 
+    handleCloseOnReturnPlan = (plan) => {
+        this.setState(prevState => {
+            let rows = [...prevState.rows];
+            let selected = {...prevState.rows};
+            let isDetailsVisible = prevState.isDetailsVisible;
+            isDetailsVisible = !isDetailsVisible;
+            selected = {};
+            rows = rows.filter(row => row.id !== plan.id);
+            return {rows, selected, isDetailsVisible}
+        })
+    }
+
     handleSelect = (id) => {
         this.setState({selected: id});
     }
@@ -233,7 +245,7 @@ class Plans extends Component {
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
 
                 <div>
-                    { isDetailsVisible ?
+                    { (isDetailsVisible && selected.type !== undefined ) ?
                         selected.type.code !== 'PZP' ?
                             <PlanContainer
                                 initialValues={selected}
@@ -242,6 +254,7 @@ class Plans extends Component {
                                 levelAccess="accountant"
                                 changeAction={this.handleChangeAction}
                                 handleClose={this.handleClose}
+                                handleCloseOnReturn={this.handleCloseOnReturnPlan}
                                 statuses={statuses}
                                 investmentCategories={this.props.investmentCategories}
                                 modes={this.props.modes}

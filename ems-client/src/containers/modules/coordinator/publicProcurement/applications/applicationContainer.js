@@ -1022,7 +1022,7 @@ class ApplicationContainer extends Component {
                 onDeleteProtocolPrice={this.handleDeleteProtocolPrice}
                 onApproveApplication={this.props.onApproveApplication}
                 onSendBackApplication={this.props.onSendBackApplication}
-                onRollbackRealisation={this.props.handleRollbackRealization}
+                onRollbackRealisation={this.handleRollbackRealization}
                 onSend={this.handleSendApplication}
                 onRealized={this.handleConfirmRealization}
                 onExcelPartsExport={this.handlePartsExcelExport}

@@ -1,4 +1,4 @@
-import { reduxForm, formValueSelector } from 'redux-form';
+import { reduxForm, formValueSelector, getFormSyncErrors } from 'redux-form';
 import { connect } from 'react-redux';
 import ApplicationAssortmentGroupsForm from 'components/modules/coordinator/publicProcurement/applications/forms/applicationAssortmentGroupsForm';
 import {validate} from 'components/modules/coordinator/publicProcurement/applications/forms/applicationAssortmentGroupsFormValid';
@@ -22,6 +22,7 @@ ApplicationAssortmentGroupsFormContainer = connect(
         const amountContractAwardedNet = selector(state, 'amountContractAwardedNet')
         const optionValue = selector(state, "optionValue")
         const isOption = selector(state, "isOption")
+        const formErrors =  getFormSyncErrors('ApplicationAssortmentGroupsForm')(state);
         return {
             applicationProcurementPlanPosition,
             orderGroupValueNet,
@@ -30,7 +31,8 @@ ApplicationAssortmentGroupsFormContainer = connect(
             amountContractAwardedNet,
             vat,
             optionValue,
-            isOption
+            isOption,
+            formErrors
         }
     }
 )(ApplicationAssortmentGroupsFormContainer)

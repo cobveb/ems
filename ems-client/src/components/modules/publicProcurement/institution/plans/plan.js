@@ -272,7 +272,7 @@ class Plan extends Component {
     render(){
         const { classes, isLoading, error, initialValues, levelAccess } = this.props;
         const { selected, headPzp, headPzpUpd, rows, isDetailsVisible, splitOptions, disabledApprove, planAction } = this.state;
-        console.log(initialValues.planPositions)
+
         return(
             <>
                 {isLoading && <Spinner />}

@@ -39,16 +39,13 @@ class ApplicationsContainer extends Component {
     }
 
     handleGetCoordinators(){
-        this.props.loading(true);
         PublicProcurementApplicationApi.getCoordinators()
         .then(response => {
             this.setState({
                 coordinators: response.data.data,
             });
-            this.props.loading(false)
         })
         .catch(error => {
-            this.props.loading(false);
         });
     }
 

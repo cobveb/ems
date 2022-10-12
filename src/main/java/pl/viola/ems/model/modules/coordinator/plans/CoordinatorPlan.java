@@ -3,6 +3,7 @@ package pl.viola.ems.model.modules.coordinator.plans;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 
@@ -13,8 +14,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@ToString(exclude = {"coordinator", "positions"})
-@EqualsAndHashCode(exclude = {"coordinator", "positions"})
+@ToString(exclude = {"coordinator", "positions", "institutionPlan"})
+@EqualsAndHashCode(exclude = {"coordinator", "positions", "institutionPlan"})
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -116,6 +117,11 @@ public class CoordinatorPlan {
 
     @JoinColumn(name = "update_number")
     private Integer updateNumber;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "institution_plan_id")
+    private InstitutionPlan institutionPlan;
 
     public void removePosition(CoordinatorPlanPosition position) {
         positions.remove(position);

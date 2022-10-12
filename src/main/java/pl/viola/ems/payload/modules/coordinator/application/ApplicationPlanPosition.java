@@ -20,4 +20,8 @@ public class ApplicationPlanPosition {
 
     private BigDecimal amountAwardedGross;
 
+    private BigDecimal amountRealizedNet;
+
+    private BigDecimal amountRealizedGross;
+
 }

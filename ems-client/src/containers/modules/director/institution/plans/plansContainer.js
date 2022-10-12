@@ -2,14 +2,23 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
+import * as constants from 'constants/uiNames';
 import Plans from 'components/modules/accountant/institution/plans/plans';
 import PlansApi from 'api/modules/director/institution/plansApi';
-import {updateOnCloseDetails, findSelectFieldPosition, getCoordinatorPlanTypes, generateExportLink} from 'utils';
+import {updateOnCloseDetails, findSelectFieldPosition, getCoordinatorPlanTypes, generateExportLink, getInstitutionPlanStatuses} from 'utils';
 
 class PlansContainer extends Component {
     state = {
         plans: [],
-        types: getCoordinatorPlanTypes(),
+        types: [
+            {
+               code: '',
+               name: constants.COORDINATOR_PLAN_TYPE,
+            },
+        ].concat(getCoordinatorPlanTypes()
+            .filter(type => type.code !== 'INW')
+        ),
+        statuses: getInstitutionPlanStatuses(),
     }
 
     handleGetPlans(){
@@ -23,6 +32,7 @@ class PlansContainer extends Component {
                     Object.assign(plan,
                         {
                             type: plan.type = findSelectFieldPosition(this.state.types, plan.type),
+                            status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
                         }
                     )
                 ))
@@ -54,13 +64,14 @@ class PlansContainer extends Component {
 
     render(){
         const {isLoading, error, levelAccess} = this.props;
-        const {plans, types} = this.state;
+        const {plans, types, statuses } = this.state;
         return(
             <Plans
                 initialValues={plans}
                 levelAccess={levelAccess}
                 isLoading={isLoading}
                 types={types}
+                statuses={statuses}
                 error={error}
                 onClose={this.handleUpdateOnCloseDetails}
                 onExcelExport={this.handleExcelExport}

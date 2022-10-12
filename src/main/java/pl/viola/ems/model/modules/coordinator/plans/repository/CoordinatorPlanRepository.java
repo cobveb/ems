@@ -2,6 +2,7 @@ package pl.viola.ems.model.modules.coordinator.plans.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 
@@ -17,7 +18,11 @@ public interface CoordinatorPlanRepository extends JpaRepository<CoordinatorPlan
 
     List<CoordinatorPlan> findByStatusInAndCorrectionPlanIsNull(List<CoordinatorPlan.PlanStatus> statuses);
 
+    List<CoordinatorPlan> findByStatusInAndCorrectionPlanIsNotNull(List<CoordinatorPlan.PlanStatus> statuses);
+
     List<CoordinatorPlan> findByStatusInAndCoordinatorInAndCorrectionPlanIsNull(List<CoordinatorPlan.PlanStatus> statuses, Set<OrganizationUnit> coordinator);
+
+    List<CoordinatorPlan> findByStatusInAndCoordinatorInAndCorrectionPlanIsNotNull(List<CoordinatorPlan.PlanStatus> statuses, Set<OrganizationUnit> coordinator);
 
     List<CoordinatorPlan> findByStatusInAndTypeIn(List<CoordinatorPlan.PlanStatus> statuses, List<CoordinatorPlan.PlanType> types);
 
@@ -30,5 +35,7 @@ public interface CoordinatorPlanRepository extends JpaRepository<CoordinatorPlan
     List<CoordinatorPlan> findByStatusAndTypeAndYear(CoordinatorPlan.PlanStatus status, CoordinatorPlan.PlanType type, int year);
 
     List<CoordinatorPlan> findByStatusInAndTypeAndYear(List<CoordinatorPlan.PlanStatus> statuses, CoordinatorPlan.PlanType type, int year);
+
+    Set<CoordinatorPlan> findByInstitutionPlan(InstitutionPlan institutionPlan);
 
 }

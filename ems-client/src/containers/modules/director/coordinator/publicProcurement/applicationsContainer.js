@@ -154,7 +154,6 @@ class ApplicationsContainer extends Component {
     }
 
     handleGetCoordinators(){
-        this.props.loading(true);
         return OrganizationUnitsApi.getCoordinators()
         .then(response => {
             this.setState(prevState => {
@@ -162,7 +161,6 @@ class ApplicationsContainer extends Component {
                 coordinators =  coordinators.concat(response.data.data);
                 return {coordinators};
             });
-            this.props.loading(false)
         })
         .catch(error => {});
     }

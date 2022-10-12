@@ -247,6 +247,25 @@ class PlanFinancialContentPosition extends Component {
                                         value={ Object.keys(initialValues).length !== 0 && initialValues.status ? initialValues.status.name : ''}
                                     />
                                 </Grid>
+                                { planUpdate &&
+                                    <>
+                                        <Grid item xs={2}>
+                                            <FormAmountField
+                                                name="correctionPlanPosition.amountAwardedNet"
+                                                label={constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_NET}
+                                                suffix={'zł.'}
+                                                disabled
+                                            />
+                                        </Grid>
+                                        <Grid item xs={2}>
+                                            <FormAmountField
+                                                name="correctionPlanPosition.amountAwardedGross"
+                                                label={constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_GROSS}
+                                                disabled
+                                            />
+                                        </Grid>
+                                    </>
+                                }
                                 <Grid item xs={2}>
                                     <FormSelectField
                                         isRequired={true}
@@ -257,25 +276,34 @@ class PlanFinancialContentPosition extends Component {
                                         disabled={planStatus!=='ZP' && true}
                                     />
                                 </Grid>
-                                <Grid item xs={5}>
+                                <Grid item xs={planUpdate ? 3 : 5}>
                                     <FormAmountField
                                         name="amountRequestedNet"
-                                        label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_NET}
+                                        label={planUpdate ?
+                                            constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT_NET :
+                                                constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_NET
+                                        }
                                         suffix={'zł.'}
                                         disabled
                                     />
                                 </Grid>
-                                <Grid item xs={5}>
+                                <Grid item xs={planUpdate ? 3 : 5}>
                                     <FormAmountField
                                         name="amountRequestedGross"
-                                        label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS}
+                                        label={planUpdate ?
+                                            constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT :
+                                                constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS
+                                        }
                                         disabled
                                     />
                                 </Grid>
                                 <Grid item xs={3} >
                                     <FormAmountField
                                         name="amountAwardedNet"
-                                        label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_NET}
+                                        label={planUpdate ?
+                                            constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AWARDED_AFTER_CORRECTED_NET :
+                                                constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_NET
+                                        }
                                         suffix={'zł.'}
                                         disabled
                                     />
@@ -283,7 +311,10 @@ class PlanFinancialContentPosition extends Component {
                                 <Grid item xs={3} >
                                     <FormAmountField
                                         name="amountAwardedGross"
-                                        label={constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS}
+                                        label={planUpdate ?
+                                            constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AWARDED_AFTER_CORRECTED_GROSS :
+                                                constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS
+                                        }
                                         suffix={'zł.'}
                                         disabled
                                     />

@@ -110,7 +110,9 @@ public class InstitutionCoordinatorPlanPosition {
 
     public BigDecimal getAmountAwardedCorrectGross() {
         return correctionPlanCoordinatorPosition != null ?
-                coordinatorPlanPosition.getAmountAwardedGross().subtract(correctionPlanCoordinatorPosition.getCoordinatorPlanPosition().getAmountAwardedGross())
+                coordinatorPlanPosition.getAmountAwardedGross() != null ?
+                        coordinatorPlanPosition.getAmountAwardedGross().subtract(correctionPlanCoordinatorPosition.getCoordinatorPlanPosition().getAmountAwardedGross())
+                        : null
                 : coordinatorPlanPosition.getAmountAwardedGross();
     }
 

@@ -108,11 +108,11 @@ class CostYearForm extends Component {
                                     <Divider />
                                 </Grid>
                                 <Button
-                                    label={action ==='add' ? constants.BUTTON_ADD : constants.BUTTON_EDIT}
-                                    icon={action === 'add' ? <Add/> : <Edit/>}
+                                    label={constants.BUTTON_ADD}
+                                    icon={<Add/>}
                                     iconAlign="right"
                                     type='submit'
-                                    variant={action === 'add' ? 'add' : 'edit'}
+                                    variant={'add'}
                                     disabled={pristine || submitting || invalid || submitSucceeded }
                                 />
                                 <Button

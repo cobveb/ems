@@ -3,11 +3,12 @@ import { change } from 'redux-form';
 import { withStyles, Grid, Typography, Divider, Toolbar }  from '@material-ui/core/';
 import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
-import { Button, InputField } from 'common/gui';
+import { Button, InputField, SearchField } from 'common/gui';
 import * as constants from 'constants/uiNames';
 import { FormTableField, FormAmountField } from 'common/form';
 import { Cancel, Description, LibraryBooks, Visibility, DoneAll, CheckCircle } from '@material-ui/icons/';
 import PlanPublicProcurementContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planPublicProcurementContentPositionFormContainer';
+import { escapeSpecialCharacters } from 'utils/';
 
 const styles = theme => ({
     content: {
@@ -29,7 +30,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(64.4)}px)`,
+        height: `calc(100vh - ${theme.spacing(70.5)}px)`,
     },
 });
 
@@ -41,6 +42,7 @@ class PlanBasicInfoForm extends Component {
         approveType: null,
         positions: this.props.initialValues.positions,
         selected:[],
+        codeNameSearch: '',
         headPzp: [
             {
                 id: 'assortmentGroup.name',
@@ -94,7 +96,6 @@ class PlanBasicInfoForm extends Component {
     renderPlanContent = () =>{
         const { initialValues, vats, units, modes, assortmentGroups, orderTypes, estimationTypes} = this.props;
         const { positionAction, selected } = this.state;
-        console.log(selected)
         switch(initialValues.type.code){
             case("PZP"):
                 return(
@@ -161,6 +162,19 @@ class PlanBasicInfoForm extends Component {
         });
     }
 
+    handleChangeSearch = (event) => {
+        this.setState({[event.target.name]: event.target.value})
+    }
+
+    filter = () => {
+        let planPositions = this.props.initialValues.positions;
+        const codeNameSearch = escapeSpecialCharacters(this.state.codeNameSearch)
+        return planPositions.filter(position => {
+            return position.assortmentGroup.name.toLowerCase().search(
+                codeNameSearch.toLowerCase()) !== -1
+        });
+    }
+
     handleExcelExport = (exportType) => {
         this.props.onExcelExport(exportType, this.state.headPzp)
     }
@@ -199,11 +213,24 @@ class PlanBasicInfoForm extends Component {
                 positions: this.props.initialValues.positions,
             });
         }
+
+        /* Filter position */
+        if (this.state.codeNameSearch !== prevState.codeNameSearch){
+            this.setState({
+                positions: this.filter(),
+            })
+        }
+        /* Filter positions on close position details */
+        if(this.state.action === '' && this.state.action !== prevState.action){
+            this.setState({
+                positions: this.filter(),
+            });
+        }
     }
 
     render(){
         const { handleSubmit, submitting, classes, initialValues } = this.props;
-        const { headPzp, selected, openPositionDetails, positions, planAction } = this.state;
+        const { headPzp, selected, openPositionDetails, positions, planAction, codeNameSearch } = this.state;
         return(
             <>
                 {planAction && this.renderDialog()}
@@ -340,6 +367,16 @@ class PlanBasicInfoForm extends Component {
                                 </Typography>
                             </Toolbar>
                             <Grid container spacing={0} justify="center" className={classes.container}>
+                                <Grid item xs={12}>
+                                    <SearchField
+                                        name="codeNameSearch"
+                                        onChange={this.handleChangeSearch}
+                                        label={ constants.COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP}
+                                        valueType='all'
+                                        value={codeNameSearch}
+                                        disabled={this.props.initialValues.positions.length === 0}
+                                    />
+                                </Grid>
                                 <Grid item xs={12} sm={12} >
                                     <FormTableField
                                         className={classes.tableWrapper}
@@ -381,7 +418,10 @@ class PlanBasicInfoForm extends Component {
                             alignItems="flex-start"
                             className={classes.container}
                         >
-                            {initialValues.status !== undefined && initialValues.status.code === 'WY' &&
+                            {/*
+                                Approve coordinator plans only by approve public procurement institution plan
+                            */}
+                            {(initialValues.status !== undefined && initialValues.status.code === 'WY' && initialValues.correctionPlan !== null) &&
                                 <Button
                                     label={constants.BUTTON_APPROVE}
                                     icon=<DoneAll/>

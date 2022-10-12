@@ -127,7 +127,7 @@ class PlanContainer extends Component {
 //                                )
 //                            ))
 //                        }
-if(initData.isUpdate && initData.positions.length > 0){
+                    if(initData.isUpdate && initData.positions.length > 0){
                             this.setUpCorrectValue(initData.positions)
                         }
                         return {initData};
@@ -298,7 +298,13 @@ if(initData.isUpdate && initData.positions.length > 0){
             if(index !== null){
                 position['amountAwardedNet'] = position['amountRequestedNet'];
                 position['amountAwardedGross'] = position['amountRequestedGross'];
-                position.status = findSelectFieldPosition(this.state.statuses, "ZA");
+                if(!this.state.initData.isUpdate){
+                    /* Change position status to accept if current plan is base financial plan */
+                    position.status = findSelectFieldPosition(this.state.statuses, "ZA");
+                } else {
+                    /* Change position status to corrected if current plan is financial plan update */
+                    position.status = findSelectFieldPosition(this.state.statuses, "SK");
+                }
                 this.state.initData.positions.splice(index, 1, position);
             }
             return position;
@@ -352,6 +358,17 @@ if(initData.isUpdate && initData.positions.length > 0){
         .catch(error =>{});
     }
 
+    handleReturnPlan = () => {
+        this.props.loading(true);
+        PlansApi.returnPlan(this.state.initData.id)
+        .then(response =>{
+            this.props.handleCloseOnReturn(this.state.initData);
+            this.props.loading(false)
+        })
+        .catch(error =>{});
+
+    }
+
     handleExcelExport = (exportType, headRow) =>{
         this.props.loading(true);
         PlansApi.exportPlanPositionsToExcel(exportType, this.state.initData.type.code, this.state.initData.id, headRow)
@@ -390,6 +407,7 @@ if(initData.isUpdate && initData.positions.length > 0){
                     onApprovePlan={this.handleApprovePlan}
                     onForwardPlan={this.handleForwardPlan}
                     onWithdrawPlan={this.handleWithdrawPlan}
+                    onReturnPlan={this.handleReturnPlan}
                     onClose={handleClose}
                     onExcelExport={this.handleExcelExport}
                     fundingSources={fundingSources}

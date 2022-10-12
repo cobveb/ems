@@ -114,29 +114,23 @@ export const validate =  ( values, props ) => {
                         errors[field] = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE
                     }
                 }
+            } else if (field === "assortmentGroups"){
+                if(values[field].length === 0){
+                    errors["assortmentGroups"] = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE
+                }
+                else if (values[field].length > 0) {
+                    values[field].forEach(group => {
+                        if(group.applicationAssortmentGroupPlanPositions.length === 0){
+                            errors["planPositions"] = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENTS_GROUPS_PLAN_POSITION_REQUIRE
+                        }
+                    })
+
+                }
             } else if(values[field].length === 0 ){
                 errors[field] = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE
             }
         })
     }
 
-
-//
-//    if(values.orderValueNet){
-//        console.log(values.assortmentGroups)
-//        console.log(props.formCurrentValues.assortmentGroups)
-//        const maxOrderValueNet = values.assortmentGroups.reduce((prev, cur) => prev + cur.amountRequestedNet, 0);
-//        console.log(maxOrderValueNet)
-//        console.log(values.orderValueNet)
-//        if(maxOrderValueNet < values.orderValueNet){
-//            errors.orderValueNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENTS_GROUPS_NET_EXCEEDED;
-//        }
-//    }
-//
-//    if(values.orderValueYearNet){
-//        if(values.orderValueNet < values.orderValueYearNet){
-//            errors.orderValueYearNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_NET_EXCEEDED;
-//        }
-//    }
     return errors
 }

@@ -33,13 +33,15 @@ public class FinancialPosition extends CoordinatorPlanPosition {
 
     public BigDecimal getAmountCorrectGross() {
         return super.getCorrectionPlanPosition() != null ?
-                super.getAmountRequestedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
+            super.getAmountRequestedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
                 : null;
     }
 
     public BigDecimal getAmountAwardedCorrectGross() {
         return super.getCorrectionPlanPosition() != null ?
-                super.getAmountAwardedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
+                super.getAmountAwardedGross() != null ?
+                        super.getAmountAwardedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
+                        : null
                 : null;
     }
 

@@ -50,8 +50,6 @@ class PlanCorrectionPositionForm extends Component {
     render(){
         const { classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, planStatus, planType, level } = this.props;
         const { formChanged } = this.state;
-        console.log(initialValues)
-        console.log(planType)
         return(
             <>
                 <Dialog

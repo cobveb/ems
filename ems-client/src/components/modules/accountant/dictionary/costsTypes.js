@@ -5,9 +5,10 @@ import ModalDialog from 'common/modalDialog';
 import Spinner from 'common/spinner';
 import * as constants from 'constants/uiNames';
 import { Table, Button, SearchField } from 'common/gui';
-import { Delete, Add, Edit } from '@material-ui/icons/';
+import { Delete, Add, Edit, Settings } from '@material-ui/icons/';
 import CostTypeContainer from 'containers/modules/accountant/dictionary/costTypeContainer';
 import {escapeSpecialCharacters} from 'utils/';
+import GeneratorCostsTypesContainer from 'containers/modules/accountant/dictionary/generatorCostTypeContainer';
 
 const styles = theme => ({
     tableWrapper: {
@@ -34,6 +35,8 @@ class CostsTypes extends Component {
         codeNameSearch: '',
         isDetailsVisible: false,
         action:'',
+        openGenerator: false,
+        generateMsg: null,
     }
 
     filter = () => {
@@ -88,6 +91,9 @@ class CostsTypes extends Component {
 
     handleCloseDialog = () => {
         this.props.clearError(null);
+        if(this.state.generateMsg !== null){
+            this.setState(state => ({ generateMsg: null}));
+        }
     }
 
     handleDelete = (event, action) => {
@@ -102,7 +108,25 @@ class CostsTypes extends Component {
         });
     }
 
+    handleGenerateMsg = (msg) => {
+        this.setState({
+            generateMsg: msg,
+        })
+    }
+
+    handleGenerateCostsTypes = (msg) => {
+        this.setState({
+            openGenerator: !this.state.openGenerator,
+        })
+    }
+
     componentDidUpdate(prevProps, prevState){
+        // Filter rows on close application
+        if(this.state.action === '' && this.state.action !== prevState.action){
+            this.setState({
+                rows: this.filter(),
+            });
+        }
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
                 rows: this.props.initialValues,
@@ -115,11 +139,18 @@ class CostsTypes extends Component {
     }
 
     render(){
-        const { classes, isLoading, error, coordinators, initialValues } = this.props;
-        const { headCells, rows, selected, action } = this.state;
+        const { classes, isLoading, error, coordinators, initialValues} = this.props;
+        const { headCells, rows, selected, action, codeNameSearch, openGenerator, generateMsg } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
+                {generateMsg &&
+                    <ModalDialog
+                        message={generateMsg}
+                        variant="info"
+                        onClose={this.handleCloseDialog}
+                    />
+                }
                 {action === "delete" &&
                     <ModalDialog
                         message={constants.ACCOUNTANT_COSTS_TYPES_CONFIRM_DELETE_MESSAGE}
@@ -129,6 +160,13 @@ class CostsTypes extends Component {
                     />
                 }
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
+                { openGenerator &&
+                    <GeneratorCostsTypesContainer
+                        open={openGenerator}
+                        setupGenerateMsg={this.handleGenerateMsg}
+                        onClose={this.handleGenerateCostsTypes}
+                    />
+                }
                 <div>
                     {this.state.isDetailsVisible ?
                         <CostTypeContainer
@@ -157,6 +195,7 @@ class CostsTypes extends Component {
                                             label={constants.ACCOUNTANT_COSTS_TYPES_SEARCH_NUMBER_NAME}
                                             placeholder={constants.ACCOUNTANT_COSTS_TYPES_SEARCH_NUMBER_NAME}
                                             valueType='all'
+                                            value={codeNameSearch}
                                         />
                                     </Grid>
                                 </Grid>
@@ -175,33 +214,58 @@ class CostsTypes extends Component {
                                 container
                                 direction="row"
                                 justify="center"
-                                alignItems="flex-end"
+                                alignItems="flex-start"
                             >
-                                <Button
-                                    label={constants.BUTTON_ADD}
-                                    icon=<Add className={classes.icon}/>
-                                    iconAlign="right"
-                                    variant="add"
-                                    onClick = { (event) => this.handleChangeVisibleDetails(event, 'add', )}
-                                    data-action="add"
-                                />
-                                <Button
-                                    label={constants.BUTTON_EDIT}
-                                    icon=<Edit className={classes.icon}/>
-                                    iconAlign="right"
-                                    disabled={Object.keys(selected).length === 0}
-                                    variant="edit"
-                                    onClick = { (event) => this.handleChangeVisibleDetails(event, 'edit', )}
-                                    data-action="edit"
-                                />
-                                <Button
-                                    label={constants.BUTTON_DELETE}
-                                    icon=<Delete className={classes.icon}/>
-                                    iconAlign="right"
-                                    disabled={Object.keys(selected).length === 0}
-                                    onClick = {(event) => this.handleDelete(event, 'delete', )}
-                                    variant="delete"
-                                />
+                                <Grid item xs={1}>
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justify="flex-start"
+                                        alignItems="flex-start"
+                                    >
+                                        <Button
+                                            label={constants.BUTTON_GENERATE}
+                                            icon=<Settings/>
+                                            iconAlign="left"
+                                            onClick = {this.handleGenerateCostsTypes}
+                                            variant="cancel"
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <Grid item xs={11}>
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justify="center"
+                                        alignItems="flex-start"
+                                    >
+                                        <Button
+                                            label={constants.BUTTON_ADD}
+                                            icon=<Add className={classes.icon}/>
+                                            iconAlign="right"
+                                            variant="add"
+                                            onClick = { (event) => this.handleChangeVisibleDetails(event, 'add', )}
+                                            data-action="add"
+                                        />
+                                        <Button
+                                            label={constants.BUTTON_EDIT}
+                                            icon=<Edit className={classes.icon}/>
+                                            iconAlign="right"
+                                            disabled={Object.keys(selected).length === 0}
+                                            variant="edit"
+                                            onClick = { (event) => this.handleChangeVisibleDetails(event, 'edit', )}
+                                            data-action="edit"
+                                        />
+                                        <Button
+                                            label={constants.BUTTON_DELETE}
+                                            icon=<Delete className={classes.icon}/>
+                                            iconAlign="right"
+                                            disabled={Object.keys(selected).length === 0}
+                                            onClick = {(event) => this.handleDelete(event, 'delete', )}
+                                            variant="delete"
+                                        />
+                                    </Grid>
+                                </Grid>
                             </Grid>
                         </>
                     }

@@ -26,10 +26,12 @@ export const validate =  ( values, props ) => {
     }
 
     if(values.orderGroupValueNet && values.applicationProcurementPlanPosition !== undefined){
-        if(values.applicationProcurementPlanPosition.amountRequestedNet < values.orderGroupValueNet){
-            errors.orderGroupValueNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_REQUESTED_INVALID;
-        } else if ((values.applicationProcurementPlanPosition.amountRequestedNet - (values.applicationProcurementPlanPosition.amountInferredNet + values.applicationProcurementPlanPosition.amountRealizedNet)) < values.orderGroupValueNet){
-            errors.orderGroupValueNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_INVALID;
+        if(props.applicationMode.code === 'PL'){
+            if(values.applicationProcurementPlanPosition.amountRequestedNet < values.orderGroupValueNet){
+                errors.orderGroupValueNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_REQUESTED_INVALID;
+            } else if ((values.applicationProcurementPlanPosition.amountRequestedNet - (values.applicationProcurementPlanPosition.amountInferredNet + values.applicationProcurementPlanPosition.amountRealizedNet)) < values.orderGroupValueNet){
+                errors.orderGroupValueNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_INVALID;
+            }
         }
     }
 
@@ -43,6 +45,10 @@ export const validate =  ( values, props ) => {
         if( values.optionValue > 100){
                 errors.optionValue = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_INVALID_VALUE;
         }
+    }
+
+    if(values.applicationAssortmentGroupPlanPositions !== undefined && values.applicationAssortmentGroupPlanPositions.length === 0){
+        errors["planPositions"] = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE
     }
 
     return errors

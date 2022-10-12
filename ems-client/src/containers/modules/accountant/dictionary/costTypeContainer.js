@@ -4,8 +4,7 @@ import { bindActionCreators } from 'redux';
 import { loading } from 'actions/';
 import CostType from 'components/modules/accountant/dictionary/costType'
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
-import {generateExportLink} from 'utils';
-
+import { generateExportLink, findIndexElement } from 'utils';
 class CostTypeContainer extends Component {
     state = {
         initData: {
@@ -50,6 +49,23 @@ class CostTypeContainer extends Component {
             });
             this.props.loading(false)
         });
+    }
+
+    handleDeleteYear = (year) => {
+        this.props.loading(true)
+        CostTypeApi.deleteCostTypeYear(year.id)
+        .then(response => {
+            this.setState( prevState => {
+                const initData = {...prevState.initData};
+                const idx = findIndexElement(year, initData.years, "positionId");
+                if(idx !== null){
+                    initData.years.splice(idx, 1);
+                }
+                return {initData};
+            });
+            this.props.loading(false);
+        })
+        .catch(error => {})
     }
 
     handleClose = () => {
@@ -99,6 +115,7 @@ class CostTypeContainer extends Component {
                 action={action}
                 handleSubmit={this.handleSubmit}
                 onClose={this.handleClose}
+                onDeleteYear={this.handleDeleteYear}
                 onExcelExport={this.handleExcelExport}
                 allCosts={allCosts}
             />

@@ -289,6 +289,8 @@ export const COORDINATOR_PLAN_UPDATE_PLAN_TITLE = 'Aktualizacja planu nr ';
 export const COORDINATOR_PLAN_BASIC_INFORMATION = 'Dane podstawowe';
 export const COORDINATOR_PLAN_POSITIONS = 'Pozycje planu';
 export const COORDINATOR_PLAN_PUBLIC_ORDERS_REGISTER = 'Rejestr zamówień publicznych';
+/* components/modules/coordinator/plans/planPositionRealization.js */
+export const COORDINATOR_PLAN_POSITION_REALIZATION_TITLE = 'Realizacja pozycji: ';
 /* components/modules/coordinator/plans/forms/planBasicForm.js */
 export const COORDINATOR_PLAN_ACCEPT_PATH = 'Akceptacja planu';
 export const COORDINATOR_PLAN_CONFIRM_SEND_MESSAGE = 'Plan zostanie wysłany. Czy kontynuować?';
@@ -403,8 +405,9 @@ export const COORDINATOR_PLAN_UPDATE_PUBLIC_PROCUREMENT_VALUE = 'Przyznana warto
 export const COORDINATOR_PLAN_UPDATE_PUBLIC_PROCUREMENT_CORRECT_VALUE = 'Wartość planu netto po korekcie';
 export const COORDINATOR_PLAN_UPDATE_PLAN_AWARDED_VALUE = 'Przyznana wartość planu brutto przed korektą';
 export const COORDINATOR_PLAN_UPDATE_PLAN_AWARDED_CORRECT_VALUE = 'Wartość planu brutto po korekcie';
-export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT = "Korekta";
-export const COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT = "Korekta - kwota szacowana";
+export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT = "Korekta - kwota szacowana";
+export const COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT_NET = "Kwota szacowana netto po korekcie";
+export const COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT = "Kwota szacowana brutto po korekcie";
 export const COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT = "Korekta - kwota przyznana";
 export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_TASK_CORRECTED = "Korekta zadania";
 export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_EXPENSES_CORRECTED = "Kwota przyznana - Korekta";
@@ -422,6 +425,7 @@ export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_BEFORE_CORRECTED_GROSS = "K
 export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AFTER_CORRECTED_NET = "Kwota netto po korekcie";
 export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AFTER_CORRECTED_GROSS = "Kwota brutto po korekcie";
 export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_REQUESTED_AFTER_CORRECTED_GROSS = "Kwota szacowana brutto po korekcie";
+export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AWARDED_AFTER_CORRECTED_NET = "Kwota przyznana netto po korekcie";
 export const COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_AWARDED_AFTER_CORRECTED_GROSS = "Kwota przyznana brutto po korekcie";
 /* components/modules/coordinator/plans/planUpdateFinancialContentPositionFormValid.js */
 export const COORDINATOR_PLAN_UPDATE_PLAN_AMOUNT_AWARDED_EXCEEDED = "Przekroczono zatwierdzoną wartość planu";
@@ -550,6 +554,7 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENTS_GROUPS_NET_E
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_NET_EXCEEDED = 'Wartość w roku bieżącym większa niż wartość zamówienia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE = 'Wymagane wprowadzenie pozycji';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CHECKBOX_FIELD_REQUIRE = 'Wymagane wybranie opcji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENTS_GROUPS_PLAN_POSITION_REQUIRE = 'Nie uzupełniono informacji o pozycjach w ';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationAssortmentGroupsForm.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP = 'Grupa asortymentowa wniosku o udzielenie zamówienia publicznego';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_GROUP_INFO = 'Dane grupy asortymentowej w ramach planu zamówień publicznych instytucji';
@@ -581,6 +586,10 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_G
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationPlanPositionForm.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_TITLE_CREATE = 'Nowa pozycja';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_TITLE_EDIT = 'Edycja pozycji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_INFO = 'Informacje w ramach planu';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_POSITION_INFO = 'Informacje w ramach wniosku';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_AMOUNT_NET = 'Kwota netto pozycji w ramach planu';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_AMOUNT_GROSS = 'Kwota brutto pozycji w ramach planu';
 /* components/modules/coordinator/publicProcurement/applications/forms/subsequentYearsForm.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_YEAR_TITLE_CREATE = 'Wydatek w latach kolenych';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SUBSEQUENT_YEAR_TITLE_EDIT = 'Edycja wydatku na rok: ';
@@ -720,6 +729,7 @@ export const COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_COORDINATOR_TYPE = 'P
 export const COORDINATOR_REALIZATION_INVOICE_POSITION_COORDINATOR_PLAN_POSITION = 'Pozycja w ramach planu';
 /* components/modules/coordinator/realization/invoices/forms/invoicePositionFormValid.js */
 export const COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED = 'Przekroczona wartość umowy';
+export const COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED = 'Kwota większa od dostępnej kwoty pozycji w ramach planu';
 export const COORDINATOR_REALIZATION_INVOICE_POSITION_VALUE_NET_INVALID = 'Kwota netto większa niż kwota brutto';
 /* components/modules/coordinator/realization/expenses/expenses.js */
 export const COORDINATOR_REALIZATION_EXPENSES_TITLE = 'Wydatki jednorazowe';
@@ -800,6 +810,13 @@ export const ACCOUNTANT_COST_TYPE_ALL_COORDINATORS = 'Koordynatorzy: ';
 export const ACCOUNTANT_COST_TYPE_YEAR_COORDINATORS = 'Przypisani koordynatorzy: ';
 /*components/modules/accountant/dictionary/forms/costYearFormValid.js*/
 export const ACCOUNTANT_COST_TYPE_YEAR_EXISTS = 'Podany okres obowiązywania istnieje';
+/* components/modules/accountant/dictionary/forms/generatorCostTypeForm */
+export const ACCOUNTANT_COST_TYPE_GENERATOR_TITLE = 'Generator Rodzajów Kosztów';
+export const ACCOUNTANT_COST_TYPE_GENERATOR_TARGET_YEAR = 'Rok docelowy';
+export const ACCOUNTANT_COST_TYPE_GENERATOR_SOURCE_YEAR = 'Rok źródłowy';
+export const ACCOUNTANT_COST_TYPE_GENERATOR_CONFIRM_MSG = 'Zostaną wygenerowane rodzaje kosztów. Czy kontynuować?';
+/* components/modules/accountant/dictionary/forms/generatorCostTypeFormValid */
+export const ACCOUNTANT_COST_TYPE_GENERATOR_SOURCE_TARGET_YEAR_EQUAL = 'Rok źródłowy i docelowy jest identyczny';
 /* components/modules/accountant/dictionary/contractors.js */
 export const ACCOUNTANT_CONTRACTORS_TABLE_HEAD_ROW_CODE = 'Kod';
 export const ACCOUNTANT_CONTRACTORS_TABLE_HEAD_ROW_NAME = 'Nazwa';
@@ -920,7 +937,8 @@ export const BUTTON_PRINT_BASIC = 'Wydruk podstawowy';
 export const BUTTON_PRINT_DETAILS = 'Wydruk szczegółowy';
 export const BUTTON_UPDATE = 'Aktualizuj';
 export const BUTTON_REMARKS = 'Uwagi';
-export const BUTTON_DETAILS = 'Szczegoły';
+export const BUTTON_DETAILS = 'Szczegóły';
+export const BUTTON_GENERATE = 'Generuj';
 export const BUTTON_SEND_BACK = 'Wycofaj';
 export const RADIO_BUTTON_YES = 'Tak';
 export const RADIO_BUTTON_NO = 'Nie';

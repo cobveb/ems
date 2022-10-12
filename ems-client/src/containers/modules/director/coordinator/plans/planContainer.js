@@ -8,7 +8,7 @@ import {findSelectFieldPosition, generateExportLink} from 'utils';
 import PlansApi from 'api/modules/director/coordinator/plansApi';
 import CostTypeApi from 'api/modules/accountant/costTypeApi';
 import DictionaryApi from 'api/common/dictionaryApi';
-import {publicProcurementEstimationTypes, publicProcurementOrderTypes, findIndexElement, getCoordinatorPlanPositionsStatuses} from 'utils/';
+import {publicProcurementEstimationTypes, publicProcurementOrderTypes, findIndexElement, getCoordinatorPlanPositionsStatuses, getVats} from 'utils/';
 
 class PlanContainer extends Component {
     state = {
@@ -18,16 +18,7 @@ class PlanContainer extends Component {
         units: [],
         costsTypes:[],
         fundingSources:[],
-        vats: [
-            {
-                code: 1.08,
-                name: "8%",
-            },
-            {
-                code: 1.23,
-                name: "23%",
-            },
-        ],
+        vats: getVats(),
         orderTypes: publicProcurementOrderTypes(),
         estimationTypes: publicProcurementEstimationTypes(),
         statuses: getCoordinatorPlanPositionsStatuses(),

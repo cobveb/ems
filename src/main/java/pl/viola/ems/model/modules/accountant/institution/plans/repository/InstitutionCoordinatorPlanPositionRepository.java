@@ -18,6 +18,6 @@ public interface InstitutionCoordinatorPlanPositionRepository extends JpaReposit
 
     InstitutionCoordinatorPlanPosition findByCoordinatorPlanPosition(CoordinatorPlanPosition coordinatorPlanPosition);
 
-    List<InstitutionCoordinatorPlanPosition> findByCoordinatorPlanPositionIn(List<CoordinatorPlanPosition> coordinatorPlanPositions);
+    Set<InstitutionCoordinatorPlanPosition> findByCoordinatorPlanPositionIn(List<CoordinatorPlanPosition> coordinatorPlanPositions);
 
 }

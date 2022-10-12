@@ -19,4 +19,8 @@ public interface InstitutionPlanRepository extends JpaRepository<InstitutionPlan
     List<InstitutionPlan> findByTypeIn(List<CoordinatorPlan.PlanType> types);
 
     List<InstitutionPlan> findByType(CoordinatorPlan.PlanType type);
+
+    InstitutionPlan findFirstByYearAndTypeOrderByIdDesc(Integer year, CoordinatorPlan.PlanType type);
+
+    InstitutionPlan findByCorrectionPlan(InstitutionPlan correctionPlan);
 }

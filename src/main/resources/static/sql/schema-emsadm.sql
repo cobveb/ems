@@ -978,62 +978,62 @@ create sequence acc_inst_plan_cor_pos_seq start with 1 increment by 1 nomaxvalue
 -- Create sequence of table coordinator plan
 drop sequence cor_plan_seq;
 /
-create sequence cor_plan_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_plan_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 /
 -- Create sequence of table coordinator plan position
 drop sequence cor_plan_pos_seq;
 /
-create sequence cor_plan_pos_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_plan_pos_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 
 -- Create sequence of table coordinator plan position
 drop sequence cor_pos_inv_source_seq;
 /
-create sequence cor_pos_inv_source_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_pos_inv_source_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 
 -- Create sequence of table coordinator plan sub position
 drop sequence cor_plan_sub_pos_seq;
 /
-create sequence cor_plan_sub_pos_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_plan_sub_pos_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 
 -- Create sequence of table coordinator public procurement application
 drop sequence cor_pub_proc_apl_seq;
 /
-create sequence cor_pub_proc_apl_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_pub_proc_apl_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 
 -- Create sequence of table coordinator public procurement application
 drop sequence cor_pub_proc_apl_groups_seq;
 /
-create sequence cor_pub_proc_apl_groups_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_pub_proc_apl_groups_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 
 -- Create sequence of table coordinator public procurement application
 drop sequence cor_pub_proc_apl_parts_seq;
 /
-create sequence cor_pub_proc_apl_parts_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_pub_proc_apl_parts_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 
 -- Create sequence of table coordinator public procurement application
 drop sequence cor_pub_proc_apl_criteria_seq;
 /
-create sequence cor_pub_proc_apl_criteria_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_pub_proc_apl_criteria_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 
 -- Create sequence of table Application Assortment Group Subsequent Year
 drop sequence cor_pub_proc_gr_sub_year_seq;
 /
-create sequence cor_pub_proc_gr_sub_year_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_pub_proc_gr_sub_year_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 /
 -- Create sequence of table texts
 drop sequence text_seq;
 /
-create sequence text_seq start with 1 increment by 1 nomaxvalue;
+create sequence text_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 /
 -- Create sequence of table application assortment group plan position
 drop sequence cor_pub_apl_gr_pos_seq;
 /
-create sequence cor_pub_apl_gr_pos_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_pub_apl_gr_pos_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 /
 -- Create sequence of table public procurement application protocol
 drop sequence cor_pub_proc_apl_protocol_seq;
 /
-create sequence cor_pub_proc_apl_protocol_seq start with 1 increment by 1 nomaxvalue;
+create sequence cor_pub_proc_apl_protocol_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 /
 -- Create sequence of table Invoices
 drop sequence cor_real_inv_seq;
@@ -1182,6 +1182,270 @@ create or replace package body cor_public_procurement_mgmt as
 
 end cor_public_procurement_mgmt;
 /
+/* Create package coordinator plan management */
+create or replace package cor_plans_util as
+    procedure update_plan_position_realized_value(p_coordinator in cor_plans.coordinator_id%type);
+    procedure update_corection_plan_position_realized_value(
+        p_position in cor_plan_positions.id%type,
+        p_position_net in cor_plan_positions.am_rea_net%type,
+        p_position_gros in cor_plan_positions.am_rea_gross%type,
+        p_coordinator in cor_plans.coordinator_id%type
+    );
+    procedure generate_costs_type(
+        p_source_year in acc_cost_years.year%type,
+        p_target_year in acc_cost_years.year%type,
+        o_msg out varchar2
+    );
+end cor_plans_util;
+/
+create or replace package body cor_plans_util as
+    procedure update_plan_position_realized_value(p_coordinator in cor_plans.coordinator_id%type)as
+        t_am_rea_net cor_plan_positions.am_rea_net%type;
+        t_am_rea_gross cor_plan_positions.am_rea_gross%type;
+        cursor c_plan_positions is
+                select  pos.id, pos.am_rea_net, pos.am_rea_gross from cor_plan_positions pos left join cor_plans pl on(pos.plan_id = pl.id)
+                    where pl.plan_type = 'PZP' and pl.coordinator_id = p_coordinator and pos.pos_correction_id is null
+                        order by pos.id;
+        r_position c_plan_positions%rowtype;
+        begin
+            open c_plan_positions;
+                loop
+                fetch c_plan_positions into r_position;
+                    select
+                        sum(amount_contract_awa_net),
+                        sum(amount_contract_awa_gross)
+                    into
+                        t_am_rea_net,
+                        t_am_rea_gross
+                    from
+                        cor_pub_proc_prices pr
+                    where
+                        pr.apl_pub_proc_gr_id in (
+                            select
+                                gr.id
+                            from
+                                cor_pub_proc_groups gr left join cor_pub_proc_application apl on (gr.application_id = apl.id)
+                            where apl.coordinator_id = p_coordinator and apl.status = 'ZR' and apl.apl_mode = 'PL' and plan_pub_proc_pos_id in
+                                (
+                                    select institution_position_id from acc_institution_plan_cor_pos where cor_position_id = r_position.id
+                                )
+                        );
+
+                    if r_position.am_rea_net is not null then
+
+                        if r_position.am_rea_net <> t_am_rea_net then
+                            -- Update coordinator plan position amount realized
+                            DBMS_OUTPUT.PUT_LINE( r_position.id || ' - old net ' || r_position.am_rea_net || ' - new net ' || t_am_rea_net || ' - old gross ' || r_position.am_rea_gross || ' - new gross ' || t_am_rea_gross );
+                            --update cor_plan_positions set am_rea_net = t_am_rea_net, am_rea_gross = t_am_rea_gross where id = r_position.id;
+                        end if;
+
+                        if r_position.id is not null then
+                            cor_plans_util.update_corection_plan_position_realized_value(r_position.id, t_am_rea_net, t_am_rea_gross, p_coordinator);
+                        end if;
+                    end if;
+
+                exit when c_plan_positions%notfound;
+                end loop;
+            close c_plan_positions;
+        end;
+
+        procedure update_corection_plan_position_realized_value(
+            p_position in cor_plan_positions.id%type,
+            p_position_net in cor_plan_positions.am_rea_net%type,
+            p_position_gros in cor_plan_positions.am_rea_gross%type,
+            p_coordinator in cor_plans.coordinator_id%type
+        ) as
+        t_corected_position cor_plan_positions%rowtype;
+        t_am_rea_net cor_plan_positions.am_rea_net%type;
+        t_am_rea_gross cor_plan_positions.am_rea_gross%type;
+
+        begin
+            begin
+                select
+                    *
+                into
+                    t_corected_position
+                from
+                    cor_plan_positions pos
+                where
+                    pos.pos_correction_id = p_position;
+                exception
+                        when NO_DATA_FOUND then
+                            t_corected_position.id := null;
+            end;
+            if t_corected_position.id is not null then
+
+                select
+                    sum(amount_contract_awa_net),
+                    sum(amount_contract_awa_gross)
+                into
+                    t_am_rea_net,
+                    t_am_rea_gross
+                from
+                    cor_pub_proc_prices pr
+                where
+                    pr.apl_pub_proc_gr_id in (
+                        select
+                            gr.id
+                        from
+                            cor_pub_proc_groups gr left join cor_pub_proc_application apl on (gr.application_id = apl.id)
+                        where apl.coordinator_id = p_coordinator and apl.status = 'ZR' and apl.apl_mode = 'PL' and plan_pub_proc_pos_id in
+                        (
+                            select institution_position_id from acc_institution_plan_cor_pos where cor_position_id = t_corected_position.id
+                        )
+                    );
+
+                    if t_am_rea_net is not null then
+                        t_am_rea_net := t_am_rea_net + p_position_net;
+                        t_am_rea_gross := t_am_rea_gross + p_position_gros;
+                    else
+                        t_am_rea_net := p_position_net;
+                        t_am_rea_gross := p_position_gros;
+                    end if;
+                if t_corected_position.am_rea_net <> t_am_rea_net then
+                    -- Update coordinator plan position amount realized
+                    DBMS_OUTPUT.PUT_LINE('is corrented ' || p_position || ' - ' || 'corected position ' || t_corected_position.id || ' old net '|| t_corected_position.am_rea_net || ' new net ' || t_am_rea_net || ' old gross ' || t_corected_position.am_rea_gross || ' new gross ' || t_am_rea_gross);
+                    --update cor_plan_positions set am_rea_net = t_am_rea_net, am_rea_gross = t_am_rea_gross where id = t_corected_position.id;
+                end if;
+
+                cor_plans_util.update_corection_plan_position_realized_value(t_corected_position.id, t_am_rea_net, t_am_rea_gross, p_coordinator);
+
+            end if;
+        end;
+
+        procedure generate_costs_type(p_source_year in acc_cost_years.year%type, p_target_year in acc_cost_years.year%type, o_msg out varchar2)as
+            cursor c_costs is
+                select
+                    cy.id,
+                    cy.cost_type_id
+                from
+                    acc_costs_type ct left join acc_cost_years cy on (ct.id = cy.cost_type_id)
+                where
+                    ct.active = 1
+                    and cy.year = p_source_year
+                    and not exists (
+                        select
+                            null
+                        from
+                            acc_cost_years in_cy
+                        where
+                            in_cy.year = p_target_year
+                            and in_cy.cost_type_id = cy.cost_type_id
+                    );
+            -- table type
+            type c_cost_tab is table of c_costs%rowtype;
+            type coordinator_ids_tab is table of acc_cost_years_coordinators.coordinator_id%type index by pls_integer;
+            type new_year_ids_tab is table of acc_cost_years.id%type index by pls_integer;
+            -- table
+            c_cost_t c_cost_tab;
+            coordniator_ids_t coordinator_ids_tab;
+            new_year_ids_t new_year_ids_tab;
+            begin
+                 open c_costs;
+                    loop
+                        fetch  c_costs bulk collect into c_cost_t;
+                        exit when c_cost_t.count = 0;
+
+                        /* Create year(p_target_year) for costs types */
+                        forall i in 1..c_cost_t.count
+                            insert into acc_cost_years(id, year, cost_type_id) values(acc_cost_years_seq.nextval, p_target_year, c_cost_t(i).cost_type_id) returning id bulk collect into new_year_ids_t;
+
+                        for i in 1..c_cost_t.count loop
+                            select
+                                cyc.coordinator_id
+                            bulk collect into
+                                coordniator_ids_t
+                            from
+                                acc_cost_years_coordinators cyc
+                            where
+                                cyc.cost_year_id = c_cost_t(i).id
+                                and cyc.coordinator_id not in(
+                                    select
+                                        in_cyc.coordinator_id
+                                    from
+                                        acc_cost_years cy left join acc_cost_years_coordinators in_cyc on (cy.id=in_cyc.cost_year_id)
+                                    where
+                                        cy.cost_type_id = c_cost_t(i).cost_type_id
+                                        and cy.year = p_target_year
+                                        and in_cyc.coordinator_id = cyc.coordinator_id
+                                );
+
+                            if coordniator_ids_t.count <> 0 then
+                                --DBMS_OUTPUT.PUT_LINE('cost_type: ' || c_cost_t(i).cost_type_id);
+                                /*forall i in 1..coordniator_ids_t.count
+                                    insert into acc_cost_years_coordinators(cost_year_id, coordinator_id) values(new_year_ids_t(i),coordniator_ids_t(i));
+                                */
+                                for idx in 1 .. coordniator_ids_t.count loop
+                                    --DBMS_OUTPUT.PUT_LINE('new cost year id: ' || new_year_ids_t(i) || 'coordinator id: ' ||  coordniator_ids_t(idx));
+                                    insert into acc_cost_years_coordinators(cost_year_id, coordinator_id) values(new_year_ids_t(i),coordniator_ids_t(idx));
+                                end loop;
+                            end if;
+                    end loop;
+                        exit when c_costs%notfound;
+                end loop;
+            close c_costs;
+
+            o_msg := 'Wygenerowano ' || c_cost_t.count || ' rodzajów kosztów na rok ' || p_target_year;
+        end;
+end cor_plans_util;
+/
+/* Create package institution plan management */
+create or replace package ins_plans_util as
+    procedure update_plan_position_realized_value(p_plan in acc_institution_plan_positions.plan_id%type);
+end ins_plans_util;
+create or replace package body ins_plans_util as
+    procedure update_plan_position_realized_value(p_plan in acc_institution_plan_positions.plan_id%type)as
+        cursor c_plan_positions is
+            select ip.*, ipf.cost_type_id
+                from acc_institution_plan_positions ip left join acc_institution_plan_pos_fin ipf on (ipf.id = ip.id)
+                    where ip.plan_id = p_plan;
+        r_position c_plan_positions%rowtype;
+        t_am_rea_net cor_plan_positions.am_rea_net%type;
+        t_am_rea_gross cor_plan_positions.am_rea_gross%type;
+        t_am_awa_net cor_plan_positions.am_awa_gross%type;
+        t_am_awa_gross cor_plan_positions.am_awa_gross%type;
+        begin
+            open c_plan_positions;
+                loop
+                    fetch c_plan_positions into r_position;
+
+                        select
+                            sum(cp.am_rea_net),
+                            sum(cp.am_rea_gross),
+                            sum(cp.am_awa_net),
+                            sum(cp.am_awa_gross)
+                        into
+                            t_am_rea_net,
+                            t_am_rea_gross,
+                            t_am_awa_net,
+                            t_am_awa_gross
+                        from
+                            cor_plan_positions cp
+                        where
+                            cp.id in (
+                                select
+                                    icp.cor_position_id
+                                from
+                                    acc_institution_plan_cor_pos icp
+                                where
+                                    icp.institution_position_id = r_position.id
+                            );
+                    if r_position.am_rea_net <> t_am_rea_net then
+                        -- Update institution plan position amount realized
+                        DBMS_OUTPUT.PUT_LINE('Rea');
+                        DBMS_OUTPUT.PUT_LINE( r_position.id || ' - old net ' || r_position.am_rea_net || ' - new net ' || t_am_rea_net || ' - old gross ' || r_position.am_rea_gross || ' - new gross ' || t_am_rea_gross );
+                        --update acc_institution_plan_positions set am_rea_net = t_am_rea_net, am_rea_gross = t_am_rea_gross where id = r_position.id;
+                    end if;
+                    if r_position.am_awa_gross <> t_am_awa_gross then
+                        DBMS_OUTPUT.PUT_LINE('AWA');
+                        DBMS_OUTPUT.PUT_LINE( r_position.id || ' - old net ' || r_position.am_awa_net || ' - new net ' || t_am_awa_net || ' - old gross ' || r_position.am_awa_gross || ' - new gross ' || t_am_awa_gross );
+                        update acc_institution_plan_positions set am_awa_net = t_am_awa_net, am_awa_gross = t_am_awa_gross where id = r_position.id;
+                    end if;
+                exit when c_plan_positions%notfound;
+                end loop;
+            close c_plan_positions;
+        end;
+end ins_plans_util;
 /*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   TRIGGERS                                            			    */
 /*-------------------------------------------------------------------------------------------------------------------- */

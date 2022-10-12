@@ -53,6 +53,12 @@ public class CostTypeController {
         return new ApiResponse(HttpStatus.ACCEPTED, costTypeService.deleteCostType(costId));
     }
 
+    @DeleteMapping("/deleteCostTypeYear/{yearId}")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('3014')")
+    public ApiResponse deleteCostTypeYear(@PathVariable Long yearId) {
+        return new ApiResponse(HttpStatus.ACCEPTED, costTypeService.deleteCostTypeYear(yearId));
+    }
+
     @PutMapping("/export/costTypes/{exportType}")
     public void exportCostTypesToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
                                       @PathVariable ExportType exportType, HttpServletResponse response) throws IOException {
@@ -65,5 +71,11 @@ public class CostTypeController {
                                           @PathVariable ExportType exportType, HttpServletResponse response) throws IOException {
 
         costTypeService.exportCostTypeYearsToExcel(exportType, headRow, costId, generateExportResponse(response, exportType));
+    }
+
+    @PostMapping("/generateCostsTypes")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('2014')")
+    public ApiResponse generateCostsTypes(@RequestParam int sourceYear, @RequestParam int targetYear) {
+        return new ApiResponse(HttpStatus.CREATED, costTypeService.generateCostsTypesOnYear(sourceYear, targetYear));
     }
 }

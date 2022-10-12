@@ -92,6 +92,15 @@ public class CostTypeServiceImpl implements CostTypeService {
     }
 
     @Override
+    @Transactional
+    public String deleteCostTypeYear(final Long yearId) {
+
+        costYearRepository.deleteById(yearId);
+
+        return messageSource.getMessage("Accountant.costTypeYear.deleteMsg", null, Locale.getDefault());
+    }
+
+    @Override
     public void exportCostTypesToExcel(final ExportType exportType, final ArrayList<ExcelHeadRow> headRow, final HttpServletResponse response) throws IOException {
         ArrayList<Map<String, Object>> rows = new ArrayList<>();
         List<CostType> costTypes = costTypeRepository.findAll();
@@ -115,6 +124,15 @@ public class CostTypeServiceImpl implements CostTypeService {
             rows.add(row);
         });
         Utils.generateExcelExport(exportType, headRow, rows, response);
+    }
+
+    @Override
+    @Transactional
+    public String generateCostsTypesOnYear(final int sourceYear, final int targetYear) {
+
+        return costTypeRepository.generateCostsTypesOnYear(sourceYear, targetYear);
+
+//        return messageSource.getMessage("Accountant.costType.generateCostsTypesMsg", null, Locale.getDefault());
     }
 
 }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.Invoice;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.InvoicePosition;
 import pl.viola.ems.payload.api.ApiResponse;
@@ -40,6 +41,12 @@ public class InvoiceController {
     @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('1244', '1142')")
     public ApiResponse getInvoicePositions(@PathVariable Long invoiceId) {
         return new ApiResponse(HttpStatus.FOUND, invoiceService.getInvoicePositions(invoiceId));
+    }
+
+    @GetMapping("/planPosition/{planType}/{planPositionId}/getInvoicePositions")
+    @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('1244', '1142')")
+    public ApiResponse getInvoicesPositionsByCoordinatorPlanPosition(@PathVariable CoordinatorPlan.PlanType planType, @PathVariable Long planPositionId) {
+        return new ApiResponse(HttpStatus.FOUND, invoiceService.getInvoicesPositionsByCoordinatorPlanPosition(planType, planPositionId));
     }
 
     @PutMapping("/{invoiceId}/{action}/saveInvoicePosition")

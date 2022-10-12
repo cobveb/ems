@@ -107,11 +107,9 @@ class PlanPositionsContainer extends Component {
         .then(response =>{
             switch(this.props.planType.code){
                 case ("FIN"):
-                    console.log(response.data.data)
                     this.setState(prevState => {
                         let initData = {...prevState.initData};
                         const index = findIndexElement(values, initData.planPositions, "positionId");
-                            console.log(index)
                         if(index !== null){
                             Object.assign(response.data.data[0],
                             {

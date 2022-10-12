@@ -35,7 +35,7 @@ public class InstitutionFinancialPlanPosition extends InstitutionPlanPosition {
 
     public BigDecimal getAmountCorrectGross() {
         return super.getCorrectionPlanPosition() != null ?
-                super.getAmountRequestedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
+            super.getAmountRequestedGross().subtract(super.getCorrectionPlanPosition().getAmountAwardedGross())
                 : null;
     }
 

@@ -63,6 +63,12 @@ public class AccountantPlanCoordinatorController {
         return new ApiResponse(HttpStatus.ACCEPTED, planService.updatePlanStatus(planId, CoordinatorPlan.PlanStatus.RO));
     }
 
+    @PutMapping("/plan/returnPlan/{planId}")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('4024')")
+    public ApiResponse returnCoordinatorPlan(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.ACCEPTED, planService.returnCoordinatorPlan(planId));
+    }
+
     @PutMapping("/plan/forwardPlan/{planId}")
     public ApiResponse forwardPlan(@PathVariable Long planId) {
         return new ApiResponse(HttpStatus.ACCEPTED, planService.updatePlanStatus(planId, CoordinatorPlan.PlanStatus.PK));

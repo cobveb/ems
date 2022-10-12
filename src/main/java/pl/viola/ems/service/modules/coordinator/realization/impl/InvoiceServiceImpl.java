@@ -21,6 +21,7 @@ import pl.viola.ems.model.modules.coordinator.realization.invoice.Invoice;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.InvoicePosition;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.repository.InvoicePositionRepository;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.repository.InvoiceRepository;
+import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePositionPayload;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 import pl.viola.ems.service.modules.coordinator.plans.PlanService;
 import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
@@ -137,6 +138,37 @@ public class InvoiceServiceImpl implements InvoiceService {
         return new ArrayList<>(invoice.getInvoicePositions());
     }
 
+    @Override
+    public Set<InvoicePositionPayload> getInvoicesPositionsByCoordinatorPlanPosition(final CoordinatorPlan.PlanType planType, final Long positionId) {
+        Set<InvoicePositionPayload> positions = new HashSet<>();
+        List<CoordinatorPlanPosition> planPositions = new ArrayList<>();
+
+        CoordinatorPlanPosition coordinatorPlanPosition = planType.equals(CoordinatorPlan.PlanType.FIN) ?
+                financialPositionRepository.findById(positionId).orElseThrow(() -> new AppException("Coordinator.plan.position.notFound", HttpStatus.NOT_FOUND)) :
+                investmentPositionRepository.findById(positionId).orElseThrow(() -> new AppException("Coordinator.plan.position.notFound", HttpStatus.NOT_FOUND));
+
+        planPositions.add(coordinatorPlanPosition);
+
+        if (coordinatorPlanPosition.getCorrectionPlanPosition() != null) {
+            planPositions.add(coordinatorPlanPosition.getCorrectionPlanPosition());
+            this.findCorrectedPlanPosition(coordinatorPlanPosition.getCorrectionPlanPosition(), planPositions);
+        }
+
+        invoicePositionRepository.findByCoordinatorPlanPositionIn(planPositions).forEach(invoicePosition -> {
+            InvoicePositionPayload positionPayload = new InvoicePositionPayload(
+                    invoicePosition.getId(),
+                    invoicePosition.getInvoice().getNumber(),
+                    invoicePosition.getName(),
+                    invoicePosition.getAmountNet(),
+                    invoicePosition.getAmountGross()
+            );
+
+            positions.add(positionPayload);
+        });
+
+        return positions;
+    }
+
     @Transactional
     @Override
     public InvoicePosition saveInvoicePosition(final InvoicePosition invoicePosition, final Long invoiceId, final String action) {
@@ -160,8 +192,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         if (invoicePosition.getPositionIncludedPlanType().equals(CoordinatorPlan.PlanType.FIN)) {
             InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPositionIn(Collections.singletonList(invoicePosition.getCoordinatorPlanPosition()))
-                    .stream().filter(institutionCoordinatorPlanPosition1 -> !institutionCoordinatorPlanPosition1.getInstitutionPlanPosition().getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA))
-                    .findAny().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
+                    .stream().findFirst().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
             if (action.equals("add")) {
                 this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition, invoicePosition);
             } else if (action.equals("edit")) {
@@ -186,8 +217,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         if (invoicePosition.getPositionIncludedPlanType().equals(CoordinatorPlan.PlanType.FIN)) {
             InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPositionIn(Collections.singletonList(invoicePosition.getCoordinatorPlanPosition()))
-                    .stream().filter(institutionCoordinatorPlanPosition1 -> !institutionCoordinatorPlanPosition1.getInstitutionPlanPosition().getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA))
-                    .findAny().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
+                    .stream().findFirst().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
 
             this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition, invoicePosition);
         }
@@ -234,7 +264,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getAmountRealizedGross().add(invoicePosition.getAmountGross())
         );
 
-        if (!Arrays.asList(InstitutionPlan.InstitutionPlanStatus.RE, InstitutionPlan.InstitutionPlanStatus.UT, InstitutionPlan.InstitutionPlanStatus.AA).contains(institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().getStatus())) {
+        if (Objects.equals(InstitutionPlan.InstitutionPlanStatus.ZA, institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().getStatus())) {
             institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().setStatus(InstitutionPlan.InstitutionPlanStatus.RE);
         }
 
@@ -332,6 +362,21 @@ public class InvoiceServiceImpl implements InvoiceService {
             );
 
             updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(correctionInstitutionPlanPosition, invoicePosition);
+        }
+    }
+
+    private void findCorrectedPlanPosition(final CoordinatorPlanPosition planPosition, final List<CoordinatorPlanPosition> planPositions) {
+        if (planPosition.getCorrectionPlanPosition() != null) {
+            CoordinatorPlanPosition correctedPlanPosition = planPosition.getPlan().getType().equals(CoordinatorPlan.PlanType.FIN) ?
+                    financialPositionRepository.findById(planPosition.getCorrectionPlanPosition().getId()).orElse(null) :
+                    investmentPositionRepository.findById(planPosition.getCorrectionPlanPosition().getId()).orElse(null);
+
+            if (correctedPlanPosition != null) {
+                planPositions.add(correctedPlanPosition);
+                if (correctedPlanPosition.getCorrectionPlanPosition() != null) {
+                    this.findCorrectedPlanPosition(correctedPlanPosition.getCorrectionPlanPosition(), planPositions);
+                }
+            }
         }
     }
 

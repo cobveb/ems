@@ -92,26 +92,26 @@ class Plan extends Component {
                 subtype: 'amount',
             },
             {
-                id: 'amountCorrectGross',
+                id: 'amountRequestedGross',
                 label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
-                id: 'amountRequestedGross',
-                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS,
-                suffix: 'zł.',
-                type: 'amount',
-            },
-            {
-                id: 'amountAwardedCorrectGross',
-                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
+                id: 'amountCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
                 id: 'amountAwardedGross',
                 label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountAwardedCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -467,7 +467,7 @@ class Plan extends Component {
                                         variant="submit"
                                         disabled={levelAccess === "accountant" ?
                                             disabledApprove || (initialValues.status !== undefined && initialValues.status !== 'UT')
-                                                : (initialValues.status !== 'AN')
+                                                : (!['AK', 'RE'].includes(initialValues.status) || (initialValues.status === 'RE' && initialValues.chiefAcceptUser !== null))
                                         }
                                         onClick={(event) => this.handlePlanAction(event, 'approve')}
                                     />
@@ -493,7 +493,7 @@ class Plan extends Component {
                                         iconAlign="left"
                                         disabled={levelAccess === "accountant" ?
                                             disableWithdraw || ['UT','ZA', 'RE', 'AA'].includes(initialValues.status)
-                                                : !['AE', 'AN'].includes(initialValues.status)
+                                                : (!['AE', 'AN'].includes(initialValues.status) || initialValues.chiefAcceptUser === null)
                                         }
                                         onClick = {(event) => this.handlePlanAction(event, 'withdraw')}
                                         variant="cancel"

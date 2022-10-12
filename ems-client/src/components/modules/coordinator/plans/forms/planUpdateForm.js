@@ -2,14 +2,15 @@ import React, { Component } from 'react';
 import { withStyles, Grid, Typography, Divider, Toolbar }  from '@material-ui/core/';
 import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
-import { Button, InputField } from 'common/gui';
+import { Button, InputField, SearchField } from 'common/gui';
 import * as constants from 'constants/uiNames';
 import { FormDateField, FormTableField, FormAmountField} from 'common/form';
-import { Save, Cancel, Send, Description, LibraryBooks, Edit, Visibility, CheckCircle, Print, DoneAll, Redo } from '@material-ui/icons/';
+import { Save, Cancel, Send, Description, LibraryBooks, Edit, Visibility, CheckCircle, Print, DoneAll, Redo, FolderOpen } from '@material-ui/icons/';
 import PlanUpdateFinancialContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planUpdateFinancialContentPositionFormContainer';
 import PlanUpdateInvestmentContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planUpdateInvestmentContentPositionFormContainer';
 import PlanUpdatePublicProcurementContentPositionFormContainer from 'containers/modules/coordinator/plans/forms/planUpdatePublicProcurementContentPositionFormContainer';
-import {findIndexElement} from 'utils/';
+import { findIndexElement, escapeSpecialCharacters } from 'utils/';
+import PlanPositionRealizationContainer from 'containers/modules/coordinator/plans/planPositionRealizationContainer';
 
 const styles = theme => ({
     content: {
@@ -31,7 +32,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(64.4)}px)`,
+        height: `calc(100vh - ${theme.spacing(70.5)}px)`,
     },
 });
 
@@ -47,6 +48,8 @@ class PlanBasicInfoForm extends Component {
         notExistCorrectedPositions: false,
         isAgreed: false,
         approveLevel: null,
+        openRealization: false,
+        codeNameSearch:'',
         headFin: [
             {
                 id: 'costType.code',
@@ -66,20 +69,14 @@ class PlanBasicInfoForm extends Component {
                 subtype: 'amount',
             },
             {
-                id: 'amountCorrectGross',
+                id: 'amountRequestedGross',
                 label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
             {
-                id: 'amountRequestedGross',
+                id: 'amountCorrectGross',
                 label: constants.COORDINATOR_PLAN_UPDATE_POSITION_AMOUNT_CORRECT,
-                suffix: 'zł.',
-                type: 'amount',
-            },
-            {
-                id: 'amountAwardedCorrectGross',
-                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -90,10 +87,21 @@ class PlanBasicInfoForm extends Component {
                 type: 'amount',
             },
             {
+                id: 'amountAwardedCorrectGross',
+                label: constants.COORDINATOR_PLAN_UPDATE_FINANCIAL_POSITION_AMOUNT_AWARDED_CORRECT,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
                 id: 'amountRealizedGross',
                 label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
+            },
+            {
+                id: 'status.name',
+                label: constants.HEADING_STATUS,
+                type: 'object',
             },
         ],
         headInv: [
@@ -192,7 +200,7 @@ class PlanBasicInfoForm extends Component {
     };
 
     handleClose = () =>{
-        if(this.props.pristine === false){
+        if((this.props.pristine === false  && this.state.codeNameSearch === '') || (this.props.pristine === true  && this.state.codeNameSearch !== '')){
             this.setState({formChanged: !this.state.formChanged});
         } else {
             this.props.onClose(this.props.initialValues);
@@ -224,7 +232,6 @@ class PlanBasicInfoForm extends Component {
     }
 
     handleSubmitSubPosition = (values, action) =>{
-
         const {formFinancialValues, formPublicProcurementValues, formInvestmentValues} = this.props;
 
         const formValues = this.props.initialValues.type.code === 'FIN' ?
@@ -247,11 +254,23 @@ class PlanBasicInfoForm extends Component {
         } else if (action === 'edit'){
             const idx = findIndexElement(values, payload.subPositions, "positionId");
             if(idx !== null){
-                let sumAmountRequestedNet = formValues.amountRequestedNet - formValues.subPositions[idx].amountNet;
-                let sumAmountRequestedGross = formValues.amountRequestedGross - formValues.subPositions[idx].amountGross;
-                payload.amountRequestedNet = parseFloat((sumAmountRequestedNet + values.amountNet).toFixed(2));
-                payload.amountRequestedGross =  parseFloat((sumAmountRequestedGross + values.amountGross).toFixed(2));
-                payload.subPositions.splice(idx, 1, values);
+                if(this.props.initialValues.type.code !== 'FIN') {
+                    let sumAmountRequestedNet = formValues.amountRequestedNet - formValues.subPositions[idx].amountNet;
+                    let sumAmountRequestedGross = formValues.amountRequestedGross - formValues.subPositions[idx].amountGross;
+                    payload.amountRequestedNet = parseFloat((sumAmountRequestedNet + values.amountNet).toFixed(2));
+                    payload.amountRequestedGross =  parseFloat((sumAmountRequestedGross + values.amountGross).toFixed(2));
+                    payload.subPositions.splice(idx, 1, values);
+                } else {
+                    let sumAmountRequestedNet = 0;
+                    let sumAmountRequestedGross = 0;
+                    payload.subPositions.splice(idx, 1, values);
+                    payload.subPositions.forEach(subPos => {
+                        sumAmountRequestedNet =  sumAmountRequestedNet + subPos.amountNet;
+                        sumAmountRequestedGross =  sumAmountRequestedGross + subPos.amountGross;
+                    })
+                    payload.amountRequestedNet = sumAmountRequestedNet;
+                    payload.amountRequestedGross = sumAmountRequestedGross;
+                }
             }
         }
         this.props.onSubmitPlanSubPosition(payload, "correct")
@@ -418,6 +437,47 @@ class PlanBasicInfoForm extends Component {
         }
     };
 
+    handleOpenRealization = () => {
+        this.setState({openRealization: !this.state.openRealization})
+    }
+
+    handleCloseRealization = () => {
+        this.setState({openRealization: !this.state.openRealization, selected: [],})
+    }
+
+    handleChangeSearch = (event) => {
+        this.setState({[event.target.name]: event.target.value})
+    }
+
+    filter = () => {
+        const {initialValues} = this.props;
+        let planPositions = this.props.initialValues.positions;
+        const codeNameSearch = escapeSpecialCharacters(this.state.codeNameSearch)
+        if(initialValues.type !== undefined){
+            switch(initialValues.type.code){
+                case("FIN"):
+                    return planPositions.filter(position => {
+                        return position.costType.code.toLowerCase().search(
+                            codeNameSearch.toLowerCase()) !== -1 ||
+                            position.costType.name.toLowerCase().search(
+                            codeNameSearch.toLowerCase()) !== -1
+                    });
+                case("INW"):
+                    return planPositions.filter(position => {
+                        return position.task.toLowerCase().search(
+                            codeNameSearch.toLowerCase()) !== -1
+                    });
+                case("PZP"):
+                    return planPositions.filter(position => {
+                        return position.assortmentGroup.name.toLowerCase().search(
+                            codeNameSearch.toLowerCase()) !== -1
+                    });
+                default:
+                    return null;
+            };
+        }
+    }
+
     handleExcelExport = (exportType, level, headRow, positionId) => {
         const {headFin, headInv, headPzp} = this.state;
         const {initialValues} = this.props;
@@ -493,6 +553,19 @@ class PlanBasicInfoForm extends Component {
             && this.props.initialValues.status.code === 'PK'){
             this.setupAgreedPlan(this.props.initialValues.positions);
         }
+
+        /* Filter position */
+        if (this.state.codeNameSearch !== prevState.codeNameSearch && this.props.initialValues.positions.length > 0){
+            this.setState({
+                positions: this.filter(),
+            })
+        }
+        /* Filter positions on close position details */
+        if(this.state.action === '' && this.state.action !== prevState.action){
+            this.setState({
+                positions: this.filter(),
+            });
+        }
     }
 
     componentDidMount(){
@@ -503,7 +576,7 @@ class PlanBasicInfoForm extends Component {
 
     render(){
         const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, levelAccess } = this.props
-        const { headFin, headInv, headPzp, selected, openPositionDetails, positions, send, formChanged, notExistCorrectedPositions, approveLevel } = this.state;
+        const { headFin, headInv, headPzp, selected, openPositionDetails, openRealization, positions, send, formChanged, notExistCorrectedPositions, approveLevel, codeNameSearch } = this.state;
         return(
             <>
                 {send &&
@@ -515,6 +588,14 @@ class PlanBasicInfoForm extends Component {
                     />
                 }
                 {approveLevel && this.renderApproveDialog()}
+                {openRealization &&
+                    <PlanPositionRealizationContainer
+                        initialValues={selected[0]}
+                        planType={this.props.initialValues.type.code}
+                        open={openRealization}
+                        onClose={this.handleCloseRealization}
+                    />
+                }
                 {openPositionDetails ?
                     this.renderPlanContent()
                 :
@@ -531,8 +612,11 @@ class PlanBasicInfoForm extends Component {
                     <Typography
                         variant="h6"
                     >
-                        {
-                            Object.keys(initialValues).length > 1 && constants.COORDINATOR_PLAN_UPDATE_PLAN_TITLE + ` ${initialValues.updateNumber} - ${initialValues.type.name} ${new Date(initialValues.year).getFullYear()} `
+                        {   Object.keys(initialValues).length > 1 ?
+                                initialValues.updateNumber !== null ?
+                                    `${constants.COORDINATOR_PLAN_UPDATE_PLAN_TITLE} ${initialValues.updateNumber} - ${initialValues.type.name} ${new Date(initialValues.year).getFullYear()}` :
+                                        `${constants.COORDINATOR_PLAN_UPDATE_PLAN_TITLE} - ${initialValues.type.name} ${new Date(initialValues.year).getFullYear()}`
+                            : ""
                         }
                     </Typography>
                     <Divider />
@@ -718,6 +802,20 @@ class PlanBasicInfoForm extends Component {
                                 </Typography>
                             </Toolbar>
                             <Grid container spacing={0} justify="center" className={classes.container}>
+                                <Grid item xs={12}>
+                                    <SearchField
+                                        name="codeNameSearch"
+                                        onChange={this.handleChangeSearch}
+                                        label={this.props.initialValues.type !== undefined && (
+                                            this.props.initialValues.type.code === 'FIN' ? constants.ACCOUNTANT_INSTITUTION_POSITION_SEARCH_COST_TYPE :
+                                                this.props.initialValues.type.code === 'PZP' ? constants.COORDINATOR_PLAN_POSITION_PUBLIC_ASSORTMENT_GROUP :
+                                                    constants.COORDINATOR_PLAN_POSITIONS_HEAD_TASK
+                                        )}
+                                        valueType='all'
+                                        value={codeNameSearch}
+                                        disabled={this.props.initialValues.positions.length === 0}
+                                    />
+                                </Grid>
                                 <Grid item xs={12} sm={12} >
                                     <FormTableField
                                         className={classes.tableWrapper}
@@ -791,7 +889,7 @@ class PlanBasicInfoForm extends Component {
                                             iconAlign="left"
                                             type='submit'
                                             variant="submit"
-                                            disabled={pristine || submitting || invalid || submitSucceeded  }
+                                            disabled={(pristine && codeNameSearch === '') || (!pristine && codeNameSearch !== '') || submitting || invalid || submitSucceeded  }
                                         />
                                     }
                                     {(Object.keys(initialValues).length === 1 || (initialValues.status !== undefined && (initialValues.status.code === 'ZP' || initialValues.status.code === 'PK'))) &&
@@ -800,8 +898,8 @@ class PlanBasicInfoForm extends Component {
                                             icon=<Send/>
                                             iconAlign="left"
                                             variant="submit"
-                                            disabled={!pristine || submitting || invalid || initialValues.positions === undefined
-                                                || positions.length === 0 || notExistCorrectedPositions
+                                            disabled={(!pristine && codeNameSearch ==='') ||  (pristine && codeNameSearch !=='') || submitting || invalid || initialValues.positions === undefined
+                                                || (positions.length === 0 && codeNameSearch ==='') || notExistCorrectedPositions
                                             }
                                             onClick={this.handleSend}
                                         />
@@ -837,14 +935,24 @@ class PlanBasicInfoForm extends Component {
                                                     (levelAccess === "accountant" && initialValues.status.code === 'AD')
                                         ))
                                     )  &&
-                                     <Button
-                                         label={constants.BUTTON_RETURN_COORDINATOR}
-                                         icon=<Redo/>
-                                         iconAlign="left"
-                                         variant="delete"
-                                         onClick={(event) => this.handleApproveAction(event, "sendBack")}
-                                     />
-}
+                                        <Button
+                                            label={constants.BUTTON_RETURN_COORDINATOR}
+                                            icon=<Redo/>
+                                            iconAlign="left"
+                                            variant="delete"
+                                            onClick={(event) => this.handleApproveAction(event, "sendBack")}
+                                        />
+                                    }
+                                    {(initialValues.type !== undefined && initialValues.type.code !== "PZP") &&
+                                        <Button
+                                            label={constants.ACCOUNTANT_MENU_REALIZATION}
+                                            icon=<FolderOpen />
+                                            iconAlign="left"
+                                            variant="add"
+                                            disabled={selected.length === 0}
+                                            onClick={this.handleOpenRealization}
+                                        />
+                                    }
                                 </Grid>
                             </Grid>
                             <Grid item xs={2}>

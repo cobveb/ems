@@ -18,6 +18,17 @@ import java.util.Set;
                 "cost_number"
         })
 })
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(
+                name = "generateCostsType",
+                procedureName = "emsadm.cor_plans_util.generate_costs_type",
+                parameters = {
+                        @StoredProcedureParameter(name = "p_source_year", type = Integer.class, mode = ParameterMode.IN),
+                        @StoredProcedureParameter(name = "p_target_year", type = Integer.class, mode = ParameterMode.IN),
+                        @StoredProcedureParameter(name = "o_msg", type = String.class, mode = ParameterMode.OUT)
+                }
+        )
+})
 @DynamicUpdate()
 public class CostType {
     @Id

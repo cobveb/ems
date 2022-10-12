@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { withStyles, Grid, Typography} from '@material-ui/core/';
 import { Spinner, ModalDialog } from 'common/';
-import { Table, Button, DatePicker } from 'common/gui';
+import { Table, Button, DatePicker, SelectField } from 'common/gui';
 import { Visibility } from '@material-ui/icons/';
 import PlanContainer from 'containers/modules/accountant/institution/plans/planContainer';
+import PlanPzpContainer from 'containers/modules/publicProcurement/institution/plans/planContainer';
 
 const styles = theme => ({
     root: {
@@ -72,15 +73,25 @@ class Plans extends Component {
                 label: constants.PUBLIC_COORDINATOR_PLANS_TABLE_HEAD_ROW_UPDATE_NUMBER,
                 type:'number',
             },
+            {
+                id: 'status.name',
+                label: constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_STATUS,
+                type: 'object',
+            },
         ],
         rows: [],
         year: null,
+        type:'',
         selected: {},
         isDetailsVisible: false,
     }
 
     handleDataChange = (id) => (date) => {
         this.setState({[id]: date})
+    }
+
+    handleSearch = (event) => {
+        this.setState({[event.target.name]: event.target.value})
     }
 
     handleSelect = (id) => {
@@ -103,11 +114,13 @@ class Plans extends Component {
         let plans = this.props.initialValues;
 
         return plans.filter((plan) => {
-            return (
+            return plan.type.code.toLowerCase().search(
+                this.state.type.toLowerCase()) !== -1 &&
+                (
                 this.state.year === null ?
                     plan :
                         plan.year === this.state.year.getFullYear()
-            )
+                )
         })
     }
 
@@ -127,29 +140,49 @@ class Plans extends Component {
             this.setState({
                 rows: this.filter(),
             });
-        } else if (this.state.year !== prevState.year){
+        } else if (this.state.year !== prevState.year ||
+            this.state.type !== prevState.type
+        ){
             this.setState({
               rows: this.filter(),
             })
         }
+        if(this.props.levelAccess === 'director'){
+            // Filter rows on close application
+            if(Object.keys(this.state.selected).length === 0 && this.state.selected !== prevState.selected){
+                this.setState({
+                    rows: this.filter(),
+                });
+            }
+        }
     }
 
     render(){
-        const { classes, isLoading, error, types, levelAccess } = this.props;
-        const { headCells, rows, year, selected, isDetailsVisible } = this.state;
-
+        const { classes, isLoading, error, types, statuses, levelAccess } = this.props;
+        const { headCells, rows, year, selected, isDetailsVisible, type } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
                 { isDetailsVisible ?
-                    <PlanContainer
-                        initialValues={selected}
-                        changeVisibleDetails={this.handleChangeVisibleDetails}
-                        types={types}
-                        levelAccess={levelAccess}
-                        onClose={this.handleClose}
-                    />
+                    selected.type.code === 'FIN' ?
+                        <PlanContainer
+                            initialValues={selected}
+                            changeVisibleDetails={this.handleChangeVisibleDetails}
+                            types={types}
+                            statuses={statuses}
+                            levelAccess={levelAccess}
+                            onClose={this.handleClose}
+                        />
+                    :
+                        <PlanPzpContainer
+                            initialValues={selected}
+                            changeVisibleDetails={this.handleChangeVisibleDetails}
+                            types={types}
+                            statuses={statuses}
+                            levelAccess={levelAccess}
+                            onClose={this.handleClose}
+                        />
                 :
                     <>
                         <Grid
@@ -160,7 +193,7 @@ class Plans extends Component {
                             <Typography variant="h6">{constants.ACCOUNTANT_INSTITUTION_PLANS_TITLE}</Typography>
                             <div className={classes.content}>
                                 <Grid container spacing={0} direction="row" justify="center" className={classes.container}>
-                                    <Grid item xs={12} className={classes.item}>
+                                    <Grid item xs={levelAccess === 'director' ? 6 : 12} className={classes.item}>
                                         <DatePicker
                                             id="year"
                                             onChange={this.handleDataChange('year')}
@@ -172,6 +205,17 @@ class Plans extends Component {
                                             views={["year"]}
                                         />
                                     </Grid>
+                                    { levelAccess === 'director' &&
+                                        <Grid item xs={6} className={classes.item}>
+                                            <SelectField
+                                                name="type"
+                                                onChange={this.handleSearch}
+                                                label={constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_TYPE}
+                                                options={types}
+                                                value={type}
+                                            />
+                                        </Grid>
+                                    }
                                     <Grid container spacing={0} direction="row" justify="flex-start" className={classes.container}>
                                         <Table
                                             className={classes.tableWrapper}

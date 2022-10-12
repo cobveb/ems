@@ -33,6 +33,7 @@ class PlanContainer extends Component {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
                 initData = response.data.data;
+                initData.status = findSelectFieldPosition(this.props.statuses, initData.status);
                 initData.type = findSelectFieldPosition(this.props.types, response.data.data.type);
                 if(initData.isCorrected){
                     initData.planPositions.map(position => (
@@ -153,7 +154,7 @@ class PlanContainer extends Component {
         this.handleGetPlan();
     }
     render(){
-        const {levelAccess} = this.props;
+        const {levelAccess, clearError} = this.props;
         const {initData, disableWithdraw} = this.state;
         return(
             <Plan
@@ -167,6 +168,7 @@ class PlanContainer extends Component {
                 onChiefWithdrawPlan={this.handleChiefWithdrawPlan}
                 onPrintPlan={this.handlePrintPlan}
                 onExcelExport={this.handleExcelExport}
+                clearError={clearError}
                 onClose={this.props.onClose}
             />
         );

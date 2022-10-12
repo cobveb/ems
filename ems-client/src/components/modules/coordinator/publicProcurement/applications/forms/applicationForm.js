@@ -528,7 +528,7 @@ class ApplicationForm extends Component {
 
     allowToSend = () => {
         const { formErrors } = this.props;
-        if(formErrors.parts !== undefined || formErrors.assortmentGroups !== undefined || formErrors.criteria !== undefined || (formErrors.applicationProtocol !== undefined && formErrors.applicationProtocol.prices !== undefined)){
+        if(formErrors.parts !== undefined || formErrors.assortmentGroups !== undefined || formErrors.planPositions !== undefined || formErrors.criteria !== undefined || (formErrors.applicationProtocol !== undefined && formErrors.applicationProtocol.prices !== undefined)){
             this.setState({allowToSend: false})
         }
     }
@@ -688,6 +688,7 @@ class ApplicationForm extends Component {
                             vats={vats}
                             assortmentGroups={this.props.initialValues.assortmentGroups}
                             applicationStatus={initialValues.status}
+                            applicationMode={initialValues.mode}
                             levelAccess={levelAccess}
                             isParts={formCurrentValues.isParts}
                             onClose={this.handleCloseGroupDetails}
@@ -970,8 +971,14 @@ class ApplicationForm extends Component {
                                             <Toolbar className={classes.toolbar}>
                                                 <FormControl error>
                                                     <Typography variant="subtitle1" ><LibraryBooks className={classes.subHeaderIcon} fontSize="small" /> {constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_GROUPS}</Typography>
-                                                    { formErrors.criteria !== undefined &&
+                                                    { formErrors.assortmentGroups !== undefined &&
                                                         <FormHelperText>{formErrors.assortmentGroups}</FormHelperText>
+                                                    }
+                                                    { formErrors.planPositions !== undefined &&
+                                                        <FormHelperText>{initialValues.orderIncludedPlanType.code === 'FIN' ?
+                                                            `${formErrors.planPositions} ${constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_FINANCIAL}` :
+                                                                `${formErrors.planPositions} ${constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_INVESTMENT}`}
+                                                        </FormHelperText>
                                                     }
                                                 </FormControl>
                                             </Toolbar>

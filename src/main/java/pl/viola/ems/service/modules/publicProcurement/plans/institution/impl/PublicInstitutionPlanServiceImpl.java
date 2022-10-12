@@ -273,7 +273,7 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
 
             });
             institutionPlan.setPlanPositions(new HashSet<>(institutionPublicProcurementPlanPositions));
-
+            coordinatorPlan.setInstitutionPlan(institutionPlan);
         }
         institutionPlanRepository.save(updatePlanPositions(coordinatorPlan, institutionPlan));
     }

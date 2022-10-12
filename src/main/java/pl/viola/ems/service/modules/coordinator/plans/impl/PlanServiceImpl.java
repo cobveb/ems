@@ -25,6 +25,7 @@ import pl.viola.ems.service.common.JasperPrintService;
 import pl.viola.ems.service.modules.accountant.institution.InstitutionPlanService;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 import pl.viola.ems.service.modules.coordinator.plans.PlanService;
+import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
 import pl.viola.ems.service.modules.publicProcurement.plans.institution.PublicInstitutionPlanService;
 import pl.viola.ems.utils.Utils;
 
@@ -79,6 +80,9 @@ public class PlanServiceImpl implements PlanService {
 
     @Autowired
     PublicInstitutionPlanService publicInstitutionPlanService;
+
+    @Autowired
+    InvoiceService invoiceService;
 
     @Override
     public List<CoordinatorPlan> findByCoordinator() {
@@ -289,7 +293,7 @@ public class PlanServiceImpl implements PlanService {
                 institutionPlanService.updateInstitutionPlan(plan, newStatus.equals(CoordinatorPlan.PlanStatus.WY) ? "send" : "withdraw");
             } else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
                 /* If updated plan is financial then update institution plan  */
-                institutionPlanService.correctInstitutionPlan(plan, newStatus.equals(CoordinatorPlan.PlanStatus.WY) ? "send" : "withdraw");
+//                institutionPlanService.correctInstitutionPlan(plan, newStatus.equals(CoordinatorPlan.PlanStatus.WY) ? "send" : "withdraw");
             }
         }
         return plan;
@@ -309,34 +313,60 @@ public class PlanServiceImpl implements PlanService {
         plan.setEconomicAcceptUser(null);
         plan.setChiefAcceptUser(null);
 
-        plan.getPositions().forEach(position -> {
-            position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZP);
-            if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
-                if (plan.getCorrectionPlan() == null) {
+        if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
+            if (plan.getCorrectionPlan() == null) {
+                /* If returned financial base plan  */
+                plan.getPositions().forEach(position -> {
+                    position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZP);
                     position.setAmountAwardedNet(null);
                     position.setAmountAwardedGross(null);
-                }
+                });
+            } else {
+                /* If returned financial plan is an update  */
+                plan.getPositions().forEach(position -> {
+                    if (position.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.KR)) {
+                        position.setAmountAwardedNet(null);
+                        position.setAmountAwardedGross(null);
+                    } else if (position.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.SK)) {
+                        position.setAmountAwardedNet(null);
+                        position.setAmountAwardedGross(null);
+                        position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.KR);
+                    } else {
+                        position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZP);
+                        if (position.getAmountRequestedNet().compareTo(position.getCorrectionPlanPosition().getAmountAwardedNet()) != 0) {
+                            /* Setup amount requested value to amount awarded value from corrected plan position
+                                if not setup on create update plan
+                            */
+                            position.setAmountRequestedNet(position.getAmountAwardedNet());
+                            position.setAmountRequestedGross(position.getAmountAwardedGross());
+                        }
+                    }
+                });
+
             }
-        });
+
+        } else {
+            plan.getPositions().forEach(position -> {
+                position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZP);
+            });
+        }
+
         coordinatorPlanRepository.save(plan);
         if (!plan.getType().equals(CoordinatorPlan.PlanType.INW)) {
             // Update institution plan if returned plan is not an update
             if (plan.getCorrectionPlan() == null) {
                 institutionPlanService.updateInstitutionPlan(plan, "return");
-            } else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
-                /* If updated plan is financial then update institution plan  */
-                institutionPlanService.correctInstitutionPlan(plan, "return");
             }
+//            else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
+//                /* If updated plan is financial then update institution plan  */
+//                institutionPlanService.correctInstitutionPlan(plan, "return");
+//            }
         }
         return messageSource.getMessage("Coordinator.plan.returnMsg", null, Locale.getDefault());
     }
 
     @Override
     public void updateInferredPositionValue(final PublicProcurementPosition position) {
-//        Optional<PublicProcurementPosition> position = publicProcurementPositionRepository.findById(planPosition.getId());
-//        position.get().setAmountInferredNet(planPosition.getAmountInferredNet());
-//        position.get().setAmountInferredGross(planPosition.getAmountInferredGross());
-//        position.get().setStatus(CoordinatorPlanPosition.PlanPositionStatus.RE);
         publicProcurementPositionRepository.save(position);
     }
 
@@ -372,9 +402,10 @@ public class PlanServiceImpl implements PlanService {
                     //update institution plan if current coordinator plan is not update
                     if (plan.getCorrectionPlan() == null) {
                         institutionPlanService.updateInstitutionPlan(plan, "approveDirector");
-                    } else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
-                        institutionPlanService.correctInstitutionPlan(plan, "approveDirector");
                     }
+//                    else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
+//                        institutionPlanService.correctInstitutionPlan(plan, "approveDirector");
+//                    }
                 }
                 return coordinatorPlanRepository.save(plan);
             case ECONOMIC:
@@ -383,25 +414,29 @@ public class PlanServiceImpl implements PlanService {
                 if (!plan.getType().equals(CoordinatorPlan.PlanType.INW)) {
                     if (plan.getCorrectionPlan() == null) {
                         institutionPlanService.updateInstitutionPlan(plan, "approveEconomic");
-                    } else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
-                        institutionPlanService.correctInstitutionPlan(plan, "approveEconomic");
                     }
+//                    else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
+//                        institutionPlanService.correctInstitutionPlan(plan, "approveEconomic");
+//                    }
                 }
                 return coordinatorPlanRepository.save(plan);
             case CHIEF:
-                plan.getPositions().forEach(position -> position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZA));
                 if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
                     plan.setStatus(CoordinatorPlan.PlanStatus.AN);
                     if (plan.getCorrectionPlan() == null) {
+                        plan.getPositions().forEach(position -> position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZA));
                         institutionPlanService.updateInstitutionPlan(plan, "approveChief");
                     } else {
+                        /* Update institution plan on accept coordinator plan */
                         institutionPlanService.correctInstitutionPlan(plan, "approveChief");
                     }
                 } else {
+                    plan.getPositions().forEach(position -> position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZA));
                     if (plan.getType().equals(CoordinatorPlan.PlanType.PZP) && plan.getCorrectionPlan() != null) {
                         plan.setStatus(CoordinatorPlan.PlanStatus.AN);
                         publicInstitutionPlanService.updateInstitutionPublicProcurementPlan(plan);
                     } else {
+                        /* Accept investment and PZP not update plan */
                         plan.setStatus(CoordinatorPlan.PlanStatus.ZA);
                     }
                     plan.setChiefAcceptUser(user);
@@ -557,8 +592,8 @@ public class PlanServiceImpl implements PlanService {
 
         setPlanAmountValues(coordinatorPlanRepository.save(coordinatorPlan));
 
-        //Update Institution plan if current plan is not update
         if (coordinatorPlan.getCorrectionPlan() == null) {
+            /* Update institution plan position if current position plan is base plan */
             institutionPlanService.updateInstitutionPlanPositions(positions);
         }
         return coordinatorPlan;
@@ -651,22 +686,11 @@ public class PlanServiceImpl implements PlanService {
                 CoordinatorPlan.PlanStatus.AA
         );
 
-        List<CoordinatorPlan.PlanStatus> publicProcurementStatuses = Arrays.asList(
-                CoordinatorPlan.PlanStatus.AK,
-                CoordinatorPlan.PlanStatus.AD,
-                CoordinatorPlan.PlanStatus.ZA,
-                CoordinatorPlan.PlanStatus.AN,
-                CoordinatorPlan.PlanStatus.RE,
-                CoordinatorPlan.PlanStatus.ZR,
-                CoordinatorPlan.PlanStatus.AA
-        );
+
 
         List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNull(statuses);
 
-        coordinatorPlans = coordinatorPlans.stream().filter(coordinatorPlan ->
-                (!coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) ||
-                        (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) && publicProcurementStatuses.contains(coordinatorPlan.getStatus())
-                        ))).collect(Collectors.toList());
+        coordinatorPlans = this.filterCoordinatorsPlanInAccountant(coordinatorPlans);
 
 
         if (!coordinatorPlans.isEmpty()) {
@@ -732,21 +756,7 @@ public class PlanServiceImpl implements PlanService {
                         CoordinatorPlan.PlanStatus.AA
                 );
                 coordinatorPlanUpdates = coordinatorPlanRepository.findByStatusInAndTypeInAndCorrectionPlanIsNotNull(statuses, Arrays.asList(CoordinatorPlan.PlanType.PZP, CoordinatorPlan.PlanType.INW, CoordinatorPlan.PlanType.FIN));
-                break;
-            case "director":
-                statuses = Arrays.asList(
-                        CoordinatorPlan.PlanStatus.AZ,
-                        CoordinatorPlan.PlanStatus.AD,
-                        CoordinatorPlan.PlanStatus.AK,
-                        CoordinatorPlan.PlanStatus.AE,
-                        CoordinatorPlan.PlanStatus.AN,
-                        CoordinatorPlan.PlanStatus.ZA,
-                        CoordinatorPlan.PlanStatus.RE,
-                        CoordinatorPlan.PlanStatus.ZR,
-                        CoordinatorPlan.PlanStatus.AA
-                );
-
-                coordinatorPlanUpdates = coordinatorPlanRepository.findByStatusInAndTypeInAndCorrectionPlanIsNotNull(statuses, Arrays.asList(CoordinatorPlan.PlanType.PZP, CoordinatorPlan.PlanType.INW, CoordinatorPlan.PlanType.FIN));
+                coordinatorPlanUpdates = this.filterCoordinatorsPlanInAccountant(coordinatorPlanUpdates);
                 break;
         }
         if (!coordinatorPlanUpdates.isEmpty()) {
@@ -756,7 +766,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<CoordinatorPlan> getPlansCoordinatorInDirector() {
+    public List<CoordinatorPlan> getPlansCoordinatorInDirector(boolean isPlanUpdates) {
         List<CoordinatorPlan.PlanStatus> statuses = Arrays.asList(
                 CoordinatorPlan.PlanStatus.AZ,
                 CoordinatorPlan.PlanStatus.AK,
@@ -773,11 +783,15 @@ public class PlanServiceImpl implements PlanService {
         List<CoordinatorPlan> coordinatorPlans = new ArrayList<>();
 
         if (user.getOrganizationUnit().getRole().equals(OrganizationUnit.Role.DIRECTOR)) {
-            coordinatorPlans = coordinatorPlanRepository.findByStatusInAndCoordinatorInAndCorrectionPlanIsNull(statuses, user.getOrganizationUnit().getDirectorCoordinators());
+            coordinatorPlans = isPlanUpdates ?
+                    coordinatorPlanRepository.findByStatusInAndCoordinatorInAndCorrectionPlanIsNotNull(statuses, user.getOrganizationUnit().getDirectorCoordinators()) :
+                    coordinatorPlanRepository.findByStatusInAndCoordinatorInAndCorrectionPlanIsNull(statuses, user.getOrganizationUnit().getDirectorCoordinators());
         } else if (user.getOrganizationUnit().getRole().equals(OrganizationUnit.Role.CHIEF) ||
                 user.getOrganizationUnit().getRole().equals(OrganizationUnit.Role.ECONOMIC) ||
                 user.getGroups().stream().anyMatch(group -> group.getCode().equals("admin"))) {
-            coordinatorPlans = coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNull(statuses);
+            coordinatorPlans = isPlanUpdates ?
+                    coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNotNull(statuses) :
+                    coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNull(statuses);
         }
 
         if (!coordinatorPlans.isEmpty()) {
@@ -838,7 +852,7 @@ public class PlanServiceImpl implements PlanService {
                 });
                 break;
             case "director":
-                plans = getPlansCoordinatorInDirector();
+                plans = getPlansCoordinatorInDirector(false);
                 plans.forEach(plan -> {
                     Map<String, Object> row = new HashMap<>();
                     row.put("year", plan.getYear());
@@ -917,6 +931,21 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
+    public void exportPlanPositionsInvoicesPositionsToXlsx(final ExportType exportType, final CoordinatorPlan.PlanType planType, final Long positionId, final ArrayList<ExcelHeadRow> headRow, final HttpServletResponse response) throws IOException {
+        ArrayList<Map<String, Object>> rows = new ArrayList<>();
+
+        invoiceService.getInvoicesPositionsByCoordinatorPlanPosition(planType, positionId).forEach(invoicePosition -> {
+            Map<String, Object> row = new HashMap<>();
+            row.put("invoiceNumber", invoicePosition.getInvoiceNumber());
+            row.put("name.content", invoicePosition.getName().getContent());
+            row.put("amountNet", invoicePosition.getAmountNet());
+            row.put("amountGross", invoicePosition.getAmountGross());
+            rows.add(row);
+        });
+        Utils.generateExcelExport(exportType, headRow, rows, response);
+    }
+
+    @Override
     public void exportSubPositionsToExcel(ExportType exportType, CoordinatorPlan.PlanType planType, Long positionId,
                                           ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException {
 
@@ -984,8 +1013,8 @@ public class PlanServiceImpl implements PlanService {
             plan.getPositions().forEach(planPosition -> {
                 FinancialPosition newPosition = new FinancialPosition();
                 newPosition.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZP);
-                newPosition.setAmountRequestedNet(planPosition.getAmountRequestedNet());
-                newPosition.setAmountRequestedGross(planPosition.getAmountRequestedGross());
+                newPosition.setAmountRequestedNet(planPosition.getAmountAwardedNet());
+                newPosition.setAmountRequestedGross(planPosition.getAmountAwardedGross());
                 newPosition.setAmountAwardedNet(planPosition.getAmountAwardedNet());
                 newPosition.setAmountAwardedGross(planPosition.getAmountAwardedGross());
                 newPosition.setAmountRealizedNet(planPosition.getAmountRealizedNet());
@@ -1257,6 +1286,22 @@ public class PlanServiceImpl implements PlanService {
         return investmentSubPosition.getPlanPosition();
     }
 
+    @Override
+    public List<CoordinatorPlanPosition> findCorrectedPlanPositions(final CoordinatorPlanPosition coordinatorPlanPosition) {
+
+        List<CoordinatorPlanPosition> correctedPlanPositions = new ArrayList<>(Collections.singletonList(coordinatorPlanPosition));
+
+        CoordinatorPlanPosition correctedPlanPosition = financialPositionRepository.findByCorrectionPlanPosition(coordinatorPlanPosition);
+
+        if (correctedPlanPosition != null) {
+            correctedPlanPositions.add(correctedPlanPosition);
+            if (correctedPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
+                this.findCorrectedPlanPosition(correctedPlanPosition, correctedPlanPositions);
+            }
+        }
+        return correctedPlanPositions;
+    }
+
 
     private void setPositionAmountRequestedValue(CoordinatorPlanPosition position) {
         if (!position.getSubPositions().isEmpty()) {
@@ -1286,5 +1331,32 @@ public class PlanServiceImpl implements PlanService {
             setPlanAmountValues(plan.getCorrectionPlan());
         }
         return plan;
+    }
+
+    private void findCorrectedPlanPosition(final CoordinatorPlanPosition planPosition, final List<CoordinatorPlanPosition> correctPlanPositions) {
+        CoordinatorPlanPosition correctedPlanPosition = financialPositionRepository.findByCorrectionPlanPosition(planPosition);
+
+        if (correctedPlanPosition != null) {
+            correctPlanPositions.add(correctedPlanPosition);
+            this.findCorrectedPlanPosition(correctedPlanPosition, correctPlanPositions);
+        }
+    }
+
+    private List<CoordinatorPlan> filterCoordinatorsPlanInAccountant(List<CoordinatorPlan> coordinatorPlans) {
+
+        List<CoordinatorPlan.PlanStatus> publicProcurementStatuses = Arrays.asList(
+                CoordinatorPlan.PlanStatus.AK,
+                CoordinatorPlan.PlanStatus.AD,
+                CoordinatorPlan.PlanStatus.ZA,
+                CoordinatorPlan.PlanStatus.AN,
+                CoordinatorPlan.PlanStatus.RE,
+                CoordinatorPlan.PlanStatus.ZR,
+                CoordinatorPlan.PlanStatus.AA
+        );
+
+        return coordinatorPlans.stream().filter(coordinatorPlan ->
+                (!coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) ||
+                        (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) && publicProcurementStatuses.contains(coordinatorPlan.getStatus())
+                        ))).collect(Collectors.toList());
     }
 }

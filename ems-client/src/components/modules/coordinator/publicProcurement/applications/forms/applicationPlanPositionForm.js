@@ -4,15 +4,15 @@ import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { withStyles, Divider, Grid, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Typography, Toolbar } from '@material-ui/core/';
 import {Spinner, ModalDialog } from 'common/';
-import { Close, Save, Cancel, LibraryBooks, Edit } from '@material-ui/icons/';
+import { Close, Save, Cancel, LibraryBooks, Edit, Description } from '@material-ui/icons/';
 import { Button } from 'common/gui';
 import { FormAmountField, FormSelectField, FormDictionaryField, FormTableField } from 'common/form';
 import SubsequentYearsFormContainer from 'containers/modules/coordinator/publicProcurement/applications/forms/subsequentYearsFormContainer';
 
 const styles = theme => ({
     dialog:{
-        height: `calc(100vh - ${theme.spacing(70)}px)`,
-        maxHeight: `calc(100vh - ${theme.spacing(40)}px)`,
+        height: `calc(100vh - ${theme.spacing(40)}px)`,
+        maxHeight: `calc(100vh - ${theme.spacing(20)}px)`,
         width: '100%',
         paddingRight: theme.spacing(1),
         paddingLeft: theme.spacing(2),
@@ -30,6 +30,19 @@ const styles = theme => ({
     tableWrapper: {
         overflow: 'auto',
         height: theme.spacing(30),
+    },
+    section: {
+        marginBottom: theme.spacing(1),
+    },
+    container: {
+        width: '100%',
+        padding: 0,
+    },
+    toolbar: {
+        minHeight: theme.spacing(4),
+    },
+    dialogTitle: {
+        paddingBottom: theme.spacing(1),
     },
 })
 
@@ -184,7 +197,7 @@ class ApplicationPlanPositionForm extends Component {
                 >
                     {(submitting || isLoading) && <Spinner /> }
                     <form onSubmit={handleSubmit}>
-                        <DialogTitle disableTypography={true}>
+                        <DialogTitle disableTypography={true} className={classes.dialogTitle}>
                             <Grid
                                 container
                                 direction="row"
@@ -211,82 +224,117 @@ class ApplicationPlanPositionForm extends Component {
                             </Grid>
                         </DialogTitle>
                         <DialogContent className={classes.dialog}>
-                            <Grid container spacing={1} justify="center" className={classes.container}>
-                                <Grid item xs={12}>
-                                    <FormDictionaryField
-                                        isRequired={true}
-                                        name="coordinatorPlanPosition"
-                                        dictionaryName={orderIncludedPlanType === 'FIN' ?
-                                            constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_FINANCIAL_PLAN_POSITION :
-                                                constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_INVESTMENT_PLAN_POSITION
-                                        }
-                                        label={orderIncludedPlanType === 'FIN' ?
-                                            constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_FINANCIAL_PLAN_POSITION :
-                                                constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_INVESTMENT_PLAN_POSITION
-                                        }
-                                        items={planPositions}
-                                        disabled={applicationStatus !== undefined && applicationStatus.code !== 'ZP'}
-                                    />
+                            <div className={classes.section}>
+                                <Toolbar className={classes.toolbar}>
+                                    <Description className={classes.subHeaderIcon} fontSize="small" />
+                                    <Typography variant="subtitle1" >
+                                        {constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_INFO}
+                                    </Typography>
+                                </Toolbar>
+                                <Grid container spacing={1} justify="center" className={classes.container}>
+                                    <Grid item xs={12}>
+                                        <FormDictionaryField
+                                            isRequired={true}
+                                            name="coordinatorPlanPosition"
+                                            dictionaryName={orderIncludedPlanType === 'FIN' ?
+                                                constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_FINANCIAL_PLAN_POSITION :
+                                                    constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_INVESTMENT_PLAN_POSITION
+                                            }
+                                            label={orderIncludedPlanType === 'FIN' ?
+                                                constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_FINANCIAL_PLAN_POSITION :
+                                                    constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_INVESTMENT_PLAN_POSITION
+                                            }
+                                            items={planPositions}
+                                            disabled={applicationStatus !== undefined && applicationStatus.code !== 'ZP'}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <FormAmountField
+                                            name="coordinatorPlanPosition.amountAwardedNet"
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_AMOUNT_NET}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <FormAmountField
+                                            name="coordinatorPlanPosition.amountAwardedGross"
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_AMOUNT_GROSS}
+                                            disabled
+                                        />
+                                    </Grid>
+
                                 </Grid>
-                                <Grid item xs={5}>
-                                    <FormAmountField
-                                        name="positionAmountNet"
-                                        label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_POSITION_NET}
-                                        isRequired={true}
-                                        disabled={applicationStatus !== undefined && applicationStatus.code !== 'ZP' && true}
-                                    />
+                            </div>
+                            <div className={classes.section}>
+                                <Divider />
+                                <Toolbar className={classes.toolbar}>
+                                    <Description className={classes.subHeaderIcon} fontSize="small" />
+                                    <Typography variant="subtitle1" >
+                                        {constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_POSITION_INFO}
+                                    </Typography>
+                                </Toolbar>
+                                <Grid container spacing={1} justify="center" className={classes.container}>
+                                    <Grid item xs={5}>
+                                        <FormAmountField
+                                            name="positionAmountNet"
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_POSITION_NET}
+                                            isRequired={true}
+                                            disabled={applicationStatus !== undefined && applicationStatus.code !== 'ZP' && true}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <FormSelectField
+                                            name="vat"
+                                            isRequired={true}
+                                            label={constants.VAT}
+                                            options={vats}
+                                            disabled={applicationStatus !== undefined && applicationStatus.code !== 'ZP' && true}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={5}>
+                                        <FormAmountField
+                                            name="positionAmountGross"
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_POSITION_GROSS}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} >
+                                        <Toolbar className={classes.toolbarTable}>
+                                            <LibraryBooks className={classes.subHeaderIcon} fontSize="small" />
+                                            <Typography variant="subtitle1" >{constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_NEXT_YEARS}</Typography>
+                                        </Toolbar>
+                                        <FormTableField
+                                            className={classes.tableWrapper}
+                                            name="subsequentYears"
+                                            head={tableHeadYears}
+                                            allRows={subsequentYears}
+                                            checkedRows={selected}
+                                            toolbar={true}
+                                            addButtonProps={{
+                                                disabled : ((applicationStatus !== undefined && applicationStatus.code !== 'ZP') ||(!allowAddYear || action === 'add'))  && true,
+                                            }}
+                                            editButtonProps={{
+                                                label: constants.BUTTON_EDIT,
+                                                icon: <Edit/>,
+                                                variant: "edit",
+                                                disabled: ((applicationStatus !== undefined && applicationStatus.code !== 'ZP') && selected.length > 0) && true
+                                            }}
+                                            deleteButtonProps={{
+                                                disabled : (applicationStatus !== undefined && applicationStatus.code !== 'ZP') ? true
+                                                    : selected.length > 0 ? false : true,
+                                            }}
+                                            onAdd={(event) => this.handleOpenPositionDetails(event, 'add')}
+                                            onEdit={(event) => this.handleOpenPositionDetails(event, 'edit')}
+                                            onDelete={(event) => this.handleDelete(event, 'delete')}
+                                            multiChecked={false}
+                                            checkedColumnFirst={true}
+                                            onSelect={this.handleSelect}
+                                            onDoubleClick={this.handleDoubleClick}
+                                            orderBy="id"
+                                        />
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={2}>
-                                    <FormSelectField
-                                        name="vat"
-                                        isRequired={true}
-                                        label={constants.VAT}
-                                        options={vats}
-                                    />
-                                </Grid>
-                                <Grid item xs={5}>
-                                    <FormAmountField
-                                        name="positionAmountGross"
-                                        label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_POSITION_GROSS}
-                                        disabled
-                                    />
-                                </Grid>
-                                <Grid item xs={12} >
-                                    <Toolbar className={classes.toolbarTable}>
-                                        <LibraryBooks className={classes.subHeaderIcon} fontSize="small" />
-                                        <Typography variant="subtitle1" >{constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_NEXT_YEARS}</Typography>
-                                    </Toolbar>
-                                    <FormTableField
-                                        className={classes.tableWrapper}
-                                        name="subsequentYears"
-                                        head={tableHeadYears}
-                                        allRows={subsequentYears}
-                                        checkedRows={selected}
-                                        toolbar={true}
-                                        addButtonProps={{
-                                            disabled : ((applicationStatus !== undefined && applicationStatus.code !== 'ZP') ||(!allowAddYear || action === 'add'))  && true,
-                                        }}
-                                        editButtonProps={{
-                                            label: constants.BUTTON_EDIT,
-                                            icon: <Edit/>,
-                                            variant: "edit",
-                                            disabled: ((applicationStatus !== undefined && applicationStatus.code !== 'ZP') && selected.length > 0) && true
-                                        }}
-                                        deleteButtonProps={{
-                                            disabled : (applicationStatus !== undefined && applicationStatus.code !== 'ZP') ? true
-                                                : selected.length > 0 ? false : true,
-                                        }}
-                                        onAdd={(event) => this.handleOpenPositionDetails(event, 'add')}
-                                        onEdit={(event) => this.handleOpenPositionDetails(event, 'edit')}
-                                        onDelete={(event) => this.handleDelete(event, 'delete')}
-                                        multiChecked={false}
-                                        checkedColumnFirst={true}
-                                        onSelect={this.handleSelect}
-                                        onDoubleClick={this.handleDoubleClick}
-                                        orderBy="id"
-                                    />
-                                </Grid>
-                            </Grid>
+                            </div>
                         </DialogContent>
                         <DialogActions>
                             <Grid

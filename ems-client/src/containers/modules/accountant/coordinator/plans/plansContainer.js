@@ -50,7 +50,6 @@ class PlansContainer extends Component {
     }
 
     handleGetCoordinators(){
-        this.props.loading(true);
         return OrganizationUnitsApi.getCoordinators()
         .then(response => {
             this.setState(prevState => {
@@ -58,7 +57,6 @@ class PlansContainer extends Component {
                 coordinators =  coordinators.concat(response.data.data);
                 return {coordinators};
             });
-            this.props.loading(false)
         })
         .catch(error => {});
     }
@@ -145,6 +143,7 @@ class PlansContainer extends Component {
                 investmentCategories={investmentCategories}
                 modes={modes}
                 types={types}
+                levelAccess="accountant"
                 isLoading={isLoading}
                 loading={loading}
                 error={error}

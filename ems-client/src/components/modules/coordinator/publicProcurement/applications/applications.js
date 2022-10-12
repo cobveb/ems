@@ -252,7 +252,12 @@ class Applications extends Component {
 //                });
 //            }
 //        }
-
+        // Filter rows on close application
+        if(this.state.action === '' && this.state.action !== prevState.action){
+            this.setState({
+                rows: this.filter(),
+            });
+        }
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
                 rows: this.filter(),
@@ -273,7 +278,7 @@ class Applications extends Component {
 
     render(){
         const { classes, isLoading, error, estimationTypes, vats, planPositions, coordinators, modes, statuses } = this.props;
-        const { initData, isDetailsVisible, action, year, rows, headCells, selected, estimationType, mode, status, splitOptions, applications } = this.state;
+        const { initData, isDetailsVisible, action, year, rows, headCells, selected, estimationType, mode, number, orderedObject, status, splitOptions, applications } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -331,6 +336,7 @@ class Applications extends Component {
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
                                             placeholder={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
                                             valueType="all"
+                                            value={number}
                                         />
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
@@ -366,6 +372,7 @@ class Applications extends Component {
                                             onChange={this.handleSearch}
                                             label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERED_OBJECT}
                                             valueType="all"
+                                            value={orderedObject}
                                         />
                                     </Grid>
                                 </Grid>

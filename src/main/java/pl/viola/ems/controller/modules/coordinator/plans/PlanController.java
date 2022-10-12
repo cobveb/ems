@@ -126,4 +126,11 @@ public class PlanController {
     public ApiResponse deleteInvestmentSource(@PathVariable Long positionId, @PathVariable Long sourceId) {
         return new ApiResponse(HttpStatus.ACCEPTED, planService.deleteInvestmentSource(positionId, sourceId));
     }
+
+    @PutMapping("/export/planPositionInvoicesPositions/{planType}/{positionId}/{exportType}")
+    public void exportPlanPositionsInvoicesPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow, @PathVariable CoordinatorPlan.PlanType planType,
+                                                           @PathVariable ExportType exportType, @PathVariable Long positionId, HttpServletResponse response) throws IOException {
+
+        planService.exportPlanPositionsInvoicesPositionsToXlsx(exportType, planType, positionId, headRow, generateExportResponse(response, exportType));
+    }
 }

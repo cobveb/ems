@@ -23,8 +23,12 @@ public interface CostTypeService {
 
     String deleteCostType(Long costId);
 
+    String deleteCostTypeYear(Long yearId);
+
     void exportCostTypesToExcel(ExportType exportType, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
 
     void exportCostTypeYearsToExcel(ExportType exportType, ArrayList<ExcelHeadRow> headRow, long costId, HttpServletResponse response) throws IOException;
+
+    String generateCostsTypesOnYear(int sourceYear, int targetYear);
 
 }

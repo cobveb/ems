@@ -115,14 +115,13 @@ class CostTypeForm extends Component {
     handleConfirmDelete = () => {
         const index = findIndexElement(this.state.selected[0], this.state.years, "positionId");
         if (index !== null){
+            this.props.onDeleteYear(this.state.selected[0])
             this.setState( prevState => {
-                const years = [...prevState.years];
                 let selected = [...prevState.selected];
                 let costYearAction = [...prevState.costYearAction];
-                years.splice(index, 1);
                 selected = []
                 costYearAction = ''
-                return {years, selected, costYearAction};
+                return {selected, costYearAction};
             });
         }
     }
