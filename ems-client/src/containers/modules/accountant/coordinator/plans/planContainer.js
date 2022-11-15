@@ -298,12 +298,12 @@ class PlanContainer extends Component {
             if(index !== null){
                 position['amountAwardedNet'] = position['amountRequestedNet'];
                 position['amountAwardedGross'] = position['amountRequestedGross'];
-                if(!this.state.initData.isUpdate){
-                    /* Change position status to accept if current plan is base financial plan */
-                    position.status = findSelectFieldPosition(this.state.statuses, "ZA");
-                } else {
+                if(this.state.initData.isUpdate){
                     /* Change position status to corrected if current plan is financial plan update */
                     position.status = findSelectFieldPosition(this.state.statuses, "SK");
+                } else {
+                    /* Change position status to accept if current plan is base financial plan */
+                    position.status = findSelectFieldPosition(this.state.statuses, "ZA");
                 }
                 this.state.initData.positions.splice(index, 1, position);
             }
@@ -379,6 +379,16 @@ class PlanContainer extends Component {
         .catch(error => {});
     }
 
+    handlePrintPlan = () =>{
+        this.props.loading(true);
+        PlansApi.printPlan(this.state.initData.id)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
     componentDidMount() {
         if (this.props.action === 'plan'){
             this.handleGetPlan();
@@ -410,6 +420,7 @@ class PlanContainer extends Component {
                     onReturnPlan={this.handleReturnPlan}
                     onClose={handleClose}
                     onExcelExport={this.handleExcelExport}
+                    onPrintPlan={this.handlePrintPlan}
                     fundingSources={fundingSources}
                     vats={vats}
                     modes={this.props.modes}

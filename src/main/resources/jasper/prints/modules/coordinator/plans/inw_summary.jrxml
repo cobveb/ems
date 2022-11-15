@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
-			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-			  name="inw_summary" pageWidth="802" pageHeight="595" orientation="Landscape" columnWidth="802"
-			  leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="03a8a6c7-758e-41f6-9562-ae78fbd06068">
-	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<style name="Summary" mode="Opaque" backcolor="#CFE5E6">
-		<box padding="5">
-			<pen lineWidth="0.5"/>
-		</box>
-	</style>
-	<parameter name="PLAN_ID" class="java.math.BigDecimal"/>
-	<parameter name="YEAR" class="java.lang.Integer" evaluationTime="Early"/>
-	<queryString language="SQL">
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="inw_summary" pageWidth="802" pageHeight="595" orientation="Landscape" columnWidth="802"
+              leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="03a8a6c7-758e-41f6-9562-ae78fbd06068">
+    <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="UCK"/>
+    <style name="Summary" mode="Opaque" backcolor="#CFE5E6">
+        <box padding="5">
+            <pen lineWidth="0.5"/>
+        </box>
+    </style>
+    <parameter name="PLAN_ID" class="java.math.BigDecimal"/>
+    <parameter name="YEAR" class="java.lang.Integer" evaluationTime="Early"/>
+    <queryString language="SQL">
 		<![CDATA[select
     so.type_id,
     sum(so.so_awa_gross),
@@ -38,31 +39,31 @@ group by so.type_id]]>
 		<property name="com.jaspersoft.studio.field.label" value="SUM(SO.SO_EXP_AWA_GROSS)"/>
 	</field>
 	<variable name="zadanie_inne" class="java.math.BigDecimal" resetType="Master" calculation="Sum">
-		<variableExpression>
-			<![CDATA[(!$F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_AWA_GROSS)} : new BigDecimal(0))]]></variableExpression>
+        <variableExpression>
+            <![CDATA[(!$F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_AWA_GROSS)} : new BigDecimal(0))]]></variableExpression>
 	</variable>
 	<variable name="zadanie_wlasne" class="java.math.BigDecimal" resetType="Master" calculation="Sum">
-		<variableExpression>
-			<![CDATA[($F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_AWA_GROSS)} : new BigDecimal(0))]]></variableExpression>
+        <variableExpression>
+            <![CDATA[($F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_AWA_GROSS)} : new BigDecimal(0))]]></variableExpression>
 	</variable>
 	<variable name="zadanie_suma" class="java.math.BigDecimal" resetType="Master">
 		<variableExpression><![CDATA[$V{zadanie_inne}.add( $V{zadanie_wlasne})]]></variableExpression>
 	</variable>
 	<variable name="realizacja_wlasne" class="java.math.BigDecimal" resetType="Master" calculation="Sum">
-		<variableExpression>
-			<![CDATA[($F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_REA_GROSS)} : new BigDecimal(0))]]></variableExpression>
+        <variableExpression>
+            <![CDATA[($F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_REA_GROSS)} : new BigDecimal(0))]]></variableExpression>
 	</variable>
 	<variable name="realizacja_inne" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression>
-			<![CDATA[(!$F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_REA_GROSS)} !=null ? $F{SUM(SO.SO_REA_GROSS)}  : new BigDecimal(0) : new BigDecimal(0))]]></variableExpression>
+        <variableExpression>
+            <![CDATA[(!$F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_REA_GROSS)} !=null ? $F{SUM(SO.SO_REA_GROSS)}  : new BigDecimal(0) : new BigDecimal(0))]]></variableExpression>
 	</variable>
 	<variable name="wydatek_inne" class="java.math.BigDecimal" resetType="Master" calculation="Sum">
-		<variableExpression>
-			<![CDATA[(!$F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_EXP_AWA_GROSS)} : new BigDecimal(0))]]></variableExpression>
+        <variableExpression>
+            <![CDATA[(!$F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_EXP_AWA_GROSS)} : new BigDecimal(0))]]></variableExpression>
 	</variable>
 	<variable name="wydatek_wlasne" class="java.math.BigDecimal" resetType="Master" calculation="Sum">
-		<variableExpression>
-			<![CDATA[($F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_EXP_AWA_GROSS)} : new BigDecimal(0))]]></variableExpression>
+        <variableExpression>
+            <![CDATA[($F{TYPE_ID}.equals(new BigDecimal(42)) ? $F{SUM(SO.SO_EXP_AWA_GROSS)} : new BigDecimal(0))]]></variableExpression>
 	</variable>
 	<variable name="wydatek_suma" class="java.math.BigDecimal" resetType="Master">
 		<variableExpression><![CDATA[$V{wydatek_wlasne}.add($V{wydatek_inne})]]></variableExpression>
@@ -73,8 +74,8 @@ group by so.type_id]]>
 	<summary>
 		<band height="133">
 			<textField>
-				<reportElement style="Summary" x="0" y="0" width="202" height="102"
-							   uuid="9012ed35-5127-4e26-9b3d-17418188fe36"/>
+                <reportElement style="Summary" x="0" y="0" width="202" height="102"
+                               uuid="9012ed35-5127-4e26-9b3d-17418188fe36"/>
 				<box>
 					<pen lineWidth="0.5"/>
 				</box>
@@ -84,39 +85,39 @@ group by so.type_id]]>
 				<textFieldExpression><![CDATA["Razem wydatki"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Summary" stretchType="ElementGroupHeight" x="202" y="0" width="150" height="40"
-							   uuid="a0f69eb0-1ce4-48a1-85a3-2356880a460b"/>
+                <reportElement style="Summary" stretchType="ElementGroupHeight" x="202" y="0" width="150" height="40"
+                               uuid="a0f69eb0-1ce4-48a1-85a3-2356880a460b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="PDF_fonts" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Źródła finansowania\n (w zł)"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Summary" stretchType="ElementGroupHeight" x="352" y="0" width="150" height="40"
-							   uuid="164c9b35-6142-43fa-84ba-1958c27c80d1">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
+                <reportElement style="Summary" stretchType="ElementGroupHeight" x="352" y="0" width="150" height="40"
+                               uuid="164c9b35-6142-43fa-84ba-1958c27c80d1">
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="PDF_fonts" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Kwota zadania ogółem\n (w zł)"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Summary" stretchType="ElementGroupHeight" x="502" y="0" width="150" height="40"
-							   uuid="d7b5db98-124b-49be-a2ef-76e6e62e050f">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
+                <reportElement style="Summary" stretchType="ElementGroupHeight" x="502" y="0" width="150" height="40"
+                               uuid="d7b5db98-124b-49be-a2ef-76e6e62e050f">
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="PDF_fonts" isBold="true"/>
 				</textElement>
-				<textFieldExpression>
-					<![CDATA["Wydatki poniesione\n do roku " +($P{YEAR}-1)+ "(w zł)"]]></textFieldExpression>
+                <textFieldExpression>
+                    <![CDATA["Wydatki poniesione\n do roku " +($P{YEAR}-1)+ "(w zł)"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="Summary" stretchType="ElementGroupHeight" x="652" y="0" width="150" height="40"
-							   uuid="35ff3db3-8ef3-4e7a-8b8f-3e45a6915aca">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
+                <reportElement style="Summary" stretchType="ElementGroupHeight" x="652" y="0" width="150" height="40"
+                               uuid="35ff3db3-8ef3-4e7a-8b8f-3e45a6915aca">
+                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
+                </reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="PDF_fonts" isBold="true"/>
 				</textElement>
@@ -139,60 +140,60 @@ group by so.type_id]]>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="PDF_fonts" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["środki zewnętrzne"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement style="Summary" x="0" y="102" width="352" height="30"
-							   uuid="0471f4ee-31c0-42bb-bc4a-4bf57b72b15e"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="PDF_fonts" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Razem"]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-					   isBlankWhenNull="true">
-				<reportElement style="Summary" x="352" y="102" width="150" height="30"
-							   uuid="43ee89e2-29af-4ea1-b63c-fe098a80b8c7"/>
-				<box padding="5"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="PDF_fonts" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{zadanie_suma}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-					   isBlankWhenNull="true">
-				<reportElement x="352" y="40" width="150" height="32" uuid="a3fd8601-ed58-419b-a008-b4c80527467c"/>
-				<box padding="5">
-					<pen lineWidth="0.5"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="PDF_fonts"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{zadanie_wlasne}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-					   isBlankWhenNull="true">
-				<reportElement x="352" y="72" width="150" height="30" uuid="908c84c6-23c4-4e02-9ac7-32861ad5c305"/>
-				<box padding="5">
-					<pen lineWidth="0.5"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="PDF_fonts"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{zadanie_inne}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-					   isBlankWhenNull="true">
-				<reportElement x="502" y="40" width="150" height="32" uuid="16d3d832-bfdd-4b84-8436-0b88e46c5617"/>
-				<box padding="5">
-					<pen lineWidth="0.5"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="PDF_fonts"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{realizacja_wlasne}]]></textFieldExpression>
-			</textField>
+                </textElement>
+                <textFieldExpression><![CDATA["środki zewnętrzne"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement style="Summary" x="0" y="102" width="352" height="30"
+                               uuid="0471f4ee-31c0-42bb-bc4a-4bf57b72b15e"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="PDF_fonts" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Razem"]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                       isBlankWhenNull="true">
+                <reportElement style="Summary" x="352" y="102" width="150" height="30"
+                               uuid="43ee89e2-29af-4ea1-b63c-fe098a80b8c7"/>
+                <box padding="5"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="PDF_fonts" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{zadanie_suma}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                       isBlankWhenNull="true">
+                <reportElement x="352" y="40" width="150" height="32" uuid="a3fd8601-ed58-419b-a008-b4c80527467c"/>
+                <box padding="5">
+                    <pen lineWidth="0.5"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{zadanie_wlasne}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                       isBlankWhenNull="true">
+                <reportElement x="352" y="72" width="150" height="30" uuid="908c84c6-23c4-4e02-9ac7-32861ad5c305"/>
+                <box padding="5">
+                    <pen lineWidth="0.5"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{zadanie_inne}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                       isBlankWhenNull="true">
+                <reportElement x="502" y="40" width="150" height="32" uuid="16d3d832-bfdd-4b84-8436-0b88e46c5617"/>
+                <box padding="5">
+                    <pen lineWidth="0.5"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{realizacja_wlasne}]]></textFieldExpression>
+            </textField>
 			<textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤" isBlankWhenNull="true">
 				<reportElement x="652" y="40" width="150" height="32" uuid="dfdfb55a-307a-450c-9455-ef51c6dbc2f1"/>
 				<box padding="5">
@@ -203,41 +204,41 @@ group by so.type_id]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{wydatek_wlasne}]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-					   isBlankWhenNull="true">
-				<reportElement x="652" y="72" width="150" height="30" uuid="d3d5fc44-82be-4916-8e49-821262782d32"/>
-				<box padding="5">
-					<pen lineWidth="0.5"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="PDF_fonts"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{wydatek_inne}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-					   isBlankWhenNull="true">
-				<reportElement style="Summary" x="652" y="102" width="150" height="30"
-							   uuid="da307c4b-fc98-4852-b38b-fe5aaddc3e18"/>
-				<box padding="5"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="PDF_fonts" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{wydatek_suma}]]></textFieldExpression>
-			</textField>
-			<textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-					   isBlankWhenNull="true">
-				<reportElement x="502" y="72" width="150" height="30" uuid="70771d87-1219-4e8c-be41-519919596c95"/>
-				<box padding="5">
-					<pen lineWidth="0.5"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="PDF_fonts"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{realizacja_inne}]]></textFieldExpression>
-			</textField>
+            <textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                       isBlankWhenNull="true">
+                <reportElement x="652" y="72" width="150" height="30" uuid="d3d5fc44-82be-4916-8e49-821262782d32"/>
+                <box padding="5">
+                    <pen lineWidth="0.5"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{wydatek_inne}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                       isBlankWhenNull="true">
+                <reportElement style="Summary" x="652" y="102" width="150" height="30"
+                               uuid="da307c4b-fc98-4852-b38b-fe5aaddc3e18"/>
+                <box padding="5"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="PDF_fonts" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{wydatek_suma}]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight" evaluationTime="Auto" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                       isBlankWhenNull="true">
+                <reportElement x="502" y="72" width="150" height="30" uuid="70771d87-1219-4e8c-be41-519919596c95"/>
+                <box padding="5">
+                    <pen lineWidth="0.5"/>
+                </box>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="PDF_fonts"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{realizacja_inne}]]></textFieldExpression>
+            </textField>
 			<textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤" isBlankWhenNull="true">
-				<reportElement style="Summary" x="502" y="102" width="150" height="30"
-							   uuid="eff0c953-d870-4178-bed8-b724c7ca758d"/>
+                <reportElement style="Summary" x="502" y="102" width="150" height="30"
+                               uuid="eff0c953-d870-4178-bed8-b724c7ca758d"/>
 				<box padding="5"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="PDF_fonts" isBold="true"/>

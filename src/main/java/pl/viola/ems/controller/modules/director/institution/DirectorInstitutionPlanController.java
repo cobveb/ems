@@ -34,10 +34,21 @@ public class DirectorInstitutionPlanController {
         return new ApiResponse(HttpStatus.ACCEPTED, institutionPlanService.updatePlanStatus(planId, "approve", "director"));
     }
 
+    @PutMapping("/approveEconomicPlan/{planId}")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('4025')")
+    public ApiResponse approveEconomicDirectorPlan(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.ACCEPTED, institutionPlanService.updatePlanStatus(planId, "approve", "economic"));
+    }
+
     @PutMapping("/withdrawPlan/{planId}")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('3025')")
     public ApiResponse withdrawDirectorPlan(@PathVariable Long planId) {
         return new ApiResponse(HttpStatus.ACCEPTED, institutionPlanService.updatePlanStatus(planId, "withdraw", "director"));
+    }
+
+    @GetMapping("/existsPlanToApprove/{planId}")
+    public ApiResponse existsPlanToApprove(@PathVariable Long planId) {
+        return new ApiResponse(HttpStatus.FOUND, institutionPlanService.existsPlanToApprove(planId));
     }
 
     @PutMapping("/export/plans/{exportType}")

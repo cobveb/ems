@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Button, InputField, SearchField } from 'common/gui';
 import * as constants from 'constants/uiNames';
 import { FormTableField, FormAmountField } from 'common/form';
-import { Cancel, Description, LibraryBooks, Edit, Done, PriorityHigh, CheckCircle, Visibility, ArrowForward, Undo, FolderOpen, Info, Redo, DoneAll } from '@material-ui/icons/';
+import { Cancel, Description, LibraryBooks, Edit, Done, PriorityHigh, CheckCircle, Visibility, ArrowForward, Undo, FolderOpen, Info, Redo, DoneAll, Print } from '@material-ui/icons/';
 import PlanCorrectionPositionFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planCorrectionPositionFormContainer.js';
 import PlanPositionRemarksFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planPositionRemarksFormContainer.js';
 import PlanInvestmentPositionFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planInvestmentPositionFormContainer.js';
@@ -35,7 +35,7 @@ const styles = theme => ({
     },
     containerBtn: {
         width: '100%',
-        paddingLeft: theme.spacing(35),
+        paddingLeft: theme.spacing(5),
         margin: 0,
     },
     tableWrapper: {
@@ -511,7 +511,6 @@ class PlanBasicInfoForm extends Component {
     }
 
     handleChangeVisibleDetails = (event, action) =>{
-        console.log(this.state.isDetailsVisible)
         if(action === "close"){
             this.setState(state => ({isDetailsVisible: !state.isDetailsVisible, selected: []}));
         } else {
@@ -914,6 +913,22 @@ class PlanBasicInfoForm extends Component {
                                 alignItems="flex-start"
                                 className={classes.container}
                             >
+                                <Grid item xs={1}>
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justify="flex-start"
+                                        alignItems="flex-start"
+                                    >
+                                        <Button
+                                            label={constants.BUTTON_PRINT}
+                                            icon=<Print/>
+                                            iconAlign="left"
+                                            variant="cancel"
+                                            onClick={this.props.onPrintPlan}
+                                        />
+                                    </Grid>
+                                </Grid>
                                 <Grid item xs={10}>
                                     <Grid
                                         container
@@ -924,8 +939,10 @@ class PlanBasicInfoForm extends Component {
                                     >
                                         {
                                             <>
-                                                {initialValues.status !== undefined && (initialValues.status.code === 'WY' || initialValues.status.code === 'RO' ||
-                                                    initialValues.status.code === 'UZ' || (initialValues.type.code === 'PZP' && initialValues.status.code === 'AD')) &&
+                                                {initialValues.status !== undefined &&
+                                                    ((initialValues.type.code === 'FIN' && initialValues.isUpdate !== undefined && (initialValues.status.code === 'WY' || initialValues.status.code === 'RO')) ||
+                                                        initialValues.status.code === 'UZ' ||
+                                                            (initialValues.type.code === 'PZP' && initialValues.status.code === 'AD')) &&
                                                     <Button
                                                         label={constants.BUTTON_APPROVE}
                                                         icon=<DoneAll/>
@@ -1042,7 +1059,7 @@ class PlanBasicInfoForm extends Component {
                                         }
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={2}>
+                                <Grid item xs={1}>
                                     <Grid
                                         container
                                         direction="row"

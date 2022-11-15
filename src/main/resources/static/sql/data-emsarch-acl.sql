@@ -66,6 +66,7 @@ insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (62,'2242','Modyfikacja 
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (63,'3242','Usuwanie umowy');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (64,'1144','Odczyt umów koordynatorów');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (65,'1244','Odczyt faktur koordynatorów');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (66,'4025','Zatwierdzenie planu instytucji Dyrektor ekonomiczny');
 
 
 REM INSERTING into EMSARCH.AC_OBJECTS
@@ -149,3 +150,4 @@ insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (2,63);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,64);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (4,65);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (5,66);

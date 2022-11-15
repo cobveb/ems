@@ -40,7 +40,7 @@ class GeneratorCostTypeForm extends Component {
     }
 
     render(){
-        const { classes, open, onClose, isLoading, error,  handleSubmit, pristine, submitting, invalid, submitSucceeded } = this.props;
+        const { classes, open, onClose, isLoading, error, pristine, submitting, invalid, submitSucceeded } = this.props;
         const { generate } = this.state;
         return (
             <>

@@ -841,7 +841,7 @@ export const DIRECTOR_PLAN_COORDINATOR_CONFIRM_RETURN_MESSAGE = 'Plan zostanie w
 export const PUBLIC_MENU_COORDINATOR = 'Koordynator';
 export const PUBLIC_SUBMENU_COORDINATOR_PLANS = 'Plany';
 export const PUBLIC_SUBMENU_COORDINATOR_APPLICATIONS = 'Wnioski';
-export const PUBLIC_SUBMENU_COORDINATOR_UPDATES = 'Aktualizacje';
+export const PUBLIC_SUBMENU_COORDINATOR_UPDATES = 'Aktualizacje planów';
 export const PUBLIC_MENU_INSTITUTION = 'Instytucja';
 export const PUBLIC_SUBMENU_INSTITUTION_PLANS = 'Plany';
 export const PUBLIC_MENU_DICTIONARIES = 'Słowniki';
@@ -962,6 +962,8 @@ export const INSTITUTION_PLAN_STATUS_REALIZED = 'Realizowany';
 export const INSTITUTION_PLAN_STATUS_EXECUTED = 'Zrealizowany';
 export const INSTITUTION_PLAN_STATUS_UPDATE = 'Zaktualizowany';
 /* public procurement protocol statuses */
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_SAVED = 'Zapisany';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_SEND = 'Wysłany';
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPROVE_PUBLIC = 'Akceptacja ZP';
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPROVE_ACCOUNTANT = "Akceptacja - Główny księgowy";
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_EXECUTED = 'Zaakceptowany';

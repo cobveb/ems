@@ -288,6 +288,15 @@ class PlanContainer extends Component {
         .catch(error => {});
     }
 
+    handlePrintPlan = () =>{
+        this.props.loading(true);
+        PlansApi.printPlan(this.state.initData.id)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
     componentDidMount() {
         this.handleGetPlanPositions();
         if(this.props.initialValues.type !== undefined && this.props.initialValues.type.code === 'INW'){
@@ -310,6 +319,7 @@ class PlanContainer extends Component {
                 onApproveChief={this.handleApproveChief}
                 onReturnPlan={this.handleReturnPlan}
                 onRemarksPlanPosition={this.handleRemarksPlanPosition}
+                onPrintPlan={this.handlePrintPlan}
                 onExcelExport={this.handleExcelExport}
                 onClose={handleClose}
                 units={units}

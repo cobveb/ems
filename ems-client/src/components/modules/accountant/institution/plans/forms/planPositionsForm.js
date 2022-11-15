@@ -330,7 +330,7 @@ class PlanPositionsForm extends Component {
                                                 disabled={selected.length === 0 ||
                                                     (selected.length === 1 && selected[0].amountAwardedGross !== null) || acceptDisabled ||
                                                         (selected[0].planStatus !== undefined && !['WY', 'RO'].includes(selected[0].planStatus))
-                                                            || planStatus !== 'UT'}
+                                                            || planStatus.code !== 'UT'}
                                                 onClick={(event) => this.handleAction(event, 'accept')}
                                             />
                                             <Button
@@ -341,7 +341,7 @@ class PlanPositionsForm extends Component {
                                                 disabled={selected.length === 0 ||
                                                     selected.length > 1 ||
                                                         (selected[0].planStatus !== undefined && !['WY', 'RO'].includes(selected[0].planStatus))
-                                                            || planStatus !== 'UT'}
+                                                            || planStatus.code !== 'UT'}
                                                 onClick={this.handleOpenCorrection}
                                             />
                                         </>

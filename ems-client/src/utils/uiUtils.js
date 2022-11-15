@@ -449,6 +449,14 @@ export const getCoordinatorPlanPositionsStatuses = () => [
 
 export const getPublicProcurementProtocolStatuses = () => [
     {
+        code: 'ZP',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_SAVED,
+    },
+    {
+        code: 'WY',
+        name: constants.COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_SEND,
+    },
+    {
         code: 'AZ',
         name: constants.COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPROVE_PUBLIC,
     },

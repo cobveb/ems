@@ -90,7 +90,6 @@ class Protocols extends Component {
 
     filter = () => {
         let protocols = this.props.initialValues;
-
         return protocols.filter((protocol) => {
             return protocol.status.code.toLowerCase().search(
                 this.state.status.toLowerCase()) !== -1 &&
@@ -106,6 +105,21 @@ class Protocols extends Component {
                 )
         })
     }
+
+    handleCloseDetails = (protocol, action) => {
+        this.props.onClose(protocol, action);
+        this.setState(prevState => {
+            let rows = [...prevState.rows];
+            let isDetailsVisible = prevState.isDetailsVisible;
+            let selected = {...prevState.selected}
+
+            rows = this.filter();
+            isDetailsVisible = !isDetailsVisible;
+            selected = {};
+
+            return {rows, isDetailsVisible, selected };
+        });
+    };
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues !== prevProps.initialValues){
@@ -124,8 +138,7 @@ class Protocols extends Component {
 
     render(){
         const { classes, isLoading, error, coordinators, statuses, levelAccess, vats } = this.props;
-        const { selected, isDetailsVisible, status, headCells, rows, coordinator } = this.state;
-        console.log(levelAccess)
+        const { selected, isDetailsVisible, status, headCells, rows, coordinator, number } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -137,10 +150,13 @@ class Protocols extends Component {
                             assortmentGroups={[]}
                             vats={vats}
                             contractors={[]}
+                            statuses={statuses}
                             applicationStatus={selected.applicationStatus}
                             levelAccess={levelAccess}
-                            onClose={this.handleChangeVisibleDetails}
+//                            onClose={this.handleChangeVisibleDetails}
+                            onClose={this.handleCloseDetails}
                         />
+
                     </>
                 :
                     <>
@@ -160,6 +176,7 @@ class Protocols extends Component {
                                             onChange={this.handleSearch}
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
                                             placeholder={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
+                                            value={number}
                                             valueType="all"
                                         />
                                     </Grid>

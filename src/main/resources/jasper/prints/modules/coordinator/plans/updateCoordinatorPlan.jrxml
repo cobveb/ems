@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.13.0.final using JasperReports Library version 6.13.0-46ada4d1be8f3c5985fd0b6146f3ed44caed6f05  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
-			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-			  name="TestReport" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802"
-			  leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
-			  uuid="f0045280-8714-487d-9d67-8aeba0fe03c9">
-	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
-	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="647"/>
-	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="353"/>
-	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="483"/>
-	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="517"/>
-	<property name="com.jaspersoft.studio.unit." value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
-	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="TestReport" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20"
+              uuid="f0045280-8714-487d-9d67-8aeba0fe03c9">
+    <property name="ireport.zoom" value="1.0"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="647"/>
+    <property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="353"/>
+    <property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="483"/>
+    <property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="517"/>
+    <property name="com.jaspersoft.studio.unit." value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+    <property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
@@ -192,8 +192,8 @@ from
 			<variableExpression><![CDATA[$F{AM_REQ_NET}]]></variableExpression>
 		</variable>
 		<variable name="AM_COR_REQ_POS_NET" class="java.math.BigDecimal">
-			<variableExpression>
-				<![CDATA[$F{COR_REQ_NET} == null ? $F{AM_REQ_NET} : $F{AM_REQ_NET}.subtract( $F{COR_REQ_NET} )]]></variableExpression>
+            <variableExpression>
+                <![CDATA[$F{COR_REQ_NET} == null ? $F{AM_REQ_NET} : $F{AM_REQ_NET}.subtract( $F{COR_REQ_NET} )]]></variableExpression>
 		</variable>
 		<variable name="AM_COR_PLAN_NET" class="java.math.BigDecimal" resetType="Master" calculation="Sum">
 			<variableExpression><![CDATA[$V{AM_COR_REQ_POS_NET}]]></variableExpression>
@@ -257,12 +257,12 @@ from
 			<variableExpression><![CDATA[$F{COR_AWA_GROSS}]]></variableExpression>
 		</variable>
 		<variable name="AM_COR_PLAN_GROSS" class="java.math.BigDecimal" resetType="Master" calculation="Sum">
-			<variableExpression>
-				<![CDATA[$F{COR_AWA_GROSS} == null ? $F{AM_AWA_GROSS} :  $F{AM_AWA_GROSS}.subtract( $F{COR_AWA_GROSS} )]]></variableExpression>
+            <variableExpression>
+                <![CDATA[$F{COR_AWA_GROSS} == null ? $F{AM_AWA_GROSS} :  $F{AM_AWA_GROSS}.subtract( $F{COR_AWA_GROSS} )]]></variableExpression>
 		</variable>
 		<variable name="AM_COR_POS_GROSS" class="java.math.BigDecimal" resetType="Master">
-			<variableExpression>
-				<![CDATA[$F{COR_AWA_GROSS} == null ? $F{AM_AWA_GROSS} : $F{AM_AWA_GROSS}.subtract( $F{COR_AWA_GROSS} )]]></variableExpression>
+            <variableExpression>
+                <![CDATA[$F{COR_AWA_GROSS} == null ? $F{AM_AWA_GROSS} : $F{AM_AWA_GROSS}.subtract( $F{COR_AWA_GROSS} )]]></variableExpression>
 		</variable>
 	</subDataset>
 	<subDataset name="inw" uuid="f8fbd499-719e-450a-90e9-d80906edf459">
@@ -352,7 +352,7 @@ WHERE
  	emsarch.users usr left join emsadm.cor_plans pl on (pl.send_user_id = usr.id)
  	left join emsadm.organization_units co on (pl.coordinator_id = co.code)
 WHERE
-	 pl.id= $P{MAIN_ID} ]]>
+	 pl.id= $P{MAIN_ID}]]>
 	</queryString>
 	<field name="ID" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.label" value="ID"/>
@@ -381,9 +381,9 @@ WHERE
 	<field name="CHIEF" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.label" value="CHIEF"/>
 	</field>
-	<field name="YEAR" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.label" value="YEAR"/>
-	</field>
+    <field name="YEAR" class="java.lang.Integer">
+        <property name="com.jaspersoft.studio.field.label" value="YEAR"/>
+    </field>
 	<field name="UPDATE_NUMBER" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.label" value="UPDATE_NUMBER"/>
 	</field>
@@ -397,8 +397,8 @@ WHERE
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font fontName="PDF_fonts" size="16" isBold="true"/>
 				</textElement>
-				<textFieldExpression>
-					<![CDATA["PLAN " + ($F{PLAN_TYPE}.equals( "PZP" ) ? "ZAMÓWIEŃ PUBLICZNYCH " : $F{PLAN_TYPE}.equals( "FIN" ) ? "FINANSOWY " : "INWESTYCYJNY " )+ "NA ROK " + $F{YEAR} +" - Korekta Planu nr: " + $F{UPDATE_NUMBER}]]></textFieldExpression>
+                <textFieldExpression>
+                    <![CDATA["PLAN " + ($F{PLAN_TYPE}.equals( "PZP" ) ? "ZAMÓWIEŃ PUBLICZNYCH " : $F{PLAN_TYPE}.equals( "FIN" ) ? "FINANSOWY " : "INWESTYCYJNY " )+ "NA ROK " + $F{YEAR} +" - Korekta Planu nr: " + $F{UPDATE_NUMBER}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -430,28 +430,28 @@ WHERE
 			<printWhenExpression><![CDATA[$F{PLAN_TYPE}.equals( "PZP" )]]></printWhenExpression>
 			<componentElement>
 				<reportElement x="0" y="0" width="802" height="90" uuid="0e498bbb-18c1-439c-b6c2-c9e4f94371a3">
-					<property name="com.jaspersoft.studio.layout"
-							  value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+                    <property name="com.jaspersoft.studio.layout"
+                              value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 					<property name="com.jaspersoft.studio.components.autoresize.proportional" value="true"/>
 				</reportElement>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
-						  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="pzp" uuid="433ee66b-3376-414c-96cc-db7d6fb8528f">
-						<datasetParameter name="PLAN_ID">
-							<datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:columnGroup width="802" uuid="75ef1ab0-cb6b-4641-8dd1-111be172a9a0">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Columns [7]"/>
-						<jr:groupHeader groupName="ORDER_TYPE">
-							<jr:cell style="Table_CH" height="30" rowSpan="1">
+                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
+                          xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                    <datasetRun subDataset="pzp" uuid="433ee66b-3376-414c-96cc-db7d6fb8528f">
+                        <datasetParameter name="PLAN_ID">
+                            <datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+                    </datasetRun>
+                    <jr:columnGroup width="802" uuid="75ef1ab0-cb6b-4641-8dd1-111be172a9a0">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Columns [7]"/>
+                        <jr:groupHeader groupName="ORDER_TYPE">
+                            <jr:cell style="Table_CH" height="30" rowSpan="1">
 								<textField>
-									<reportElement x="0" y="0" width="802" height="30"
-												   uuid="c6f11bf1-623d-49b9-9322-3752fbdb362f"/>
+                                    <reportElement x="0" y="0" width="802" height="30"
+                                                   uuid="c6f11bf1-623d-49b9-9322-3752fbdb362f"/>
 									<box padding="5"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" isItalic="true"/>
@@ -465,8 +465,8 @@ WHERE
 							<jr:tableFooter style="Table_CH" height="30" rowSpan="1"/>
 							<jr:columnHeader style="Table_CH" height="40" rowSpan="1">
 								<staticText>
-									<reportElement x="0" y="0" width="48" height="40"
-												   uuid="5fc7d6a8-abde-4ce5-b629-3ec9660fb3f5"/>
+                                    <reportElement x="0" y="0" width="48" height="40"
+                                                   uuid="5fc7d6a8-abde-4ce5-b629-3ec9660fb3f5"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font isBold="true"/>
 									</textElement>
@@ -475,8 +475,8 @@ WHERE
 							</jr:columnHeader>
 							<jr:detailCell style="Table_TD" height="30">
 								<textField>
-									<reportElement x="0" y="0" width="48" height="30"
-												   uuid="c42e46ae-39b1-43de-aa87-090428da1fad"/>
+                                    <reportElement x="0" y="0" width="48" height="30"
+                                                   uuid="c42e46ae-39b1-43de-aa87-090428da1fad"/>
 									<box padding="5"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="PDF_fonts"/>
@@ -489,8 +489,8 @@ WHERE
 							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
 							<jr:tableFooter style="Table_CH" height="30" rowSpan="1">
 								<staticText>
-									<reportElement x="0" y="0" width="171" height="30"
-												   uuid="62e36187-bf88-4c2c-bbc7-ce04484491b4"/>
+                                    <reportElement x="0" y="0" width="171" height="30"
+                                                   uuid="62e36187-bf88-4c2c-bbc7-ce04484491b4"/>
 									<box padding="5"/>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" isBold="true"/>
@@ -500,8 +500,8 @@ WHERE
 							</jr:tableFooter>
 							<jr:columnHeader style="Table_CH" height="40" rowSpan="1">
 								<staticText>
-									<reportElement x="0" y="0" width="171" height="40"
-												   uuid="901d5436-c680-418a-885a-e4c50c234d09"/>
+                                    <reportElement x="0" y="0" width="171" height="40"
+                                                   uuid="901d5436-c680-418a-885a-e4c50c234d09"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" isBold="true"/>
 									</textElement>
@@ -511,10 +511,10 @@ WHERE
 							<jr:detailCell style="Table_TD" height="30">
 								<box padding="0"/>
 								<textField>
-									<reportElement x="0" y="0" width="171" height="30"
-												   uuid="6499237e-a419-45c9-8b67-3bc4c94b42a6">
-										<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
-									</reportElement>
+                                    <reportElement x="0" y="0" width="171" height="30"
+                                                   uuid="6499237e-a419-45c9-8b67-3bc4c94b42a6">
+                                        <property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+                                    </reportElement>
 									<box padding="5"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="PDF_fonts"/>
@@ -525,60 +525,60 @@ WHERE
 						</jr:column>
 						<jr:column width="90" uuid="7addc5ad-1648-47d9-810d-a7772aca1726">
 							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-							<jr:tableFooter style="Table_CH" height="30" rowSpan="1">
-								<textField evaluationTime="Group" evaluationGroup="ORDER_TYPE"
-										   pattern="#,##0.00 ¤;#,##0.00 - ¤">
-									<reportElement x="0" y="0" width="90" height="30"
-												   uuid="47df7a29-0c82-4de6-97c4-28383cff9c8f"/>
-									<box padding="5"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="PDF_fonts" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{AM_OLD_REQ_PLAN_NET}]]></textFieldExpression>
-								</textField>
-							</jr:tableFooter>
+                            <jr:tableFooter style="Table_CH" height="30" rowSpan="1">
+                                <textField evaluationTime="Group" evaluationGroup="ORDER_TYPE"
+                                           pattern="#,##0.00 ¤;#,##0.00 - ¤">
+                                    <reportElement x="0" y="0" width="90" height="30"
+                                                   uuid="47df7a29-0c82-4de6-97c4-28383cff9c8f"/>
+                                    <box padding="5"/>
+                                    <textElement textAlignment="Left" verticalAlignment="Middle">
+                                        <font fontName="PDF_fonts" isBold="true"/>
+                                    </textElement>
+                                    <textFieldExpression><![CDATA[$V{AM_OLD_REQ_PLAN_NET}]]></textFieldExpression>
+                                </textField>
+                            </jr:tableFooter>
 							<jr:columnHeader style="Table_CH" height="40" rowSpan="1">
 								<staticText>
-									<reportElement x="0" y="0" width="90" height="40"
-												   uuid="e8ee868e-9825-4467-8665-e4aee4f4f34e"/>
+                                    <reportElement x="0" y="0" width="90" height="40"
+                                                   uuid="e8ee868e-9825-4467-8665-e4aee4f4f34e"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" isBold="true"/>
 									</textElement>
 									<text><![CDATA[Kwota przed korektą netto]]></text>
 								</staticText>
 							</jr:columnHeader>
-							<jr:detailCell style="Table_TD" height="30">
-								<box padding="0"/>
-								<textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-										   isBlankWhenNull="true">
-									<reportElement x="0" y="0" width="90" height="30"
-												   uuid="d4fc4b33-decb-450e-bfd0-69ca35a98f52"/>
-									<box padding="5"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="PDF_fonts"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$F{COR_REQ_NET}]]></textFieldExpression>
-								</textField>
-							</jr:detailCell>
+                            <jr:detailCell style="Table_TD" height="30">
+                                <box padding="0"/>
+                                <textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                                           isBlankWhenNull="true">
+                                    <reportElement x="0" y="0" width="90" height="30"
+                                                   uuid="d4fc4b33-decb-450e-bfd0-69ca35a98f52"/>
+                                    <box padding="5"/>
+                                    <textElement textAlignment="Left" verticalAlignment="Middle">
+                                        <font fontName="PDF_fonts"/>
+                                    </textElement>
+                                    <textFieldExpression><![CDATA[$F{COR_REQ_NET}]]></textFieldExpression>
+                                </textField>
+                            </jr:detailCell>
 						</jr:column>
 						<jr:column width="81" uuid="6c288fb3-ff6f-412a-81bc-a52315fd66c9">
 							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
-							<jr:tableFooter style="Table_CH" height="30" rowSpan="1">
-								<textField evaluationTime="Group" evaluationGroup="ORDER_TYPE"
-										   pattern="#,##0.00 ¤;#,##0.00 - ¤">
-									<reportElement x="0" y="0" width="81" height="30"
-												   uuid="d859613e-77ca-4d1c-9572-a3262f2f2b7f"/>
-									<box padding="5"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="PDF_fonts" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{AM_COR_PLAN_NET}]]></textFieldExpression>
-								</textField>
-							</jr:tableFooter>
+                            <jr:tableFooter style="Table_CH" height="30" rowSpan="1">
+                                <textField evaluationTime="Group" evaluationGroup="ORDER_TYPE"
+                                           pattern="#,##0.00 ¤;#,##0.00 - ¤">
+                                    <reportElement x="0" y="0" width="81" height="30"
+                                                   uuid="d859613e-77ca-4d1c-9572-a3262f2f2b7f"/>
+                                    <box padding="5"/>
+                                    <textElement textAlignment="Left" verticalAlignment="Middle">
+                                        <font fontName="PDF_fonts" isBold="true"/>
+                                    </textElement>
+                                    <textFieldExpression><![CDATA[$V{AM_COR_PLAN_NET}]]></textFieldExpression>
+                                </textField>
+                            </jr:tableFooter>
 							<jr:columnHeader style="Table_CH" height="40" rowSpan="1">
 								<staticText>
-									<reportElement x="0" y="0" width="81" height="40"
-												   uuid="1f1706a8-4079-474f-84e7-3cec7037bc3a"/>
+                                    <reportElement x="0" y="0" width="81" height="40"
+                                                   uuid="1f1706a8-4079-474f-84e7-3cec7037bc3a"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" isBold="true"/>
 									</textElement>
@@ -587,35 +587,35 @@ WHERE
 							</jr:columnHeader>
 							<jr:detailCell style="Table_TD" height="30">
 								<textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤">
-									<reportElement x="0" y="0" width="81" height="30"
-												   uuid="d63dbd86-54d6-4cbd-9911-ad257ce79b21"/>
+                                    <reportElement x="0" y="0" width="81" height="30"
+                                                   uuid="d63dbd86-54d6-4cbd-9911-ad257ce79b21"/>
 									<box padding="5"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="PDF_fonts"/>
 									</textElement>
-									<textFieldExpression>
-										<![CDATA[$V{AM_COR_REQ_POS_NET}.compareTo(BigDecimal.ZERO) == 0 ? "" : $V{AM_COR_REQ_POS_NET}]]></textFieldExpression>
+                                    <textFieldExpression>
+                                        <![CDATA[$V{AM_COR_REQ_POS_NET}.compareTo(BigDecimal.ZERO) == 0 ? "" : $V{AM_COR_REQ_POS_NET}]]></textFieldExpression>
 								</textField>
 							</jr:detailCell>
 						</jr:column>
 						<jr:column width="88" uuid="ea48f111-940b-4da3-88d5-a69c80a9d03e">
 							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-							<jr:tableFooter style="Table_CH" height="30" rowSpan="1">
-								<textField evaluationTime="Group" evaluationGroup="ORDER_TYPE"
-										   pattern="#,##0.00 ¤;#,##0.00 - ¤">
-									<reportElement x="0" y="0" width="88" height="30"
-												   uuid="e8bdd429-534a-4216-8936-cde49300ceac"/>
-									<box padding="5"/>
-									<textElement textAlignment="Left" verticalAlignment="Middle">
-										<font fontName="PDF_fonts" isBold="true"/>
-									</textElement>
-									<textFieldExpression><![CDATA[$V{AM_NEW_REQ_PLAN_NET}]]></textFieldExpression>
-								</textField>
-							</jr:tableFooter>
+                            <jr:tableFooter style="Table_CH" height="30" rowSpan="1">
+                                <textField evaluationTime="Group" evaluationGroup="ORDER_TYPE"
+                                           pattern="#,##0.00 ¤;#,##0.00 - ¤">
+                                    <reportElement x="0" y="0" width="88" height="30"
+                                                   uuid="e8bdd429-534a-4216-8936-cde49300ceac"/>
+                                    <box padding="5"/>
+                                    <textElement textAlignment="Left" verticalAlignment="Middle">
+                                        <font fontName="PDF_fonts" isBold="true"/>
+                                    </textElement>
+                                    <textFieldExpression><![CDATA[$V{AM_NEW_REQ_PLAN_NET}]]></textFieldExpression>
+                                </textField>
+                            </jr:tableFooter>
 							<jr:columnHeader style="Table_CH" height="40" rowSpan="1">
 								<staticText>
-									<reportElement x="0" y="0" width="88" height="40"
-												   uuid="554d17a2-5038-4cd4-a6d7-a95cfe4ec048"/>
+                                    <reportElement x="0" y="0" width="88" height="40"
+                                                   uuid="554d17a2-5038-4cd4-a6d7-a95cfe4ec048"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" isBold="true"/>
 									</textElement>
@@ -624,8 +624,8 @@ WHERE
 							</jr:columnHeader>
 							<jr:detailCell style="Table_TD" height="30">
 								<textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤">
-									<reportElement x="0" y="0" width="88" height="30"
-												   uuid="feb93fce-f474-4ca1-be08-de612a3e0491"/>
+                                    <reportElement x="0" y="0" width="88" height="30"
+                                                   uuid="feb93fce-f474-4ca1-be08-de612a3e0491"/>
 									<box padding="5"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="PDF_fonts"/>
@@ -639,8 +639,8 @@ WHERE
 							<jr:tableFooter style="Table_CH" height="30" rowSpan="1"/>
 							<jr:columnHeader style="Table_CH" height="40" rowSpan="1">
 								<staticText>
-									<reportElement x="0" y="0" width="162" height="40"
-												   uuid="db404e4d-8966-4feb-a93f-30e5f8187f0f"/>
+                                    <reportElement x="0" y="0" width="162" height="40"
+                                                   uuid="db404e4d-8966-4feb-a93f-30e5f8187f0f"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" isBold="true"/>
 									</textElement>
@@ -650,8 +650,8 @@ WHERE
 							<jr:detailCell style="Table_TD" height="30">
 								<box padding="0"/>
 								<textField textAdjust="StretchHeight">
-									<reportElement x="0" y="0" width="162" height="30"
-												   uuid="bb00665b-cf3b-4538-96e3-d7ab71edeedb"/>
+                                    <reportElement x="0" y="0" width="162" height="30"
+                                                   uuid="bb00665b-cf3b-4538-96e3-d7ab71edeedb"/>
 									<box padding="5"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="PDF_fonts"/>
@@ -665,8 +665,8 @@ WHERE
 							<jr:tableFooter style="Table_CH" height="30" rowSpan="1"/>
 							<jr:columnHeader style="Table_CH" height="40" rowSpan="1">
 								<staticText>
-									<reportElement x="0" y="0" width="162" height="40"
-												   uuid="a007da35-6043-4cfb-afe6-2cf3316fcdf7"/>
+                                    <reportElement x="0" y="0" width="162" height="40"
+                                                   uuid="a007da35-6043-4cfb-afe6-2cf3316fcdf7"/>
 									<textElement textAlignment="Center" verticalAlignment="Middle">
 										<font fontName="PDF_fonts" isBold="true"/>
 									</textElement>
@@ -676,8 +676,8 @@ WHERE
 							<jr:detailCell style="Table_TD" height="30">
 								<box padding="0"/>
 								<textField>
-									<reportElement x="0" y="0" width="162" height="30"
-												   uuid="315e14e7-1174-45b9-a42d-dc4393c0188c"/>
+                                    <reportElement x="0" y="0" width="162" height="30"
+                                                   uuid="315e14e7-1174-45b9-a42d-dc4393c0188c"/>
 									<box padding="5"/>
 									<textElement textAlignment="Left" verticalAlignment="Middle">
 										<font fontName="PDF_fonts"/>
@@ -692,34 +692,34 @@ WHERE
 		</band>
 		<band height="102">
 			<printWhenExpression><![CDATA[$F{PLAN_TYPE}.equals( "FIN" )]]></printWhenExpression>
-			<componentElement>
-				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="802" height="90"
-							   uuid="ba2c84b9-0d60-4d46-bbe7-7ffbca8c9b9e">
-					<property name="com.jaspersoft.studio.layout"
-							  value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
-					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
-					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
-					<property name="com.jaspersoft.studio.components.autoresize.proportional" value="true"/>
-				</reportElement>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
-						  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="fin" uuid="43d7ff19-e4e1-43e1-a433-da49bb328fb4">
-						<datasetParameter name="PLAN_ID">
-							<datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:column width="40" uuid="b962cdfc-8451-4fc5-87a7-30e88f37e95b">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1"/>
-						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
+            <componentElement>
+                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="802" height="90"
+                               uuid="ba2c84b9-0d60-4d46-bbe7-7ffbca8c9b9e">
+                    <property name="com.jaspersoft.studio.layout"
+                              value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+                    <property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
+                    <property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
+                    <property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+                    <property name="com.jaspersoft.studio.unit.x" value="px"/>
+                    <property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
+                    <property name="com.jaspersoft.studio.components.autoresize.proportional" value="true"/>
+                </reportElement>
+                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
+                          xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                    <datasetRun subDataset="fin" uuid="43d7ff19-e4e1-43e1-a433-da49bb328fb4">
+                        <datasetParameter name="PLAN_ID">
+                            <datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+                    </datasetRun>
+                    <jr:column width="40" uuid="b962cdfc-8451-4fc5-87a7-30e88f37e95b">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+                        <jr:tableFooter style="Table 1_CH" height="30" rowSpan="1"/>
+                        <jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement x="0" y="0" width="40" height="30"
-											   uuid="756362c8-21c2-43f1-80de-9b78daa2bfb6"/>
+                                <reportElement x="0" y="0" width="40" height="30"
+                                               uuid="756362c8-21c2-43f1-80de-9b78daa2bfb6"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -728,8 +728,8 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
-								<reportElement x="0" y="0" width="40" height="30"
-											   uuid="3b66d950-234c-4146-9e53-e1122181e338"/>
+                                <reportElement x="0" y="0" width="40" height="30"
+                                               uuid="3b66d950-234c-4146-9e53-e1122181e338"/>
 								<box topPadding="0" leftPadding="5" bottomPadding="0" rightPadding="0"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
@@ -743,8 +743,8 @@ WHERE
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="136" height="30"
-											   uuid="001eca93-d832-487d-bc64-7852231b973e"/>
+                                <reportElement x="0" y="0" width="136" height="30"
+                                               uuid="001eca93-d832-487d-bc64-7852231b973e"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -753,8 +753,8 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField textAdjust="StretchHeight">
-								<reportElement x="0" y="0" width="136" height="30"
-											   uuid="2572e24b-127f-4028-ab51-15b3429ebfa4"/>
+                                <reportElement x="0" y="0" width="136" height="30"
+                                               uuid="2572e24b-127f-4028-ab51-15b3429ebfa4"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
@@ -769,8 +769,8 @@ WHERE
 						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement x="0" y="0" width="239" height="30"
-											   uuid="cbfa0729-7177-4e9a-80d4-f7cf87c09b6d"/>
+                                <reportElement x="0" y="0" width="239" height="30"
+                                               uuid="cbfa0729-7177-4e9a-80d4-f7cf87c09b6d"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -779,8 +779,8 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField textAdjust="StretchHeight">
-								<reportElement stretchType="ContainerHeight" x="0" y="0" width="239" height="30"
-											   uuid="cfc1b4e9-58fd-4e1b-9524-97ffaac1d1fd"/>
+                                <reportElement stretchType="ContainerHeight" x="0" y="0" width="239" height="30"
+                                               uuid="cfc1b4e9-58fd-4e1b-9524-97ffaac1d1fd"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
@@ -793,8 +793,8 @@ WHERE
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1">
 							<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-								<reportElement x="0" y="0" width="107" height="30"
-											   uuid="33f679cd-7841-46e5-b905-5c369bd0a714"/>
+                                <reportElement x="0" y="0" width="107" height="30"
+                                               uuid="33f679cd-7841-46e5-b905-5c369bd0a714"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
@@ -805,8 +805,8 @@ WHERE
 						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement x="0" y="0" width="107" height="30"
-											   uuid="8dbead3d-81c4-4545-97cd-efb72f4e742e"/>
+                                <reportElement x="0" y="0" width="107" height="30"
+                                               uuid="8dbead3d-81c4-4545-97cd-efb72f4e742e"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -815,14 +815,14 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-								<reportElement x="0" y="0" width="107" height="30"
-											   uuid="6d706c10-51f7-4d94-b6b7-948fbc389331"/>
+                                <reportElement x="0" y="0" width="107" height="30"
+                                               uuid="6d706c10-51f7-4d94-b6b7-948fbc389331"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
 								</textElement>
-								<textFieldExpression>
-									<![CDATA[$F{AM_REQ_GROSS} ==null ? BigDecimal.ZERO :  $F{AM_REQ_GROSS}]]></textFieldExpression>
+                                <textFieldExpression>
+                                    <![CDATA[$F{AM_REQ_GROSS} ==null ? BigDecimal.ZERO :  $F{AM_REQ_GROSS}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -830,8 +830,8 @@ WHERE
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1">
 							<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-								<reportElement x="0" y="0" width="104" height="30"
-											   uuid="2091ce09-5eb4-4081-a255-6a2528c1c829"/>
+                                <reportElement x="0" y="0" width="104" height="30"
+                                               uuid="2091ce09-5eb4-4081-a255-6a2528c1c829"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
@@ -842,8 +842,8 @@ WHERE
 						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement x="0" y="0" width="104" height="30"
-											   uuid="c5def5fa-07b5-4ea3-8145-e533a9ea6679"/>
+                                <reportElement x="0" y="0" width="104" height="30"
+                                               uuid="c5def5fa-07b5-4ea3-8145-e533a9ea6679"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -852,14 +852,14 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-								<reportElement x="0" y="0" width="104" height="30"
-											   uuid="65c599a7-3ed5-4eef-9204-0e990d16e8c0"/>
+                                <reportElement x="0" y="0" width="104" height="30"
+                                               uuid="65c599a7-3ed5-4eef-9204-0e990d16e8c0"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
 								</textElement>
-								<textFieldExpression>
-									<![CDATA[$F{COR_AWA_GROSS} == null ? BigDecimal.ZERO : $F{COR_AWA_GROSS}]]></textFieldExpression>
+                                <textFieldExpression>
+                                    <![CDATA[$F{COR_AWA_GROSS} == null ? BigDecimal.ZERO : $F{COR_AWA_GROSS}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -867,8 +867,8 @@ WHERE
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1">
 							<textField pattern="#,##0.00 ¤;-#,##0.00 ¤" isBlankWhenNull="true">
-								<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="88" height="30"
-											   uuid="52444c47-9c77-4cd5-8e50-b7e5ed8c2570"/>
+                                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="88" height="30"
+                                               uuid="52444c47-9c77-4cd5-8e50-b7e5ed8c2570"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
@@ -878,8 +878,8 @@ WHERE
 						</jr:tableFooter>
 						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="88" height="30"
-											   uuid="eab91dd0-5ce4-425f-acfe-48c38a119f4b"/>
+                                <reportElement x="0" y="0" width="88" height="30"
+                                               uuid="eab91dd0-5ce4-425f-acfe-48c38a119f4b"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -888,14 +888,14 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField pattern="#,##0.00 ¤;-#,##0.00 ¤" isBlankWhenNull="true">
-								<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="88" height="30"
-											   uuid="3a41b3ce-56ee-4af9-ae1b-95a1600dfe74"/>
+                                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="88" height="30"
+                                               uuid="3a41b3ce-56ee-4af9-ae1b-95a1600dfe74"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
 								</textElement>
-								<textFieldExpression>
-									<![CDATA[$V{AM_COR_POS_GROSS}.intValue() != 0 ? $V{AM_COR_POS_GROSS} : null]]></textFieldExpression>
+                                <textFieldExpression>
+                                    <![CDATA[$V{AM_COR_POS_GROSS}.intValue() != 0 ? $V{AM_COR_POS_GROSS} : null]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -903,8 +903,8 @@ WHERE
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column7"/>
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1">
 							<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-								<reportElement x="0" y="0" width="88" height="30"
-											   uuid="8aa648f3-24c8-4310-82c7-5640fa2ab12e"/>
+                                <reportElement x="0" y="0" width="88" height="30"
+                                               uuid="8aa648f3-24c8-4310-82c7-5640fa2ab12e"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
@@ -914,8 +914,8 @@ WHERE
 						</jr:tableFooter>
 						<jr:columnHeader style="Table 1_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="88" height="30"
-											   uuid="0fc6bbec-673d-495c-b126-6ca9dc22944f"/>
+                                <reportElement x="0" y="0" width="88" height="30"
+                                               uuid="0fc6bbec-673d-495c-b126-6ca9dc22944f"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -924,8 +924,8 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField pattern="#,##0.00 ¤;#,##0.00 - ¤">
-								<reportElement x="0" y="0" width="88" height="30"
-											   uuid="b03a1f25-c4b3-47b3-94ed-8b35f1deb2a6"/>
+                                <reportElement x="0" y="0" width="88" height="30"
+                                               uuid="b03a1f25-c4b3-47b3-94ed-8b35f1deb2a6"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
@@ -940,37 +940,37 @@ WHERE
 		<band height="108">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<printWhenExpression><![CDATA[$F{PLAN_TYPE}.equals( "INW" )]]></printWhenExpression>
-			<componentElement>
-				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="802" height="100"
-							   uuid="d7ec9419-4767-48c2-94a6-964658c7d62d">
-					<property name="com.jaspersoft.studio.layout"
-							  value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 2_TH"/>
-					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 2_CH"/>
-					<property name="com.jaspersoft.studio.table.style.detail" value="Table 2_TD"/>
-					<property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
-					<property name="com.jaspersoft.studio.components.autoresize.proportional" value="true"/>
-				</reportElement>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
-						  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="inw" uuid="37426dc1-8fa2-4eed-ba4f-a28e1eb05dfa">
-						<datasetParameter name="PLAN_ID">
-							<datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
-						</datasetParameter>
-						<datasetParameter name="YEAR">
-							<datasetParameterExpression><![CDATA[$F{YEAR}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:column width="30" uuid="96bd66d6-aa3f-4c5a-a673-3d7a3bb2bf9e">
+            <componentElement>
+                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="802" height="100"
+                               uuid="d7ec9419-4767-48c2-94a6-964658c7d62d">
+                    <property name="com.jaspersoft.studio.layout"
+                              value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+                    <property name="com.jaspersoft.studio.table.style.table_header" value="Table 2_TH"/>
+                    <property name="com.jaspersoft.studio.table.style.column_header" value="Table 2_CH"/>
+                    <property name="com.jaspersoft.studio.table.style.detail" value="Table 2_TD"/>
+                    <property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
+                    <property name="com.jaspersoft.studio.components.autoresize.proportional" value="true"/>
+                </reportElement>
+                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
+                          xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                    <datasetRun subDataset="inw" uuid="37426dc1-8fa2-4eed-ba4f-a28e1eb05dfa">
+                        <datasetParameter name="PLAN_ID">
+                            <datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <datasetParameter name="YEAR">
+                            <datasetParameterExpression><![CDATA[$F{YEAR}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+                    </datasetRun>
+                    <jr:column width="30" uuid="96bd66d6-aa3f-4c5a-a673-3d7a3bb2bf9e">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:columnHeader style="Table 1_CH" height="40" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement x="0" y="0" width="30" height="40"
-											   uuid="00014e79-9d49-4c96-a23a-e08ce879fee1"/>
+                                <reportElement x="0" y="0" width="30" height="40"
+                                               uuid="00014e79-9d49-4c96-a23a-e08ce879fee1"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -979,8 +979,8 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField>
-								<reportElement x="0" y="0" width="30" height="30"
-											   uuid="ae5b07ee-4f71-4c4f-aba0-da9ad3f2d587"/>
+                                <reportElement x="0" y="0" width="30" height="30"
+                                               uuid="ae5b07ee-4f71-4c4f-aba0-da9ad3f2d587"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
@@ -994,8 +994,8 @@ WHERE
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:columnHeader style="Table 1_CH" height="40" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="136" height="40"
-											   uuid="facb2d91-ce16-418a-b25c-1dbe22f07c55"/>
+                                <reportElement x="0" y="0" width="136" height="40"
+                                               uuid="facb2d91-ce16-418a-b25c-1dbe22f07c55"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -1004,8 +1004,8 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField textAdjust="StretchHeight">
-								<reportElement x="0" y="0" width="136" height="30"
-											   uuid="10cf99c8-836f-4b18-939e-3aaa725dc58c"/>
+                                <reportElement x="0" y="0" width="136" height="30"
+                                               uuid="10cf99c8-836f-4b18-939e-3aaa725dc58c"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
@@ -1019,8 +1019,8 @@ WHERE
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:columnHeader style="Table 1_CH" height="40" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="136" height="40"
-											   uuid="7f52d72f-2ea6-4295-afb2-4244e47d4be2"/>
+                                <reportElement x="0" y="0" width="136" height="40"
+                                               uuid="7f52d72f-2ea6-4295-afb2-4244e47d4be2"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -1029,8 +1029,8 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="136" height="30"
-											   uuid="59136698-ee5c-4d44-ad1f-0b9459a7d21d"/>
+                                <reportElement x="0" y="0" width="136" height="30"
+                                               uuid="59136698-ee5c-4d44-ad1f-0b9459a7d21d"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
@@ -1045,8 +1045,8 @@ WHERE
 						<jr:columnHeader style="Table 1_CH" height="40" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<staticText>
-								<reportElement x="0" y="0" width="105" height="40"
-											   uuid="ee24a28a-6980-45d8-8b76-d5882cb242ae"/>
+                                <reportElement x="0" y="0" width="105" height="40"
+                                               uuid="ee24a28a-6980-45d8-8b76-d5882cb242ae"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -1056,8 +1056,8 @@ WHERE
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
 							<textField pattern="#,##0.00 ¤;#,##0.00 - ¤" isBlankWhenNull="true">
-								<reportElement x="0" y="0" width="105" height="30"
-											   uuid="2e4035ef-e1e1-4f93-9e8d-88c888d0c1da"/>
+                                <reportElement x="0" y="0" width="105" height="30"
+                                               uuid="2e4035ef-e1e1-4f93-9e8d-88c888d0c1da"/>
 								<box padding="5"/>
 								<textElement verticalAlignment="Middle">
 									<font fontName="PDF_fonts"/>
@@ -1071,8 +1071,8 @@ WHERE
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:columnHeader style="Table 1_CH" height="40" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="151" height="40"
-											   uuid="5c6963a9-ce0c-4340-a9ac-bfc2ece6a497"/>
+                                <reportElement x="0" y="0" width="151" height="40"
+                                               uuid="5c6963a9-ce0c-4340-a9ac-bfc2ece6a497"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
@@ -1082,34 +1082,34 @@ wartość
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
-							<componentElement>
-								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="151" height="30"
-											   uuid="efe2af74-fc55-4779-aafa-f20af1e8f369">
-									<property name="com.jaspersoft.studio.layout"
-											  value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-									<property name="com.jaspersoft.studio.table.style.table_header" value="Table 3_TH"/>
-									<property name="com.jaspersoft.studio.table.style.column_header"
-											  value="Table 3_CH"/>
-									<property name="com.jaspersoft.studio.table.style.detail" value="Table 3_TD"/>
-									<property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
-									<property name="com.jaspersoft.studio.components.autoresize.proportional"
-											  value="true"/>
-								</reportElement>
-								<jr:table>
-									<datasetRun subDataset="source" uuid="b3ecf739-0ce9-4976-abcf-bbe86625a58f">
-										<datasetParameter name="POSITION_ID">
-											<datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
+                            <componentElement>
+                                <reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="151" height="30"
+                                               uuid="efe2af74-fc55-4779-aafa-f20af1e8f369">
+                                    <property name="com.jaspersoft.studio.layout"
+                                              value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+                                    <property name="com.jaspersoft.studio.table.style.table_header" value="Table 3_TH"/>
+                                    <property name="com.jaspersoft.studio.table.style.column_header"
+                                              value="Table 3_CH"/>
+                                    <property name="com.jaspersoft.studio.table.style.detail" value="Table 3_TD"/>
+                                    <property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
+                                    <property name="com.jaspersoft.studio.components.autoresize.proportional"
+                                              value="true"/>
+                                </reportElement>
+                                <jr:table>
+                                    <datasetRun subDataset="source" uuid="b3ecf739-0ce9-4976-abcf-bbe86625a58f">
+                                        <datasetParameter name="POSITION_ID">
+                                            <datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
 										</datasetParameter>
 										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 									</datasetRun>
 									<jr:column width="88" uuid="6e1ca7a1-801f-445f-aa6d-bfd318b1f35e">
-										<property name="com.jaspersoft.studio.components.table.model.column.name"
-												  value="Column1"/>
+                                        <property name="com.jaspersoft.studio.components.table.model.column.name"
+                                                  value="Column1"/>
 										<jr:detailCell style="Table 1_TD" height="30">
 											<property name="com.jaspersoft.studio.unit.width" value="px"/>
 											<textField isBlankWhenNull="true">
-												<reportElement stretchType="ContainerHeight" x="0" y="0" width="88"
-															   height="30" uuid="39b940e3-f8ff-4a3e-acae-55979889fb65"/>
+                                                <reportElement stretchType="ContainerHeight" x="0" y="0" width="88"
+                                                               height="30" uuid="39b940e3-f8ff-4a3e-acae-55979889fb65"/>
 												<box padding="5"/>
 												<textElement verticalAlignment="Middle">
 													<font fontName="PDF_fonts"/>
@@ -1119,21 +1119,21 @@ wartość
 										</jr:detailCell>
 									</jr:column>
 									<jr:column width="63" uuid="27fa00e5-9a20-4400-b0e2-ce856324f211">
-										<property name="com.jaspersoft.studio.components.table.model.column.name"
-												  value="Column2"/>
-										<jr:detailCell style="Table 1_TD" height="30">
-											<box padding="1"/>
-											<textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-													   isBlankWhenNull="true">
-												<reportElement stretchType="ContainerHeight" x="0" y="0" width="61"
-															   height="28" uuid="01355337-277f-4c18-98a9-f281c6ac2b6c"/>
-												<box padding="5"/>
-												<textElement verticalAlignment="Middle">
-													<font fontName="PDF_fonts"/>
-												</textElement>
-												<textFieldExpression><![CDATA[$F{task}]]></textFieldExpression>
-											</textField>
-										</jr:detailCell>
+                                        <property name="com.jaspersoft.studio.components.table.model.column.name"
+                                                  value="Column2"/>
+                                        <jr:detailCell style="Table 1_TD" height="30">
+                                            <box padding="1"/>
+                                            <textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                                                       isBlankWhenNull="true">
+                                                <reportElement stretchType="ContainerHeight" x="0" y="0" width="61"
+                                                               height="28" uuid="01355337-277f-4c18-98a9-f281c6ac2b6c"/>
+                                                <box padding="5"/>
+                                                <textElement verticalAlignment="Middle">
+                                                    <font fontName="PDF_fonts"/>
+                                                </textElement>
+                                                <textFieldExpression><![CDATA[$F{task}]]></textFieldExpression>
+                                            </textField>
+                                        </jr:detailCell>
 									</jr:column>
 								</jr:table>
 							</componentElement>
@@ -1145,46 +1145,46 @@ wartość
 						<jr:columnHeader style="Table 1_CH" height="40" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<textField>
-								<reportElement x="0" y="0" width="102" height="40"
-											   uuid="778a8a53-a9b1-4810-8128-18f5c7b5be07"/>
+                                <reportElement x="0" y="0" width="102" height="40"
+                                               uuid="778a8a53-a9b1-4810-8128-18f5c7b5be07"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
-								<textFieldExpression>
-									<![CDATA["Wydatki poniesione do " + ($P{YEAR}-1) + " r. \nwartość (w zł)"]]></textFieldExpression>
+                                <textFieldExpression>
+                                    <![CDATA["Wydatki poniesione do " + ($P{YEAR}-1) + " r. \nwartość (w zł)"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
-							<componentElement>
-								<reportElement stretchType="ContainerHeight" x="0" y="0" width="102" height="30"
-											   uuid="8d500d4b-9642-46d1-9bfd-7dce1677713e">
-									<property name="com.jaspersoft.studio.layout"
-											  value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-									<property name="com.jaspersoft.studio.table.style.table_header" value="Table 4_TH"/>
-									<property name="com.jaspersoft.studio.table.style.column_header"
-											  value="Table 4_CH"/>
-									<property name="com.jaspersoft.studio.table.style.detail" value="Table 4_TD"/>
-									<property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
-									<property name="com.jaspersoft.studio.components.autoresize.proportional"
-											  value="true"/>
-								</reportElement>
-								<jr:table>
-									<datasetRun subDataset="source" uuid="ffa51a68-5520-44a2-aae8-eb196d7ba0a9">
-										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-									</datasetRun>
+                            <componentElement>
+                                <reportElement stretchType="ContainerHeight" x="0" y="0" width="102" height="30"
+                                               uuid="8d500d4b-9642-46d1-9bfd-7dce1677713e">
+                                    <property name="com.jaspersoft.studio.layout"
+                                              value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+                                    <property name="com.jaspersoft.studio.table.style.table_header" value="Table 4_TH"/>
+                                    <property name="com.jaspersoft.studio.table.style.column_header"
+                                              value="Table 4_CH"/>
+                                    <property name="com.jaspersoft.studio.table.style.detail" value="Table 4_TD"/>
+                                    <property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
+                                    <property name="com.jaspersoft.studio.components.autoresize.proportional"
+                                              value="true"/>
+                                </reportElement>
+                                <jr:table>
+                                    <datasetRun subDataset="source" uuid="ffa51a68-5520-44a2-aae8-eb196d7ba0a9">
+                                        <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+                                    </datasetRun>
 									<jr:column width="102" uuid="dcc24eee-758f-47fb-be96-f3d490c1dca3">
-										<jr:detailCell style="Table 1_TD" height="30">
-											<textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-													   isBlankWhenNull="true">
-												<reportElement stretchType="ContainerHeight" x="0" y="0" width="102"
-															   height="30" uuid="0567fa30-e9cc-4b4c-8b61-1bb9a5c452ed"/>
-												<box padding="5"/>
-												<textElement verticalAlignment="Middle">
-													<font fontName="PDF_fonts"/>
-												</textElement>
-												<textFieldExpression><![CDATA[$F{realize}]]></textFieldExpression>
-											</textField>
-										</jr:detailCell>
+                                        <jr:detailCell style="Table 1_TD" height="30">
+                                            <textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                                                       isBlankWhenNull="true">
+                                                <reportElement stretchType="ContainerHeight" x="0" y="0" width="102"
+                                                               height="30" uuid="0567fa30-e9cc-4b4c-8b61-1bb9a5c452ed"/>
+                                                <box padding="5"/>
+                                                <textElement verticalAlignment="Middle">
+                                                    <font fontName="PDF_fonts"/>
+                                                </textElement>
+                                                <textFieldExpression><![CDATA[$F{realize}]]></textFieldExpression>
+                                            </textField>
+                                        </jr:detailCell>
 									</jr:column>
 								</jr:table>
 							</componentElement>
@@ -1195,66 +1195,66 @@ wartość
 						<jr:tableFooter style="Table 1_CH" height="30" rowSpan="1"/>
 						<jr:columnHeader style="Table 1_CH" height="40" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="142" height="40"
-											   uuid="06753d7f-f9de-478a-aaab-6efb90226b7e"/>
+                                <reportElement x="0" y="0" width="142" height="40"
+                                               uuid="06753d7f-f9de-478a-aaab-6efb90226b7e"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font fontName="PDF_fonts" isBold="true"/>
 								</textElement>
-								<textFieldExpression>
-									<![CDATA["Planowane wydatki w " + $P{YEAR} +"r. \n/ Termin realizacji"]]></textFieldExpression>
+                                <textFieldExpression>
+                                    <![CDATA["Planowane wydatki w " + $P{YEAR} +"r. \n/ Termin realizacji"]]></textFieldExpression>
 							</textField>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="30">
-							<componentElement>
-								<reportElement stretchType="ContainerHeight" x="0" y="0" width="142" height="30"
-											   uuid="6ed5ccb9-95e5-4173-82b7-74d91f420734">
-									<property name="com.jaspersoft.studio.layout"
-											  value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
-									<property name="com.jaspersoft.studio.table.style.table_header" value="Table 5_TH"/>
-									<property name="com.jaspersoft.studio.table.style.column_header"
-											  value="Table 5_CH"/>
-									<property name="com.jaspersoft.studio.table.style.detail" value="Table 5_TD"/>
-									<property name="com.jaspersoft.studio.components.autoresize.proportional"
-											  value="true"/>
-									<property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
-								</reportElement>
-								<jr:table>
-									<datasetRun subDataset="source" uuid="f920ac84-a32f-4d65-8bca-f31bacd4bc6e">
-										<datasetParameter name="POSITION_ID">
-											<datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
+                            <componentElement>
+                                <reportElement stretchType="ContainerHeight" x="0" y="0" width="142" height="30"
+                                               uuid="6ed5ccb9-95e5-4173-82b7-74d91f420734">
+                                    <property name="com.jaspersoft.studio.layout"
+                                              value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+                                    <property name="com.jaspersoft.studio.table.style.table_header" value="Table 5_TH"/>
+                                    <property name="com.jaspersoft.studio.table.style.column_header"
+                                              value="Table 5_CH"/>
+                                    <property name="com.jaspersoft.studio.table.style.detail" value="Table 5_TD"/>
+                                    <property name="com.jaspersoft.studio.components.autoresize.proportional"
+                                              value="true"/>
+                                    <property name="com.jaspersoft.studio.components.autoresize.next" value="true"/>
+                                </reportElement>
+                                <jr:table>
+                                    <datasetRun subDataset="source" uuid="f920ac84-a32f-4d65-8bca-f31bacd4bc6e">
+                                        <datasetParameter name="POSITION_ID">
+                                            <datasetParameterExpression><![CDATA[$F{ID}]]></datasetParameterExpression>
 										</datasetParameter>
 										<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 									</datasetRun>
 									<jr:column width="72" uuid="8411d235-a7b2-4403-a7c9-a8a0a0a4aafb">
-										<property name="com.jaspersoft.studio.components.table.model.column.name"
-												  value="Column1"/>
-										<jr:detailCell style="Table 1_TD" height="30">
-											<textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤"
-													   isBlankWhenNull="true">
-												<reportElement stretchType="ContainerHeight" x="0" y="0" width="72"
-															   height="30" uuid="48ac7e68-3cef-42d9-93d6-dabb5826a66b"/>
-												<box padding="5"/>
-												<textElement verticalAlignment="Middle">
-													<font fontName="PDF_fonts"/>
-												</textElement>
-												<textFieldExpression><![CDATA[$F{expense}]]></textFieldExpression>
-											</textField>
-										</jr:detailCell>
+                                        <property name="com.jaspersoft.studio.components.table.model.column.name"
+                                                  value="Column1"/>
+                                        <jr:detailCell style="Table 1_TD" height="30">
+                                            <textField textAdjust="StretchHeight" pattern="#,##0.00 ¤;#,##0.00 - ¤"
+                                                       isBlankWhenNull="true">
+                                                <reportElement stretchType="ContainerHeight" x="0" y="0" width="72"
+                                                               height="30" uuid="48ac7e68-3cef-42d9-93d6-dabb5826a66b"/>
+                                                <box padding="5"/>
+                                                <textElement verticalAlignment="Middle">
+                                                    <font fontName="PDF_fonts"/>
+                                                </textElement>
+                                                <textFieldExpression><![CDATA[$F{expense}]]></textFieldExpression>
+                                            </textField>
+                                        </jr:detailCell>
 									</jr:column>
 									<jr:column width="70" uuid="82dcf693-e1bb-4bbc-940a-459d7aac783f">
-										<property name="com.jaspersoft.studio.components.table.model.column.name"
-												  value="Column2"/>
+                                        <property name="com.jaspersoft.studio.components.table.model.column.name"
+                                                  value="Column2"/>
 										<jr:detailCell style="Table 1_TD" height="30">
 											<property name="com.jaspersoft.studio.unit.width" value="px"/>
 											<textField textAdjust="StretchHeight" pattern="dd-MM-YYYY">
-												<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="70"
-															   height="30" uuid="2136b4e3-88c6-4e6f-a0b0-d706a953fb57"/>
+                                                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="70"
+                                                               height="30" uuid="2136b4e3-88c6-4e6f-a0b0-d706a953fb57"/>
 												<box padding="5"/>
 												<textElement verticalAlignment="Middle">
 													<font fontName="PDF_fonts"/>
 												</textElement>
-												<textFieldExpression>
-													<![CDATA[$F{REALIZATION_DATE}]]></textFieldExpression>
+                                                <textFieldExpression>
+                                                    <![CDATA[$F{REALIZATION_DATE}]]></textFieldExpression>
 											</textField>
 										</jr:detailCell>
 									</jr:column>
@@ -1268,8 +1268,8 @@ wartość
 		<band height="115">
 			<printWhenExpression><![CDATA[$F{PLAN_TYPE}.equals( "INW" )]]></printWhenExpression>
 			<subreport overflowType="Stretch">
-				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="802" height="100"
-							   uuid="ba80c2c4-7418-4a69-828a-8de255a3c2f2"/>
+                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="802" height="100"
+                               uuid="ba80c2c4-7418-4a69-828a-8de255a3c2f2"/>
 				<subreportParameter name="PLAN_ID">
 					<subreportParameterExpression><![CDATA[$F{ID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -1277,8 +1277,8 @@ wartość
 					<subreportParameterExpression><![CDATA[$F{YEAR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression>
-					<![CDATA["jasper/prints/modules/coordinator/plans/inw_summary.jasper"]]></subreportExpression>
+                <subreportExpression>
+                    <![CDATA["jasper/prints/modules/coordinator/plans/inw_summary.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="108">
@@ -1359,8 +1359,8 @@ wartość
 				<textElement textAlignment="Center">
 					<font fontName="PDF_fonts" size="8" isItalic="true"/>
 				</textElement>
-				<textFieldExpression>
-					<![CDATA[($F{PLAN_TYPE}.equals( "PZP" ) ? "(Główny Księgowy)" : "(Dyrektor Ekonomiczny)")]]></textFieldExpression>
+                <textFieldExpression>
+                    <![CDATA[($F{PLAN_TYPE}.equals( "PZP" ) ? "(Główny Księgowy)" : "(Dyrektor Ekonomiczny)")]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="550" y="83" width="250" height="1" uuid="6d14ac79-cf40-41a5-a30f-197f04f2b432">
@@ -1377,16 +1377,16 @@ wartość
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="PDF_fonts" size="10" isBold="true" isItalic="true"/>
 				</textElement>
-				<textFieldExpression>
-					<![CDATA[($F{PLAN_TYPE}.equals( "PZP" ) ? $F{ACCOUNTANT} : $F{ECONOMIC})]]></textFieldExpression>
+                <textFieldExpression>
+                    <![CDATA[($F{PLAN_TYPE}.equals( "PZP" ) ? $F{ACCOUNTANT} : $F{ECONOMIC})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="601" y="30" width="149" height="13" uuid="892c61fb-0363-4734-a143-4daaa6d6b6d7"/>
 				<textElement textAlignment="Center">
 					<font fontName="PDF_fonts" size="8" isItalic="true"/>
 				</textElement>
-				<textFieldExpression>
-					<![CDATA[($F{PLAN_TYPE}.equals( "PZP" ) ? "(Dział  Zamówień Publicznych)"  : "(Główny Księgowy)")]]></textFieldExpression>
+                <textFieldExpression>
+                    <![CDATA[($F{PLAN_TYPE}.equals( "PZP" ) ? "(Dział  Zamówień Publicznych)"  : "(Główny Księgowy)")]]></textFieldExpression>
 			</textField>
 			<line>
 				<reportElement x="550" y="23" width="250" height="1" uuid="a5857dc7-b482-47fc-bfa7-f95cca9ff2b7">
@@ -1403,8 +1403,8 @@ wartość
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="PDF_fonts" size="10" isBold="true" isItalic="true"/>
 				</textElement>
-				<textFieldExpression>
-					<![CDATA[($F{PLAN_TYPE}.equals( "PZP" ) ? $F{PUBLIC_USR} : $F{ACCOUNTANT} )]]></textFieldExpression>
+                <textFieldExpression>
+                    <![CDATA[($F{PLAN_TYPE}.equals( "PZP" ) ? $F{PUBLIC_USR} : $F{ACCOUNTANT} )]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

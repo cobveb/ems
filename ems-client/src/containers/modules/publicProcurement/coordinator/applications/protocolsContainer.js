@@ -3,10 +3,10 @@ import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
 import { loading, setError } from 'actions/';
 import Protocols from 'components/modules/accountant/coordinator/publicProcurement/protocols';
-import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
-import ProtocolApi from 'api/modules/accountant/coordinator/publicProcurementProtocolApi';
 import { getPublicProcurementProtocolStatuses, findSelectFieldPosition, getVats, updateOnCloseDetails } from 'utils/';
 import * as constants from 'constants/uiNames';
+import ProtocolApi from 'api/modules/publicProcurement/coordinator/protocolsApi';
+import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 
 class ProtocolsContainer extends Component {
     state = {
@@ -34,7 +34,6 @@ class ProtocolsContainer extends Component {
                             status: protocol.status = findSelectFieldPosition(this.state.statuses, protocol.status),
                         }
                     )
-
                 })
 
                 return{protocols}
@@ -70,8 +69,7 @@ class ProtocolsContainer extends Component {
             });
             return this.state.protocols;
         } else {
-            let protocols = this.state.protocols;
-            return updateOnCloseDetails(protocols, closedProtocol);
+            return updateOnCloseDetails(this.state.protocols, closedProtocol);
         }
     }
 
@@ -80,24 +78,21 @@ class ProtocolsContainer extends Component {
         this.handleGetCoordinators();
     }
 
-
     render(){
         const { isLoading, error, clearError, levelAccess } = this.props;
         const { protocols, coordinators, statuses, vats } = this.state;
         return (
-            <>
-                <Protocols
-                    initialValues={protocols}
-                    coordinators={coordinators}
-                    statuses={statuses}
-                    vats={vats}
-                    levelAccess={levelAccess}
-                    isLoading={isLoading}
-                    error={error}
-                    clearError={clearError}
-                    onClose={this.handleUpdateOnCloseDetails}
-                />
-            </>
+            <Protocols
+                initialValues={protocols}
+                coordinators={coordinators}
+                statuses={statuses}
+                vats={vats}
+                levelAccess={levelAccess}
+                isLoading={isLoading}
+                error={error}
+                clearError={clearError}
+                onClose={this.handleUpdateOnCloseDetails}
+            />
         );
     };
 };

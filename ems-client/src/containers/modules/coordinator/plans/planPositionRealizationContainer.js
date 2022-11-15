@@ -41,7 +41,7 @@ class PlanPositionRealizationContainer extends Component {
     }
 
     render(){
-        const { isLoading, loading, error, clearError } = this.props;
+        const { isLoading, error, clearError } = this.props;
         const { invoicesPositions } = this.state;
         return (
             <PlanPositionRealization

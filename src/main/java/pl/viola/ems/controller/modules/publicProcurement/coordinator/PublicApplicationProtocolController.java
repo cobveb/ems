@@ -3,10 +3,7 @@ package pl.viola.ems.controller.modules.publicProcurement.coordinator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.service.modules.coordinator.publicProcurement.ApplicationProtocolService;
 
@@ -16,7 +13,10 @@ public class PublicApplicationProtocolController {
     @Autowired
     ApplicationProtocolService applicationProtocolService;
 
-    public PublicApplicationProtocolController() {
+    @GetMapping("/getAllProtocols")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1124')")
+    public ApiResponse getAllProtocols() {
+        return new ApiResponse(HttpStatus.FOUND, applicationProtocolService.getProtocolsByAccessLevel("public"));
     }
 
     @PutMapping({"/approveProtocol/{protocolId}"})

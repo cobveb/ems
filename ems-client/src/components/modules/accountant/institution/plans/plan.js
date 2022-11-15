@@ -72,6 +72,11 @@ class Plan extends Component {
                 suffix: 'zł.',
                 type: 'amount',
             },
+            {
+                id: 'status.name',
+                label: constants.ACCOUNTANT_INSTITUTION_POSITION_STATUS,
+                type: 'object',
+            },
         ],
         headCellsUpd:[
             {
@@ -183,7 +188,9 @@ class Plan extends Component {
         if(this.props.levelAccess === "accountant"){
             this.props.onAccountantApprovePlan();
         } else if (this.props.levelAccess === "director"){
-            this.props.onChiefApprovePlan()
+            this.props.initialValues.status.code === 'AK' ?
+                this.props.onEconomicApprovePlan() :
+                    this.props.onChiefApprovePlan()
         }
     }
 
@@ -257,7 +264,7 @@ class Plan extends Component {
     }
 
     render(){
-        const { classes, isLoading, error, initialValues, levelAccess, disableWithdraw } = this.props;
+        const { classes, isLoading, error, initialValues, levelAccess, disableWithdraw, existsPlanToApprove } = this.props;
         const { headCells, headCellsUpd, rows, selected, isDetailsVisible, disabledApprove, planAction } = this.state;
         return(
             <>
@@ -366,7 +373,7 @@ class Plan extends Component {
                                         </Typography>
                                     </Toolbar>
                                     <Grid container spacing={1} justify="center" className={classes.container}>
-                                        <Grid item xs={12} sm={6}>
+                                        <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ? 4 : 6}>
                                             <InputField
                                                 name="approveUser"
                                                 label={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ?
@@ -377,7 +384,19 @@ class Plan extends Component {
                                                         ''}
                                             />
                                         </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        {initialValues.type !== undefined && initialValues.type.code !== 'PZP' &&
+                                            <Grid item xs={12} sm={4}>
+                                                <InputField
+                                                    name="economicAcceptUser"
+                                                    label={constants.ACCOUNTANT_PLAN_COORDINATOR_ECONOMIC_ACCEPT_USER}
+                                                    disabled={true}
+                                                    value={initialValues.economicAcceptUser !== undefined && initialValues.economicAcceptUser !== null ?
+                                                        `${initialValues.economicAcceptUser.name} ${initialValues.economicAcceptUser.surname}` :
+                                                            ''}
+                                                />
+                                            </Grid>
+                                        }
+                                        <Grid item xs={12} sm={initialValues.type !== undefined && initialValues.type.code !== 'PZP' ? 4 : 6}>
                                             <InputField
                                                 name="chiefAcceptUser"
                                                 label={constants.ACCOUNTANT_PLAN_COORDINATOR_CHIEF_ACCEPT_USER}
@@ -431,7 +450,7 @@ class Plan extends Component {
                                 <Grid
                                     container
                                     direction="row"
-                                    justify="center"
+                                    justify="flex-start"
                                     alignItems="flex-start"
                                 >
                                     <Button
@@ -444,59 +463,68 @@ class Plan extends Component {
                                     />
                                 </Grid>
                             </Grid>
-                            <Grid item xs={10}>
+                                <Grid item xs={initialValues.isCorrected === undefined || initialValues.isCorrected ? 10 : 9}>
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justify="center"
+                                        alignItems="flex-start"
+                                    >
+                                        <Button
+                                            label={constants.BUTTON_PREVIEW}
+                                            icon={<Visibility/>}
+                                            iconAlign="right"
+                                            disabled={Object.keys(selected).length === 0}
+                                            variant={"cancel"}
+                                            onClick={this.handleChangeVisibleDetails}
+                                            data-action="edit"
+                                        />
+                                        {(initialValues.status !== undefined && ['UT', 'AK', 'AE'].includes(initialValues.status.code)) &&
+                                            <Button
+                                                label={initialValues.status !== undefined ?
+                                                    levelAccess === "accountant" ? constants.BUTTON_APPROVE :
+                                                        initialValues.status.code === 'AK' ? constants.BUTTON_APPROVE_ECONOMIC :
+                                                            constants.BUTTON_APPROVE_CHIEF
+                                                    : constants.BUTTON_APPROVE}
+                                                icon=<DoneAll/>
+                                                iconAlign="left"
+                                                variant="submit"
+                                                disabled={levelAccess === "accountant" ?
+                                                    disabledApprove || (initialValues.status !== undefined && initialValues.status.code !== 'UT')
+                                                        : initialValues.isCorrected ?
+                                                            !['AK', 'AE'].includes(initialValues.status.code) : existsPlanToApprove
+                                                }
+                                                onClick={(event) => this.handlePlanAction(event, 'approve')}
+                                            />
+                                        }
+                                    </Grid>
+                                </Grid>
+                            <Grid item xs={(initialValues.isCorrected === undefined || !initialValues.isCorrected) ? 2 : 1}>
                                 <Grid
                                     container
                                     direction="row"
-                                    justify="center"
+                                    justify="flex-end"
                                     alignItems="flex-start"
                                 >
-                                    <Button
-                                        label={constants.BUTTON_PREVIEW}
-                                        icon={<Visibility/>}
-                                        iconAlign="right"
-                                        disabled={Object.keys(selected).length === 0}
-                                        variant={"cancel"}
-                                        onClick={this.handleChangeVisibleDetails}
-                                        data-action="edit"
-                                    />
-                                    <Button
-                                        label={constants.BUTTON_APPROVE}
-                                        icon=<DoneAll/>
-                                        iconAlign="left"
-                                        variant="submit"
-                                        disabled={levelAccess === "accountant" ?
-                                            disabledApprove || (initialValues.status !== undefined && initialValues.status !== 'UT')
-                                                : (!['AK', 'RE'].includes(initialValues.status) || (initialValues.status === 'RE' && initialValues.chiefAcceptUser !== null))
-                                        }
-                                        onClick={(event) => this.handlePlanAction(event, 'approve')}
-                                    />
+                                    {(initialValues.isCorrected === undefined || !initialValues.isCorrected) &&
+                                        <Button
+                                            label={constants.BUTTON_WITHDRAW}
+                                            icon=<Undo/>
+                                            iconAlign="left"
+                                            disabled={levelAccess === "accountant" ?
+                                                disableWithdraw || (initialValues.status !== undefined && !['AK'].includes(initialValues.status.code))
+                                                    : ((initialValues.status !== undefined && !['AE', 'AN'].includes(initialValues.status.code)) || initialValues.chiefAcceptUser === null)
+                                            }
+                                            onClick = {(event) => this.handlePlanAction(event, 'withdraw')}
+                                            variant="cancel"
+                                        />
+                                    }
                                     <Button
                                         label={constants.BUTTON_CLOSE}
                                         icon=<Cancel/>
                                         iconAlign="left"
                                         variant="cancel"
                                         onClick={this.handleClosePlan}
-                                    />
-                                </Grid>
-                            </Grid>
-                            <Grid item xs={1}>
-                                <Grid
-                                    container
-                                    direction="row"
-                                    justify="flex-start"
-                                    alignItems="flex-start"
-                                >
-                                    <Button
-                                        label={constants.BUTTON_WITHDRAW}
-                                        icon=<Undo/>
-                                        iconAlign="left"
-                                        disabled={levelAccess === "accountant" ?
-                                            disableWithdraw || ['UT','ZA', 'RE', 'AA'].includes(initialValues.status)
-                                                : (!['AE', 'AN'].includes(initialValues.status) || initialValues.chiefAcceptUser === null)
-                                        }
-                                        onClick = {(event) => this.handlePlanAction(event, 'withdraw')}
-                                        variant="cancel"
                                     />
                                 </Grid>
                             </Grid>

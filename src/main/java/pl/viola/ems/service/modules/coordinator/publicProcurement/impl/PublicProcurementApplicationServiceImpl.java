@@ -307,10 +307,6 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
             application = publicProcurementApplicationRepository.findById(applicationPayload.getId())
                     .orElseThrow(() -> new AppException("Coordinator.publicProcurement.application.notFound", HttpStatus.NOT_FOUND));
 
-//            if(application.getEstimationType() != null && application.getApplicationProtocol() != null && application.getEstimationType().equals(PublicProcurementPosition.EstimationType.DO50) && !applicationPayload.getEstimationType().equals(PublicProcurementPosition.EstimationType.DO50)){
-//                applicationProtocolService.deleteApplicationProtocol(application.getApplicationProtocol().getId());
-//                application.setApplicationProtocol(null);
-//            }
         }
         if (applicationPayload.getReplaySourceApplication() != null && applicationPayload.getIsReplay()) {
             application.setReplaySourceApplication(publicProcurementApplicationRepository.findById(applicationPayload.getReplaySourceApplication().getId())
@@ -1422,11 +1418,11 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                 position.getIsOption() != null && position.getIsOption() ? position.getOrderGroupValueGross().add(position.getAmountOptionGross()) : position.getOrderGroupValueGross() :
                 position.getIsOption() != null && position.getIsOption() ? planPosition.getAmountInferredGross().add(position.getOrderGroupValueGross().add(position.getAmountOptionGross())) : planPosition.getAmountInferredGross().add(position.getOrderGroupValueGross()));
 
-        this.updateValueOnCorrectedPositionOnSendApplication(position, position.getInstitutionPublicProcurementPlanPosition(), coordinator);
+        this.updateValueOnCorrectedPositionOnSendApplication(position, position.getInstitutionPublicProcurementPlanPosition(), coordinator, planPosition);
 
     }
 
-    private void updateValueOnCorrectedPositionOnSendApplication(ApplicationAssortmentGroup position, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator) {
+    private void updateValueOnCorrectedPositionOnSendApplication(ApplicationAssortmentGroup position, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator, PublicProcurementPosition coordinatorPlanPosition) {
         //If Institution public procurement position is corrected, update amount value also on update plan position
         if (institutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
             InstitutionPublicProcurementPlanPosition updatedInstitutionPublicProcurementPlanPosition = (InstitutionPublicProcurementPlanPosition) institutionPlanPositionRepository.findByCorrectionPlanPosition(institutionPublicProcurementPlanPosition);
@@ -1450,16 +1446,19 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                                     updatedInstitutionPublicProcurementPlanPosition.getAmountInferredGross().add(position.getOrderGroupValueGross()) :
                             position.getIsOption() != null && position.getIsOption() ? position.getOrderGroupValueGross().add(position.getAmountOptionGross()) : position.getOrderGroupValueGross()
             );
-            // Update amount inferred in Coordinator Public Procurement Plan Position
-            updatedPlanPosition.setAmountInferredNet(updatedPlanPosition.getAmountInferredNet() == null ?
-                    position.getIsOption() != null && position.getIsOption() ? position.getOrderGroupValueNet().add(position.getAmountOptionNet()) : position.getOrderGroupValueNet() :
-                    position.getIsOption() != null && position.getIsOption() ? updatedPlanPosition.getAmountInferredNet().add(position.getOrderGroupValueNet().add(position.getAmountOptionNet())) : updatedPlanPosition.getAmountInferredNet().add(position.getOrderGroupValueNet()));
-            updatedPlanPosition.setAmountInferredGross(updatedPlanPosition.getAmountInferredGross() == null ?
-                    position.getIsOption() != null && position.getIsOption() ? position.getOrderGroupValueGross().add(position.getAmountOptionGross()) : position.getOrderGroupValueGross() :
-                    position.getIsOption() != null && position.getIsOption() ? updatedPlanPosition.getAmountInferredGross().add(position.getOrderGroupValueGross().add(position.getAmountOptionGross())) : updatedPlanPosition.getAmountInferredGross().add(position.getOrderGroupValueGross()));
 
+            /* Update amount inferred value if current coordinator plan position is different that updatedPlanPosition */
+            if (!coordinatorPlanPosition.equals(updatedPlanPosition)) {
+                // Update amount inferred in Coordinator Public Procurement Plan Position
+                updatedPlanPosition.setAmountInferredNet(updatedPlanPosition.getAmountInferredNet() == null ?
+                        position.getIsOption() != null && position.getIsOption() ? position.getOrderGroupValueNet().add(position.getAmountOptionNet()) : position.getOrderGroupValueNet() :
+                        position.getIsOption() != null && position.getIsOption() ? updatedPlanPosition.getAmountInferredNet().add(position.getOrderGroupValueNet().add(position.getAmountOptionNet())) : updatedPlanPosition.getAmountInferredNet().add(position.getOrderGroupValueNet()));
+                updatedPlanPosition.setAmountInferredGross(updatedPlanPosition.getAmountInferredGross() == null ?
+                        position.getIsOption() != null && position.getIsOption() ? position.getOrderGroupValueGross().add(position.getAmountOptionGross()) : position.getOrderGroupValueGross() :
+                        position.getIsOption() != null && position.getIsOption() ? updatedPlanPosition.getAmountInferredGross().add(position.getOrderGroupValueGross().add(position.getAmountOptionGross())) : updatedPlanPosition.getAmountInferredGross().add(position.getOrderGroupValueGross()));
+            }
             if (updatedInstitutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
-                this.updateValueOnCorrectedPositionOnSendApplication(position, updatedInstitutionPublicProcurementPlanPosition, coordinator);
+                this.updateValueOnCorrectedPositionOnSendApplication(position, updatedInstitutionPublicProcurementPlanPosition, coordinator, updatedPlanPosition);
             }
         }
     }
@@ -1564,11 +1563,11 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
         planPosition.setAmountInferredNet(planPosition.getAmountInferredNet().subtract(position.getOrderGroupValueNet()));
         planPosition.setAmountInferredGross(planPosition.getAmountInferredGross().subtract(position.getOrderGroupValueGross()));
 
-        this.updateValueOnCorrectedPositionOnSetupAmountInferredDo50(position, position.getInstitutionPublicProcurementPlanPosition(), coordinator);
+        this.updateValueOnCorrectedPositionOnSetupAmountInferredDo50(position, position.getInstitutionPublicProcurementPlanPosition(), coordinator, planPosition);
 
     }
 
-    private void updateValueOnCorrectedPositionOnSetupAmountInferredDo50(ApplicationAssortmentGroup position, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator) {
+    private void updateValueOnCorrectedPositionOnSetupAmountInferredDo50(ApplicationAssortmentGroup position, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator, PublicProcurementPosition coordinatorPlanPosition) {
         //If Institution public procurement position is corrected, update amount value also on update plan position
         if (institutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
             InstitutionPublicProcurementPlanPosition updatedInstitutionPublicProcurementPlanPosition = (InstitutionPublicProcurementPlanPosition) institutionPlanPositionRepository.findByCorrectionPlanPosition(institutionPublicProcurementPlanPosition);
@@ -1583,11 +1582,13 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                     updatedInstitutionPublicProcurementPlanPosition.getAmountInferredGross().subtract(position.getOrderGroupValueGross())
             );
 
-            updatedPlanPosition.setAmountInferredNet(updatedPlanPosition.getAmountInferredNet().subtract(position.getOrderGroupValueNet()));
-            updatedPlanPosition.setAmountInferredGross(updatedPlanPosition.getAmountInferredGross().subtract(position.getOrderGroupValueGross()));
-
+            /* Update amount inferred value if current coordinator plan position is different that updatedPlanPosition */
+            if (!coordinatorPlanPosition.equals(updatedPlanPosition)) {
+                updatedPlanPosition.setAmountInferredNet(updatedPlanPosition.getAmountInferredNet().subtract(position.getOrderGroupValueNet()));
+                updatedPlanPosition.setAmountInferredGross(updatedPlanPosition.getAmountInferredGross().subtract(position.getOrderGroupValueGross()));
+            }
             if (updatedInstitutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
-                this.updateValueOnCorrectedPositionOnSetupAmountInferredDo50(position, updatedInstitutionPublicProcurementPlanPosition, coordinator);
+                this.updateValueOnCorrectedPositionOnSetupAmountInferredDo50(position, updatedInstitutionPublicProcurementPlanPosition, coordinator, updatedPlanPosition);
             }
         }
     }
@@ -1611,10 +1612,10 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                 planPosition.getAmountRealizedGross().add(prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedGross).reduce(BigDecimal.ZERO, BigDecimal::add)));
         planService.updateInferredPositionValue(planPosition);
 
-        this.updateValueOnCorrectedPositionOnRealizedDo50(prices, position.getInstitutionPublicProcurementPlanPosition(), coordinator);
+        this.updateValueOnCorrectedPositionOnRealizedDo50(prices, position.getInstitutionPublicProcurementPlanPosition(), coordinator, planPosition);
     }
 
-    private void updateValueOnCorrectedPositionOnRealizedDo50(List<ApplicationProtocolPrice> prices, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator) {
+    private void updateValueOnCorrectedPositionOnRealizedDo50(List<ApplicationProtocolPrice> prices, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator, PublicProcurementPosition coordinatorPlanPosition) {
         //If Institution public procurement position is corrected, update amount value also on update plan position
         if (institutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
             InstitutionPublicProcurementPlanPosition updatedInstitutionPublicProcurementPlanPosition = (InstitutionPublicProcurementPlanPosition) institutionPlanPositionRepository.findByCorrectionPlanPosition(institutionPublicProcurementPlanPosition);
@@ -1629,16 +1630,18 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                     updatedInstitutionPublicProcurementPlanPosition.getAmountRealizedGross().add(prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedGross).reduce(BigDecimal.ZERO, BigDecimal::add))
             );
 
-            // Update amount realized in Coordinator Public Procurement Plan Position
-            updatedPlanPosition.setAmountRealizedNet(updatedPlanPosition.getAmountRealizedNet() == null ?
-                    prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedNet).reduce(BigDecimal.ZERO, BigDecimal::add) :
-                    updatedPlanPosition.getAmountRealizedNet().add(prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedNet).reduce(BigDecimal.ZERO, BigDecimal::add)));
-            updatedPlanPosition.setAmountRealizedGross(updatedPlanPosition.getAmountRealizedGross() == null ?
-                    prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedGross).reduce(BigDecimal.ZERO, BigDecimal::add) :
-                    updatedPlanPosition.getAmountRealizedGross().add(prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedGross).reduce(BigDecimal.ZERO, BigDecimal::add)));
-
+            /* Update amount realized value if current coordinator plan position is different that updatedPlanPosition */
+            if (!coordinatorPlanPosition.equals(updatedPlanPosition)) {
+                // Update amount realized in Coordinator Public Procurement Plan Position
+                updatedPlanPosition.setAmountRealizedNet(updatedPlanPosition.getAmountRealizedNet() == null ?
+                        prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedNet).reduce(BigDecimal.ZERO, BigDecimal::add) :
+                        updatedPlanPosition.getAmountRealizedNet().add(prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedNet).reduce(BigDecimal.ZERO, BigDecimal::add)));
+                updatedPlanPosition.setAmountRealizedGross(updatedPlanPosition.getAmountRealizedGross() == null ?
+                        prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedGross).reduce(BigDecimal.ZERO, BigDecimal::add) :
+                        updatedPlanPosition.getAmountRealizedGross().add(prices.stream().map(ApplicationProtocolPrice::getAmountContractAwardedGross).reduce(BigDecimal.ZERO, BigDecimal::add)));
+            }
             if (updatedInstitutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
-                this.updateValueOnCorrectedPositionOnRealizedDo50(prices, updatedInstitutionPublicProcurementPlanPosition, coordinator);
+                this.updateValueOnCorrectedPositionOnRealizedDo50(prices, updatedInstitutionPublicProcurementPlanPosition, coordinator, updatedPlanPosition);
             }
         }
     }
@@ -1662,11 +1665,11 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                 position.getIsOption() != null && position.getIsOption() ? planPosition.getAmountInferredGross().subtract(position.getAmountSumGross())
                         : planPosition.getAmountInferredGross().subtract(position.getOrderGroupValueGross()));
 
-        this.updateValueOnCorrectedPositionOnSendBackApplication(position, position.getInstitutionPublicProcurementPlanPosition(), coordinator);
+        this.updateValueOnCorrectedPositionOnSendBackApplication(position, position.getInstitutionPublicProcurementPlanPosition(), coordinator, planPosition);
 
     }
 
-    private void updateValueOnCorrectedPositionOnSendBackApplication(ApplicationAssortmentGroup position, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator) {
+    private void updateValueOnCorrectedPositionOnSendBackApplication(ApplicationAssortmentGroup position, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator, PublicProcurementPosition coordinatorPlanPosition) {
 
         //If Institution public procurement position is corrected, update amount value also on update plan position
         if (institutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
@@ -1685,16 +1688,18 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                             : updatedInstitutionPublicProcurementPlanPosition.getAmountInferredGross().subtract(position.getOrderGroupValueGross())
             );
 
-            // Update amount inferred in Coordinator Public Procurement Plan Position
-            updatedPlanPosition.setAmountInferredNet(
-                    position.getIsOption() != null && position.getIsOption() ? updatedPlanPosition.getAmountInferredNet().subtract(position.getAmountSumNet())
-                            : updatedPlanPosition.getAmountInferredNet().subtract(position.getOrderGroupValueNet()));
-            updatedPlanPosition.setAmountInferredGross(
-                    position.getIsOption() != null && position.getIsOption() ? updatedPlanPosition.getAmountInferredGross().subtract(position.getAmountSumGross())
-                            : updatedPlanPosition.getAmountInferredGross().subtract(position.getOrderGroupValueGross()));
-
+            /* Update amount inferred value if current coordinator plan position is different that updatedPlanPosition */
+            if (!coordinatorPlanPosition.equals(updatedPlanPosition)) {
+                // Update amount inferred in Coordinator Public Procurement Plan Position
+                updatedPlanPosition.setAmountInferredNet(
+                        position.getIsOption() != null && position.getIsOption() ? updatedPlanPosition.getAmountInferredNet().subtract(position.getAmountSumNet())
+                                : updatedPlanPosition.getAmountInferredNet().subtract(position.getOrderGroupValueNet()));
+                updatedPlanPosition.setAmountInferredGross(
+                        position.getIsOption() != null && position.getIsOption() ? updatedPlanPosition.getAmountInferredGross().subtract(position.getAmountSumGross())
+                                : updatedPlanPosition.getAmountInferredGross().subtract(position.getOrderGroupValueGross()));
+            }
             if (updatedInstitutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
-                this.updateValueOnCorrectedPositionOnSendBackApplication(position, updatedInstitutionPublicProcurementPlanPosition, coordinator);
+                this.updateValueOnCorrectedPositionOnSendBackApplication(position, updatedInstitutionPublicProcurementPlanPosition, coordinator, updatedPlanPosition);
             }
         }
     }
@@ -1808,12 +1813,12 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                 planPosition.getAmountRealizedGross().add(position.getAmountContractAwardedGross())
         );
 
-        this.updateValueOnCorrectedPositionRealizedOnConfirmRealization(position, position.getInstitutionPublicProcurementPlanPosition(), coordinator);
+        this.updateValueOnCorrectedPositionRealizedOnConfirmRealization(position, position.getInstitutionPublicProcurementPlanPosition(), coordinator, planPosition);
 
 
     }
 
-    private void updateValueOnCorrectedPositionRealizedOnConfirmRealization(ApplicationAssortmentGroup position, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator) {
+    private void updateValueOnCorrectedPositionRealizedOnConfirmRealization(ApplicationAssortmentGroup position, InstitutionPublicProcurementPlanPosition institutionPublicProcurementPlanPosition, OrganizationUnit coordinator, PublicProcurementPosition coordinatorPlanPosition) {
         //If Institution public procurement position is corrected, update amount value also on update plan position
         if (institutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
             InstitutionPublicProcurementPlanPosition updatedInstitutionPublicProcurementPlanPosition = (InstitutionPublicProcurementPlanPosition) institutionPlanPositionRepository.findByCorrectionPlanPosition(institutionPublicProcurementPlanPosition);
@@ -1833,18 +1838,20 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                             : position.getAmountContractAwardedGross()
             );
 
-            // Update amount realized in Coordinator Public Procurement Plan Position
-            updatedPlanPosition.setAmountRealizedNet(updatedPlanPosition.getAmountRealizedNet() == null ?
-                    position.getAmountContractAwardedNet() :
-                    updatedPlanPosition.getAmountRealizedNet().add(position.getAmountContractAwardedNet())
-            );
-            updatedPlanPosition.setAmountRealizedGross(updatedPlanPosition.getAmountRealizedGross() == null ?
-                    position.getAmountContractAwardedGross() :
-                    updatedPlanPosition.getAmountRealizedGross().add(position.getAmountContractAwardedGross())
-            );
-
+            /* Update amount realized value if current coordinator plan position is different that updatedPlanPosition */
+            if (!coordinatorPlanPosition.equals(updatedPlanPosition)) {
+                // Update amount realized in Coordinator Public Procurement Plan Position
+                updatedPlanPosition.setAmountRealizedNet(updatedPlanPosition.getAmountRealizedNet() == null ?
+                        position.getAmountContractAwardedNet() :
+                        updatedPlanPosition.getAmountRealizedNet().add(position.getAmountContractAwardedNet())
+                );
+                updatedPlanPosition.setAmountRealizedGross(updatedPlanPosition.getAmountRealizedGross() == null ?
+                        position.getAmountContractAwardedGross() :
+                        updatedPlanPosition.getAmountRealizedGross().add(position.getAmountContractAwardedGross())
+                );
+            }
             if (updatedInstitutionPublicProcurementPlanPosition.getStatus().equals(CoordinatorPlanPosition.PlanPositionStatus.AA)) {
-                this.updateValueOnCorrectedPositionRealizedOnConfirmRealization(position, updatedInstitutionPublicProcurementPlanPosition, coordinator);
+                this.updateValueOnCorrectedPositionRealizedOnConfirmRealization(position, updatedInstitutionPublicProcurementPlanPosition, coordinator, updatedPlanPosition);
             }
         }
     }

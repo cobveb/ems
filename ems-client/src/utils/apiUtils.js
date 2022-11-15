@@ -124,7 +124,6 @@ function updateTokens(refreshToken){
     }
     AuthApi.updateTokens(token)
     .then(response => {
-        console.log("update token")
         updateStorageTokens(response.data);
         isAlreadyFetchingAccessToken = false;
         onAccessTokenFetched(getAccessToken());

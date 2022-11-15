@@ -28,9 +28,11 @@ import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
 import pl.viola.ems.utils.Utils;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
@@ -96,12 +98,15 @@ public class InvoiceServiceImpl implements InvoiceService {
     public Invoice saveInvoice(final Invoice invoice, final String action) {
         if (action.equals("add")) {
             invoice.setCoordinator(Utils.getCurrentUser().getOrganizationUnit());
+        } else if (action.equals("edit")) {
+            invoice.setInvoicePositions(this.getInvoicePositions(invoice.getId()).stream().collect(Collectors.toSet()));
         }
 
         if (invoice.getPublicProcurementApplication() != null) {
             invoice.setPublicProcurementApplication(publicProcurementApplicationRepository.findById(invoice.getPublicProcurementApplication().getId())
                     .orElseThrow(() -> new AppException("Coordinator.publicProcurement.application.notFound", HttpStatus.NOT_FOUND)));
         }
+
         return invoiceRepository.save(invoice);
     }
 
@@ -257,11 +262,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private void setInstitutionPlanPositionAmountRealizedAdd(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition, final InvoicePosition invoicePosition) {
         institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedNet(
-                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getAmountRealizedNet().add(invoicePosition.getAmountNet())
+                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
         );
 
         institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedGross(
-                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getAmountRealizedGross().add(invoicePosition.getAmountGross())
+                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
+
         );
 
         if (Objects.equals(InstitutionPlan.InstitutionPlanStatus.ZA, institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().getStatus())) {
@@ -274,11 +280,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     private void setInstitutionPlanPositionAmountRealizedSubtract(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition, final InvoicePosition invoicePosition) {
 
         institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedNet(
-                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getAmountRealizedNet().subtract(invoicePosition.getAmountNet())
+                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
+
         );
 
         institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedGross(
-                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getAmountRealizedGross().subtract(invoicePosition.getAmountGross())
+                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
         );
 
         this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(institutionCoordinatorPlanPosition.getInstitutionPlanPosition(), invoicePosition);
@@ -337,11 +344,13 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         if (correctionInstitutionPlanPosition != null) {
             correctionInstitutionPlanPosition.setAmountRealizedNet(
-                    correctionInstitutionPlanPosition.getAmountRealizedNet().add(invoicePosition.getAmountNet())
+                    correctionInstitutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
+
             );
 
             correctionInstitutionPlanPosition.setAmountRealizedGross(
-                    correctionInstitutionPlanPosition.getAmountRealizedGross().add(invoicePosition.getAmountGross())
+                    correctionInstitutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
+
             );
 
             updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(correctionInstitutionPlanPosition, invoicePosition);
@@ -354,11 +363,13 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         if (correctionInstitutionPlanPosition != null) {
             correctionInstitutionPlanPosition.setAmountRealizedNet(
-                    correctionInstitutionPlanPosition.getAmountRealizedNet().subtract(invoicePosition.getAmountNet())
+                    correctionInstitutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
+
             );
 
             correctionInstitutionPlanPosition.setAmountRealizedGross(
-                    correctionInstitutionPlanPosition.getAmountRealizedGross().subtract(invoicePosition.getAmountGross())
+                    correctionInstitutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
+
             );
 
             updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(correctionInstitutionPlanPosition, invoicePosition);

@@ -38,6 +38,10 @@ class PlansApi {
         return Axios.put(`/api/director/coordinator/export/planPositions/${planType}/${planId}/${exportType}`, data, {responseType: 'blob'})
     }
 
+    static printPlan(planId){
+        return Axios.get(`/api/coordinator/plan/print/${planId}`, {responseType: 'blob'})
+    }
+
 }
 
 export default PlansApi;

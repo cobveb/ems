@@ -124,7 +124,7 @@ order by
                                uuid="e340dad6-ce91-45a0-b6c8-44801085af3f">
                     <property name="com.jaspersoft.studio.unit.height" value="px"/>
                     <printWhenExpression>
-                        <![CDATA[!$P{ESTIMATION_TYPE}.equals( "DO50" ) ||  !$P{ESTIMATION_TYPE}.equals( "DO130" ) ]]></printWhenExpression>
+                        <![CDATA[!$P{ESTIMATION_TYPE}.equals( "DO50" ) ||  !$P{ESTIMATION_TYPE}.equals( "DO130" )]]></printWhenExpression>
                 </reportElement>
                 <textElement verticalAlignment="Middle" markup="styled">
                     <font fontName="PDF_fonts"/>
@@ -137,7 +137,7 @@ order by
                                height="20" uuid="b89e3b51-3bda-432a-a584-ac7efb7bcf57">
                     <property name="com.jaspersoft.studio.unit.height" value="px"/>
                     <printWhenExpression>
-                        <![CDATA[!$P{ESTIMATION_TYPE}.equals( "DO50" ) ||  !$P{ESTIMATION_TYPE}.equals( "DO130" ) ]]></printWhenExpression>
+                        <![CDATA[!$P{ESTIMATION_TYPE}.equals( "DO50" ) ||  !$P{ESTIMATION_TYPE}.equals( "DO130" )]]></printWhenExpression>
                 </reportElement>
                 <textElement verticalAlignment="Middle" markup="styled">
                     <font fontName="PDF_fonts"/>

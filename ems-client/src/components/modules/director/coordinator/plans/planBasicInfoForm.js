@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Button, InputField, SearchField } from 'common/gui';
 import * as constants from 'constants/uiNames';
 import { FormTableField, FormAmountField} from 'common/form';
-import { Cancel, Description, LibraryBooks, CheckCircle, DoneAll, PriorityHigh, Visibility, Redo, FolderOpen, Info } from '@material-ui/icons/';
+import { Cancel, Description, LibraryBooks, CheckCircle, DoneAll, PriorityHigh, Visibility, Redo, FolderOpen, Info, Print } from '@material-ui/icons/';
 import PlanPositionRemarksFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planPositionRemarksFormContainer.js';
 import PlanInvestmentPositionFormContainer from 'containers/modules/accountant/coordinator/plans/forms/planInvestmentPositionFormContainer.js';
 import PlanPositionRealizationContainer from 'containers/modules/coordinator/plans/planPositionRealizationContainer';
@@ -32,7 +32,7 @@ const styles = theme => ({
     },
     containerBtn: {
         width: '100%',
-        paddingLeft: theme.spacing(35),
+        paddingLeft: theme.spacing(5),
         margin: 0,
     },
     tableWrapper: {
@@ -719,7 +719,23 @@ class PlanBasicInfoForm extends Component {
                                 alignItems="flex-start"
                                 className={classes.container}
                             >
-                                <Grid item xs={9}>
+                                <Grid item xs={1}>
+                                    <Grid
+                                        container
+                                        direction="row"
+                                        justify="flex-start"
+                                        alignItems="flex-start"
+                                    >
+                                        <Button
+                                            label={constants.BUTTON_PRINT}
+                                            icon=<Print/>
+                                            iconAlign="left"
+                                            variant="cancel"
+                                            onClick={this.props.onPrintPlan}
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <Grid item xs={10}>
                                     <Grid
                                         container
                                         direction="row"
@@ -809,7 +825,7 @@ class PlanBasicInfoForm extends Component {
                                         }
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={1}>
                                     <Grid
                                         container
                                         direction="row"

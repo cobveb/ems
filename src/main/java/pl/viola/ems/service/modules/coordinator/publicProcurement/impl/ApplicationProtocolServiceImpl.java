@@ -64,6 +64,14 @@ public class ApplicationProtocolServiceImpl implements ApplicationProtocolServic
         applications.forEach(application -> ids.add(application.getApplicationProtocol().getId()));
 
         switch (accessLevel) {
+            case "public":
+                protocols = applicationProtocolRepository.findByIdInAndStatusIn(ids, new ArrayList<>(Arrays.asList(
+                        ApplicationProtocol.ProtocolStatus.WY,
+                        ApplicationProtocol.ProtocolStatus.AZ,
+                        ApplicationProtocol.ProtocolStatus.AK,
+                        ApplicationProtocol.ProtocolStatus.ZA
+                )));
+                break;
             case "accountant":
                 protocols = applicationProtocolRepository.findByIdInAndStatusIn(ids, new ArrayList<>(Arrays.asList(
                         ApplicationProtocol.ProtocolStatus.AZ,
@@ -81,6 +89,7 @@ public class ApplicationProtocolServiceImpl implements ApplicationProtocolServic
 
         protocols.forEach(protocol -> {
             ApplicationProtocolResponse applicationProtocolResponse = new ApplicationProtocolResponse(
+                    protocol.getId(),
                     protocol.getApplication().getId(),
                     protocol.getStatus(),
                     protocol.getApplication().getOrderedObject().getContent(),

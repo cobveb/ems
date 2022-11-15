@@ -42,4 +42,6 @@ public interface InstitutionPlanService {
 
     void exportPlanSubPositionsToExcel(ExportType exportType, CoordinatorPlan.PlanType planType, Long positionId, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
 
+    boolean existsPlanToApprove(Long planId);
+
 }

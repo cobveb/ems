@@ -66,6 +66,10 @@ public class InstitutionPlan {
     private User approveUser;
 
     @ManyToOne
+    @JoinColumn(name = "economic_accept_user_id")
+    private User economicAcceptUser;
+
+    @ManyToOne
     @JoinColumn(name = "chief_accept_user_id")
     private User chiefAcceptUser;
 

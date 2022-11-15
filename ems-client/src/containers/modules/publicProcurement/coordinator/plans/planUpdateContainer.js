@@ -118,6 +118,17 @@ class PlanUpdateContainer extends Component {
             .catch(error => {});
         }
     }
+
+    handlePrintPlan = () =>{
+        this.props.loading(true);
+        PlansApi.printPlan(this.state.initData.id)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
     componentDidMount() {
         if (this.props.action !== 'add'){
             this.handleGetPlanPositions();
@@ -137,6 +148,7 @@ class PlanUpdateContainer extends Component {
                 onSendBack={this.handleSendBack}
                 onClose={handleClose}
                 onExcelExport={this.handleExcelExport}
+                onPrintPlan={this.handlePrintPlan}
                 vats={vats}
                 modes={modes}
                 levelAccess={this.props.levelAccess}

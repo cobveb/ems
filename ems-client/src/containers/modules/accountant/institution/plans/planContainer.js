@@ -15,6 +15,7 @@ class PlanContainer extends Component {
             planPositions:[],
         },
         disableWithdraw: true,
+        existsPlanToApprove: true,
         statuses: getCoordinatorPlanPositionsStatuses(),
     }
 
@@ -26,6 +27,15 @@ class PlanContainer extends Component {
         .catch(error =>{});
     }
 
+    existsPlanToApprove = () => {
+        DirectorPlansApi.existsPlanToApprove(this.props.initialValues.id)
+        .then(response =>{
+            this.setState({ existsPlanToApprove : response.data.data})
+        })
+        .catch(error =>{});
+
+    }
+
     handleGetPlan(){
         this.props.loading(true);
         PlansApi.getPlan(this.props.initialValues.id)
@@ -35,18 +45,24 @@ class PlanContainer extends Component {
                 initData = response.data.data;
                 initData.status = findSelectFieldPosition(this.props.statuses, initData.status);
                 initData.type = findSelectFieldPosition(this.props.types, response.data.data.type);
-                if(initData.isCorrected){
-                    initData.planPositions.map(position => (
-                        Object.assign(position,
-                            {
-                                status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
-                            }
-                        )
-                    ))
-                }
+                initData.planPositions.map(position => (
+                    Object.assign(position,
+                        {
+                            status: position.status = findSelectFieldPosition(this.state.statuses, position.status),
+                        }
+                    )
+                ))
                 return {initData};
             });
-            this.checkDisableWithdraw();
+            if(!this.props.initialValues.isCorrected){
+                this.checkDisableWithdraw();
+            }
+            if(this.props.levelAccess === 'director' &&
+                ['AK','AE'].includes(this.props.initialValues.status.code) &&
+                    !this.props.initialValues.isCorrected
+            ){
+                this.existsPlanToApprove();
+            }
             this.props.loading(false)
         })
         .catch(error =>{
@@ -61,12 +77,7 @@ class PlanContainer extends Component {
     setDataOnApprove = (data) =>{
         this.setState(prevState => {
             let initData = {...prevState.initData};
-            initData.status = data.status;
-            if(this.props.levelAccess === "accountant"){
-                initData.approveUser = data.approveUser;
-            } else if (this.props.levelAccess === "director"){
-                initData.chiefAcceptUser = data.chiefAcceptUser;
-            }
+            initData.status = findSelectFieldPosition(this.props.statuses, data.status);
             return {initData};
         });
     }
@@ -74,7 +85,7 @@ class PlanContainer extends Component {
     setDataOnWithdraw = (data) =>{
         this.setState(prevState => {
             let initData = {...prevState.initData};
-            initData.status = data.status;
+            initData.status = findSelectFieldPosition(this.props.statuses, data.status);
             initData.approveUser = data.approveUser;
             return {initData};
         });
@@ -85,6 +96,7 @@ class PlanContainer extends Component {
         PlansApi.approvePlan(this.props.initialValues.id)
         .then(response => {
             this.setDataOnApprove(response.data.data);
+            this.props.onClose(this.state.initData);
             this.props.loading(false);
         })
         .catch(error =>{
@@ -97,6 +109,20 @@ class PlanContainer extends Component {
         DirectorPlansApi.approvePlan(this.props.initialValues.id)
         .then(response => {
             this.setDataOnApprove(response.data.data);
+            this.props.onClose(this.state.initData);
+            this.props.loading(false);
+        })
+        .catch(error =>{
+            this.props.loading(false)
+        })
+    }
+
+    handleEconomicApprovePlan = () => {
+        this.props.loading(true);
+        DirectorPlansApi.approveEconomicPlan(this.props.initialValues.id)
+        .then(response => {
+            this.setDataOnApprove(response.data.data);
+            this.props.onClose(this.state.initData);
             this.props.loading(false);
         })
         .catch(error =>{
@@ -155,14 +181,16 @@ class PlanContainer extends Component {
     }
     render(){
         const {levelAccess, clearError} = this.props;
-        const {initData, disableWithdraw} = this.state;
+        const {initData, disableWithdraw, existsPlanToApprove} = this.state;
         return(
             <Plan
                 initialValues={initData}
                 levelAccess={levelAccess}
                 disableWithdraw={disableWithdraw}
+                existsPlanToApprove={existsPlanToApprove}
                 onClosePosition={this.handleClosePosition}
                 onAccountantApprovePlan={this.handleAccountantApprovePlan}
+                onEconomicApprovePlan={this.handleEconomicApprovePlan}
                 onChiefApprovePlan={this.handleChiefApprovePlan}
                 onAccountantWithdrawPlan={this.handleAccountantWithdrawPlan}
                 onChiefWithdrawPlan={this.handleChiefWithdrawPlan}

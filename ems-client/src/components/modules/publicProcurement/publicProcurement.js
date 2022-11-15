@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PropTypes from 'prop-types';
-import { LibraryBooks, Style, HowToReg, Timeline, Description, LocationCity, DynamicFeed } from '@material-ui/icons/';
+import { LibraryBooks, Style, HowToReg, Timeline, Description, LocationCity, DynamicFeed, Assignment } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames'
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
 import PlansContainer from 'containers/modules/publicProcurement/coordinator/plans/plansContainer';
 import PlansUpdatesContainer from 'containers/modules/publicProcurement/coordinator/plans/plansUpdatesContainer';
 import ApplicationsContainer from 'containers/modules/publicProcurement/coordinator/applications/applicationsContainer';
+import ProtocolsContainer from 'containers/modules/publicProcurement/coordinator/applications/protocolsContainer';
 import DictionariesContainer from 'containers/modules/publicProcurement/dictionaries/dictionariesContainer';
 import InstitutionPlansContainer from 'containers/modules/publicProcurement/institution/plans/plansContainer';
 
@@ -56,6 +57,12 @@ class PublicProcurement extends Component {
                         icon: <Description />
                     },
                     {
+                        code: 'protocols',
+                        name: constants.ACCOUNTANT_SUBMENU_COORDINATOR_PUBLIC_PROTOCOLS,
+                        path: '/modules/public/coordinator/protocols',
+                        icon: <Assignment />
+                    },
+                    {
                         code: 'updates',
                         name: constants.PUBLIC_SUBMENU_COORDINATOR_UPDATES,
                         path: '/modules/public/coordinator/plans/updates',
@@ -99,6 +106,14 @@ class PublicProcurement extends Component {
         )
     }
 
+    showPublicProcurementProtocol = () =>{
+        return(
+            <ProtocolsContainer
+                levelAccess="public"
+            />
+        )
+    }
+
 
     render(){
         const { classes } = this.props;
@@ -116,6 +131,7 @@ class PublicProcurement extends Component {
                                     <PrivateRoute exact path='/modules/public/coordinator/plans' component={PlansContainer}/>
                                     <PrivateRoute exact path='/modules/public/coordinator/plans/updates' component={PlansUpdatesContainer}/>
                                     <PrivateRoute exact path='/modules/public/coordinator/applications' component={ApplicationsContainer}/>
+                                    <PrivateRoute exact path='/modules/public/coordinator/protocols' component={this.showPublicProcurementProtocol}/>
                                     <PrivateRoute exact path='/modules/public/institution/plans' component={this.showInstitutionPlans}/>
                                     <PrivateRoute exact path='/modules/public/dictionaries' component={DictionariesContainer}/>
                                 </Switch>

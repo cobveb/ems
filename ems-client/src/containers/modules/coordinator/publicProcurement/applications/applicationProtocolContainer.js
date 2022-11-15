@@ -5,7 +5,7 @@ import { loading, setError } from 'actions/';
 import PropTypes from 'prop-types';
 import ApplicationProtocolFormContainer from 'containers/modules/coordinator/publicProcurement/applications/forms/applicationProtocolFormContainer';
 import ApplicationProtocolApi from 'api/modules/coordinator/publicProcurement/applicationProtocolApi';
-import { findIndexElement, findSelectFieldPosition, generateExportLink } from 'utils/';
+import { findIndexElement, findSelectFieldPosition, generateExportLink, getPublicProcurementProtocolStatuses } from 'utils/';
 
 class ApplicationProtocolContainer extends Component {
     state = {
@@ -23,13 +23,27 @@ class ApplicationProtocolContainer extends Component {
 
     handleProtocolDetails = () =>{
         this.props.loading(true);
-        ApplicationProtocolApi.getProtocolByApplication(this.props.initialValues.id)
+        /* If access from application menu get details by initialValues ID.
+           If access from protocol menu get details by initialValues APPLICATION ID.
+        */
+        ApplicationProtocolApi.getProtocolByApplication(this.props.levelAccess === undefined ?
+            this.props.initialValues.id : this.props.initialValues.applicationId === undefined ?
+                this.props.initialValues.id : this.props.initialValues.applicationId)
         .then(response => {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
+                initData.applicationDetails.id = this.props.initialValues.id;
                 initData.applicationDetails.number = this.props.initialValues.number;
                 initData.applicationDetails.orderedObject = this.props.initialValues.orderedObject;
+                initData.applicationCoordinator = this.props.initialValues.applicationCoordinator;
+                initData.number = this.props.initialValues.number;
                 Object.assign(initData, response.data.data);
+                if(this.props.levelAccess !== undefined){
+                    initData.status = findSelectFieldPosition(getPublicProcurementProtocolStatuses(), response.data.data.status);
+                } else if (response.data.data !== null){
+                    /* Setup protocol status in coordinator module if protocol is saved */
+                    initData.status = findSelectFieldPosition(getPublicProcurementProtocolStatuses(), response.data.data.status);
+                }
                 if(initData.contractor === undefined){
                     initData.contractor = null;
                 }
@@ -58,6 +72,7 @@ class ApplicationProtocolContainer extends Component {
     handleSubmit = (values) => {
         this.props.loading(true);
         const payload = JSON.parse(JSON.stringify(values));
+        payload.status = payload.status !== undefined ? payload.status.code : "ZP";
         payload.prices.map(price =>{
             Object.assign(price,
                 {
@@ -78,11 +93,12 @@ class ApplicationProtocolContainer extends Component {
             )
             return price;
         })
-        ApplicationProtocolApi.saveProtocolByApplication(payload, this.props.initialValues.id)
+        ApplicationProtocolApi.saveProtocolByApplication(payload, this.state.initData.applicationDetails.id)
         .then(response => {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
                 Object.assign(initData, response.data.data);
+                initData.status = findSelectFieldPosition(getPublicProcurementProtocolStatuses(), response.data.data.status);
                 if(initData.prices.length > 0){
                     initData.prices.map(price => {
                         return Object.assign(price,
@@ -116,6 +132,7 @@ class ApplicationProtocolContainer extends Component {
             }
         }
         const payload = JSON.parse(JSON.stringify(protocol));
+        payload.status = payload.status.code;
         payload.prices.map(price =>{
             Object.assign(price,
                 {
@@ -136,11 +153,12 @@ class ApplicationProtocolContainer extends Component {
             )
             return price;
         })
-        ApplicationProtocolApi.saveProtocolByApplication(payload, this.props.initialValues.id)
+        ApplicationProtocolApi.saveProtocolByApplication(payload, this.state.initData.applicationDetails.id)
         .then(response => {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
                 Object.assign(initData, response.data.data);
+                initData.status = findSelectFieldPosition(getPublicProcurementProtocolStatuses(), response.data.data.status);
                 if(initData.prices.length > 0){
                     initData.prices.map(price => {
                         return Object.assign(price,
@@ -190,22 +208,6 @@ class ApplicationProtocolContainer extends Component {
                 let initData = {...prevState.initData};
                 initData.status = "WY";
                 initData.sendUser = response.data.data.sendUser;
-//                Object.assign(initData, response.data.data);
-//                if(initData.prices.length > 0){
-//                    initData.prices.map(price => {
-//                        return Object.assign(price,
-//                            {
-//                                vat: price.vat = findSelectFieldPosition(this.props.vats, price.vat),
-//                                applicationAssortmentGroup: price.applicationAssortmentGroup = Object.assign(price.applicationAssortmentGroup,
-//                                    {
-//                                        name: price.applicationAssortmentGroup.applicationProcurementPlanPosition.name,
-//                                        vat: findSelectFieldPosition(this.props.vats, price.applicationAssortmentGroup.vat),
-//                                    }
-//                                )
-//                            }
-//                        )
-//                    })
-//                }
                 return {initData}
             })
         this.props.loading(false);
@@ -226,19 +228,18 @@ class ApplicationProtocolContainer extends Component {
     }
 
     handleApproveProtocol = (approveLevel) => {
-        console.log(approveLevel)
         this.props.loading(true);
         switch(approveLevel){
             case "public":
-                console.log(approveLevel)
                 ApplicationProtocolApi.approvePublic(this.state.initData.id)
                 .then(response =>{
                     this.setState(prevState => {
                         const initData = {...prevState.initData};
-                        initData.status = "AZ";
+                        initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
                         initData.publicAcceptUser = response.data.data.publicAcceptUser;
                         return {initData};
                     });
+                    this.props.onClose(this.state.initData, "approve");
                     this.props.loading(false)
                 })
                 .catch(error =>{});
@@ -248,10 +249,11 @@ class ApplicationProtocolContainer extends Component {
                 .then(response =>{
                     this.setState(prevState => {
                         const initData = {...prevState.initData};
-                        initData.status = "AK";
+                        initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
                         initData.accountantAcceptUser = response.data.data.accountantAcceptUser;
                         return {initData};
                     });
+                    this.props.onClose(this.state.initData, "approve");
                     this.props.loading(false)
                 })
                 .catch(error =>{});
@@ -261,10 +263,11 @@ class ApplicationProtocolContainer extends Component {
                 .then(response =>{
                     this.setState(prevState => {
                         const initData = {...prevState.initData};
-                        initData.status = "ZA";
+                        initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
                         initData.chiefAcceptUser = response.data.data.chiefAcceptUser;
                         return {initData};
                     });
+                    this.props.onClose(this.state.initData, "approve");
                     this.props.loading(false)
                 })
                 .catch(error =>{});
@@ -279,12 +282,19 @@ class ApplicationProtocolContainer extends Component {
         .then(response => {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
-                initData.status = "ZP";
+                initData.status = findSelectFieldPosition(this.props.statuses, response.data.data);
                 return {initData}
             })
+            if(this.props.levelAccess !== 'coordinator'){
+                this.props.onClose(this.state.initData, "sendBack");
+            }
             this.props.loading(false);
         })
         .catch(error =>{})
+    }
+
+    handleClose = () => {
+        this.props.onClose(this.state.initData);
     }
 
     componentDidMount(){
@@ -294,7 +304,6 @@ class ApplicationProtocolContainer extends Component {
     render(){
         const { contractors, assortmentGroups, vats, applicationStatus, applicationEstimationType, levelAccess } = this.props;
         const { initData } = this.state;
-
         return(
             <ApplicationProtocolFormContainer
                 initialValues={initData}
@@ -311,7 +320,7 @@ class ApplicationProtocolContainer extends Component {
                 onSendBack={this.handleSendBack}
                 onApprove={this.handleApproveProtocol}
                 onPrint={this.handlePrintProtocol}
-                onClose={this.props.onClose}
+                onClose={this.handleClose}
             />
         )
     }

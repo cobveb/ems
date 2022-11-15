@@ -291,9 +291,6 @@ public class PlanServiceImpl implements PlanService {
             //If it is not an update of the coordinator's plan, update the institution's plan
             if (plan.getCorrectionPlan() == null) {
                 institutionPlanService.updateInstitutionPlan(plan, newStatus.equals(CoordinatorPlan.PlanStatus.WY) ? "send" : "withdraw");
-            } else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
-                /* If updated plan is financial then update institution plan  */
-//                institutionPlanService.correctInstitutionPlan(plan, newStatus.equals(CoordinatorPlan.PlanStatus.WY) ? "send" : "withdraw");
             }
         }
         return plan;
@@ -346,9 +343,7 @@ public class PlanServiceImpl implements PlanService {
             }
 
         } else {
-            plan.getPositions().forEach(position -> {
-                position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZP);
-            });
+            plan.getPositions().forEach(position -> position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZP));
         }
 
         coordinatorPlanRepository.save(plan);
@@ -357,10 +352,6 @@ public class PlanServiceImpl implements PlanService {
             if (plan.getCorrectionPlan() == null) {
                 institutionPlanService.updateInstitutionPlan(plan, "return");
             }
-//            else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
-//                /* If updated plan is financial then update institution plan  */
-//                institutionPlanService.correctInstitutionPlan(plan, "return");
-//            }
         }
         return messageSource.getMessage("Coordinator.plan.returnMsg", null, Locale.getDefault());
     }
@@ -403,9 +394,6 @@ public class PlanServiceImpl implements PlanService {
                     if (plan.getCorrectionPlan() == null) {
                         institutionPlanService.updateInstitutionPlan(plan, "approveDirector");
                     }
-//                    else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
-//                        institutionPlanService.correctInstitutionPlan(plan, "approveDirector");
-//                    }
                 }
                 return coordinatorPlanRepository.save(plan);
             case ECONOMIC:
@@ -415,19 +403,18 @@ public class PlanServiceImpl implements PlanService {
                     if (plan.getCorrectionPlan() == null) {
                         institutionPlanService.updateInstitutionPlan(plan, "approveEconomic");
                     }
-//                    else if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
-//                        institutionPlanService.correctInstitutionPlan(plan, "approveEconomic");
-//                    }
                 }
                 return coordinatorPlanRepository.save(plan);
             case CHIEF:
                 if (plan.getType().equals(CoordinatorPlan.PlanType.FIN)) {
-                    plan.setStatus(CoordinatorPlan.PlanStatus.AN);
                     if (plan.getCorrectionPlan() == null) {
                         plan.getPositions().forEach(position -> position.setStatus(CoordinatorPlanPosition.PlanPositionStatus.ZA));
+                        plan.setStatus(CoordinatorPlan.PlanStatus.AN);
                         institutionPlanService.updateInstitutionPlan(plan, "approveChief");
                     } else {
                         /* Update institution plan on accept coordinator plan */
+                        plan.setStatus(CoordinatorPlan.PlanStatus.ZA);
+                        plan.setChiefAcceptUser(user);
                         institutionPlanService.correctInstitutionPlan(plan, "approveChief");
                     }
                 } else {

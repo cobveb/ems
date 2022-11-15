@@ -6,6 +6,7 @@ import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
 import { Delete, Add, Edit } from '@material-ui/icons/';
 import { Button, Table, SearchField, DatePicker } from 'common/gui';
 import InvoiceContainer from 'containers/modules/coordinator/realization/invoices/invoiceContainer';
+import {escapeSpecialCharacters} from 'utils/';
 
 const styles = theme => ({
     root: {
@@ -68,7 +69,7 @@ class Invoices extends Component {
     };
 
     handleSearch = (event) => {
-        this.setState({[event.target.name]: event.target.value})
+        this.setState({[event.target.name]: escapeSpecialCharacters(event.target.value)})
     }
 
     handleDataChange = (id) => (date) => {

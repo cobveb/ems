@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { Button } from 'common/gui';
-import { Add, Edit, Cancel, Close } from '@material-ui/icons/';
+import { Add, Cancel, Close } from '@material-ui/icons/';
 import { withStyles, Dialog, Grid, Typography, Divider, DialogTitle, DialogActions, DialogContent, IconButton} from '@material-ui/core';
 import { FormTableTransferListField, FormDateField } from 'common/form';
 
@@ -39,7 +39,7 @@ class CostYearForm extends Component {
     }
 
     render(){
-        const { classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, action, initialValues, coordinators } = this.props;
+        const { classes, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, coordinators } = this.props;
         const { transferListHead } = this.state;
         return(
             <>

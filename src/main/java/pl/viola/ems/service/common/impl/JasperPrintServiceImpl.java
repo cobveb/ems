@@ -20,8 +20,9 @@ public class JasperPrintServiceImpl implements JasperPrintService {
 
     @Override
     public JasperPrint exportPdf(final Long mainId, final String pathToReport) throws SQLException, FileNotFoundException, JRException {
+        Connection connection = dataSource.getConnection();
         try {
-            Connection connection = dataSource.getConnection();
+
             InputStream reportStream = getClass().getResourceAsStream(pathToReport);
             JasperReport jasperReport = JasperCompileManager.compileReport(reportStream);
 
@@ -33,6 +34,7 @@ public class JasperPrintServiceImpl implements JasperPrintService {
             return jasperPrint;
         } catch (Exception exception) {
             exception.printStackTrace();
+            connection.close();
             return null;
         }
     }

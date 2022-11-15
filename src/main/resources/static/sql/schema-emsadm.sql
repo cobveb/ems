@@ -176,10 +176,12 @@ create TABLE emsadm.acc_institution_plans(
     status VARCHAR(2) NOT NULL,
     plan_type VARCHAR(3) NOT NULL,
     plan_approve_user_id NUMBER(19,0),
+    economic_accept_user_id NUMBER(19,0),
     chief_accept_user_id NUMBER(19,0),
     plan_correction_id NUMBER(19,0),
     CONSTRAINT acc_institution_plan_pk PRIMARY KEY(id),
     CONSTRAINT acc_inst_plan_approve_usr_fk FOREIGN KEY (plan_approve_user_id) REFERENCES emsarch.users(id),
+    CONSTRAINT acc_inst_plan_economic_usr_fk FOREIGN KEY (economic_accept_user_id) REFERENCES emsarch.users(id),
     CONSTRAINT acc_inst_plan_chief_usr_fk FOREIGN KEY (chief_accept_user_id) REFERENCES emsarch.users(id),
     CONSTRAINT acc_inst_correction_plan_fk FOREIGN KEY (plan_correction_id) REFERENCES emsadm.acc_institution_plans(id)
 )

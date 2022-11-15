@@ -82,7 +82,6 @@ class InvoicesContainer extends Component {
                 contracts={this.state.contracts}
                 financialPlanPositions={this.state.financialPlanPositions}
                 investmentPlanPositions={this.state.investmentPlanPositions}
-                coordinators={this.state.coordinators}
                 error={error}
                 clearError={clearError}
                 onChangeYear={this.handleChangeYear}

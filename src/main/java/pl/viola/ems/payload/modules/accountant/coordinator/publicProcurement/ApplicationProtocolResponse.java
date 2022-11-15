@@ -14,6 +14,8 @@ public class ApplicationProtocolResponse {
 
     private Long id;
 
+    private Long applicationId;
+
     private ApplicationProtocol.ProtocolStatus status;
 
     //Application ordered object

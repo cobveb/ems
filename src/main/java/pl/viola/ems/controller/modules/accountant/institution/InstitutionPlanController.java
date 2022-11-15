@@ -99,7 +99,7 @@ public class InstitutionPlanController {
     }
 
     @GetMapping("/checkDisableWithdraw/{planId}")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('1034')")
+    @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('1034', '1025')")
     public ApiResponse checkDisableWithdraw(@PathVariable Long planId) {
         return new ApiResponse(HttpStatus.FOUND, institutionPlanService.disableWithdrawInstitutionPlan(planId));
     }
