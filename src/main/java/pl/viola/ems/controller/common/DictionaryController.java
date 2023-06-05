@@ -27,21 +27,24 @@ public class DictionaryController {
         return new ApiResponse(HttpStatus.FOUND, dictionaryService.findById(code));
     }
 
+    @GetMapping("/getDictItems/{code}")
+    public ApiResponse getDictionaryActiveItems(@PathVariable String code) {
+        return new ApiResponse(HttpStatus.FOUND, dictionaryService.findActiveItemsByDictionary(code));
+    }
+
     @GetMapping("/getDictModule/{module}")
     public ApiResponse getDictionaryByModule(@PathVariable String module) {
         return new ApiResponse(HttpStatus.FOUND, dictionaryService.findByModule(module));
     }
 
     @PutMapping("/{dictCode}/saveDictItem")
-    //TODO: dodać właściwe uprawnienie
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('2013')")
+    @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('1033','2116')")
     public ApiResponse saveDictionaryItem(@RequestBody @Valid DictionaryItem dictionaryItem, @PathVariable String dictCode) {
         return new ApiResponse(HttpStatus.CREATED, dictionaryService.saveDictionaryItem(dictionaryItem, dictCode));
     }
 
     @DeleteMapping("/deleteItem/{itemId}")
-    //TODO: dodać właściwe uprawnienie
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('3022')")
+    @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('2033','3116')")
     public ApiResponse deleteItem(@PathVariable Long itemId) {
         return new ApiResponse(HttpStatus.ACCEPTED, dictionaryService.deleteDictionaryItem(itemId));
     }

@@ -219,16 +219,22 @@ class PlanBasicInfoForm extends Component {
     }
 
     handleSubmitPosition = (values, action) =>{
+        this.props.onSubmitPlanPosition(values, this.state.positionAction);
         if(this.props.initialValues.type.code === 'PZP'){
-            this.setState({
-                openPositionDetails: !this.state.openPositionDetails,
-                selected: [],
-                positionAction: '',
-                notExistCorrectedPositions: (((values.correctionPlanPosition === undefined && values.amountAwardedGross !== undefined)
-                    || values.amountAwardedGross !== values.correctionPlanPosition) ? false : true),
+            this.setState(prevState =>{
+                let selected = [...prevState.selected];
+                let openPositionDetails = {...prevState.openPositionDetails};
+                let positionAction = prevState.positionAction;
+                let notExistCorrectedPositions = {...prevState.notExistCorrectedPositions}
+                selected[0] = values;
+                if(positionAction ==='add'){
+                    positionAction = 'correct';
+                }
+                notExistCorrectedPositions = (((values.correctionPlanPosition === undefined && values.amountAwardedGross !== undefined)
+                    || values.amountAwardedGross !== values.correctionPlanPosition) ? false : true);
+                return {selected, openPositionDetails, positionAction, notExistCorrectedPositions}
             });
         }
-        this.props.onSubmitPlanPosition(values, this.state.positionAction);
     }
 
     handleSubmitSubPosition = (values, action) =>{
@@ -432,9 +438,7 @@ class PlanBasicInfoForm extends Component {
 
     handleCloseDetails = () => {
         this.setState({openPositionDetails: !this.state.openPositionDetails, selected: [], positionAction: '',});
-        if(this.props.initialValues.type.code !== "PZP"){
-            this.props.setNewPositionToNull();
-        }
+        this.props.setNewPositionToNull();
     };
 
     handleOpenRealization = () => {
@@ -520,6 +524,7 @@ class PlanBasicInfoForm extends Component {
         if(this.state.selected.length > 0 && this.state.positionAction === 'correct'){
             const index = findIndexElement(this.state.selected[0], this.props.initialValues.positions, "positionId");
             if(index !== null){
+                /* Update selected position on action correct exist position */
                 if(this.props.initialValues.positions[index] !== this.state.selected[0] ){
                     this.setState(prevState =>{
                         let positions = [...prevState.positions];
@@ -531,6 +536,13 @@ class PlanBasicInfoForm extends Component {
                         return {positions, selected, notExistCorrectedPositions}
                    })
                 }
+            } else if(this.props.newPosition !== null && this.state.selected[0] !== this.props.newPosition){
+                /* Update selected position on action add new position */
+                this.setState(prevState =>{
+                    const selected = [...prevState.selected];
+                    selected[0] = this.props.newPosition;
+                    return {selected}
+               })
             }
         }
 

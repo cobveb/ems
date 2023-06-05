@@ -1,7 +1,6 @@
 package pl.viola.ems.model.modules.accountant;
 
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -29,7 +28,7 @@ import java.util.Set;
                 }
         )
 })
-@DynamicUpdate()
+
 public class CostType {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "costTypeSequence")

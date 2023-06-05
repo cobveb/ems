@@ -23,7 +23,7 @@ class PlansContainer extends Component {
 
     handleGetPlans(){
         this.props.loading(true);
-        PlansApi.getPlans()
+        PlansApi.getPlans(new Date().getFullYear())
         .then(response =>{
             this.setState(prevState => {
                 let plans = [...prevState.plans];
@@ -42,6 +42,31 @@ class PlansContainer extends Component {
         })
         .catch(error =>{});
     }
+
+    handleChangeYear = (year) => {
+        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
+            this.props.loading(true);
+            PlansApi.getPlans(year instanceof Date ? year.getFullYear() : 0)
+            .then(response =>{
+                this.setState(prevState => {
+                    let plans = [...prevState.plans];
+                    plans = response.data.data;
+                    plans.map(plan => (
+                        Object.assign(plan,
+                            {
+                                type: plan.type = findSelectFieldPosition(this.state.types, plan.type),
+                                status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
+                            }
+                        )
+                    ))
+                    return {plans};
+                });
+                this.props.loading(false);
+            })
+            .catch(error => {})
+        }
+    }
+
 
     handleExcelExport = (exportType, headRow) =>{
         this.props.loading(true);
@@ -73,6 +98,7 @@ class PlansContainer extends Component {
                 types={types}
                 statuses={statuses}
                 error={error}
+                onChangeYear={this.handleChangeYear}
                 onClose={this.handleUpdateOnCloseDetails}
                 onExcelExport={this.handleExcelExport}
             />

@@ -8,10 +8,10 @@ import pl.viola.ems.payload.modules.coordinator.application.ApplicationProtocolP
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Set;
 
 public interface ApplicationProtocolService {
-    List<ApplicationProtocolResponse> getProtocolsByAccessLevel(String accessLevel);
+    Set<ApplicationProtocolResponse> getProtocolsByAccessLevel(int year, String accessLevel);
 
     ApplicationProtocolPayload getProtocolByApplication(Long applicationId);
 

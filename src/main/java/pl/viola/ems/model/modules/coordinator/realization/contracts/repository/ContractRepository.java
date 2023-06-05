@@ -13,5 +13,7 @@ import java.util.Set;
 public interface ContractRepository extends JpaRepository<Contract, Long> {
     Set<Contract> findByCoordinatorIn(List<OrganizationUnit> coordinators);
 
-    List<Contract> findBySigningDateBetween(Date signingDateFrom, Date signingDateTo);
+    Set<Contract> findBySigningDateBetweenAndCoordinatorIn(Date signingDateFrom, Date signingDateTo, List<OrganizationUnit> coordinators);
+
+    Set<Contract> findBySigningDateBetween(Date signingDateFrom, Date signingDateTo);
 }

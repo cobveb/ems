@@ -23,8 +23,9 @@ class ApplicationProtocolContainer extends Component {
 
     handleProtocolDetails = () =>{
         this.props.loading(true);
-        /* If access from application menu get details by initialValues ID.
-           If access from protocol menu get details by initialValues APPLICATION ID.
+        /*
+            If access from application menu get details by initialValues ID.
+            If access from protocol menu get details by initialValues APPLICATION ID.
         */
         ApplicationProtocolApi.getProtocolByApplication(this.props.levelAccess === undefined ?
             this.props.initialValues.id : this.props.initialValues.applicationId === undefined ?
@@ -32,13 +33,15 @@ class ApplicationProtocolContainer extends Component {
         .then(response => {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
-                initData.applicationDetails.id = this.props.initialValues.id;
+                initData.applicationDetails.id = this.props.initialValues.applicationId === undefined ? this.props.initialValues.id : this.props.initialValues.applicationId;
                 initData.applicationDetails.number = this.props.initialValues.number;
                 initData.applicationDetails.orderedObject = this.props.initialValues.orderedObject;
                 initData.applicationCoordinator = this.props.initialValues.applicationCoordinator;
                 initData.number = this.props.initialValues.number;
+                initData.applicationId = this.props.initialValues.applicationId;
+                initData.orderedObject = this.props.initialValues.orderedObject;
                 Object.assign(initData, response.data.data);
-                if(this.props.levelAccess !== undefined){
+                if(this.props.levelAccess !== undefined && response.data.data !== null){
                     initData.status = findSelectFieldPosition(getPublicProcurementProtocolStatuses(), response.data.data.status);
                 } else if (response.data.data !== null){
                     /* Setup protocol status in coordinator module if protocol is saved */
@@ -235,7 +238,7 @@ class ApplicationProtocolContainer extends Component {
                 .then(response =>{
                     this.setState(prevState => {
                         const initData = {...prevState.initData};
-                        initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
+                        initData.status = findSelectFieldPosition(getPublicProcurementProtocolStatuses(), response.data.data.status);
                         initData.publicAcceptUser = response.data.data.publicAcceptUser;
                         return {initData};
                     });
@@ -249,7 +252,7 @@ class ApplicationProtocolContainer extends Component {
                 .then(response =>{
                     this.setState(prevState => {
                         const initData = {...prevState.initData};
-                        initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
+                        initData.status = findSelectFieldPosition(getPublicProcurementProtocolStatuses(), response.data.data.status);
                         initData.accountantAcceptUser = response.data.data.accountantAcceptUser;
                         return {initData};
                     });
@@ -263,7 +266,7 @@ class ApplicationProtocolContainer extends Component {
                 .then(response =>{
                     this.setState(prevState => {
                         const initData = {...prevState.initData};
-                        initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
+                        initData.status = findSelectFieldPosition(getPublicProcurementProtocolStatuses(), response.data.data.status);
                         initData.chiefAcceptUser = response.data.data.chiefAcceptUser;
                         return {initData};
                     });
@@ -294,6 +297,7 @@ class ApplicationProtocolContainer extends Component {
     }
 
     handleClose = () => {
+        console.log(this.state.initData)
         this.props.onClose(this.state.initData);
     }
 

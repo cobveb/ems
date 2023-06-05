@@ -37,7 +37,7 @@ class Applications extends Component {
             isCombined: false,
             groups: []
         },
-        year: null,
+        year: new Date(),
         estimationType: '',
         mode: '',
         number: '',
@@ -263,8 +263,7 @@ class Applications extends Component {
                 rows: this.filter(),
                 applications: this.setupApplications(),
             });
-        } else if (this.state.year !== prevState.year ||
-            this.state.status !== prevState.status ||
+        } else if (this.state.status !== prevState.status ||
             this.state.mode !== prevState.mode ||
             this.state.orderedObject !== prevState.orderedObject ||
             this.state.estimationType !== prevState.estimationType ||
@@ -273,6 +272,8 @@ class Applications extends Component {
             this.setState({
              rows: this.filter(),
             })
+        } else if (this.state.year !== prevState.year){
+            this.props.onChangeYear(this.state.year);
         }
     }
 

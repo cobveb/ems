@@ -44,7 +44,7 @@ class ApplicationsContainer extends Component {
 
     handleGetApplications = () => {
         this.props.loading(true);
-        PublicProcurementApplicationApi.getApplications()
+        PublicProcurementApplicationApi.getApplications(new Date().getFullYear())
         .then(response =>{
             this.setState(prevState => {
                 let applications = [...prevState.applications];
@@ -165,6 +165,31 @@ class ApplicationsContainer extends Component {
         .catch(error => {});
     }
 
+    handleChangeYear = (year) => {
+        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
+            this.props.loading(true);
+            PublicProcurementApplicationApi.getApplications(year instanceof Date ? year.getFullYear() : 0)
+            .then(response =>{
+                this.setState(prevState => {
+                    let applications = [...prevState.applications];
+                    applications = response.data.data;
+                    applications.map(application => (
+                        Object.assign(application,
+                            {
+                                status: application.status = findSelectFieldPosition(this.state.statuses, application.status),
+                                mode: application.mode = findSelectFieldPosition(this.state.modes, application.mode),
+                                estimationType: application.estimationType = findSelectFieldPosition(this.state.estimationTypes, application.estimationType),
+                            }
+                        )
+                    ))
+                    return {applications};
+                });
+                this.props.loading(false);
+            })
+            .catch(error => {})
+        }
+    }
+
     componentDidMount(){
         this.handleGetOrderProcedures();
         this.handleGetReasonsNotRealisedApplication();
@@ -191,6 +216,7 @@ class ApplicationsContainer extends Component {
                 loading={loading}
                 error={error}
                 clearError={clearError}
+                onChangeYear={this.handleChangeYear}
                 onApproveApplication={this.handleApproveApplication}
                 onSendBackApplication={this.handleSendBackApplication}
                 onClose={this.handleUpdateOnCloseDetails}

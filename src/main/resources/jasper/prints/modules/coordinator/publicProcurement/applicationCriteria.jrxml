@@ -43,7 +43,7 @@ where
     <field name="SCORING_DESCRIPTION" class="java.lang.String">
         <property name="com.jaspersoft.studio.field.label" value="SCORING_DESCRIPTION"/>
     </field>
-    <field name="APPLICATION_ID" class="java.math.BigDecimal">
+    <field name="APPLICATION_ID" class="java.lang.Long">
         <property name="com.jaspersoft.studio.field.label" value="APPLICATION_ID"/>
     </field>
     <group name="VALUE">

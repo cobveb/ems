@@ -19,10 +19,10 @@ public class InvoiceController {
     @Autowired
     InvoiceService invoiceService;
 
-    @GetMapping("/getInvoices")
+    @GetMapping("/{year}/getInvoices")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1142')")
-    public ApiResponse getInvoices() {
-        return new ApiResponse(HttpStatus.FOUND, invoiceService.getInvoices());
+    public ApiResponse getInvoices(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, invoiceService.getInvoices(year));
     }
 
     @PutMapping("/{action}/saveInvoice")
@@ -59,5 +59,11 @@ public class InvoiceController {
     @PreAuthorize("hasGroup('admin') or hasPrivilege('3142')")
     public ApiResponse deleteInvoicePosition(@PathVariable Long invoicePositionId) {
         return new ApiResponse(HttpStatus.ACCEPTED, invoiceService.deleteInvoicePosition(invoicePositionId));
+    }
+
+    @GetMapping("/{year}/{planType}/getPlanPositions")
+    @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('1244', '1142')")
+    public ApiResponse getPlanPositions(@PathVariable Integer year, @PathVariable CoordinatorPlan.PlanType planType) {
+        return new ApiResponse(HttpStatus.FOUND, invoiceService.getPlanPositionByYearAndPlanType(year, planType));
     }
 }

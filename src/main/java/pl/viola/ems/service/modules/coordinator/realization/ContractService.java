@@ -8,9 +8,9 @@ import java.util.Set;
 
 public interface ContractService {
 
-    Set<Contract> getContracts();
+    Set<Contract> getContracts(int year);
 
-    List<Contract> getContractsByYear(int year);
+    Set<Contract> getContractsByYear(int year);
 
     Contract saveContract(Contract contract, String action);
 

@@ -128,7 +128,7 @@ class Plans extends Component {
         coordinator:'',
         type:'',
         status: '',
-        year: null,
+        year: new Date(),
     }
 
     handleClose = (plan) => {
@@ -222,8 +222,7 @@ class Plans extends Component {
             this.setState({
                 rows: this.filter(),
             });
-        } else if (this.state.year !== prevState.year ||
-            this.state.status !== prevState.status ||
+        } else if (this.state.status !== prevState.status ||
             this.state.type !== prevState.type ||
             this.state.coordinator !== prevState.coordinator)
         {
@@ -234,6 +233,8 @@ class Plans extends Component {
             this.setState({
                 rows: this.filter(),
             })
+        } else if (this.state.year !== prevState.year){
+            this.props.onChangeYear(this.state.year);
         }
     }
     render(){
@@ -335,7 +336,6 @@ class Plans extends Component {
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
                                             rowKey="id"
-                                            defaultOrderBy="id"
                                         />
                                     </Grid>
                                 </div>

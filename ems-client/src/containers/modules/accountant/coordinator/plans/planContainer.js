@@ -117,16 +117,6 @@ class PlanContainer extends Component {
                                 }
                             )
                         ))
-//                        if(initData.isUpdate){
-//                            initData["positions"].map(position => (
-//                                Object.assign(position,
-//                                    {
-//                                        amountCorrect: position.correctionPlanPosition !== null ?
-//                                            position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross : position.amountAwardedGross,
-//                                    }
-//                                )
-//                            ))
-//                        }
                     if(initData.isUpdate && initData.positions.length > 0){
                             this.setUpCorrectValue(initData.positions)
                         }
@@ -178,7 +168,6 @@ class PlanContainer extends Component {
                         )))
                         return {initData};
                     });
-//                    this.handleGetDictionaryAssortmentGroups();
                 break;
                 // no default
             }
@@ -202,18 +191,23 @@ class PlanContainer extends Component {
                 initData.planAmountAwardedNet = response.data.data.planAmountAwardedNet;
                 initData.planAmountAwardedGross = response.data.data.planAmountAwardedGross;
                 initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status)
-                initData["positions"].map(position => (
-                    Object.assign(position,
-                        {
-                            isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
-                            isDescMan: position.isDescMan = (position.managementDescription === null || position.managementDescription.length === 0) ? false : true,
-                            amountCorrect: position.amountCorrect = initData.isUpdate ?
-                                position.correctionPlanPosition !== null ?
-                                    position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross
-                                        : position.amountAwardedGross : null,
-                        }
-                    )
-                ))
+                if(initData.type.code === 'FIN' && initData.isUpdate){
+                    /* If Submit position in financial update plan get position including amountAwardedCorrectGross */
+                    this.handleGetPlanPositions();
+                } else {
+                    initData["positions"].map(position => (
+                        Object.assign(position,
+                            {
+                                isDescCor: position.isDescCor = position.coordinatorDescription === null ? false : true,
+                                isDescMan: position.isDescMan = (position.managementDescription === null || position.managementDescription.length === 0) ? false : true,
+                                amountCorrect: position.amountCorrect = initData.isUpdate ?
+                                    position.correctionPlanPosition !== null ?
+                                        position.amountAwardedGross - position.correctionPlanPosition.amountAwardedGross
+                                            : position.amountAwardedGross : null,
+                            }
+                        )
+                    ))
+                }
                 return {initData};
             });
             this.props.loading(false)
@@ -284,9 +278,15 @@ class PlanContainer extends Component {
     handleCorrectPlanPosition = (values) =>{
         const index = findIndexElement(values, this.state.initData.positions);
         if(index !== null){
-            values.amountRequestedNet !== values.amountAwardedNet ?
-                values.status = findSelectFieldPosition(this.state.statuses, "SK") :
-                    values.status = findSelectFieldPosition(this.state.statuses, "ZA");
+            if(this.state.initData.isUpdate){
+                /* Change position status to corrected if current plan is financial plan update */
+                values.status = findSelectFieldPosition(this.state.statuses, "SK");
+            } else {
+                /* Setup position status to accept or corrected if current plan is base financial plan */
+                values.amountRequestedNet !== values.amountAwardedNet ?
+                    values.status = findSelectFieldPosition(this.state.statuses, "SK") :
+                        values.status = findSelectFieldPosition(this.state.statuses, "ZA");
+            }
             this.state.initData.positions.splice(index, 1, values);
         }
         this.handleSubmitPlanPositions();

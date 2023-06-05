@@ -100,11 +100,11 @@ class ContractForm extends Component {
 
     handleConfirmDelete = () => {
         this.props.onDeleteInvoice(this.state.selected[0].id);
-        this.setState({action: null, selected: []});
+        this.setState({positionAction: null, selected: []});
     }
 
     handleCloseDialog = () => {
-        this.setState({action: null, selected: []});
+        this.setState({positionAction: null, selected: []});
     }
 
     handleClosePositionDetails = (invoice) => {

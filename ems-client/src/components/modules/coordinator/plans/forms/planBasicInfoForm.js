@@ -428,9 +428,8 @@ class PlanBasicInfoForm extends Component {
             if(index !== null){
                 if(this.props.initialValues.positions[index] !== this.state.selected[0] ){
                     this.setState(prevState =>{
-                        let positions = [...prevState.positions];
                         const selected = [...prevState.selected];
-                        selected[0] = positions[index];
+                        selected[0] = this.props.initialValues.positions[index];
                         return {selected}
                    })
                 }

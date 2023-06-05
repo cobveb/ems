@@ -59,6 +59,7 @@ class ApplicationPriceForm extends Component {
 
     render(){
         const { classes, pristine, invalid, submitting, submitSucceeded, handleSubmit, isLoading, open, applicationStatus, applicationEstimationType, protocolStatus, assortmentGroups, vats } = this.props;
+        console.log(protocolStatus)
         return(
             <>
                 <Dialog
@@ -115,7 +116,7 @@ class ApplicationPriceForm extends Component {
                                             isRequired
                                             disabled={applicationEstimationType !== undefined && (applicationEstimationType === "DO50" ?
                                                     (applicationStatus !== undefined && applicationStatus !== 'ZP') ? true : false
-                                                : (protocolStatus !== undefined &&  protocolStatus !== 'ZP') ? true : false )}
+                                                : (protocolStatus !== undefined &&  protocolStatus.code !== 'ZP') ? true : false )}
                                         />
                                     </Grid>
                                     <Grid item xs={2}>
@@ -126,7 +127,7 @@ class ApplicationPriceForm extends Component {
                                             isRequired
                                             disabled={applicationEstimationType !== undefined && (applicationEstimationType === "DO50" ?
                                                     (applicationStatus !== undefined && applicationStatus !== 'ZP') ? true : false
-                                                : (protocolStatus !== undefined &&  protocolStatus !== 'ZP') ? true : false )}
+                                                : (protocolStatus !== undefined &&  protocolStatus.code !== 'ZP') ? true : false )}
                                         />
                                     </Grid>
                                     <Grid item xs={5}>
@@ -152,7 +153,7 @@ class ApplicationPriceForm extends Component {
                                 </Grid>
                                 {(applicationEstimationType !== undefined && (applicationEstimationType === "DO50" ?
                                         (applicationStatus !== undefined && applicationStatus !== 'ZP') ? false : true
-                                    : (protocolStatus !== undefined &&  protocolStatus !== 'ZP') ? false : true )) &&
+                                    : (protocolStatus !== undefined &&  protocolStatus.code !== 'ZP') ? false : true )) &&
                                     <Button
                                         label={constants.BUTTON_SAVE}
                                         icon=<Save/>

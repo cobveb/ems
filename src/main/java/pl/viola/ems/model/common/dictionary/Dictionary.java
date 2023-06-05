@@ -1,6 +1,9 @@
 package pl.viola.ems.model.common.dictionary;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -30,6 +33,8 @@ public class Dictionary {
     @NotBlank(message = "{valid.notBlank}")
     @Pattern(regexp="^$|[ASU]$", message="{valid.dictionaryType}")
     private char type;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dictionary")
     private Set<DictionaryItem> items = new HashSet<DictionaryItem>();
+
 }

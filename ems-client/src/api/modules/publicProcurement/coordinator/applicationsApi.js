@@ -1,8 +1,8 @@
 import Axios from 'axios';
 
 class ApplicationsApi {
-    static getApplications(){
-        return Axios.get(`/api/public/coordinator/applications/getAllApplications`)
+    static getApplications(year){
+        return Axios.get(`/api/public/coordinator/applications/${year}/getAllApplications`)
     }
 
     static approveApplication(applicationId){

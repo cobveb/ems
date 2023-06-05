@@ -23,7 +23,7 @@ class ProtocolsContainer extends Component {
 
     handleGetProtocols = () =>{
         this.props.loading(true);
-        ProtocolApi.getProtocols()
+        ProtocolApi.getProtocols(new Date().getFullYear())
         .then(response => {
             this.setState(prevState => {
                 let protocols = [...prevState.protocols];
@@ -36,7 +36,6 @@ class ProtocolsContainer extends Component {
                     )
 
                 })
-
                 return{protocols}
             });
             this.props.loading(false)
@@ -75,6 +74,30 @@ class ProtocolsContainer extends Component {
         }
     }
 
+    handleChangeYear = (year) => {
+        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
+            this.props.loading(true);
+            ProtocolApi.getApplications(year instanceof Date ? year.getFullYear() : 0)
+            .then(response =>{
+                this.setState(prevState => {
+                    let protocols = [...prevState.protocols];
+                    protocols = response.data.data;
+                    protocols.map(protocol => {
+                        return Object.assign(protocol,
+                            {
+                                status: protocol.status = findSelectFieldPosition(this.state.statuses, protocol.status),
+                            }
+                        )
+
+                    })
+                    return {protocols};
+                });
+                this.props.loading(false);
+            })
+            .catch(error => {})
+        }
+    }
+
     componentDidMount(){
         this.handleGetProtocols();
         this.handleGetCoordinators();
@@ -95,6 +118,7 @@ class ProtocolsContainer extends Component {
                     isLoading={isLoading}
                     error={error}
                     clearError={clearError}
+                    onChangeYear={this.handleChangeYear}
                     onClose={this.handleUpdateOnCloseDetails}
                 />
             </>

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.viola.ems.model.modules.applicant.Application;
+import pl.viola.ems.model.modules.applicant.ApplicantApplication;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.service.modules.applicant.ApplicationService;
 import pl.viola.ems.utils.Utils;
@@ -42,7 +42,7 @@ public class ApplicationController {
 
     @PutMapping("/{action}/saveApplication")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('2001')")
-    public ApiResponse saveApplication(@RequestBody @Valid Application application, @PathVariable String action) {
+    public ApiResponse saveApplication(@RequestBody @Valid ApplicantApplication application, @PathVariable String action) {
         return new ApiResponse(HttpStatus.CREATED, applicationService.saveApplication(application, action, Utils.getCurrentUser()));
     }
 

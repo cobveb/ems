@@ -27,6 +27,57 @@ class PlanPositionRealization extends Component {
                 type: 'text',
             },
             {
+                id: 'invoiceSellDate',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_SALE_DATE,
+                type:'date',
+                dateFormat: 'dd-MM-yyyy',
+            },
+            {
+                id: 'invoiceContractorName',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_CONTRACTOR,
+                type: 'text',
+            },
+            {
+                id: 'name.content',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_POSITION_NAME,
+                type: 'object',
+            },
+            {
+                id: 'amountNet',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_POSITION_AMOUNT_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountGross',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_POSITION_AMOUNT_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+        ],
+        headInstitutionCells: [
+            {
+                id: 'invoiceNumber',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_NUMBER,
+                type: 'text',
+            },
+            {
+                id: 'coordinatorName',
+                label: constants.ORGANIZATION_UNIT_COORDINATOR,
+                type: 'text',
+            },
+            {
+                id: 'invoiceSellDate',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_SALE_DATE,
+                type:'date',
+                dateFormat: 'dd-MM-yyyy',
+            },
+            {
+                id: 'invoiceContractorName',
+                label: constants.COORDINATOR_REALIZATION_INVOICE_CONTRACTOR,
+                type: 'text',
+            },
+            {
                 id: 'name.content',
                 label: constants.COORDINATOR_REALIZATION_INVOICE_POSITION_NAME,
                 type: 'object',
@@ -47,13 +98,13 @@ class PlanPositionRealization extends Component {
     }
 
     handleExcelExport = (exportType) => {
-        this.props.onExcelExport(exportType, this.state.headCells)
+        this.props.onExcelExport(exportType, this.props.isInstitutionPlan ? this.state.headInstitutionCells  : this.state.headCells)
     }
 
 
     render(){
-        const { classes, initialValues, open, onClose, isLoading, planType, planPosition } = this.props;
-        const { headCells } = this.state;
+        const { classes, initialValues, open, onClose, isLoading, planType, planPosition, isInstitutionPlan } = this.props;
+        const { headCells, headInstitutionCells } = this.state;
         return (
             <>
                 <Dialog
@@ -74,7 +125,7 @@ class PlanPositionRealization extends Component {
                                 <Grid item xs={12} >
                                     <Typography variant='h6'>
                                         {constants.COORDINATOR_PLAN_POSITION_REALIZATION_TITLE}
-                                            {planType === 'FIN' ? ` ${planPosition.name}` : ` ${planPosition.task}`
+                                            {planType === 'FIN' ? ` ${planPosition.costType.name}` : ` ${planPosition.task}`
                                         }
                                     </Typography>
                                     <IconButton aria-label="Close"
@@ -93,12 +144,12 @@ class PlanPositionRealization extends Component {
                             <Table
                                 className={classes.tableWrapper}
                                 rows={initialValues}
-                                headCells={headCells}
+                                headCells={isInstitutionPlan ? headInstitutionCells  : headCells}
                                 onSelect={()=>{}}
                                 onDoubleClick={()=>{}}
                                 onExcelExport={this.handleExcelExport}
                                 rowKey="id"
-                                defaultOrderBy="id"
+                                defaultOrderBy="invoiceSellDate"
                             />
                         </DialogContent>
                         <DialogActions>

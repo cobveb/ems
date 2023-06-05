@@ -23,16 +23,16 @@ public class PublicPlanCoordinatorController {
     @Autowired
     PlanService planService;
 
-    @GetMapping("/plans/getAll")
+    @GetMapping("/plans/{year}/getAll")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1013')")
-    public ApiResponse getPlansByCoordinator() {
-        return new ApiResponse(HttpStatus.FOUND, planService.getPlansByCoordinatorInPublicProcurement());
+    public ApiResponse getPlansByCoordinator(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, planService.getPlansByCoordinatorInPublicProcurement(year));
     }
 
-    @GetMapping("/plans/getCoordinatorsPlanUpdates")
+    @GetMapping("/plans/{year}/getCoordinatorsPlanUpdates")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1013')")
-    public ApiResponse getCoordinatorsPlanUpdates() {
-        return new ApiResponse(HttpStatus.FOUND, planService.getCoordinatorsPlanUpdates("public", CoordinatorPlan.PlanType.PZP));
+    public ApiResponse getCoordinatorsPlanUpdates(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, planService.getCoordinatorsPlanUpdates("public", CoordinatorPlan.PlanType.PZP, year));
     }
 
     @PutMapping("/plan/{planId}/publicApprove")

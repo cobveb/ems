@@ -24,11 +24,11 @@ public interface PublicProcurementApplicationService {
 
     List<ApplicationPlanPosition> getPlanPositionByYearAndPlanType(CoordinatorPlan.PlanType planType);
 
-    List<ApplicationPayload> getApplicationsByCoordinator();
+    Set<ApplicationPayload> getApplicationsByCoordinator(int year);
 
     Set<ApplicationPayload> getApplicationsByCoordinatorInRealization();
 
-    List<ApplicationPayload> getApplicationsByAccessLevel(String accessLevel);
+    Set<ApplicationPayload> getApplicationsByAccessLevel(int year, String accessLevel);
 
     ApplicationDetailsPayload getApplication(Long applicationId);
 

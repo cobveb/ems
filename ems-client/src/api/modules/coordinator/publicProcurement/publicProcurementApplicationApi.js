@@ -14,8 +14,8 @@ class PublicProcurementApplicationApi {
         return Axios.get(`/api/ou/getPublicProcurementApplicationCoordinators`)
     }
 
-    static getApplications(){
-        return Axios.get(`/api/coordinator/publicProcurement/application/getApplications`)
+    static getApplications(year){
+        return Axios.get(`/api/coordinator/publicProcurement/application/${year}/getApplications`)
     }
 
     static getApplicationsInRealization(){

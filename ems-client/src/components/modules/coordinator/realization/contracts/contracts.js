@@ -40,6 +40,7 @@ class Contracts extends Component {
         signedFrom: null,
         signedTo: null,
         action: null,
+        year: new Date(),
         isDetailsVisible: false,
         headCells: [
             {
@@ -86,7 +87,7 @@ class Contracts extends Component {
     }
 
     handleSearch = (event) => {
-        this.setState({[event.target.name]: escapeSpecialCharacters(event.target.value)})
+        this.setState({[event.target.name]: event.target.value})
     }
 
     handleDataChange = (id) => (date) => {
@@ -129,7 +130,7 @@ class Contracts extends Component {
             return this.state.number !== '' ?
                 contract.number !== null ?
                     contract.number.toLowerCase().search(
-                        this.state.number.toLowerCase()) !== -1
+                        escapeSpecialCharacters(this.state.number.toLowerCase())) !== -1
                 : null
             : contract
             && (
@@ -169,12 +170,14 @@ class Contracts extends Component {
             this.setState({
                 rows: this.filter(),
             })
+        } else if (this.state.year !== prevState.year){
+            this.props.onChangeYear(this.state.year);
         }
     }
 
     render(){
         const { classes, isLoading, error } = this.props;
-        const { headCells, rows, selected, signedFrom, signedTo, isDetailsVisible, action } = this.state;
+        const { headCells, rows, selected, signedFrom, signedTo, isDetailsVisible, action, number, contractObject, year } = this.state;
         return (
             <>
                 {isLoading && <Spinner />}
@@ -210,19 +213,33 @@ class Contracts extends Component {
                             <div className={classes.content}>
                                 <Grid container spacing={0} direction="row" justify="center" className={classes.container}>
                                     <Grid item xs={2} className={classes.item}>
+                                        <DatePicker
+                                            id="year"
+                                            onChange={this.handleDataChange('year')}
+                                            label={constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR}
+                                            placeholder={constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR}
+                                            value={year}
+                                            format="yyyy"
+                                            mask="____"
+                                            views={["year"]}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2} className={classes.item}>
                                         <SearchField
                                             name="number"
                                             onChange={this.handleSearch}
                                             label={constants.COORDINATOR_REALIZATION_CONTRACTS_NUMBER}
                                             valueType="all"
+                                            value={number}
                                         />
                                     </Grid>
-                                    <Grid item xs={6} className={classes.item}>
+                                    <Grid item xs={4} className={classes.item}>
                                         <SearchField
                                             name="contractObject"
                                             onChange={this.handleSearch}
                                             label={constants.COORDINATOR_REALIZATION_CONTRACT_OBJECTS}
                                             valueType="all"
+                                            value={contractObject}
                                         />
                                     </Grid>
                                     <Grid item xs={2} className={classes.item}>

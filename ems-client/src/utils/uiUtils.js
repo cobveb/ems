@@ -567,3 +567,49 @@ export const getPlanTypes = () => [
         name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_INVESTMENT,
     },
 ];
+
+export const getEmploymentTypes = () => [
+    {
+        code: 'UPR',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_UPR,
+    },
+    {
+        code: 'KON',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_KON,
+    },
+    {
+        code: 'STC',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_STC,
+    },
+    {
+        code: 'UPO',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_UPO,
+    },
+    {
+        code: 'CYW',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_CYW,
+    },
+    {
+        code: 'CYR',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_CYR,
+    },
+    {
+        code: 'WOL',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_WOL,
+    },
+];
+
+export const getEmploymentStatuses = () => [
+    {
+        code: 'NW',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_STATUS_NW,
+    },
+    {
+        code: 'RE',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_STATUS_RE,
+    },
+    {
+        code: 'ZW',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_STATUS_ZW,
+    },
+];

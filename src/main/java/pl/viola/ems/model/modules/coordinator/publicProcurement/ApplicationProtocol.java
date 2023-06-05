@@ -10,9 +10,9 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@ToString(exclude = {"prices", "application"})
 @EqualsAndHashCode(exclude = {"prices", "application"})
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -77,6 +77,7 @@ public class ApplicationProtocol {
 
     @JsonIgnore
     @OneToOne(mappedBy = "applicationProtocol")
+    @ToString.Exclude
     private Application application;
 
     @ManyToOne
@@ -88,6 +89,7 @@ public class ApplicationProtocol {
     private Text contractorDesc;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicationProtocol", cascade = {CascadeType.ALL})
+    @ToString.Exclude
     private Set<ApplicationProtocolPrice> prices = new HashSet<>();
 
 }

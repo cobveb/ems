@@ -1,8 +1,8 @@
 import Axios from 'axios';
 
 class PlansApi{
-    static getPlans(){
-        return Axios.get(`/api/public/institution/plans/getPlans`)
+    static getPlans(year){
+        return Axios.get(`/api/public/institution/plans/${year}/getPlans`)
     }
 
     static getPlanPositions(planId){

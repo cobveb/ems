@@ -80,7 +80,7 @@ class Plans extends Component {
             },
         ],
         rows: [],
-        year: null,
+        year: new Date(),
         type:'',
         selected: {},
         isDetailsVisible: false,
@@ -140,13 +140,14 @@ class Plans extends Component {
             this.setState({
                 rows: this.filter(),
             });
-        } else if (this.state.year !== prevState.year ||
-            this.state.type !== prevState.type
-        ){
+        } else if (this.state.type !== prevState.type){
             this.setState({
               rows: this.filter(),
             })
+        } else if (this.state.year !== prevState.year){
+            this.props.onChangeYear(this.state.year);
         }
+
         if(this.props.levelAccess === 'director'){
             // Filter rows on close application
             if(Object.keys(this.state.selected).length === 0 && this.state.selected !== prevState.selected){
@@ -225,7 +226,6 @@ class Plans extends Component {
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
                                             rowKey='id'
-                                            defaultOrderBy="id"
                                         />
                                     </Grid>
                                 </Grid>

@@ -1,8 +1,8 @@
 import Axios from 'axios';
 
 class PublicProcurementApplicationApi {
-    static getApplications(){
-        return Axios.get(`/api/accountant/coordinator/publicProcurement/applications/getAllApplications`)
+    static getApplications(year){
+        return Axios.get(`/api/accountant/coordinator/publicProcurement/applications/${year}/getAllApplications`)
     }
 
     static approveApplication(applicationId){

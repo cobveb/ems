@@ -14,10 +14,10 @@ public class AccountantApplicationProtocolController {
     @Autowired
     ApplicationProtocolService applicationProtocolService;
 
-    @GetMapping("/getAllProtocols")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('1124')")
-    public ApiResponse getAllProtocols() {
-        return new ApiResponse(HttpStatus.FOUND, applicationProtocolService.getProtocolsByAccessLevel("accountant"));
+    @GetMapping("/{year}/getAllProtocols")
+    @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('1124', '1115')")
+    public ApiResponse getAllProtocols(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, applicationProtocolService.getProtocolsByAccessLevel(year, "accountant"));
     }
 
     @PutMapping("/approveProtocol/{protocolId}")

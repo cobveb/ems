@@ -1,8 +1,8 @@
 import Axios from 'axios';
 
 class ProtocolsApi {
-    static getProtocols(){
-        return Axios.get(`/api/public/coordinator/publicProcurement/protocol/getAllProtocols`)
+    static getProtocols(year){
+        return Axios.get(`/api/public/coordinator/publicProcurement/protocol/${year}/getAllProtocols`)
     }
 
     static approveProtocol(protocolId){

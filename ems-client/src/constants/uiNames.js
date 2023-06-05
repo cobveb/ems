@@ -140,6 +140,7 @@ export const DICTIONARY_ITEM_FORM_NAME = 'Nazwa';
 export const DICTIONARY_ITEM_FORM_IS_ACTIVE = 'Aktywna';
 /* components/modules/administrator/dictionaryItemFormValid.js */
 export const DICTIONARY_ITEM_CODE_EXISTS = 'Pozycja o podanym kodzie istnieje';
+export const DICTIONARY_ITEM_NAME_EXISTS = 'Pozycja o podanej nazwie istnieje';
 /* components/modules/administrator/parameters.js */
 export const PARAMETERS_SEARCH_CODE = 'Kod / Nazwa';
 export const PARAMETERS_SEARCH_CATEGORY = 'Kategoria';
@@ -450,6 +451,8 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_CONFIRM_WITHDRAW_MSG = 
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_CONFIRM_WITHDRAW_REALISATION_MSG = 'Realizacja wniosku zostanie anulowana. Modyfikacja wniosku będzie niemożliwa. Czy kontynuować?';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WITHDRAW = 'Wycofaj';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WITHDRAW_REALISATION = 'Wycofaj realizację';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SEND_DATE_FROM = 'Data przekazania ZP od';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SEND_DATE_TO = 'Data przekazania ZP do';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationForm.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_HEAD_TABLE_PART_NAME = 'Nazwa';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_HEAD_TABLE_PART_NET = 'Kwota netto';
@@ -865,48 +868,137 @@ export const PUBLIC_INSTITUTION_PLAN_BUTTON_PRINT_DOUBLE_GROUPS = 'Zdublowane gr
 export const PUBLIC_INSTITUTION_PLAN_BUTTON_PRINT_UPDATE = 'Aktualizacja';
 /* components/modules/accountant/coordinator/publicProcurement/protocols.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOLS_TITLE = 'Protokoły o udzielenie zamówienia publicznego';
-
 /*components/modules/hr/humanResources.js*/
-export const HR_MENU_STAFF = 'Personel';
-export const HR_MENU_STAFF_WORKERS = 'Pracownicy';
-/*components/modules/hr/staff/workers.js*/
-export const WORKERS_TABLE_HEAD_ROW_ID = 'Id';
-export const WORKERS_TABLE_HEAD_ROW_NAME = 'Imię';
-export const WORKERS_TABLE_HEAD_ROW_SURNAME = 'Nazwisko';
-export const WORKERS_SEARCH_NAME = 'Imię';
-export const WORKERS_SEARCH_SURNAME = 'Nazwisko';
-/*components/modules/hr/staff/worker.js*/
-export const WORKER_CREATE_NEW_WORKER_TITLE = 'Nowy pracownik';
-export const WORKER_EDIT_WORKER_TITLE = 'Edycja pracownika: ';
-export const WORKER_BASIC_INFORMATION = 'Dane podstawowe';
-export const WORKER_EMPLOYMENTS = 'Zatrudnienie';
-export const WORKER_FUNCTION = 'Funkcje';
-/*components/modules/hr/staff/forms/workerBasicInfoForm.js*/
-export const WORKER_BASIC_INFORMATION_ID = 'Id';
-export const WORKER_BASIC_INFORMATION_NAME = 'Imię';
-export const WORKER_BASIC_INFORMATION_SURNAME = 'Nazwisko';
-export const WORKER_BASIC_INFORMATION_OU = 'Jednostka organizacyjna';
-/*components/modules/hr/staff/forms/workerEmploymentsForm.js*/
-export const WORKER_EMPLOYMENTS_PERIODS = 'Okresy zatrudnienia:';
-export const WORKER_EMPLOYMENTS_TABLE_HEAD_ROW_POSITION = 'Stanowisko';
-export const WORKER_EMPLOYMENTS_TABLE_HEAD_ROW_OU = 'Jednostka';
-export const WORKER_EMPLOYMENTS_TABLE_HEAD_ROW_DATE_FROM = 'Okres od';
-export const WORKER_EMPLOYMENTS_TABLE_HEAD_ROW_DATE_TO = 'Okres do';
-/*components/modules/hr/staff/forms/workerFunctionsForm.js*/
-export const WORKER_FUNCTIONS = 'Pełnione funkcje:';
-export const WORKER_FUNCTIONS_TABLE_HEAD_ROW_COMMISSION = 'Funkcja';
-export const WORKER_FUNCTIONS_TABLE_HEAD_ROW_FUNCTION = 'Rola';
-export const WORKER_FUNCTIONS_TABLE_HEAD_ROW_DATE_FROM = 'Data od';
-export const WORKER_FUNCTIONS_TABLE_HEAD_ROW_DATE_TO = 'Data do';
-/*components/modules/hr/staff/forms/employmentForm.js*/
-export const WORKER_EMPLOYMENT_DETAILS_TITLE = 'Zatrudnienie - szczegóły pozycji';
-export const WORKER_EMPLOYMENT_DETAILS_NUMBER = 'Numer';
-export const WORKER_EMPLOYMENT_DETAILS_FORM = 'Forma zatrudnienia';
-export const WORKER_EMPLOYMENT_DETAILS_OU = 'Jednostka organizacyjna';
-/*components/modules/hr/staff/forms/functionForm.js*/
-export const WORKER_FUNCTION_DETAILS_TITLE = 'Funkcja - szczegóły pozycji';
-export const WORKER_FUNCTION_DETAILS_NUMBER = 'Numer';
-export const WORKER_FUNCTION_DETAILS_COMMENTS = 'Uwagi';
+export const HR_MENU_EMPLOYEES = 'Personel';
+export const HR_MENU_EMPLOYEES_EMPLOYEES = 'Pracownicy';
+export const HR_MENU_EMPLOYEES_DICTIONARIES_PLACES = 'Komórki organizacyjne';
+export const HR_MENU_EMPLOYEES_DICTIONARIES_WORKPLACES = 'Stanowiska pracy';
+/*components/modules/hr/employees/employees.js*/
+export const EMPLOYEES_TABLE_HEAD_ROW_ID = 'Id';
+export const EMPLOYEES_TABLE_HEAD_ROW_NAME = 'Imię';
+export const EMPLOYEES_TABLE_HEAD_ROW_SURNAME = 'Nazwisko';
+export const EMPLOYEES_SEARCH_NAME = 'Imię';
+export const EMPLOYEES_SEARCH_SURNAME = 'Nazwisko';
+export const EMPLOYEES_EMPLOYEE_DELETE_MSG = "Pracownik zostanie usunięty. Czy kontynować?";
+/*components/modules/hr/employees/employee.js*/
+export const EMPLOYEE_CREATE_NEW_EMPLOYEE_TITLE = 'Nowy pracownik';
+export const EMPLOYEE_EDIT_EMPLOYEE_TITLE = 'Edycja pracownika: ';
+export const EMPLOYEE_BASIC_INFORMATION = 'Dane podstawowe';
+export const EMPLOYEE_EMPLOYMENTS = 'Zatrudnienie';
+export const EMPLOYEE_ENTITLEMENTS = 'Uprawnienia';
+export const EMPLOYEE_TRAINING = 'Szkolenia';
+/*components/modules/hr/employees/forms/employeeBasicInfoForm.js*/
+export const EMPLOYEE_BASIC_INFORMATION_ID = 'Id';
+export const EMPLOYEE_BASIC_INFORMATION_HR_NUMBER = 'Nr. ewidencyjny';
+export const EMPLOYEE_BASIC_INFORMATION_NAME = 'Imię';
+export const EMPLOYEE_BASIC_INFORMATION_SURNAME = 'Nazwisko';
+export const EMPLOYEE_BASIC_INFORMATION_OU = 'Jednostka organizacyjna';
+/*components/modules/hr/employees/forms/employeeEmployments.js*/
+export const EMPLOYEE_EMPLOYMENTS_PERIODS = 'Okresy zatrudnienia:';
+export const EMPLOYEE_EMPLOYMENTS_TABLE_HEAD_ROW_WORKPLACE = 'Stanowisko';
+export const EMPLOYEE_EMPLOYMENTS_TABLE_HEAD_ROW_OU = 'Jednostka';
+export const EMPLOYEE_EMPLOYMENTS_DELETE_MSG = 'Zatrudnienie zostanie usunięte. Oświadczenia, upoważnienia oraz informacje o stanowiskach rówież zostaną usunięte. Czy kontynować?';
+/* components/modules/hr/employees/forms/employeeEntitlementsForm.js */
+export const EMPLOYEE_ENTITLEMENTS_SYSTEMS = 'Lista systemów:';
+export const EMPLOYEE_ENTITLEMENTS_SYSTEM_NAME = 'Nazwa systemu';
+export const EMPLOYEE_ENTITLEMENTS_SYSTEM_USERNAME = 'Identyfikator';
+export const EMPLOYEE_ENTITLEMENTS_SYSTEM_ENTITLEMENT_FROM = 'Czas obowiązywania od';
+export const EMPLOYEE_ENTITLEMENTS_SYSTEM_ENTITLEMENT_TO = 'Czas obowiązywania do';
+/* components/modules/hr/employees/forms/employeeTrainingForm.js */
+export const EMPLOYEE_TRAININGS = 'Ukończone szkolenia:';
+export const EMPLOYEE_TRAINING_TABLE_HEAD_ROW_TYPE = 'Rodzaj';
+export const EMPLOYEE_TRAINING_TABLE_HEAD_ROW_NAME = 'Nazwa';
+export const EMPLOYEE_TRAINING_TABLE_HEAD_ROW_DATE = 'Data';
+/* components/modules/hr/employees/forms/employmentForm.js */
+export const EMPLOYEE_EMPLOYMENT_DETAILS_TITLE = 'Zatrudnienie - szczegóły pozycji';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_ACTIVE = 'Aktywne';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_NUMBER = 'Numer umowy / porozumienia';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_CONTRACT_TYPE = 'Rodzaj umowy';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_CONTRACT_DATE = 'Umowa / porozumienie z dnia';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_EMPLOYMENT_DATE_FROM = 'Zatrudnienie od';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_EMPLOYMENT_DATE_TO = 'Zatrudnienie do';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_PROCESS = 'Czy przetwarza';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATEMENT = 'Czy oświadczenie wymagane';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_UPO = 'Czy UPO wymagane';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_WORKPLACES = 'Lista stanowisk';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_WORKPLACE_DELETE_MSG = 'Stanowisko zostanie usunięte. Czy kontynuować?';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATUS = 'Status';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATEMENTS_TITLE = 'Lista oświadczeń';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATEMENT_DELETE_MSG = 'Oświadczenie zostanie usunięte. Czy kontynuować?';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATIONS_TITLE = 'Lista upoważnień';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATION_DELETE_MSG= 'Upoważnienie zostanie usunięte. Czy kontynuować';
+/* components/modules/hr/employees/forms/employmentFormValid.js */
+export const EMPLOYEE_EMPLOYMENT_DETAILS_CONTRACT_TYPE_HR_NUMBER_UNDEFINED = 'Nie uzupełniono nr ewidencyjnego pracownika w danych podstawowych';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_INVALID_DATE = 'Nieprawidłowy okres zatrudnienia';
+/* components/modules/hr/employees/forms/workplaceForm.js */
+export const EMPLOYEE_EMPLOYMENT_DETAILS_WORKPLACE_TITLE = 'Szczegóły stanowiska';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_WORKPLACE_PLACE = 'Komórka organizacyjna';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_WORKPLACE_ACTIVE = 'Aktywne';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_WORKPLACE_DATE_FROM = 'Data od';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_WORKPLACE_DATE_TO = 'Data do';
+/* components/modules/hr/employees/forms/authorizationForm.js */
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATION_TITLE = 'Szczegóły upoważnienia';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATION_ACTIVE = 'Aktywne';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATION_DATE = 'UPO z dnia';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATION_DATE_FROM = 'UPO od';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATION_DATE_TO = 'UPO do';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATION_VERIFICATION_DATE = 'Data weryfikacji';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATION_PROCESSING_BASIS = 'Podstawowa czynność przetwarzania';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_AUTHORIZATION_PROCESSING_BASIS_DICTIONARY = 'Podstawy przetwarzania';
+/* components/modules/hr/employees/forms/statementForm.js */
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATEMENT_TITLE = 'Szczegóły oświadczenia';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATEMENT_ACTIVE = 'Aktywne';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATEMENT_DATE = 'Oświadczenie z dnia';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATEMENT_DATE_FROM = 'Oświadczenie od';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATEMENT_DATE_TO = 'Oświadczenie do';
+export const EMPLOYEE_EMPLOYMENT_DETAILS_STATEMENT_VERIFICATION_DATE = 'Data weryfikacji';
+/* components/modules/hr/employees/forms/trainingForm.js */
+export const EMPLOYEE_TRAINING_DETAILS_TITLE = 'Szkolenie - szczegóły pozycji';
+/* components/modules/hr/dictionary/places.js */
+export const HR_PLACE_DELETE_MSG = 'Komórka organizacyjna zostanie usunięta. Czy kontynuować?';
+export const HR_PLACE_SEARCH_LOCATION = 'Lokalizacja';
+/* components/modules/hr/dictionary/placeForm.js */
+export const HR_PLACE_CREATE_NEW_PLACE_TITLE = 'Nowa komórka organizacyjna';
+export const HR_PLACE_CREATE_NEW_WORKPLACE_TITLE = 'Nowe stanowisko';
+export const HR_PLACE_EDIT_PLACE_TITLE = 'Edycja komórki organizacyjnej: ';
+export const HR_PLACE_EDIT_WORKPLACE_TITLE = 'Edycja stanowiska: ';
+export const HR_PLACE_ACTIVE = 'Aktywna';
+export const HR_PLACE_ID = 'Kod';
+export const HR_PLACE_NAME = 'Nazwa';
+/* components/modules/hr/dictionary/workplaces.js */
+export const HR_WORKPLACE_DELETE_MSG = 'Komórka organizacyjna zostanie usunięta. Czy kontynuować?';
+export const HR_WORKPLACE_SEARCH_GROUP = 'Grupa zawodowa';
+/* components/modules/iod/iod.js */
+export const IOD_MENU_REGISTERS = 'Rejestry';
+export const IOD_MENU_REGISTERS_CPDO = 'Czynności przetwarzania';
+/* components/modules/iod/registers/registers.js */
+export const IOD_REGISTERS_TABLE_HEAD_ROW_CODE = 'Kod';
+export const IOD_REGISTERS_TABLE_HEAD_ROW_NAME = 'Nazwa';
+/* components/modules/iod/registers/forms/regProcessingActivitiesForm.js */
+export const IOD_REGISTER_CPDO_UPDATE_USER = 'Użytkownik aktualizujący';
+export const IOD_REGISTER_CPDO_UPDATE_DATE = 'Ostatnia aktualizacja';
+export const IOD_REGISTER_CPDO_POSITIONS = 'Pozycje rejestru';
+export const IOD_REGISTER_CPDO_POSITION_ACTIVE = 'Aktywna';
+export const IOD_REGISTER_CPDO_POSITION_NAME = 'Nazwa czynności przetwarzania';
+export const IOD_REGISTER_CPDO_POSITION_DATA_SET_CONNECTION = 'Powiązanie ze zbiorem danych';
+export const IOD_REGISTER_CPDO_POSITION_PURPOSE_PROCESSING = 'Cel przetwarzania Art.. 30 ust. 1 pkt b';
+export const IOD_REGISTER_CPDO_POSITION_CATEGORIES_PEOPLE = 'Kategorie osób Art.. 30 ust. 1 pkt c';
+export const IOD_REGISTER_CPDO_POSITION_DATA_CATEGORIES = 'Kategorie danych Art.. 30 ust. 1 pkt c';
+export const IOD_REGISTER_CPDO_POSITION_LEGAL_BASIS = 'Podstawa prawna';
+export const IOD_REGISTER_CPDO_POSITION_DATA_SOURCE = 'Źródło danych';
+export const IOD_REGISTER_CPDO_POSITION_CATEGORY_REMOVAL_DATE = 'Planowany termin usunięcia kategorii danych (jeżeli jest to możliwe) Art.. 30 ust. 1 pkt f';
+export const IOD_REGISTER_CPDO_POSITION_CO_ADMINISTRATOR_NAME = 'Nazwa współadministratora i dane kontaktowe (jeśli dotyczy) Art.. 30 ust. 1 pkt a';
+export const IOD_REGISTER_CPDO_POSITION_PROCESSOR_NAME = 'Nazwa podmiotu przetwarzającego i dane kontaktowe (jeśli dotyczy) Art.. 30 ust. 1 pkt d';
+export const IOD_REGISTER_CPDO_POSITION_RECIPIENT_CATEGORIES = 'Kategorie odbiorców (innych niż podmiot przetwarzający) Art.. 30 ust. 1 pkt d';
+export const IOD_REGISTER_CPDO_POSITION_SYSTEM_SOFTWARE_NAME = 'Nazwa systemu lub oprogramowania';
+export const IOD_REGISTER_CPDO_POSITION_SECURITY_MEASURES = 'Ogólny opis technicznych i organizacyjnych środków bezpieczeństwa zgodnie z art. 32 ust. 1 (jeżeli jest to możliwe) Art.. 30 ust. 1 pkt g';
+export const IOD_REGISTER_CPDO_POSITION_DPIA = 'DPIA (jeśli tak, lokalizacja raportu)';
+export const IOD_REGISTER_CPDO_POSITION_THIRD_COUNTRY = 'Transfer do kraju trzeciego lub organizacji międzynarodowej (nazwa kraju i podmiotu) Art. 30 ust. 1 pkt e';
+export const IOD_REGISTER_CPDO_POSITION_THIRD_COUNTRY_DOCUMENTATION = 'Transfer do kraju trzeciego lub org. międzynarodowej. Jeśli transfer i art. 49 ust. 1 akapit drugi - dokumentacja odpowiednich zabezpieczeń Art. 30 ust. 1 pkt e';
+/* 'components/modules/iod/registers/forms/regProcessingActivitiesPositionForm' */
+export const IOD_REGISTER_CPDO_CREATE_NEW_POSITION_TITLE = 'Nowa pozycja';
+export const IOD_REGISTER_CPDO_CREATE_EDIT_POSITION_TITLE = 'Edycja pozycji: ';
+export const IOD_REGISTER_CPDO_POSITION_OU = 'Komórki organizacyjne';
 /* Commons sections */
 export const BUTTON_SAVE = 'Zapisz';
 export const BUTTON_CANCEL = 'Anuluj';
@@ -951,7 +1043,8 @@ export const TRANSFER_LIST_ALL_RIGHT = '>>';
 export const TRANSFER_LIST_SELECTED_RIGHT = '>';
 export const TRANSFER_LIST_ALL_LEFT = '<<';
 export const TRANSFER_LIST_SELECTED_LEFT = '<';
-
+export const MENU_DICTIONARIES = 'Słowniki';
+export const SEARCH_CODE_NAME = 'Kod / Nazwa'
 export const INSTITUTION_PLAN_STATUS_CREATED = 'Utworzony';
 export const INSTITUTION_PLAN_STATUS_APPROVED_ACCOUNTANT = 'Akceptacja - Główny księgowy';
 export const INSTITUTION_PLAN_STATUS_APPROVED_DIRECTOR = 'Akceptacja  - Dyrektor pionu';
@@ -961,20 +1054,35 @@ export const INSTITUTION_PLAN_STATUS_APPROVED = 'Zaakceptowany';
 export const INSTITUTION_PLAN_STATUS_REALIZED = 'Realizowany';
 export const INSTITUTION_PLAN_STATUS_EXECUTED = 'Zrealizowany';
 export const INSTITUTION_PLAN_STATUS_UPDATE = 'Zaktualizowany';
+export const TABLE_HEAD_ROW_CODE = 'Kod';
+export const TABLE_HEAD_ROW_NAME = 'Nazwa';
+export const TABLE_HEAD_ROW_ACTIVE = 'Aktywna';
 /* public procurement protocol statuses */
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_SAVED = 'Zapisany';
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_SEND = 'Wysłany';
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPROVE_PUBLIC = 'Akceptacja ZP';
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_APPROVE_ACCOUNTANT = "Akceptacja - Główny księgowy";
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_EXECUTED = 'Zaakceptowany';
+/* hr employee employment types */
+export const HR_EMPLOYEE_EMPLOYMENT_TYPE_UPR = 'Umowa o pracę';
+export const HR_EMPLOYEE_EMPLOYMENT_TYPE_KON = 'Kontrakt';
+export const HR_EMPLOYEE_EMPLOYMENT_TYPE_WOL = 'Wolontariat';
+export const HR_EMPLOYEE_EMPLOYMENT_TYPE_STC = 'Staż cząstkowy';
+export const HR_EMPLOYEE_EMPLOYMENT_TYPE_UPO = 'Umowa powierzenia';
+export const HR_EMPLOYEE_EMPLOYMENT_TYPE_CYW = 'Cywilnoprawna';
+export const HR_EMPLOYEE_EMPLOYMENT_TYPE_CYR = 'Cywilnoprawna - tryb pozarezydencki';
+/* hr employee employment statuses */
+export const HR_EMPLOYEE_EMPLOYMENT_STATUS_NW = 'Nowe';
+export const HR_EMPLOYEE_EMPLOYMENT_STATUS_RE = 'Realizowane';
+export const HR_EMPLOYEE_EMPLOYMENT_STATUS_ZW = 'Zweryfikowane';
 /* common/modalDialog.js */
 export const MODAL_DIALOG_ERROR = 'Błąd';
 export const MODAL_DIALOG_INFORMATION = 'Informacja';
 export const MODAL_DIALOG_WARNING = 'Ostrzeżenie';
 export const MODAL_DIALOG_CONFIRM = 'Potwierdzenie';
-export const MODAL_DIALOG_FORM_CHANGE_MSG = 'Dane zostały zmodyfikowane. Niezapisane dane zostaną utracone. Czy kontynuować?'
+export const MODAL_DIALOG_FORM_CHANGE_MSG = 'Dane zostały zmodyfikowane. Niezapisane dane zostaną utracone. Czy kontynuować?';
 /*common/gui/guiDatePicker.js*/
-export const DATE_PICKER_INVALID_DATE_MESSAGE = 'Nieprawidłowy format daty';
+export const DATE_PICKER_INVALID_DATE_MESSAGE = 'Nieprawidłowa data';
 export const DATE_PICKER_MAX_DATE_MESSAGE = 'Data późniejsza niż data maksymalna';
 export const DATE_PICKER_MIN_DATE_MESSAGE = 'Data wcześniejsza niż data minimalna';
 export const DATE_PICKER_MONTHS_JANUARY = 'Styczeń';

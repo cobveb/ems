@@ -29,5 +29,21 @@ export const validate =  ( values ) => {
         }
     }
 
+    if(values.realPrevYearsValueNet !== null){
+        if((values.invoicesValueNet + values.realPrevYearsValueNet ) > values.contractValueNet){
+            errors["realPrevYearsValueNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
+        }
+
+        if(values.realPrevYearsValueNet > values.realPrevYearsValueGross){
+            errors["realPrevYearsValueNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_VALUE_NET_INVALID
+        }
+    }
+
+    if(values.realPrevYearsValueGross !== null){
+        if((values.invoicesValueGross + values.realPrevYearsValueGross ) > values.contractValueGross){
+            errors["realPrevYearsValueGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
+        }
+    }
+
     return errors;
 }

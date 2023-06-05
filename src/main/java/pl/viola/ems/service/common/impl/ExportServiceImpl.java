@@ -98,16 +98,21 @@ public class ExportServiceImpl implements ExportService {
 
                     SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 
-                    Date date = null;
+                    String dateStr = null;
 
-                    try {
-                        date = formatter.parse(value.toString());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                    if (value instanceof Date) {
+                        dateStr = formatter.format((Date) value);
+                    } else {
+                        try {
+                            Date date = formatter.parse(value.toString());
+                            dateStr = formatter.format(date);
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                     }
-
                     cell.setCellStyle(dateStyle);
-                    cell.setCellValue(date);
+                    cell.setCellValue(dateStr);
                     break;
                 case "numeric":
                     cell.setCellValue((Integer) value);

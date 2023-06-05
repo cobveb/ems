@@ -40,6 +40,7 @@ class Invoices extends Component {
         saleFrom: null,
         saleTo: null,
         action: null,
+        year: new Date(),
         isDetailsVisible: false,
         headCells: [
             {
@@ -111,7 +112,7 @@ class Invoices extends Component {
     }
 
     handleDataChange = (id) => (date) => {
-        this.setState({[id]: new Date(date.setHours(0,0,0,0))})
+        this.setState({[id]: date})
     }
 
     handleCloseDialogError = () => {
@@ -159,12 +160,14 @@ class Invoices extends Component {
             this.setState({
                 rows: this.filter(),
             })
+        } else if (this.state.year !== prevState.year){
+            this.props.onChangeYear(this.state.year);
         }
     }
 
     render(){
         const { classes, isLoading, error } = this.props;
-        const { headCells, rows, saleFrom, saleTo, selected, isDetailsVisible, action } = this.state;
+        const { headCells, rows, saleFrom, saleTo, selected, isDetailsVisible, action, year } = this.state;
         return (
             <>
                 {isLoading && <Spinner />}
@@ -199,6 +202,18 @@ class Invoices extends Component {
                             <Divider />
                             <div className={classes.content}>
                                 <Grid container spacing={0} direction="row" justify="center" className={classes.container}>
+                                    <Grid item xs={2} className={classes.item}>
+                                        <DatePicker
+                                            id="year"
+                                            onChange={this.handleDataChange('year')}
+                                            label={constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR}
+                                            placeholder={constants.COORDINATOR_PLANS_TABLE_HEAD_ROW_YEAR}
+                                            value={year}
+                                            format="yyyy"
+                                            mask="____"
+                                            views={["year"]}
+                                        />
+                                    </Grid>
                                     <Grid item xs={4} className={classes.item}>
                                         <SearchField
                                             name="number"
@@ -207,7 +222,7 @@ class Invoices extends Component {
                                             valueType="all"
                                         />
                                     </Grid>
-                                    <Grid item xs={4} className={classes.item}>
+                                    <Grid item xs={3} className={classes.item}>
                                         <DatePicker
                                             id="saleFrom"
                                             onChange={this.handleDataChange('saleFrom')}
@@ -215,7 +230,7 @@ class Invoices extends Component {
                                             value={saleFrom}
                                         />
                                     </Grid>
-                                    <Grid item xs={4} className={classes.item}>
+                                    <Grid item xs={3} className={classes.item}>
                                         <DatePicker
                                             id="saleTo"
                                             onChange={this.handleDataChange('saleTo')}

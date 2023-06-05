@@ -3,7 +3,7 @@ package pl.viola.ems.model.modules.administrator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.viola.ems.model.modules.accountant.CostYear;
-import pl.viola.ems.model.modules.applicant.Application;
+import pl.viola.ems.model.modules.applicant.ApplicantApplication;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 
 import javax.persistence.*;
@@ -103,11 +103,11 @@ public class OrganizationUnit {
 
     @JsonIgnore
     @OneToMany(mappedBy = "coordinator", cascade = CascadeType.ALL)
-    private Set<Application> coordinators = new HashSet<>();
+    private Set<ApplicantApplication> coordinators = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL)
-    private Set<Application> applicants = new HashSet<>();
+    private Set<ApplicantApplication> applicants = new HashSet<>();
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)

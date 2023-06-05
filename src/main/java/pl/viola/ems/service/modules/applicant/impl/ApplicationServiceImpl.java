@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
-import pl.viola.ems.model.modules.applicant.Application;
+import pl.viola.ems.model.modules.applicant.ApplicantApplication;
 import pl.viola.ems.model.modules.applicant.ApplicationPosition;
 import pl.viola.ems.model.modules.applicant.repository.ApplicationPositionRepository;
 import pl.viola.ems.model.modules.applicant.repository.ApplicationRepository;
@@ -33,7 +33,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     MessageSource messageSource;
 
     @Override
-    public List<Application> findByApplicant(final User principal) {
+    public List<ApplicantApplication> findByApplicant(final User principal) {
 
         List<OrganizationUnit> organizationUnits = new ArrayList<>();
         organizationUnits.add(
@@ -46,7 +46,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public List<Application> findByCoordinator(final User principal) {
+    public List<ApplicantApplication> findByCoordinator(final User principal) {
 
         List<OrganizationUnit> coordinators = new ArrayList<>();
         coordinators.add(organizationUnitService.findCoordinatorByCode(
@@ -67,8 +67,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @Transactional
-    public Application saveApplication(final Application application, final String action, final User principal) {
-        Application currentApplication = application;
+    public ApplicantApplication saveApplication(final ApplicantApplication application, final String action, final User principal) {
+        ApplicantApplication currentApplication = application;
         switch (action) {
             case "add": {
                 OrganizationUnit applicant = principal.getOrganizationUnit();
@@ -92,13 +92,13 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @Transactional
-    public Application updateApplicationStatus(final Long applicationId, final String newStatus) {
+    public ApplicantApplication updateApplicationStatus(final Long applicationId, final String newStatus) {
         List<String> status = Arrays.asList("WY", "ZP");
         if (newStatus == null || !status.contains(newStatus)) {
             throw new AppException("Applicant.application.invalidStatus", HttpStatus.BAD_REQUEST);
         }
 
-        Application application = applicationRepository.findById(applicationId)
+        ApplicantApplication application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new AppException("Applicant.application.notFound", HttpStatus.NOT_FOUND));
         application.getPositions().forEach(position -> position.setStatus(newStatus));
         application.setStatus(newStatus);
@@ -133,7 +133,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
     }
 
-    private void saveApplicationPositions(Application application) {
+    private void saveApplicationPositions(ApplicantApplication application) {
         Set<ApplicationPosition> positions = application.getPositions();
         applicationPositionRepository.deleteAll(applicationPositionRepository.findByApplication(Optional.of(application)));
         positions.forEach(position -> {

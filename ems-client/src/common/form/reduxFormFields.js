@@ -211,6 +211,10 @@ export function renderDateField({meta: { submitting, error, invalid, touched, vi
     const onChange = date => {
         Date.parse(date) ? inputProps.onChange(date.toISOString()) : inputProps.onChange(date);
     };
+
+    const onBlur = () => {
+        inputProps.onChange(value);
+    }
     return(
         <MuiPickersUtilsProvider utils={LocalizedUtils} locale={pl}>
             <KeyboardDatePicker
@@ -227,6 +231,7 @@ export function renderDateField({meta: { submitting, error, invalid, touched, vi
                 keyboardIcon={others.disabled ? false : others.icon}
                 disabled={submitting || others.disabled}
                 onChange={onChange}
+                onBlur={onBlur}
                 error={error && touched}
                 helperText={touched && error}
                 {...others}

@@ -21,4 +21,10 @@ public class AccountantInvoiceController {
     public ApiResponse getInvoices(@PathVariable int year) {
         return new ApiResponse(HttpStatus.FOUND, invoiceService.getInvoicesByYear(year));
     }
+
+    @GetMapping("/planPosition/{planPositionId}/getInvoicePositions")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1244')")
+    public ApiResponse getInvoicesPositionsByInstitutionPlanPosition(@PathVariable Long planPositionId) {
+        return new ApiResponse(HttpStatus.FOUND, invoiceService.getInvoicesByInstitutionPlanPositions(planPositionId));
+    }
 }

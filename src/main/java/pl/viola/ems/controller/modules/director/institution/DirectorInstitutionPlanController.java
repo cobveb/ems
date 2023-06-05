@@ -22,10 +22,10 @@ public class DirectorInstitutionPlanController {
     @Autowired
     InstitutionPlanService institutionPlanService;
 
-    @GetMapping("/getPlans")
+    @GetMapping("/{year}/getPlans")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1025')")
-    public ApiResponse getInstitutionPlans() {
-        return new ApiResponse(HttpStatus.FOUND, institutionPlanService.getPlans("director"));
+    public ApiResponse getInstitutionPlans(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, institutionPlanService.getPlans(year, "director"));
     }
 
     @PutMapping("/approvePlan/{planId}")

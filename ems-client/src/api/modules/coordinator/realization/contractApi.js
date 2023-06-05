@@ -1,8 +1,8 @@
 import Axios from 'axios';
 
 class ContractApi {
-    static getContracts(){
-        return Axios.get(`/api/coordinator/realization/contract/getContracts`)
+    static getContracts(year){
+        return Axios.get(`/api/coordinator/realization/contract/${year}/getContracts`)
     }
 
     static saveContract(action, data){

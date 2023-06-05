@@ -2,11 +2,14 @@ import React, { Component } from 'react';
 import { withStyles, CssBaseline, Card, CardContent } from '@material-ui/core/';
 import DrawerMenu from 'common/menu/drawerMenu';
 import PropTypes from 'prop-types';
-import { People } from '@material-ui/icons/';
+import { People, LibraryBooks, Domain, Work } from '@material-ui/icons/';
 import * as constants from 'constants/uiNames'
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
-import WorkersContainer from 'containers/modules/hr/staff/workersContainer';
+import EmployeesContainer from 'containers/modules/hr/employees/employeesContainer';
+import DictionariesContainer from 'containers/modules/hr/dictionary/dictionariesContainer';
+import PlacesContainer from 'containers/modules/hr/dictionary/placesContainer';
+import WorkplacesContainer from 'containers/modules/hr/dictionary/workplacesContainer';
 
 const styles = theme => ({
     root: {
@@ -35,20 +38,52 @@ class HumanResources extends Component {
     state = {
         menus: [
             {
-                name: constants.HR_MENU_STAFF,
+                name: constants.HR_MENU_EMPLOYEES,
                 icon: <People />,
                 defaultExpanded: true,
                 items:  [
                     {
-                        code: 'workers',
-                        name: constants.HR_MENU_STAFF_WORKERS,
+                        code: 'employees',
+                        name: constants.HR_MENU_EMPLOYEES_EMPLOYEES,
                         path: '/modules/hr',
                         icon: <People />
                     },
                 ],
             },
+            {
+                name: constants.MENU_DICTIONARIES,
+                icon: <LibraryBooks />,
+                items: [
+                    {
+                        code:'dictionaries',
+                        name: constants.MENU_DICTIONARIES,
+                        path: '/modules/hr/dictionaries',
+                        icon: <LibraryBooks />
+                    },
+                    {
+                        code:'places',
+                        name: constants.HR_MENU_EMPLOYEES_DICTIONARIES_PLACES,
+                        path: '/modules/hr/dictionaries/places',
+                        icon: <Domain />
+                    },
+                    {
+                        code:'workplaces',
+                        name: constants.HR_MENU_EMPLOYEES_DICTIONARIES_WORKPLACES,
+                        path: '/modules/hr/dictionaries/workplaces',
+                        icon: <Work />
+                    },
+                ],
+            }
         ]
     };
+
+    showEmployeeDetails = () =>{
+        return(
+            <EmployeesContainer
+                levelAccess="hr"
+            />
+        )
+    }
 
     render(){
         const { classes } = this.props;
@@ -62,7 +97,10 @@ class HumanResources extends Component {
                         <Card className={classes.card}>
                             <CardContent>
                                 <Switch>
-                                    <PrivateRoute exact path='/modules/hr/' component={WorkersContainer}/>
+                                    <PrivateRoute exact path='/modules/hr/' component={this.showEmployeeDetails}/>
+                                    <PrivateRoute exact path='/modules/hr/dictionaries' component={DictionariesContainer}/>
+                                    <PrivateRoute exact path='/modules/hr/dictionaries/places' component={PlacesContainer}/>
+                                    <PrivateRoute exact path='/modules/hr/dictionaries/workplaces' component={WorkplacesContainer}/>
                                 </Switch>
                             </CardContent>
                         </Card>

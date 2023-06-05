@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { withStyles, Grid, Typography, Divider, Toolbar, InputAdornment} from '@material-ui/core/';
-import { Description, LibraryBooks, Visibility, Cancel, DoneAll, Undo, CheckCircle, Print } from '@material-ui/icons/';
+import { Description, LibraryBooks, Visibility, Cancel, DoneAll, Undo, CheckCircle, Print, FolderOpen } from '@material-ui/icons/';
 import { Table, Button, InputField, SearchField } from 'common/gui';
 import { Spinner, ModalDialog } from 'common/';
 import { numberWithSpaces, escapeSpecialCharacters, findIndexElement } from 'utils/';
 import PlanPositionsContainer from 'containers/modules/accountant/institution/plans/planPositionsContainer';
+import PlanPositionRealizationContainer from 'containers/modules/accountant/institution/plans/planPositionRealizationContainer';
 
 const styles = theme => ({
     root: {
@@ -132,11 +133,12 @@ class Plan extends Component {
                 type: 'object',
             },
         ],
-        selected:{},
+        selected: {},
         isDetailsVisible: false,
         codeNameSearch: '',
         disabledApprove: true,
         planAction:'',
+        openRealization: false,
     }
 
     handleSelect = (id) => {
@@ -232,13 +234,24 @@ class Plan extends Component {
         }
     }
 
+    handleOpenRealization = () => {
+        this.setState({openRealization: !this.state.openRealization})
+    }
+
+    handleCloseRealization = () => {
+        this.setState({
+            openRealization: !this.state.openRealization,
+            selected: {},
+        });
+    }
+
     handleExcelExport = (exportType) => {
         this.props.onExcelExport(exportType, this.state.headCells)
     }
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues !== prevProps.initialValues){
-                this.setState(prevState =>{
+            this.setState(prevState =>{
                 let rows = [...prevState.rows];
                 let selected = {...prevState.selected};
                 let disabledApprove = {...prevState.disabledApprove}
@@ -265,14 +278,20 @@ class Plan extends Component {
 
     render(){
         const { classes, isLoading, error, initialValues, levelAccess, disableWithdraw, existsPlanToApprove } = this.props;
-        const { headCells, headCellsUpd, rows, selected, isDetailsVisible, disabledApprove, planAction } = this.state;
+        const { headCells, headCellsUpd, rows, selected, isDetailsVisible, disabledApprove, planAction, openRealization } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
                 {error && <ModalDialog message={error} onClose={this.handleCloseDialog} variant="error"/>}
 
                 { planAction && this.renderDialog() }
-
+                {openRealization &&
+                    <PlanPositionRealizationContainer
+                        initialValues={selected}
+                        open={openRealization}
+                        onClose={this.handleCloseRealization}
+                    />
+                }
                 {isDetailsVisible ?
                     <PlanPositionsContainer
                         initialValues={selected}
@@ -429,6 +448,7 @@ class Plan extends Component {
                                                 rows={rows}
                                                 headCells={initialValues.isCorrected ? headCellsUpd : headCells}
                                                 onSelect={this.handleSelect}
+                                                clearSelect={Object.keys(selected).length === 0}
                                                 onDoubleClick={this.handleDoubleClick}
                                                 onExcelExport={this.handleExcelExport}
                                                 rowKey='id'
@@ -497,6 +517,14 @@ class Plan extends Component {
                                                 onClick={(event) => this.handlePlanAction(event, 'approve')}
                                             />
                                         }
+                                        <Button
+                                            label={constants.ACCOUNTANT_MENU_REALIZATION}
+                                            icon=<FolderOpen />
+                                            iconAlign="left"
+                                            variant="add"
+                                            disabled={Object.keys(selected).length === 0}
+                                            onClick={this.handleOpenRealization}
+                                        />
                                     </Grid>
                                 </Grid>
                             <Grid item xs={(initialValues.isCorrected === undefined || !initialValues.isCorrected) ? 2 : 1}>

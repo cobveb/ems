@@ -17,7 +17,7 @@ import pl.viola.ems.model.common.dictionary.Dictionary;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
-import pl.viola.ems.model.modules.applicant.Application;
+import pl.viola.ems.model.modules.applicant.ApplicantApplication;
 import pl.viola.ems.model.modules.applicant.ApplicationPosition;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.service.modules.administrator.UserService;
@@ -51,10 +51,10 @@ class ApplicationControllerTest {
     private final OrganizationUnit applicant = new OrganizationUnit("app", "Applicant", "Uck", "uck@uck.katowice.pl", true);
     private final OrganizationUnit coordinator = new OrganizationUnit("cor", "Coordinator", "Uck", "uck@uck.katowice.pl", true);
 
-    private final Application application = new Application((long) 1, "01/app/2020", applicant, coordinator, "ZA", new Date(), null, new HashSet<>());
-    private final Application send = new Application((long) 1, "01/app/2020", applicant, coordinator, "WY", new Date(), null, new HashSet<>());
-    private final Application withdraw = new Application((long) 1, "01/app/2020", applicant, coordinator, "ZA", new Date(), null, new HashSet<>());
-    private final Application application1 = new Application((long) 2, "01/app/2020", coordinator, applicant, "ZA", new Date(), null, new HashSet<>());
+    private final ApplicantApplication application = new ApplicantApplication((long) 1, "01/app/2020", applicant, coordinator, "ZA", new Date(), null, new HashSet<>());
+    private final ApplicantApplication send = new ApplicantApplication((long) 1, "01/app/2020", applicant, coordinator, "WY", new Date(), null, new HashSet<>());
+    private final ApplicantApplication withdraw = new ApplicantApplication((long) 1, "01/app/2020", applicant, coordinator, "ZA", new Date(), null, new HashSet<>());
+    private final ApplicantApplication application1 = new ApplicantApplication((long) 2, "01/app/2020", coordinator, applicant, "ZA", new Date(), null, new HashSet<>());
 
     private final Dictionary test = new Dictionary("test", "Test", 'U', new HashSet<>());
     private final DictionaryItem item = new DictionaryItem((long) 1, "test", "test item", true, test, new HashSet<>(), new HashSet<>(), new HashSet<>(), new HashSet<>());
@@ -94,8 +94,8 @@ class ApplicationControllerTest {
         withdraw.setPositions(new HashSet<>(Collections.singletonList(posWithdraw)));
         send.setPositions(new HashSet<>(Collections.singletonList(posSend)));
 
-        List<Application> applicants = Arrays.asList(application, application1);
-        List<Application> coordinators = Collections.singletonList(application1);
+        List<ApplicantApplication> applicants = Arrays.asList(application, application1);
+        List<ApplicantApplication> coordinators = Collections.singletonList(application1);
 
         given(userService.findByUsername("user")).willReturn(Optional.of(user));
         given(applicationService.findByApplicant(user)).willReturn(applicants);

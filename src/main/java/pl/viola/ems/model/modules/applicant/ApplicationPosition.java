@@ -43,5 +43,5 @@ public class ApplicationPosition {
     @NonNull
     @ManyToOne
     @JoinColumn(name = "application_id")
-    private Application application;
+    private ApplicantApplication application;
 }

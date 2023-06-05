@@ -193,12 +193,6 @@ class ApplicationForm extends Component {
             },
         ],
         splitOptions:[
-//            {
-//                label: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_ROLLBACK_PART_REALIZATION,
-//                onClick: ((event) => this.handleSplitAction(event, 'rollbackParts')),
-//                disabled: false,
-//                icon:<AssignmentReturn className={this.props.classes.splitButtonIcon} />,
-//            },
             {
                 label: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_ROLLBACK_REALIZATION,
                 onClick: ((event) => this.handleSplitAction(event, 'rollbackAll')),
@@ -601,7 +595,7 @@ class ApplicationForm extends Component {
             } else {
                 this.setState(prevState => {
                     const splitOptions = [...prevState.splitOptions];
-                    if(this.props.formCurrentValues.parts.filter(part => ((part.isRealized === true && part.amountContractAwardedNet === null) ||
+                    if(this.props.formCurrentValues.parts.filter(part => (part.isRealized === null || (part.isRealized === true && part.amountContractAwardedNet === null) ||
                         (part.isRealized === false && part.reasonNotRealized === null))).length > 0){
                         splitOptions[1].disabled = true;
                     } else {
@@ -657,6 +651,21 @@ class ApplicationForm extends Component {
                 this.setState({maxContentHeight: (this.state.titleHeight + this.action.clientHeight)+67});
             }
         }
+
+        //Setup split button disabled option on save parts
+        if(prevProps.formCurrentValues !== undefined && this.props.formCurrentValues.parts !== prevProps.formCurrentValues.parts && this.props.formCurrentValues.parts.length > 0){
+            this.setState(prevState => {
+                const splitOptions = [...prevState.splitOptions];
+                if(this.props.formCurrentValues.parts.filter(part => (part.isRealized === null || (part.isRealized === true && part.amountContractAwardedNet === null) ||
+                    (part.isRealized === false && part.reasonNotRealized === null))).length > 0){
+                    splitOptions[1].disabled = true;
+                } else {
+                    splitOptions[1].disabled = false;
+                }
+                return {splitOptions}
+            });
+        }
+
     }
 
     render(){
@@ -1197,7 +1206,7 @@ class ApplicationForm extends Component {
                                                 label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_JUSTIFICATION_PURCHASE}
                                                 multiline
                                                 isRequired={initialValues.status !== undefined ? true : null }
-                                                inputProps={{ maxLength: 1000 }}
+                                                inputProps={{ maxLength: 2000 }}
                                                 disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
                                             />
                                         </Grid>

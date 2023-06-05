@@ -17,10 +17,10 @@ public class ContractController {
     @Autowired
     ContractService contractService;
 
-    @GetMapping("/getContracts")
+    @GetMapping("/{year}/getContracts")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1242')")
-    public ApiResponse getContracts() {
-        return new ApiResponse(HttpStatus.FOUND, contractService.getContracts());
+    public ApiResponse getContracts(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, contractService.getContracts(year));
     }
 
     @PutMapping("/{action}/saveContract")

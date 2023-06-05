@@ -48,6 +48,7 @@ class PlanPositionRealizationContainer extends Component {
                 initialValues={invoicesPositions}
                 planPosition={this.props.initialValues}
                 planType={this.props.planType}
+                isInstitutionPlan={false}
                 open={this.props.open}
                 isLoading={isLoading}
                 error={error}

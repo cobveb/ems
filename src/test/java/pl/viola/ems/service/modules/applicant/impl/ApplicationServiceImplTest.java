@@ -14,7 +14,7 @@ import pl.viola.ems.model.common.dictionary.Dictionary;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
-import pl.viola.ems.model.modules.applicant.Application;
+import pl.viola.ems.model.modules.applicant.ApplicantApplication;
 import pl.viola.ems.model.modules.applicant.ApplicationPosition;
 import pl.viola.ems.model.modules.applicant.repository.ApplicationPositionRepository;
 import pl.viola.ems.model.modules.applicant.repository.ApplicationRepository;
@@ -94,12 +94,12 @@ class ApplicationServiceImplTest {
     private final List<OrganizationUnit> organizationUnits = Arrays.asList(applicant, child);
     private final List<OrganizationUnit> coordinatorUnits = Collections.singletonList(coordinator);
 
-    private final Application application = new Application((long) 1, "01/app/2020", applicant, coordinator, "ZA", new Date(), null, new HashSet<>());
+    private final ApplicantApplication application = new ApplicantApplication((long) 1, "01/app/2020", applicant, coordinator, "ZA", new Date(), null, new HashSet<>());
 
-    private final Application application1 = new Application((long) 2, "01/app/2020", coordinator, applicant, "ZA", new Date(), null, new HashSet<>());
+    private final ApplicantApplication application1 = new ApplicantApplication((long) 2, "01/app/2020", coordinator, applicant, "ZA", new Date(), null, new HashSet<>());
 
-    private final List<Application> applicants = Collections.singletonList(application);
-    private final List<Application> coordinators = Collections.singletonList(application1);
+    private final List<ApplicantApplication> applicants = Collections.singletonList(application);
+    private final List<ApplicantApplication> coordinators = Collections.singletonList(application1);
 
     private final User user = new User(
             (long) 0,
@@ -163,7 +163,7 @@ class ApplicationServiceImplTest {
     void findByApplicant() {
 
 
-        List<Application> applications = applicationService.findByApplicant(user);
+        List<ApplicantApplication> applications = applicationService.findByApplicant(user);
 
         assertThat(applications).isNotEmpty();
         assertThat(applications.size()).isGreaterThanOrEqualTo(1);
@@ -174,9 +174,9 @@ class ApplicationServiceImplTest {
     @Test
     void findByCoordinator() {
 
-        Application test = new Application((long) 2, "01/app/2020", coordinator, applicant, "ZA", new Date(), null, new HashSet<>());
+        ApplicantApplication test = new ApplicantApplication((long) 2, "01/app/2020", coordinator, applicant, "ZA", new Date(), null, new HashSet<>());
 
-        List<Application> applications = applicationService.findByCoordinator(coordinatorUser);
+        List<ApplicantApplication> applications = applicationService.findByCoordinator(coordinatorUser);
 
         assertThat(applications).isNotEmpty();
         assertThat(applications.size()).isGreaterThanOrEqualTo(1);
@@ -202,8 +202,8 @@ class ApplicationServiceImplTest {
 
     @Test
     void saveApplicationAdd() {
-        Application appl = new Application((long) 1, null, applicant, coordinator, "ZA", new Date(), null, new HashSet<>());
-        Application newAppl = applicationService.saveApplication(appl, "add", user);
+        ApplicantApplication appl = new ApplicantApplication((long) 1, null, applicant, coordinator, "ZA", new Date(), null, new HashSet<>());
+        ApplicantApplication newAppl = applicationService.saveApplication(appl, "add", user);
         verify(applicationRepository, times(1)).save(application);
         assertThat(newAppl.getNumber()).isEqualTo("01/app/2020");
     }
@@ -218,7 +218,7 @@ class ApplicationServiceImplTest {
 
     @Test
     void saveApplicationEdit() {
-        Application editedApplication = applicationService.saveApplication(application, "edit", user);
+        ApplicantApplication editedApplication = applicationService.saveApplication(application, "edit", user);
         verify(applicationRepository, times(1)).save(application);
         verify(applicationPositionRepository, times(1)).deleteAll(positions);
         assertThat(editedApplication).isEqualTo(application);
@@ -233,9 +233,9 @@ class ApplicationServiceImplTest {
 
     @Test
     void updateApplicationStatus() {
-        Application application = new Application((long) 1, "01/app/2020", applicant, coordinator, "WY", new Date(), null, new HashSet<>());
+        ApplicantApplication application = new ApplicantApplication((long) 1, "01/app/2020", applicant, coordinator, "WY", new Date(), null, new HashSet<>());
 
-        Application updated = applicationService.updateApplicationStatus((long) 1, "WY");
+        ApplicantApplication updated = applicationService.updateApplicationStatus((long) 1, "WY");
 
         verify(applicationRepository, times(1)).save(updated);
         assertThat(application.getStatus()).isEqualTo(updated.getStatus());

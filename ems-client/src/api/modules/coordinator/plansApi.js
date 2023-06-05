@@ -2,8 +2,8 @@ import Axios from 'axios';
 
 class PlansApi {
 
-    static getPlans(){
-        return Axios.get(`/api/coordinator/plans/getAll`)
+    static getPlans(year){
+        return Axios.get(`/api/coordinator/plans/${year}/getAll`)
     }
 
     static getPlanPositions(planId){
@@ -23,7 +23,7 @@ class PlansApi {
     }
 
     static savePlan(action, data){
-    return Axios.put(`/api/coordinator/plan/${action}/savePlan`, data)
+        return Axios.put(`/api/coordinator/plan/${action}/savePlan`, data)
     }
 
     static sendPlan(planId){

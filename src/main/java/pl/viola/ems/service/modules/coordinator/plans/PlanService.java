@@ -14,15 +14,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface PlanService {
-    List<CoordinatorPlan> findByCoordinator();
+    Set<CoordinatorPlan> findByCoordinator(int year);
 
     <T extends CoordinatorPlanPosition> List<T> findPositionsByPlan(Long planId);
 
     <T extends CoordinatorPlanPosition> List<T> findPositionsByIdsAndPlanType(List<Long> positionIds, CoordinatorPlan.PlanType planType);
 
-    List<CoordinatorPlanPosition> getPlanPositionByYearAndPlanType(CoordinatorPlan.PlanType planType);
+    List<CoordinatorPlanPosition> getPlanPositionByYearAndPlanType(Integer year, CoordinatorPlan.PlanType planType);
 
     Optional<PublicProcurementPosition> getPublicProcurementPositionById(Long positionId);
 
@@ -48,13 +49,13 @@ public interface PlanService {
 
     String deletePlanPosition(Long planId, Long planPositionId);
 
-    List<CoordinatorPlan> getPlansByCoordinatorInAccountant();
+    Set<CoordinatorPlan> getPlansByCoordinatorInAccountant(int year);
 
-    List<CoordinatorPlan> getPlansByCoordinatorInPublicProcurement();
+    Set<CoordinatorPlan> getPlansByCoordinatorInPublicProcurement(int year);
 
-    List<CoordinatorPlan> getCoordinatorsPlanUpdates(String accessLevel, CoordinatorPlan.PlanType plan);
+    Set<CoordinatorPlan> getCoordinatorsPlanUpdates(String accessLevel, CoordinatorPlan.PlanType plan, int year);
 
-    List<CoordinatorPlan> getPlansCoordinatorInDirector(boolean isPlanUpdates);
+    Set<CoordinatorPlan> getPlansCoordinatorInDirector(boolean isPlanUpdates, int year);
 
     CoordinatorPlanPosition deleteSubPosition(CoordinatorPlanSubPosition subPosition, Long positionId);
 

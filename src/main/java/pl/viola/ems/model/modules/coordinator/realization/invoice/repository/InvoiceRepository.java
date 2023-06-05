@@ -13,5 +13,7 @@ import java.util.Set;
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     Set<Invoice> findByCoordinatorIn(List<OrganizationUnit> coordinators);
 
-    List<Invoice> findBySellDateBetween(Date sellDateFrom, Date sellDateTo);
+    Set<Invoice> findBySellDateBetweenAndCoordinatorIn(Date signingDateFrom, Date signingDateTo, List<OrganizationUnit> coordinators);
+
+    Set<Invoice> findBySellDateBetween(Date sellDateFrom, Date sellDateTo);
 }

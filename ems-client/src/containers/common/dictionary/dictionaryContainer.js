@@ -23,7 +23,9 @@ class DictionaryContainer extends Component{
                     initData.items.push(response.data.data);
                 } else {
                     const idx = findIndexElement(response.data.data, initData.items);
-                    this.state.initData.items.splice(idx, 1, response.data.data);
+                    if(idx !== null){
+                        initData.items.splice(idx, 1, response.data.data);
+                    }
                 }
                 return {initData}
             })
@@ -40,7 +42,10 @@ class DictionaryContainer extends Component{
         .then(response =>{
             this.setState(prevState => {
                 const initData = {...prevState.initData};
-                initData.items = initData.items.filter(item => item.id !== value.id)
+                const idx = findIndexElement(value, this.state.initData.items);
+                if(idx !== null){
+                    initData.items.splice(idx, 1);
+                }
                 return {initData};
             });
             this.props.loading(false)

@@ -927,6 +927,131 @@ COMMENT on COLUMN pub_institution_plan_pos.estimation_type is 'Position estimati
 COMMENT on COLUMN pub_institution_plan_pos.order_type is 'Position order type';
 COMMENT on COLUMN pub_institution_plan_pos.assortment_id is 'Position assortment group (FK -> slAsortGr)';
 /
+
+/*-----------------------------------------Tables Module IOD  -------------------------------------------*/
+/* Create the table of registers */
+drop table emsadm.registers cascade constraints purge;
+/
+create TABLE emsadm.registers(
+    id NUMBER(19,0) NOT NULL,
+    code VARCHAR2(10) NOT NULL,
+    name VARCHAR2(300) NOT NULL,
+    upd_date DATE,
+    upd_user_id NUMBER(19,0),
+    CONSTRAINT registers_pk PRIMARY KEY(id),
+    CONSTRAINT registers_upd_user_fk FOREIGN KEY (upd_user_id) REFERENCES emsarch.users(id)
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN registers.id is 'IodRegister PK';
+COMMENT on COLUMN registers.code is 'IodRegister code';
+COMMENT on COLUMN registers.name is 'IodRegister name';
+COMMENT on COLUMN registers.upd_date is 'IodRegister update date';
+COMMENT on COLUMN registers.upd_user_id is 'IodRegister update user ID (FK -> Users)';
+/
+
+/* Create the table of register positions */
+drop table emsadm.register_positions cascade constraints purge;
+/
+create TABLE emsadm.register_positions(
+    id NUMBER(19,0) NOT NULL,
+    name VARCHAR2(300) NOT NULL,
+    is_active NUMBER(1) DEFAULT 1 NOT NULL,
+    register_id NUMBER(19,0),
+    CONSTRAINT reg_pos_pk PRIMARY KEY(id),
+    CONSTRAINT reg_pos_fk FOREIGN KEY (register_id) REFERENCES emsadm.registers(id)
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN register_positions.id is 'IodRegister position PK';
+COMMENT on COLUMN register_positions.name is 'IodRegister poistion name';
+COMMENT on COLUMN register_positions.is_active is 'Register position is active';
+COMMENT on COLUMN register_positions.register_id is 'IodRegister ID (FK -> Registers)';
+/
+
+/* Create the table of iod register cpdo positions */
+drop table emsadm.iod_reg_pos_cpdo cascade constraints purge;
+/
+create TABLE emsadm.iod_reg_pos_cpdo(
+    id NUMBER(19,0) NOT NULL,
+    ou_id NUMBER(19,0),
+    purpose_proc_id NUMBER(19,0),
+    cat_people_id NUMBER(19,0),
+    data_cat_id NUMBER(19,0),
+    legal_basis_id NUMBER(19,0),
+    date_source_id NUMBER(19,0),
+    data_set_conn_id NUMBER(19,0),
+    cat_rem_date_id NUMBER(19,0),
+    co_adm_name_id NUMBER(19,0),
+    processor_name_id NUMBER(19,0),
+    recipient_cat_id NUMBER(19,0),
+    sys_soft_name_id NUMBER(19,0),
+    sec_measures_id NUMBER(19,0),
+    dpia_id NUMBER(19,0),
+    third_country_id NUMBER(19,0),
+    third_country_doc_id NUMBER(19,0),
+    comments_id NUMBER(19,0),
+    CONSTRAINT reg_pos_cpdo_pk PRIMARY KEY(id)
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN iod_reg_pos_cpdo.id is 'IodRegister position PK';
+COMMENT on COLUMN iod_reg_pos_cpdo.ou_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.purpose_proc_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.cat_people_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.data_cat_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.legal_basis_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.date_source_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.data_set_conn_id is 'Connection with the data set';
+COMMENT on COLUMN iod_reg_pos_cpdo.cat_rem_date_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.co_adm_name_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.processor_name_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.recipient_cat_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.sys_soft_name_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.sec_measures_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.dpia_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.third_country_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.third_country_doc_id is 'Organization units (text)';
+COMMENT on COLUMN iod_reg_pos_cpdo.comments_id is 'Comments (text)';
+
+/*-----------------------------------------Tables Module HR   -------------------------------------------*/
+/* Create the table of HR places */
+drop table emsadm.hr_places cascade constraints purge;
+/
+create TABLE emsadm.hr_places(
+    id NUMBER(19,0) NOT NULL,
+    name VARCHAR2(300) NOT NULL,
+    active NUMBER(1),
+    place_type VARCHAR(2) default 'PL' NOT NULL,
+    location_id NUMBER(19,0),
+    group_id NUMBER(19,0),
+    CONSTRAINT hr_places_pk PRIMARY KEY(id),
+    CONSTRAINT hr_place_location_fk FOREIGN KEY (location_id) REFERENCES emsarch.dictionary_items(id),
+    CONSTRAINT hr_place_group_fk FOREIGN KEY (group_id) REFERENCES  emsarch.dictionary_items(id)
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN hr_places.id is 'Place contractors PK';
+COMMENT on COLUMN hr_places.name is 'Place name';
+COMMENT on COLUMN hr_places.active is 'Is place active';
+COMMENT on COLUMN hr_places.place_type is 'Type place or workplace';
+COMMENT on COLUMN hr_places.location_id is 'Place location FK (dictionary_items -> slHrLoc)';
+COMMENT on COLUMN hr_places.group_id is 'Place group FK (dictionary_items -> slHrGrZaw)';
+
+/* Create the table of HR employees */
+drop table emsadm.hr_employees cascade constraints purge;
+/
+create TABLE emsadm.hr_employees(
+    id NUMBER(19,0) NOT NULL,
+    name VARCHAR2(15) NOT NULL,
+    surname VARCHAR2(80) NOT NULL,
+    hr_number VARCHAR2(20),
+    comments_id NUMBER(19,0),
+    CONSTRAINT hr_employee_pk PRIMARY KEY(id),
+    CONSTRAINT hr_employee_comments_fk FOREIGN KEY (comments_id) REFERENCES emsadm.texts(id)
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN hr_employees.id is 'Employee PK';
+COMMENT on COLUMN hr_employees.name is 'Employee name';
+COMMENT on COLUMN hr_employees.surname is 'Employee surname';
+COMMENT on COLUMN hr_employees.hr_number is 'Employee HR number';
+COMMENT on COLUMN hr_employees.comments_id is 'Employee comments FK (texts)';
 /*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   SEQUENCE                                            			   */
 /*---------------------------------------------------------------------------------------------------------------------*/
@@ -1051,6 +1176,35 @@ create sequence cor_real_inv_pos_seq start with 1 increment by 1 nomaxvalue noca
 drop sequence cor_real_ctr_seq;
 /
 create sequence cor_real_ctr_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
+
+/*-----------------------------------------Sequence Module IOD -------------------------------------------------*/
+
+-- Create sequence of table registers
+drop sequence register_seq;
+/
+create sequence register_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
+/
+
+-- Create sequence of table registers positions
+drop sequence reg_pos_seq;
+/
+create sequence reg_pos_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
+/
+
+/*-----------------------------------------Sequence Module HR -------------------------------------------------*/
+
+-- Create sequence of table HR places
+drop sequence hr_place_seq;
+/
+create sequence hr_place_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
+/
+
+-- Create sequence of table HR places
+drop sequence hr_employee_seq;
+/
+create sequence hr_employee_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
+/
+
 //*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   PACKAGES                                           		       */
 /*-------------------------------------------------------------------------------------------------------------------- */

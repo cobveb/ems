@@ -5,6 +5,7 @@ import pl.viola.ems.model.common.dictionary.DictionaryItem;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface DictionaryService {
     List<Dictionary> findAll();
@@ -16,4 +17,6 @@ public interface DictionaryService {
     DictionaryItem saveDictionaryItem(DictionaryItem dictionaryItem, String dictionaryCode);
 
     String deleteDictionaryItem(Long itemId);
+
+    Set<DictionaryItem> findActiveItemsByDictionary(String dictionaryCode);
 }

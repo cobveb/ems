@@ -39,8 +39,9 @@ class PlansUpdatesContainer extends Component {
     }
 
     handleUpdateOnCloseDetails = (plan) => {
+        plan.year = new Date(plan.year).getFullYear();
         let plans = this.state.plans;
-        return updateOnCloseDetails(plans, plan);
+        return updateOnCloseDetails(plans, plan, "id");
     }
 
     handleGetDictionaryModes(){
@@ -54,7 +55,6 @@ class PlansUpdatesContainer extends Component {
     };
 
     handleGetCoordinators(){
-        this.props.loading(true);
         return OrganizationUnitsApi.getCoordinators()
         .then(response => {
             this.setState(prevState => {
@@ -62,14 +62,13 @@ class PlansUpdatesContainer extends Component {
                 coordinators =  coordinators.concat(response.data.data);
                 return {coordinators};
             });
-            this.props.loading(false)
         })
         .catch(error => {});
     }
 
     handleGetPlanUpdates(){
         this.props.loading(true);
-        PlansApi.getPlanUpdates(this.props.levelAccess === undefined ? "public" : this.props.levelAccess)
+        PlansApi.getPlanUpdates(this.props.levelAccess === undefined ? "public" : this.props.levelAccess, new Date().getFullYear())
         .then(response =>{
             this.setState(prevState => {
                 let plans = [...prevState.plans];
@@ -87,6 +86,33 @@ class PlansUpdatesContainer extends Component {
             this.props.loading(false)
         })
         .catch(error =>{});
+    }
+
+    handleChangeYear = (year) => {
+        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
+            this.props.loading(true);
+            PlansApi.getPlanUpdates(
+                this.props.levelAccess === undefined ? "public" : this.props.levelAccess,
+                year instanceof Date ? year.getFullYear() : 0
+            )
+            .then(response =>{
+                this.setState(prevState => {
+                    let plans = [...prevState.plans];
+                    plans = response.data.data;
+                    plans.map(plan => (
+                        Object.assign(plan,
+                            {
+                                status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
+                                type: plan.type = findSelectFieldPosition( this.state.types, plan.type),
+                            }
+                        )
+                    ))
+                    return {plans};
+                });
+                this.props.loading(false);
+            })
+            .catch(error => {})
+        }
     }
 
     componentDidMount() {
@@ -113,6 +139,7 @@ class PlansUpdatesContainer extends Component {
                 loading={loading}
                 error={error}
                 clearError={clearError}
+                onChangeYear={this.handleChangeYear}
                 onClose={this.handleUpdateOnCloseDetails}
                 onExcelExport={this.handleExcelExport}
             />

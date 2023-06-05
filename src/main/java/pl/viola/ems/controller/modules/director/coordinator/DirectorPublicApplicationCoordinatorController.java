@@ -15,10 +15,10 @@ public class DirectorPublicApplicationCoordinatorController {
     @Autowired
     PublicProcurementApplicationService publicProcurementApplicationService;
 
-    @GetMapping("/getAllApplications")
+    @GetMapping("{year}/getAllApplications")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1115')")
-    public ApiResponse getApplications() {
-        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByAccessLevel("director"));
+    public ApiResponse getApplications(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByAccessLevel(year, "director"));
     }
 
     @PutMapping("/application/directorApprove/{applicationId}")

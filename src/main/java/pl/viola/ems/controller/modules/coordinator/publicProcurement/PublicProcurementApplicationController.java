@@ -43,10 +43,10 @@ public class PublicProcurementApplicationController {
         return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getPlanPositionByYearAndPlanType(planType));
     }
 
-    @GetMapping("/getApplications")
+    @GetMapping("{year}/getApplications")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1032')")
-    public ApiResponse getApplications() {
-        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByCoordinator());
+    public ApiResponse getApplications(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByCoordinator(year));
     }
 
     @GetMapping("/getApplicationsInRealization")

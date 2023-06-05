@@ -23,10 +23,10 @@ public class AccountantPublicApplicationCoordinatorController {
     @Autowired
     PublicProcurementApplicationService publicProcurementApplicationService;
 
-    @GetMapping("/getAllApplications")
+    @GetMapping("{year}/getAllApplications")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1124')")
-    public ApiResponse getApplications() {
-        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByAccessLevel("accountant"));
+    public ApiResponse getApplications(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByAccessLevel(year, "accountant"));
     }
 
     @PutMapping("/application/approve/{applicationId}")

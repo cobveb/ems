@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import pl.viola.ems.model.common.Text;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -14,6 +15,10 @@ public class InvoicePositionPayload {
     private Long id;
 
     private String invoiceNumber;
+
+    private Date invoiceSellDate;
+
+    private String invoiceContractorName;
 
     private Text name;
 

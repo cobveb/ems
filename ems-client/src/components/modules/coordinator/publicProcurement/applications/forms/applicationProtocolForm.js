@@ -280,7 +280,7 @@ class ProtocolForm extends Component {
                                             dictionaryName={constants.ACCOUNTANT_SUBMENU_DICTIONARIES_CONTRACTORS}
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONTRACTOR_CONTRACT}
                                             items={contractors}
-                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP')}
+                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || levelAccess !== undefined}
                                         />
                                     :
                                         <FormTextField
@@ -289,7 +289,7 @@ class ProtocolForm extends Component {
                                             isRequired
                                             multiline
                                             inputProps={{ maxLength: 1000 }}
-                                            disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
+                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || levelAccess !== undefined}
                                         />
                                 }
                             </Grid>
@@ -302,35 +302,45 @@ class ProtocolForm extends Component {
                                             name="email"
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_EMAIL}
                                             labelPlacement="end"
-                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||( formCurrentValues !== undefined && formCurrentValues.renouncement)
+                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
+                                                (formCurrentValues !== undefined && formCurrentValues.renouncement) ||
+                                                    levelAccess !== undefined
                                             }
                                         />
                                         <FormCheckBox
                                             name="phone"
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_PHONE}
                                             labelPlacement="end"
-                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || (formCurrentValues !== undefined && formCurrentValues.renouncement)
+                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
+                                                (formCurrentValues !== undefined && formCurrentValues.renouncement) ||
+                                                    levelAccess !== undefined
                                             }
                                         />
                                         <FormCheckBox
                                             name="internet"
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_INTERNET}
                                             labelPlacement="end"
-                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || (formCurrentValues !== undefined && formCurrentValues.renouncement)
+                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
+                                                (formCurrentValues !== undefined && formCurrentValues.renouncement) ||
+                                                    levelAccess !== undefined
                                             }
                                         />
                                         <FormCheckBox
                                             name="paper"
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_PAPER}
                                             labelPlacement="end"
-                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || (formCurrentValues !== undefined && formCurrentValues.renouncement)
+                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
+                                                (formCurrentValues !== undefined && formCurrentValues.renouncement) ||
+                                                    levelAccess !== undefined
                                             }
                                         />
                                         <FormCheckBox
                                             name="other"
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_OTHER}
                                             labelPlacement="end"
-                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || (formCurrentValues !== undefined && formCurrentValues.renouncement)
+                                            disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
+                                                (formCurrentValues !== undefined && formCurrentValues.renouncement) ||
+                                                    levelAccess !== undefined
                                             }
                                         />
                                         {formCurrentValues !== undefined && formCurrentValues.other &&
@@ -340,7 +350,7 @@ class ProtocolForm extends Component {
                                                 isRequired
                                                 multiline
                                                 inputProps={{ maxLength: 1000 }}
-                                                disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') }
+                                                disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || levelAccess !== undefined}
                                             />
                                         }
                                         <FormCheckBox
@@ -348,7 +358,8 @@ class ProtocolForm extends Component {
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_DISCERNMENT_RENOUNCEMENT}
                                             labelPlacement="end"
                                             disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || (formCurrentValues !== undefined &&
-                                                (formCurrentValues.other || formCurrentValues.paper || formCurrentValues.internet || formCurrentValues.phone || formCurrentValues.email))
+                                                (formCurrentValues.other || formCurrentValues.paper || formCurrentValues.internet || formCurrentValues.phone || formCurrentValues.email)) ||
+                                                    levelAccess !== undefined
                                             }
                                         />
                                         {formCurrentValues !== undefined && formCurrentValues.renouncement &&
@@ -358,7 +369,9 @@ class ProtocolForm extends Component {
                                                 isRequired
                                                 multiline
                                                 inputProps={{ maxLength: 1000 }}
-                                                disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
+                                                disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
+                                                    levelAccess !== undefined
+                                                }
                                             />
                                         }
                                     </FormControl>
@@ -411,7 +424,9 @@ class ProtocolForm extends Component {
                                     multiline
                                     isRequired
                                     inputProps={{ maxLength: 4000 }}
-                                    disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP')}
+                                    disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
+                                        levelAccess !== undefined
+                                    }
                                 />
                             </Grid>
                             <Grid item xs={12} >
@@ -421,7 +436,9 @@ class ProtocolForm extends Component {
                                     multiline
                                     isRequired
                                     inputProps={{ maxLength: 4000 }}
-                                    disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP')}
+                                    disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
+                                        levelAccess !== undefined
+                                    }
                                 />
                             </Grid>
                             <Grid item xs={12} >
@@ -430,7 +447,9 @@ class ProtocolForm extends Component {
                                     label={constants.COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_COMMENTS}
                                     multiline
                                     inputProps={{ maxLength: 1000 }}
-                                    disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
+                                    disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
+                                        levelAccess !== undefined
+                                    }
                                 />
                             </Grid>
                         </Grid>

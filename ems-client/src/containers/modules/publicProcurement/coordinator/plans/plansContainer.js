@@ -39,8 +39,9 @@ class PlansContainer extends Component {
     }
 
     handleUpdateOnCloseDetails = (plan) => {
+        console.log(plan)
         let plans = this.state.plans;
-        return updateOnCloseDetails(plans, plan);
+        return updateOnCloseDetails(plans, plan, "id");
     }
 
     handleGetDictionaryModes(){
@@ -69,7 +70,7 @@ class PlansContainer extends Component {
 
      handleGetPlans(){
         this.props.loading(true);
-        PlansApi.getPlans()
+        PlansApi.getPlans(new Date().getFullYear())
         .then(response =>{
             this.setState(prevState => {
                 let plans = [...prevState.plans];
@@ -88,6 +89,31 @@ class PlansContainer extends Component {
         })
         .catch(error =>{});
     }
+
+    handleChangeYear = (year) => {
+        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
+            this.props.loading(true);
+            PlansApi.getPlans(year instanceof Date ? year.getFullYear() : 0)
+            .then(response =>{
+                this.setState(prevState => {
+                    let plans = [...prevState.plans];
+                    plans = response.data.data;
+                    plans.map(plan => (
+                        Object.assign(plan,
+                            {
+                                status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
+                                type: plan.type = findSelectFieldPosition( this.state.types, plan.type),
+                            }
+                        )
+                    ))
+                    return {plans};
+                });
+                this.props.loading(false);
+            })
+            .catch(error => {})
+        }
+    }
+
 
     handleExcelExport = (exportType, headRow) =>{
         this.props.loading(true);
@@ -120,6 +146,7 @@ class PlansContainer extends Component {
                 loading={loading}
                 error={error}
                 clearError={clearError}
+                onChangeYear={this.handleChangeYear}
                 onClose={this.handleUpdateOnCloseDetails}
                 onExcelExport={this.handleExcelExport}
             />

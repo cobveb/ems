@@ -8,20 +8,29 @@ import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.coordinator.plans.PublicProcurementPosition;
 import pl.viola.ems.model.modules.coordinator.publicProcurement.Application;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 @Repository
 public interface PublicProcurementApplicationRepository extends JpaRepository<Application, Long> {
-    List<Application> findByCoordinatorIn(List<OrganizationUnit> organizationUnits);
+    Set<Application> findByCoordinatorIn(List<OrganizationUnit> organizationUnits);
 
-    List<Application> findByStatusIn(List<Application.ApplicationStatus> statuses);
+    Set<Application> findByCreateDateBetweenAndCoordinatorIn(Date createDateFrom, Date createDateTo, List<OrganizationUnit> organizationUnits);
 
-    List<Application> findByStatusInAndCoordinatorIn(List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> organizationUnits);
-//    Set<Application> findByStatusInAndCoordinatorIn(List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> organizationUnits);
+    Set<Application> findByStatusIn(List<Application.ApplicationStatus> statuses);
+
+    Set<Application> findByCreateDateBetweenAndStatusIn(Date createDateFrom, Date createDateTo, List<Application.ApplicationStatus> statuses);
+
+    Set<Application> findByStatusInAndCoordinatorIn(List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> organizationUnits);
+
+    Set<Application> findByCreateDateBetweenAndStatusInAndCoordinatorIn(Date createDateFrom, Date createDateTo, List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> organizationUnits);
 
     List<Application> findByEstimationTypeAndApplicationProtocolIsNotNull(PublicProcurementPosition.EstimationType estimationType);
 
     @Procedure(name = "publicProcurementGenerateApplicationNumber")
     String generateApplicationNumber(@Param("p_coordinator") String coordinator, @Param("p_mode") String mode, @Param("p_estimation_type") String estimation_type);
 }
+
+
+

@@ -27,16 +27,16 @@ public class AccountantPlanCoordinatorController {
     @Autowired
     PlanService planService;
 
-    @GetMapping("/plans/getAll")
+    @GetMapping("/plans/{year}/getAll")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1024')")
-    public ApiResponse getPlansByCoordinator() {
-        return new ApiResponse(HttpStatus.FOUND, planService.getPlansByCoordinatorInAccountant());
+    public ApiResponse getPlansByCoordinator(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, planService.getPlansByCoordinatorInAccountant(year));
     }
 
-    @GetMapping("/plans/getCoordinatorsPlanUpdates")
+    @GetMapping("/plans/{year}/getCoordinatorsPlanUpdates")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1024')")
-    public ApiResponse getCoordinatorsPlanUpdates() {
-        return new ApiResponse(HttpStatus.FOUND, planService.getCoordinatorsPlanUpdates("accountant", CoordinatorPlan.PlanType.PZP));
+    public ApiResponse getCoordinatorsPlanUpdates(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, planService.getCoordinatorsPlanUpdates("accountant", CoordinatorPlan.PlanType.PZP, year));
     }
 
     @GetMapping("/plans/getPlan/{planId}")

@@ -178,7 +178,7 @@ class Users extends Component {
                                             onChange={this.handleSearch}
                                             label={constants.USERS_SEARCH_SURNAME}
                                             placeholder={constants.USERS_SEARCH_SURNAME}
-                                            valueType="digits"
+                                            valueType="all"
                                         />
                                     </Grid>
                                     <Grid item xs={4}>
@@ -187,6 +187,7 @@ class Users extends Component {
                                             onChange={this.handleSearch}
                                             label={constants.USERS_SEARCH_NAME}
                                             placeholder={constants.USERS_SEARCH_NAME}
+                                            valueType="all"
                                         />
                                     </Grid>
                                 </Grid>

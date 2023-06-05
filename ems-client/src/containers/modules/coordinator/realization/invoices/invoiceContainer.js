@@ -21,6 +21,8 @@ class InvoiceContainer extends Component {
             }
         ].concat(getVats()),
         contractors: [],
+        financialPlanPositions:[],
+        investmentPlanPositions:[],
         action: this.props.action,
     };
 
@@ -58,6 +60,30 @@ class InvoiceContainer extends Component {
         .catch(error => {})
     }
 
+    handleGetFinancialPlanPositions = (sellDate) => {
+        InvoicesApi.getPlanPositions(new Date(sellDate).getFullYear(), 'FIN')
+        .then(response => {
+            this.setState( prevState =>{
+                let financialPlanPositions = [...prevState.financialPlanPositions];
+                financialPlanPositions = response.data.data;
+                return {financialPlanPositions}
+            })
+        })
+        .catch(error => {});
+    }
+
+    handleGetInvestmentPlanPositions = (sellDate) => {
+        InvoicesApi.getPlanPositions(new Date(sellDate).getFullYear(), 'INW')
+        .then(response => {
+            this.setState( prevState =>{
+                let investmentPlanPositions = [...prevState.investmentPlanPositions];
+                investmentPlanPositions = response.data.data;
+                return {investmentPlanPositions}
+            })
+        })
+        .catch(error => {});
+    }
+
     handleSubmit = (values) =>{
         this.props.loading(true)
         const payload = JSON.parse(JSON.stringify(values));
@@ -73,6 +99,12 @@ class InvoiceContainer extends Component {
                 if(initData.contract !== null){
                    initData.contract = this.setupContract(initData.contract);
                 }
+
+                /* Get plans position on add invoice action */
+                this.handleGetFinancialPlanPositions(response.data.data.sellDate);
+                this.handleGetInvestmentPlanPositions(response.data.data.sellDate);
+
+
                 action = 'edit';
 
                 return {initData, action}
@@ -169,6 +201,7 @@ class InvoiceContainer extends Component {
                 if(initData.contract !== undefined &&  initData.contract !== null){
                    initData.contract = this.setupContract(initData.contract);
                 }
+
                 return {initData}
             });
         }
@@ -189,6 +222,8 @@ class InvoiceContainer extends Component {
 
         if(this.props.action !== "add"){
             this.handleGetInvoicePositions()
+            this.handleGetFinancialPlanPositions(this.props.initialValues.sellDate);
+            this.handleGetInvestmentPlanPositions(this.props.initialValues.sellDate);
         }
         this.handleContractors()
     }
@@ -205,8 +240,8 @@ class InvoiceContainer extends Component {
                     contractors={this.state.contractors}
                     applications={this.props.applications}
                     contracts={this.props.contracts}
-                    financialPlanPositions={this.props.financialPlanPositions}
-                    investmentPlanPositions={this.props.investmentPlanPositions}
+                    financialPlanPositions={this.state.financialPlanPositions}
+                    investmentPlanPositions={this.state.investmentPlanPositions}
                     error={this.props.error}
                     clearError={this.props.clearError}
                     onSubmit={this.handleSubmit}

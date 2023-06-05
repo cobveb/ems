@@ -5,6 +5,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import pl.viola.ems.exception.AppException;
+import pl.viola.ems.model.common.export.ExportType;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionCoordinatorPlanPosition;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPosition;
@@ -21,18 +22,22 @@ import pl.viola.ems.model.modules.coordinator.realization.invoice.Invoice;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.InvoicePosition;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.repository.InvoicePositionRepository;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.repository.InvoiceRepository;
+import pl.viola.ems.payload.export.ExcelHeadRow;
+import pl.viola.ems.payload.modules.accountant.institution.plans.InvoiceInstitutionPositionsResponse;
+import pl.viola.ems.payload.modules.coordinator.application.ApplicationPlanPosition;
 import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePositionPayload;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 import pl.viola.ems.service.modules.coordinator.plans.PlanService;
 import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
 import pl.viola.ems.utils.Utils;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
@@ -71,25 +76,33 @@ public class InvoiceServiceImpl implements InvoiceService {
     InstitutionPlanPositionRepository institutionPlanPositionRepository;
 
     @Override
-    public Set<Invoice> getInvoices() {
+    public Set<Invoice> getInvoices(final int year) {
         List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
                 Utils.getCurrentUser().getOrganizationUnit().getCode()
         ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
 
         coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
 
-        return invoiceRepository.findByCoordinatorIn(coordinators);
+        if (year != 0) {
+            LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
+            Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
+            Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
+            return invoiceRepository.findBySellDateBetweenAndCoordinatorIn(firstDay, lastDay, coordinators);
+        } else {
+            return invoiceRepository.findByCoordinatorIn(coordinators);
+        }
+
     }
 
     @Override
-    public List<Invoice> getInvoicesByYear(final int year) {
+    public Set<Invoice> getInvoicesByYear(final int year) {
         if (year != 0) {
             LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
             Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
             Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
             return invoiceRepository.findBySellDateBetween(firstDay, lastDay);
         } else {
-            return invoiceRepository.findAll();
+            return new HashSet<>(invoiceRepository.findAll());
         }
     }
 
@@ -99,7 +112,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (action.equals("add")) {
             invoice.setCoordinator(Utils.getCurrentUser().getOrganizationUnit());
         } else if (action.equals("edit")) {
-            invoice.setInvoicePositions(this.getInvoicePositions(invoice.getId()).stream().collect(Collectors.toSet()));
+            invoice.setInvoicePositions(new HashSet<>(this.getInvoicePositions(invoice.getId())));
         }
 
         if (invoice.getPublicProcurementApplication() != null) {
@@ -127,7 +140,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                             invoicePosition.getCoordinatorPlanPosition()
                     );
 
-                    this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition, invoicePosition);
+                    this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition);
                 }
             });
         }
@@ -163,6 +176,8 @@ public class InvoiceServiceImpl implements InvoiceService {
             InvoicePositionPayload positionPayload = new InvoicePositionPayload(
                     invoicePosition.getId(),
                     invoicePosition.getInvoice().getNumber(),
+                    invoicePosition.getInvoice().getSellDate(),
+                    invoicePosition.getInvoice().getContractor().getName(),
                     invoicePosition.getName(),
                     invoicePosition.getAmountNet(),
                     invoicePosition.getAmountGross()
@@ -199,13 +214,13 @@ public class InvoiceServiceImpl implements InvoiceService {
             InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPositionIn(Collections.singletonList(invoicePosition.getCoordinatorPlanPosition()))
                     .stream().findFirst().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
             if (action.equals("add")) {
-                this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition, invoicePosition);
+                this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition);
             } else if (action.equals("edit")) {
 
                 invoice.getInvoicePositions().stream().filter(position -> position.getId().equals(invoicePosition.getId()))
-                        .findFirst().ifPresent(tmp -> this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition, tmp));
+                        .findFirst().ifPresent(tmp -> this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition));
 
-                this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition, invoicePosition);
+                this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition);
             }
         }
 
@@ -224,12 +239,86 @@ public class InvoiceServiceImpl implements InvoiceService {
             InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPositionIn(Collections.singletonList(invoicePosition.getCoordinatorPlanPosition()))
                     .stream().findFirst().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
 
-            this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition, invoicePosition);
+            this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition);
         }
         invoicePositionRepository.deleteById(invoicePosition.getId());
 
         return messageSource.getMessage("Coordinator.invoice.position.deleteMsg", null, Locale.getDefault());
     }
+
+    @Override
+    public List<ApplicationPlanPosition> getPlanPositionByYearAndPlanType(final Integer year, final CoordinatorPlan.PlanType planType) {
+        List<ApplicationPlanPosition> positions = new ArrayList<>();
+        List<CoordinatorPlanPosition> planPositions = planService.getPlanPositionByYearAndPlanType(year, planType);
+        if (!planPositions.isEmpty()) {
+            planPositions.forEach(planPosition -> {
+                ApplicationPlanPosition applicationPlanPosition = new ApplicationPlanPosition(
+                        planPosition.getId(),
+                        planType.equals(CoordinatorPlan.PlanType.FIN) ? planPosition.getCostType().getCode() : planPosition.getId().toString(),
+                        planType.equals(CoordinatorPlan.PlanType.FIN) ? planPosition.getCostType().getName() : planPosition.getTask(),
+                        planPosition.getAmountAwardedNet(),
+                        planPosition.getAmountAwardedGross(),
+                        planPosition.getAmountRealizedNet(),
+                        planPosition.getAmountRealizedGross()
+                );
+                positions.add(applicationPlanPosition);
+            });
+        }
+        return positions;
+    }
+
+    @Override
+    public Set<InvoiceInstitutionPositionsResponse> getInvoicesByInstitutionPlanPositions(final Long planPositionId) {
+        Set<InvoiceInstitutionPositionsResponse> invoicesPositions = new HashSet<>();
+
+        InstitutionPlanPosition institutionPlanPosition = institutionPlanPositionRepository.findById(planPositionId)
+                .orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.BAD_REQUEST));
+
+        institutionPlanPosition.getInstitutionCoordinatorPlanPositions().forEach(institutionCoordinatorPlanPosition -> {
+            List<CoordinatorPlanPosition> planPositions = new ArrayList<>();
+
+            planPositions.add(institutionCoordinatorPlanPosition.getCoordinatorPlanPosition());
+            if (institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getCorrectionPlanPosition() != null) {
+                planPositions.add(institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getCorrectionPlanPosition());
+                this.findCorrectedPlanPosition(institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getCorrectionPlanPosition(), planPositions);
+            }
+
+            invoicePositionRepository.findByCoordinatorPlanPositionIn(planPositions).forEach(invoicePosition -> {
+                InvoiceInstitutionPositionsResponse invoiceInstitutionPositionsResponse = new InvoiceInstitutionPositionsResponse(
+                        invoicePosition.getId(),
+                        institutionCoordinatorPlanPosition.getCoordinatorPlanPosition().getPlan().getCoordinator().getName(),
+                        invoicePosition.getInvoice().getNumber(),
+                        invoicePosition.getInvoice().getSellDate(),
+                        invoicePosition.getInvoice().getContractor().getName(),
+                        invoicePosition.getName(),
+                        invoicePosition.getAmountNet(),
+                        invoicePosition.getAmountGross()
+                );
+                invoicesPositions.add(invoiceInstitutionPositionsResponse);
+            });
+        });
+
+        return invoicesPositions;
+    }
+
+    @Override
+    public void exportPlanPositionInvoicesPositionsToXlsx(final ExportType exportType, final Long positionId, final ArrayList<ExcelHeadRow> headRow, final HttpServletResponse response) throws IOException {
+        ArrayList<Map<String, Object>> rows = new ArrayList<>();
+        this.getInvoicesByInstitutionPlanPositions(positionId).stream().sorted(Comparator.comparing(InvoiceInstitutionPositionsResponse::getInvoiceSellDate)).forEach(invoicesInstitutionPosition -> {
+            Map<String, Object> row = new HashMap<>();
+            row.put("invoiceNumber", invoicesInstitutionPosition.getInvoiceNumber());
+            row.put("coordinatorName", invoicesInstitutionPosition.getCoordinatorName());
+            row.put("invoiceSellDate", invoicesInstitutionPosition.getInvoiceSellDate());
+            row.put("invoiceContractorName", invoicesInstitutionPosition.getInvoiceContractorName());
+            row.put("name.content", invoicesInstitutionPosition.getName().getContent());
+            row.put("amountNet", invoicesInstitutionPosition.getAmountNet());
+            row.put("amountGross", invoicesInstitutionPosition.getAmountGross());
+            rows.add(row);
+        });
+
+        Utils.generateExcelExport(exportType, headRow, rows, response);
+    }
+
 
     private void setCoordinatorPlanPositionAmountRealizedAdd(InvoicePosition invoicePosition) {
         invoicePosition.getCoordinatorPlanPosition().setAmountRealizedNet(
@@ -260,7 +349,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         this.updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedSubtract(invoicePosition.getCoordinatorPlanPosition(), invoicePosition);
     }
 
-    private void setInstitutionPlanPositionAmountRealizedAdd(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition, final InvoicePosition invoicePosition) {
+    private void setInstitutionPlanPositionAmountRealizedAdd(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition) {
         institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedNet(
                 institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
         );
@@ -274,10 +363,10 @@ public class InvoiceServiceImpl implements InvoiceService {
             institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().setStatus(InstitutionPlan.InstitutionPlanStatus.RE);
         }
 
-        this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(institutionCoordinatorPlanPosition.getInstitutionPlanPosition(), invoicePosition);
+        this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(institutionCoordinatorPlanPosition.getInstitutionPlanPosition());
     }
 
-    private void setInstitutionPlanPositionAmountRealizedSubtract(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition, final InvoicePosition invoicePosition) {
+    private void setInstitutionPlanPositionAmountRealizedSubtract(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition) {
 
         institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedNet(
                 institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
@@ -288,7 +377,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
         );
 
-        this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(institutionCoordinatorPlanPosition.getInstitutionPlanPosition(), invoicePosition);
+        this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(institutionCoordinatorPlanPosition.getInstitutionPlanPosition());
     }
 
     private void updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedAdd(final CoordinatorPlanPosition coordinatorPlanPosition, final InvoicePosition invoicePosition) {
@@ -338,7 +427,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
     }
 
-    private void updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(final InstitutionPlanPosition institutionPlanPosition, final InvoicePosition invoicePosition) {
+    private void updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(final InstitutionPlanPosition institutionPlanPosition) {
 
         InstitutionPlanPosition correctionInstitutionPlanPosition = institutionPlanPositionRepository.findByCorrectionPlanPosition(institutionPlanPosition);
 
@@ -353,11 +442,11 @@ public class InvoiceServiceImpl implements InvoiceService {
 
             );
 
-            updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(correctionInstitutionPlanPosition, invoicePosition);
+            updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(correctionInstitutionPlanPosition);
         }
     }
 
-    private void updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(final InstitutionPlanPosition institutionPlanPosition, final InvoicePosition invoicePosition) {
+    private void updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(final InstitutionPlanPosition institutionPlanPosition) {
 
         InstitutionPlanPosition correctionInstitutionPlanPosition = institutionPlanPositionRepository.findByCorrectionPlanPosition(institutionPlanPosition);
 
@@ -372,7 +461,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
             );
 
-            updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(correctionInstitutionPlanPosition, invoicePosition);
+            updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(correctionInstitutionPlanPosition);
         }
     }
 
@@ -385,6 +474,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             if (correctedPlanPosition != null) {
                 planPositions.add(correctedPlanPosition);
                 if (correctedPlanPosition.getCorrectionPlanPosition() != null) {
+                    planPositions.add(correctedPlanPosition.getCorrectionPlanPosition());
                     this.findCorrectedPlanPosition(correctedPlanPosition.getCorrectionPlanPosition(), planPositions);
                 }
             }

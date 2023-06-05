@@ -32,4 +32,6 @@ public class ApplicationPayload {
 
     private Date createDate;
 
+    private Date sendDate;
+
 }

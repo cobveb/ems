@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.common.coordinatorPlan.ApprovePlanType;
 import pl.viola.ems.model.common.export.ExportType;
+import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.coordinator.plans.*;
@@ -85,14 +86,19 @@ public class PlanServiceImpl implements PlanService {
     InvoiceService invoiceService;
 
     @Override
-    public List<CoordinatorPlan> findByCoordinator() {
+    public Set<CoordinatorPlan> findByCoordinator(final int year) {
         List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
                 Utils.getCurrentUser().getOrganizationUnit().getCode()
         ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
 
+        Set<CoordinatorPlan> plans;
         coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
 
-        List<CoordinatorPlan> plans = coordinatorPlanRepository.findByCoordinatorIn(coordinators);
+        if (year == 0) {
+            plans = coordinatorPlanRepository.findByCoordinatorInOrderByIdDesc(coordinators);
+        } else {
+            plans = coordinatorPlanRepository.findByYearAndCoordinatorInOrderByIdDesc(year, coordinators);
+        }
 
         if (!plans.isEmpty()) {
             plans.forEach(this::setPlanAmountValues);
@@ -119,7 +125,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<CoordinatorPlanPosition> getPlanPositionByYearAndPlanType(final CoordinatorPlan.PlanType planType) {
+    public List<CoordinatorPlanPosition> getPlanPositionByYearAndPlanType(final Integer year, final CoordinatorPlan.PlanType planType) {
         List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
                 Utils.getCurrentUser().getOrganizationUnit().getCode()
         ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
@@ -131,7 +137,7 @@ public class PlanServiceImpl implements PlanService {
 
         coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
 
-        CoordinatorPlan plan = coordinatorPlanRepository.findByYearAndTypeAndCoordinatorInAndStatusIn(Year.now().getValue(), planType,
+        CoordinatorPlan plan = coordinatorPlanRepository.findByYearAndTypeAndCoordinatorInAndStatusIn(year != null ? year : Year.now().getValue(), planType,
                 coordinators, statuses);
 
         if (plan == null) {
@@ -425,6 +431,21 @@ public class PlanServiceImpl implements PlanService {
                     } else {
                         /* Accept investment and PZP not update plan */
                         plan.setStatus(CoordinatorPlan.PlanStatus.ZA);
+                        if (plan.getType().equals(CoordinatorPlan.PlanType.PZP)) {
+                            /*
+                                Update status institution public procurement plan to ZA
+                                if all coordinators plan are accepted
+                            */
+                            List<CoordinatorPlan.PlanStatus> statuses = Arrays.asList(
+                                    CoordinatorPlan.PlanStatus.ZA,
+                                    CoordinatorPlan.PlanStatus.RE,
+                                    CoordinatorPlan.PlanStatus.ZR,
+                                    CoordinatorPlan.PlanStatus.AA
+                            );
+                            if (coordinatorPlanRepository.findByInstitutionPlanAndStatusNotIn(plan.getInstitutionPlan(), statuses).isEmpty()) {
+                                plan.getInstitutionPlan().setStatus(InstitutionPlan.InstitutionPlanStatus.ZA);
+                            }
+                        }
                     }
                     plan.setChiefAcceptUser(user);
                 }
@@ -657,7 +678,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<CoordinatorPlan> getPlansByCoordinatorInAccountant() {
+    public Set<CoordinatorPlan> getPlansByCoordinatorInAccountant(final int year) {
         List<CoordinatorPlan.PlanStatus> statuses = Arrays.asList(
                 CoordinatorPlan.PlanStatus.WY,
                 CoordinatorPlan.PlanStatus.AK,
@@ -673,9 +694,12 @@ public class PlanServiceImpl implements PlanService {
                 CoordinatorPlan.PlanStatus.AA
         );
 
-
-
-        List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNull(statuses);
+        Set<CoordinatorPlan> coordinatorPlans;
+        if (year != 0) {
+            coordinatorPlans = coordinatorPlanRepository.findByYearAndStatusInAndCorrectionPlanIsNullOrderByIdDesc(year, statuses);
+        } else {
+            coordinatorPlans = coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNullOrderByIdDesc(statuses);
+        }
 
         coordinatorPlans = this.filterCoordinatorsPlanInAccountant(coordinatorPlans);
 
@@ -687,7 +711,9 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<CoordinatorPlan> getPlansByCoordinatorInPublicProcurement() {
+    public Set<CoordinatorPlan> getPlansByCoordinatorInPublicProcurement(final int year) {
+
+        Set<CoordinatorPlan> coordinatorPlans;
 
         List<CoordinatorPlan.PlanStatus> statuses = Arrays.asList(
                 CoordinatorPlan.PlanStatus.WY,
@@ -701,7 +727,12 @@ public class PlanServiceImpl implements PlanService {
                 CoordinatorPlan.PlanStatus.AA
         );
 
-        List<CoordinatorPlan> coordinatorPlans = coordinatorPlanRepository.findByStatusInAndTypeAndCorrectionPlanIsNull(statuses, CoordinatorPlan.PlanType.PZP);
+        if (year == 0) {
+            coordinatorPlans = coordinatorPlanRepository.findByStatusInAndTypeAndCorrectionPlanIsNullOrderByIdDesc(statuses, CoordinatorPlan.PlanType.PZP);
+        } else {
+            coordinatorPlans = coordinatorPlanRepository.findByYearAndStatusInAndTypeAndCorrectionPlanIsNullOrderByIdDesc(year, statuses, CoordinatorPlan.PlanType.PZP);
+        }
+
         if (!coordinatorPlans.isEmpty()) {
             coordinatorPlans.forEach(this::setPlanAmountValues);
         }
@@ -709,8 +740,8 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<CoordinatorPlan> getCoordinatorsPlanUpdates(String accessLevel, CoordinatorPlan.PlanType plan) {
-        List<CoordinatorPlan> coordinatorPlanUpdates = new ArrayList<>();
+    public Set<CoordinatorPlan> getCoordinatorsPlanUpdates(String accessLevel, CoordinatorPlan.PlanType plan, int year) {
+        Set<CoordinatorPlan> coordinatorPlanUpdates = new HashSet<>();
         List<CoordinatorPlan.PlanStatus> statuses;
         switch (accessLevel) {
             case "public":
@@ -725,7 +756,11 @@ public class PlanServiceImpl implements PlanService {
                         CoordinatorPlan.PlanStatus.ZR,
                         CoordinatorPlan.PlanStatus.AA
                 );
-                coordinatorPlanUpdates = coordinatorPlanRepository.findByStatusInAndTypeInAndCorrectionPlanIsNotNull(statuses, Collections.singletonList(CoordinatorPlan.PlanType.PZP));
+                if (year == 0) {
+                    coordinatorPlanUpdates = coordinatorPlanRepository.findByStatusInAndTypeAndCorrectionPlanIsNullOrderByIdDesc(statuses, CoordinatorPlan.PlanType.PZP);
+                } else {
+                    coordinatorPlanUpdates = coordinatorPlanRepository.findByYearAndStatusInAndTypeInAndCorrectionPlanIsNotNullOrderByIdDesc(year, statuses, Collections.singletonList(CoordinatorPlan.PlanType.PZP));
+                }
                 break;
             case "accountant":
                 statuses = Arrays.asList(
@@ -742,7 +777,11 @@ public class PlanServiceImpl implements PlanService {
                         CoordinatorPlan.PlanStatus.ZR,
                         CoordinatorPlan.PlanStatus.AA
                 );
-                coordinatorPlanUpdates = coordinatorPlanRepository.findByStatusInAndTypeInAndCorrectionPlanIsNotNull(statuses, Arrays.asList(CoordinatorPlan.PlanType.PZP, CoordinatorPlan.PlanType.INW, CoordinatorPlan.PlanType.FIN));
+                if (year == 0) {
+                    coordinatorPlanUpdates = coordinatorPlanRepository.findByStatusInAndTypeInAndCorrectionPlanIsNotNull(statuses, Arrays.asList(CoordinatorPlan.PlanType.PZP, CoordinatorPlan.PlanType.INW, CoordinatorPlan.PlanType.FIN));
+                } else {
+                    coordinatorPlanUpdates = coordinatorPlanRepository.findByYearAndStatusInAndTypeInAndCorrectionPlanIsNotNullOrderByIdDesc(year, statuses, Arrays.asList(CoordinatorPlan.PlanType.PZP, CoordinatorPlan.PlanType.INW, CoordinatorPlan.PlanType.FIN));
+                }
                 coordinatorPlanUpdates = this.filterCoordinatorsPlanInAccountant(coordinatorPlanUpdates);
                 break;
         }
@@ -753,7 +792,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<CoordinatorPlan> getPlansCoordinatorInDirector(boolean isPlanUpdates) {
+    public Set<CoordinatorPlan> getPlansCoordinatorInDirector(final boolean isPlanUpdates, final int year) {
         List<CoordinatorPlan.PlanStatus> statuses = Arrays.asList(
                 CoordinatorPlan.PlanStatus.AZ,
                 CoordinatorPlan.PlanStatus.AK,
@@ -767,18 +806,24 @@ public class PlanServiceImpl implements PlanService {
         );
 
         User user = Utils.getCurrentUser();
-        List<CoordinatorPlan> coordinatorPlans = new ArrayList<>();
+        Set<CoordinatorPlan> coordinatorPlans = new HashSet<>();
 
         if (user.getOrganizationUnit().getRole().equals(OrganizationUnit.Role.DIRECTOR)) {
             coordinatorPlans = isPlanUpdates ?
-                    coordinatorPlanRepository.findByStatusInAndCoordinatorInAndCorrectionPlanIsNotNull(statuses, user.getOrganizationUnit().getDirectorCoordinators()) :
-                    coordinatorPlanRepository.findByStatusInAndCoordinatorInAndCorrectionPlanIsNull(statuses, user.getOrganizationUnit().getDirectorCoordinators());
+                    year == 0 ? coordinatorPlanRepository.findByStatusInAndCoordinatorInAndCorrectionPlanIsNotNullOrderByIdDesc(statuses, user.getOrganizationUnit().getDirectorCoordinators()) :
+                            coordinatorPlanRepository.findByYearAndStatusInAndCoordinatorInAndCorrectionPlanIsNotNullOrderByIdDesc(year, statuses, user.getOrganizationUnit().getDirectorCoordinators())
+                    :
+                    year == 0 ? coordinatorPlanRepository.findByStatusInAndCoordinatorInAndCorrectionPlanIsNullOrderByIdDesc(statuses, user.getOrganizationUnit().getDirectorCoordinators()) :
+                            coordinatorPlanRepository.findByYearAndStatusInAndCoordinatorInAndCorrectionPlanIsNullOrderByIdDesc(year, statuses, user.getOrganizationUnit().getDirectorCoordinators());
         } else if (user.getOrganizationUnit().getRole().equals(OrganizationUnit.Role.CHIEF) ||
                 user.getOrganizationUnit().getRole().equals(OrganizationUnit.Role.ECONOMIC) ||
                 user.getGroups().stream().anyMatch(group -> group.getCode().equals("admin"))) {
             coordinatorPlans = isPlanUpdates ?
-                    coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNotNull(statuses) :
-                    coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNull(statuses);
+                    year == 0 ? coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNotNullOrderByIdDesc(statuses) :
+                            coordinatorPlanRepository.findByYearAndStatusInAndCorrectionPlanIsNotNullOrderByIdDesc(year, statuses)
+                    :
+                    year == 0 ? coordinatorPlanRepository.findByStatusInAndCorrectionPlanIsNullOrderByIdDesc(statuses) :
+                            coordinatorPlanRepository.findByYearAndStatusInAndCorrectionPlanIsNullOrderByIdDesc(year, statuses);
         }
 
         if (!coordinatorPlans.isEmpty()) {
@@ -812,14 +857,15 @@ public class PlanServiceImpl implements PlanService {
 
         ArrayList<Map<String, Object>> rows = new ArrayList<>();
 
-        List<CoordinatorPlan> plans;
+        Set<CoordinatorPlan> plans;
 
         switch (accessLevel) {
             case "accountant":
-                plans = getPlansByCoordinatorInAccountant();
+                plans = getPlansByCoordinatorInAccountant(0);
                 plans.forEach(plan -> {
                     Map<String, Object> row = new HashMap<>();
                     row.put("year", plan.getYear());
+                    row.put("type.name", plan.getType().name());
                     row.put("coordinator.name", plan.getCoordinator().getName());
                     row.put("planAmountRequestedGross", plan.getPlanAmountRequestedGross());
                     row.put("planAmountAwardedGross", plan.getPlanAmountAwardedGross());
@@ -829,7 +875,7 @@ public class PlanServiceImpl implements PlanService {
                 });
                 break;
             case "coordinator":
-                plans = findByCoordinator();
+                plans = findByCoordinator(0);
                 plans.forEach(plan -> {
                     Map<String, Object> row = new HashMap<>();
                     row.put("year", plan.getYear());
@@ -839,7 +885,7 @@ public class PlanServiceImpl implements PlanService {
                 });
                 break;
             case "director":
-                plans = getPlansCoordinatorInDirector(false);
+                plans = getPlansCoordinatorInDirector(false, 0);
                 plans.forEach(plan -> {
                     Map<String, Object> row = new HashMap<>();
                     row.put("year", plan.getYear());
@@ -852,7 +898,7 @@ public class PlanServiceImpl implements PlanService {
                 });
                 break;
             case "publicProcurement":
-                plans = getPlansByCoordinatorInPublicProcurement();
+                plans = getPlansByCoordinatorInPublicProcurement(0);
                 plans.forEach(plan -> {
                     Map<String, Object> row = new HashMap<>();
                     row.put("year", plan.getYear());
@@ -924,6 +970,8 @@ public class PlanServiceImpl implements PlanService {
         invoiceService.getInvoicesPositionsByCoordinatorPlanPosition(planType, positionId).forEach(invoicePosition -> {
             Map<String, Object> row = new HashMap<>();
             row.put("invoiceNumber", invoicePosition.getInvoiceNumber());
+            row.put("invoiceSellDate", invoicePosition.getInvoiceSellDate());
+            row.put("invoiceContractorName", invoicePosition.getInvoiceContractorName());
             row.put("name.content", invoicePosition.getName().getContent());
             row.put("amountNet", invoicePosition.getAmountNet());
             row.put("amountGross", invoicePosition.getAmountGross());
@@ -1329,7 +1377,7 @@ public class PlanServiceImpl implements PlanService {
         }
     }
 
-    private List<CoordinatorPlan> filterCoordinatorsPlanInAccountant(List<CoordinatorPlan> coordinatorPlans) {
+    private Set<CoordinatorPlan> filterCoordinatorsPlanInAccountant(Set<CoordinatorPlan> coordinatorPlans) {
 
         List<CoordinatorPlan.PlanStatus> publicProcurementStatuses = Arrays.asList(
                 CoordinatorPlan.PlanStatus.AK,
@@ -1344,6 +1392,6 @@ public class PlanServiceImpl implements PlanService {
         return coordinatorPlans.stream().filter(coordinatorPlan ->
                 (!coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) ||
                         (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) && publicProcurementStatuses.contains(coordinatorPlan.getStatus())
-                        ))).collect(Collectors.toList());
+                        ))).collect(Collectors.toSet());
     }
 }

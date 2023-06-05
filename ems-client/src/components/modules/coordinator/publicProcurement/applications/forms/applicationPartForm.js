@@ -55,7 +55,8 @@ class ApplicationPartForm extends Component {
     }
 
     handleSubmitPartRealized = () => {
-        if(this.props.formCurrentValues.reasonsNotRealized !== null){
+        if(this.props.formCurrentValues.reasonNotRealized !== null){
+            console.log(this.props.formCurrentValues.reasonNotRealized)
             this.setState({isNotRealized: !this.state.isNotRealized});
         } else {
             this.props.onSubmit(this.props.formCurrentValues)
@@ -98,6 +99,7 @@ class ApplicationPartForm extends Component {
     render(){
         const { classes, isLoading, open, handleSubmit, pristine, submitting, invalid, submitSucceeded, action, vats, initialValues, applicationStatus, assortmentGroups, isRealized, reasonsNotRealized, isOption, amountNet, applicationThreshold, levelAccess, formCurrentValues } = this.props;
         const { isNotRealized } = this.state
+
         return(
             <>
                 <Dialog

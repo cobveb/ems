@@ -21,6 +21,10 @@ class DictionaryApi {
     static deleteDictionaryItem(itemId){
         return Axios.delete(`/api/dict/deleteItem/${itemId}`)
     }
+
+    static getDictionaryActiveItems(code){
+        return Axios.get(`/api/dict/getDictItems/${code}`)
+    }
 }
 
 export default DictionaryApi;

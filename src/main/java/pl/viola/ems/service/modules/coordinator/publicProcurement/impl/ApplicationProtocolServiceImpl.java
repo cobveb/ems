@@ -54,9 +54,9 @@ public class ApplicationProtocolServiceImpl implements ApplicationProtocolServic
     JasperPrintService jasperPrintService;
 
     @Override
-    public List<ApplicationProtocolResponse> getProtocolsByAccessLevel(String accessLevel) {
-        List<ApplicationProtocol> protocols = new ArrayList<>();
-        List<ApplicationProtocolResponse> applicationProtocolResponses = new ArrayList<>();
+    public Set<ApplicationProtocolResponse> getProtocolsByAccessLevel(final int year, final String accessLevel) {
+        Set<ApplicationProtocol> protocols = new HashSet<>();
+        Set<ApplicationProtocolResponse> applicationProtocolResponses = new HashSet<>();
         List<Long> ids = new ArrayList<>();
         List<Application> applications = publicProcurementApplicationRepository.
                 findByEstimationTypeAndApplicationProtocolIsNotNull(PublicProcurementPosition.EstimationType.DO130);

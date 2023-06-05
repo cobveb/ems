@@ -45,7 +45,7 @@ class PlansContainer extends Component {
 
     handleGetPlans(){
         this.props.loading(true);
-        PlansApi.getPlans()
+        PlansApi.getPlans(new Date().getFullYear())
         .then(response =>{
             this.setState(prevState => {
                 let plans = [...prevState.plans];
@@ -140,6 +140,32 @@ class PlansContainer extends Component {
         }
     }
 
+    handleChangeYear = (year) => {
+        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
+            this.props.loading(true);
+            PlansApi.getPlans(year instanceof Date ? year.getFullYear() : 0)
+            .then(response =>{
+                this.setState(prevState => {
+                    let plans = [...prevState.plans];
+                    plans = response.data.data;
+                    plans.map(plan => (
+                        Object.assign(plan,
+                            {
+                                year: plan.year = new Date(plan.year,0,1).toJSON(),
+                                status: plan.status = findSelectFieldPosition(this.state.statuses, plan.status),
+                                type: plan.type = findSelectFieldPosition( this.state.types, plan.type),
+                                isUpdate: plan.isUpdate = plan.correctionPlan === null ? false : true,
+                            }
+                        )
+                    ))
+                    return {plans};
+                });
+                this.props.loading(false);
+            })
+            .catch(error => {})
+        }
+    }
+
     handleExcelExport = (exportType, headRow) =>{
         this.props.loading(true);
         PlansApi.exportPlansToExcel(exportType, headRow)
@@ -170,6 +196,7 @@ class PlansContainer extends Component {
                 loading={loading}
                 error={error}
                 clearError={clearError}
+                onChangeYear={this.handleChangeYear}
                 onClose={this.handleUpdateOnCloseDetails}
                 onExcelExport={this.handleExcelExport}
                 onWithdraw={this.handleWithdraw}

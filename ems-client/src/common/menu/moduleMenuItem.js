@@ -6,6 +6,9 @@ import { withStyles, ListItem, ListItemIcon, ListItemText, Tooltip } from '@mate
 const styles = theme => ({
     listItemText: {
         fontSize: theme.spacing(1.9),
+    },
+    listIcon:{
+        minWidth: theme.spacing(4),
     }
 })
 
@@ -15,7 +18,7 @@ class ModuleMenuItem extends Component {
         return(
             <Tooltip title={open ? "" : item.name}>
                 <ListItem component={Link} to={item.path} button key={item.code} >
-                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemIcon className={classes.listIcon}>{item.icon}</ListItemIcon>
                     <ListItemText primary={item.name} classes={{primary  : classes.listItemText}} />
                 </ListItem>
             </Tooltip>

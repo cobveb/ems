@@ -7,7 +7,6 @@ import DrawerMenu from 'common/menu/drawerMenu';
 import PrivateRoute from 'common/privateRoute';
 import { Switch } from 'react-router-dom';
 import PlansContainer from 'containers/modules/coordinator/plans/plansContainer';
-import PublicProcurementRegisterContainer from 'containers/modules/coordinator/publicProcurement/register/registerContainer';
 import PublicProcurementApplicationsContainer from 'containers/modules/coordinator/publicProcurement/applications/applicationsContainer';
 import DictionariesContainer from 'containers/modules/coordinator/dictionariesContainer';
 import ContractorsContainer from 'containers/modules/accountant/dictionary/contractorsContainer';
@@ -121,8 +120,6 @@ class Coordinator extends Component {
                                     <PrivateRoute exact path='/modules/coordinator/' component={PlansContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/plans' component={PlansContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/public/applications' component={PublicProcurementApplicationsContainer}/>
-                                    <PrivateRoute exact path='/modules/coordinator/public/register' component={PublicProcurementRegisterContainer}/>
-                                    <PrivateRoute exact path='/modules/coordinator/public/realization' component={PublicProcurementRegisterContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/realization/contracts' component={ContractsContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/realization/invoices' component={InvoicesContainer}/>
                                     <PrivateRoute exact path='/modules/coordinator/dictionaries' component={DictionariesContainer}/>

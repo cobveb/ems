@@ -51,6 +51,9 @@ public class DictionaryServiceImpl implements DictionaryService {
             case "coordinator":
                 dictionaries.add("jedMiar");
                 break;
+            case "hr":
+                dictionaries.add("slHrGrZaw");
+                dictionaries.add("slHrLoc");
         }
         return dictionaryRepository.findByCodeIn(dictionaries);
     }
@@ -73,5 +76,13 @@ public class DictionaryServiceImpl implements DictionaryService {
         } else {
             throw new AppException("Dictionary.dictionaryItemNotFound", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    public Set<DictionaryItem> findActiveItemsByDictionary(final String dictionaryCode) {
+
+        return dictionaryItemRepository.findByDictionaryAndIsActiveTrueOrderByName(
+                dictionaryRepository.findById(dictionaryCode).orElseThrow(() -> new AppException("Dictionary.dictionaryNotFound", HttpStatus.NOT_FOUND))
+        );
     }
 }

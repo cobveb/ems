@@ -2,8 +2,8 @@ import Axios from 'axios';
 
 class PlansApi {
 
-    static getPlans(){
-        return Axios.get(`/api/director/coordinator/plans/getAll`)
+    static getPlans(year){
+        return Axios.get(`/api/director/coordinator/plans/${year}/getAll`)
     }
 
     static approveDirector(planId){

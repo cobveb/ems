@@ -31,7 +31,7 @@ export const validate =  ( values, props ) => {
             const curPartsValue = props.parts.reduce((prev, cur) => prev + cur.amountNet, 0)
             if(props.action === 'add'){
                 if( curPartsValue + values.amountNet > props.orderValueNet){
-                    errors.amountNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_INVALID_COUNT_VALUE_NET;
+                        errors.amountNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_INVALID_COUNT_VALUE_NET;
                 }
             } else {
                 if( curPartsValue + values.amountNet - props.initialValues.amountNet > props.orderValueNet){

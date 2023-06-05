@@ -37,25 +37,32 @@ public class ContractServiceImpl implements ContractService {
     MessageSource messageSource;
 
     @Override
-    public Set<Contract> getContracts() {
+    public Set<Contract> getContracts(final int year) {
         List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
                 Utils.getCurrentUser().getOrganizationUnit().getCode()
         ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
 
         coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
 
-        return contractRepository.findByCoordinatorIn(coordinators);
+        if (year != 0) {
+            LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
+            Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
+            Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
+            return contractRepository.findBySigningDateBetweenAndCoordinatorIn(firstDay, lastDay, coordinators);
+        } else {
+            return contractRepository.findByCoordinatorIn(coordinators);
+        }
     }
 
     @Override
-    public List<Contract> getContractsByYear(final int year) {
+    public Set<Contract> getContractsByYear(final int year) {
         if (year != 0) {
             LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
             Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
             Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
             return contractRepository.findBySigningDateBetween(firstDay, lastDay);
         } else {
-            return contractRepository.findAll();
+            return new HashSet<>(contractRepository.findAll());
         }
     }
 

@@ -13,6 +13,7 @@ import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanSubPosition;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.service.modules.coordinator.plans.PlanService;
+import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
 import pl.viola.ems.utils.Utils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,10 +31,13 @@ public class PlanController {
     @Autowired
     PlanService planService;
 
-    @GetMapping("/plans/getAll")
+    @Autowired
+    InvoiceService invoiceService;
+
+    @GetMapping("/plans/{year}/getAll")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1022')")
-    public ApiResponse getPlansByCoordinator() {
-        return new ApiResponse(HttpStatus.FOUND, planService.findByCoordinator());
+    public ApiResponse getPlansByCoordinator(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, planService.findByCoordinator(year));
     }
 
     @GetMapping("/plan/{planId}/getPositions")
@@ -127,10 +131,10 @@ public class PlanController {
         return new ApiResponse(HttpStatus.ACCEPTED, planService.deleteInvestmentSource(positionId, sourceId));
     }
 
-    @PutMapping("/export/planPositionInvoicesPositions/{planType}/{positionId}/{exportType}")
-    public void exportPlanPositionsInvoicesPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow, @PathVariable CoordinatorPlan.PlanType planType,
+    @PutMapping("/export/institutionPlanPositionInvoicesPositions/{positionId}/{exportType}")
+    public void exportPlanPositionsInvoicesPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
                                                            @PathVariable ExportType exportType, @PathVariable Long positionId, HttpServletResponse response) throws IOException {
 
-        planService.exportPlanPositionsInvoicesPositionsToXlsx(exportType, planType, positionId, headRow, generateExportResponse(response, exportType));
+        invoiceService.exportPlanPositionInvoicesPositionsToXlsx(exportType, positionId, headRow, generateExportResponse(response, exportType));
     }
 }

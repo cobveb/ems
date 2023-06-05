@@ -20,5 +20,13 @@ export const validate = (values, props) => {
                 errors.code = constants.DICTIONARY_ITEM_CODE_EXISTS;
         }
     }
+
+    if(values.name){
+        if( props.positions.find(position => {
+             return (position.name === values.name && position.id !== values.id)
+            }) !== undefined){
+                errors.name = constants.DICTIONARY_ITEM_NAME_EXISTS;
+        }
+    }
     return errors
 }

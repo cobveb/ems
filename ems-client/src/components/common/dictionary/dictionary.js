@@ -162,7 +162,7 @@ class Dictionary extends Component {
                         message={constants.DICTIONARY_CONFIRM_DELETE_MESSAGE}
                         variant="warning"
                         onConfirm={this.handleConfirmDelete}
-                        onClose={this.handleCancelDeleter}
+                        onClose={this.handleCancelDelete}
                     />
                 }
                 {itemDetails &&

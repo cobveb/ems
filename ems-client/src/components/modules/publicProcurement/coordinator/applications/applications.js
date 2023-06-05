@@ -23,7 +23,7 @@ const styles = theme => ({
         margin: 0,
     },
     tableWrapper: {
-        minHeight: `calc(100vh - ${theme.spacing(37.8)}px)`,
+        minHeight: `calc(100vh - ${theme.spacing(37.9)}px)`,
     },
     item: {
         paddingRight: theme.spacing(1),
@@ -34,13 +34,15 @@ class Applications extends Component {
     state = {
         selected:{},
         isDetailsVisible: false,
-        year: null,
+        year: new Date(),
         estimationType: '',
         mode: '',
         number: '',
         status: '',
         orderedObject: '',
         coordinator:'',
+        sendFrom: null,
+        sendTo: null,
         rows:[],
         headCells: [
             {
@@ -172,6 +174,15 @@ class Applications extends Component {
                     this.state.year === null ?
                         application :
                             new Date(application.createDate).getFullYear() === this.state.year.getFullYear()
+                ) &&
+                (
+                    (this.state.sendFrom !== null && this.state.sendTo !== null) ?
+                        new Date(application.sendDate) >= this.state.sendFrom && new Date(application.sendDate) <= this.state.sendTo :
+                            this.state.sendFrom !== null ?
+                            new Date(application.sendDate) >= this.state.sendFrom :
+                                this.state.sendFrom === null && this.state.sendTo === null ?
+                                    application :
+                                        new Date(application.sendDate) <= this.state.sendTo
                 )
         })
     }
@@ -193,23 +204,26 @@ class Applications extends Component {
             this.setState({
                 rows: this.filter(),
             });
-        } else if (this.state.year !== prevState.year ||
-            this.state.coordinator !== prevState.coordinator ||
+        } else if (this.state.coordinator !== prevState.coordinator ||
             this.state.status !== prevState.status ||
             this.state.mode !== prevState.mode ||
             this.state.orderedObject !== prevState.orderedObject ||
             this.state.estimationType !== prevState.estimationType ||
+            this.state.sendFrom !== prevState.sendFrom ||
+            this.state.sendTo !== prevState.sendTo ||
             this.state.number !== prevState.number)
         {
             this.setState({
                 rows: this.filter(),
             })
+        } else if (this.state.year !== prevState.year){
+            this.props.onChangeYear(this.state.year);
         }
     }
 
     render(){
         const { classes, isLoading, error, modes, statuses, estimationTypes, coordinators } = this.props;
-        const { selected, year, estimationType, mode, status, headCells, rows, isDetailsVisible, coordinator } = this.state;
+        const { selected, year, estimationType, mode, status, headCells, rows, isDetailsVisible, coordinator, orderedObject, number, sendFrom, sendTo, } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -268,6 +282,7 @@ class Applications extends Component {
                                             onChange={this.handleSearch}
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
                                             placeholder={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
+                                            value={number}
                                             valueType="all"
                                         />
                                     </Grid>
@@ -307,12 +322,29 @@ class Applications extends Component {
                                             value={status}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} className={classes.item}>
+                                    <Grid item xs={8} className={classes.item}>
                                         <SearchField
                                             name="orderedObject"
                                             onChange={this.handleSearch}
                                             label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERED_OBJECT}
                                             valueType="all"
+                                            value={orderedObject}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2} className={classes.item}>
+                                        <DatePicker
+                                            id="sendFrom"
+                                            onChange={this.handleDataChange('sendFrom')}
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SEND_DATE_FROM}
+                                            value={sendFrom}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2} className={classes.item}>
+                                        <DatePicker
+                                            id="sendTo"
+                                            onChange={this.handleDataChange('sendTo')}
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SEND_DATE_TO}
+                                            value={sendTo}
                                         />
                                     </Grid>
                                     <Grid item xs={12} className={classes.item}>

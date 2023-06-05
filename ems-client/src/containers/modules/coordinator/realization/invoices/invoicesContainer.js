@@ -19,7 +19,7 @@ class InvoicesContainer extends Component {
 
     handleGetInvoices = () =>{
         this.props.loading(true);
-        InvoicesApi.getInvoices()
+        InvoicesApi.getInvoices(new Date().getFullYear())
         .then(response =>{
             this.setState({
                 invoices: response.data.data,
@@ -51,37 +51,13 @@ class InvoicesContainer extends Component {
     }
 
     handleGetContracts = () =>{
-        ContractApi.getContracts()
+        ContractApi.getContracts(0)
         .then(response =>{
             this.setState({
                 contracts: response.data.data,
             })
         })
         .catch(error => {})
-    }
-
-    handleGetFinancialPlanPositions = () => {
-        PublicProcurementApplicationApi.getPlanPositions('FIN')
-        .then(response => {
-            this.setState( prevState =>{
-                let financialPlanPositions = [...prevState.financialPlanPositions];
-                financialPlanPositions = response.data.data;
-                return {financialPlanPositions}
-            })
-        })
-        .catch(error => {});
-    }
-
-    handleGetInvestmentPlanPositions = () => {
-        PublicProcurementApplicationApi.getPlanPositions('INW')
-        .then(response => {
-            this.setState( prevState =>{
-                let investmentPlanPositions = [...prevState.investmentPlanPositions];
-                investmentPlanPositions = response.data.data;
-                return {investmentPlanPositions}
-            })
-        })
-        .catch(error => {});
     }
 
     handleDelete = (invoiceId) => {
@@ -99,6 +75,20 @@ class InvoicesContainer extends Component {
         .catch(error => {});
     }
 
+    handleChangeYear = (year) => {
+        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
+            this.props.loading(true);
+            InvoicesApi.getInvoices(year instanceof Date ? year.getFullYear() : 0)
+            .then(response =>{
+                this.setState({
+                    invoices: response.data.data,
+                })
+                this.props.loading(false);
+            })
+            .catch(error => {})
+        }
+    }
+
     handleUpdateOnCloseDetails = (invoice) => {
         return updateOnCloseDetails(this.state.invoices, invoice);
     }
@@ -107,8 +97,6 @@ class InvoicesContainer extends Component {
         this.handleGetInvoices();
         this.handleGetApplications();
         this.handleGetContracts();
-        this.handleGetFinancialPlanPositions();
-        this.handleGetInvestmentPlanPositions();
     }
 
     render(){
@@ -125,6 +113,7 @@ class InvoicesContainer extends Component {
                     onDelete={this.handleDelete}
                     error={error}
                     clearError={clearError}
+                    onChangeYear={this.handleChangeYear}
                     onClose={this.handleUpdateOnCloseDetails}
                 />
             </>

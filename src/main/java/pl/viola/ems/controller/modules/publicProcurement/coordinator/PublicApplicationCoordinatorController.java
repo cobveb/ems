@@ -20,10 +20,10 @@ public class PublicApplicationCoordinatorController {
     public PublicApplicationCoordinatorController() {
     }
 
-    @GetMapping({"/getAllApplications"})
+    @GetMapping({"/{year}/getAllApplications"})
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1113')")
-    public ApiResponse getApplications() {
-        return new ApiResponse(HttpStatus.FOUND, this.publicProcurementApplicationService.getApplicationsByAccessLevel("public"));
+    public ApiResponse getApplications(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, this.publicProcurementApplicationService.getApplicationsByAccessLevel(year, "public"));
     }
 
     @PutMapping({"/approve/{applicationId}"})

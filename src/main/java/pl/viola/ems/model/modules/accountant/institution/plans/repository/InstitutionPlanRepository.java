@@ -6,19 +6,25 @@ import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface InstitutionPlanRepository extends JpaRepository<InstitutionPlan, Long> {
 
     InstitutionPlan findByYearAndType(Integer year, CoordinatorPlan.PlanType type);
 
-    InstitutionPlan findByYearAndTypeAndStatusIn(Integer year, CoordinatorPlan.PlanType type, List<InstitutionPlan.InstitutionPlanStatus> statuses);
+    Optional<InstitutionPlan> findByYearAndTypeAndStatusIn(Integer year, CoordinatorPlan.PlanType type, List<InstitutionPlan.InstitutionPlanStatus> statuses);
 
-    List<InstitutionPlan> findByStatusIn(List<InstitutionPlan.InstitutionPlanStatus> status);
+    Set<InstitutionPlan> findByStatusInOrderByIdDesc(List<InstitutionPlan.InstitutionPlanStatus> status);
 
-    List<InstitutionPlan> findByTypeIn(List<CoordinatorPlan.PlanType> types);
+    Set<InstitutionPlan> findByYearAndStatusInOrderByIdDesc(Integer year, List<InstitutionPlan.InstitutionPlanStatus> status);
 
-    List<InstitutionPlan> findByType(CoordinatorPlan.PlanType type);
+    Set<InstitutionPlan> findByTypeInOrderByIdDesc(List<CoordinatorPlan.PlanType> types);
+
+    Set<InstitutionPlan> findByYearAndTypeInOrderByIdDesc(Integer year, List<CoordinatorPlan.PlanType> types);
+
+    Set<InstitutionPlan> findByType(CoordinatorPlan.PlanType type);
 
     InstitutionPlan findFirstByYearAndTypeOrderByIdDesc(Integer year, CoordinatorPlan.PlanType type);
 

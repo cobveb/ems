@@ -61,7 +61,7 @@ class ContractsContainer extends Component {
 
     handleGetContracts = () =>{
         this.props.loading(true);
-        ContractApi.getContracts()
+        ContractApi.getContracts(new Date().getFullYear())
         .then(response =>{
             this.setState({
                 contracts: response.data.data,
@@ -89,6 +89,20 @@ class ContractsContainer extends Component {
         .catch(error => {});
     }
 
+    handleChangeYear = (year) => {
+        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
+            this.props.loading(true);
+            ContractApi.getContracts(year instanceof Date ? year.getFullYear() : 0)
+            .then(response =>{
+                this.setState({
+                    contracts: response.data.data,
+                })
+                this.props.loading(false);
+            })
+            .catch(error => {})
+        }
+    }
+
     handleUpdateOnCloseDetails = (contract) => {
         return updateOnCloseDetails(this.state.contracts, contract);
     }
@@ -109,6 +123,7 @@ class ContractsContainer extends Component {
                     isLoading={isLoading}
                     error={error}
                     clearError={clearError}
+                    onChangeYear={this.handleChangeYear}
                     onDelete={this.handleDelete}
                     onClose={this.handleUpdateOnCloseDetails}
                 />

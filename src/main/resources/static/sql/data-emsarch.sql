@@ -7,7 +7,8 @@ insert into EMSARCH.MODULES (ID,CODE,NAME) values (3,'public','Zamówienia publi
 insert into EMSARCH.MODULES (ID,CODE,NAME) values (4,'coordinator','Koordynator');
 insert into EMSARCH.MODULES (ID,CODE,NAME) values (5,'applicant','Wnioskodawca');
 insert into EMSARCH.MODULES (ID,CODE,NAME) values (6,'hr','Kadry');
-insert into EMSARCH.MODULES (ID,CODE,NAME) values (7,'administrator','Administrator');
+insert into EMSARCH.MODULES (ID,CODE,NAME) values (7,'iod','IODO');
+insert into EMSARCH.MODULES (ID,CODE,NAME) values (8,'administrator','Administrator');
 REM INSERTING into EMSARCH.GROUPS
 insert into EMSARCH.GROUPS (ID,CODE,NAME) values (groups_seq.nextval,'admin','Administratorzy');
 REM INSERTING into EMSARCH.USERS
@@ -24,6 +25,11 @@ insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('dicFunSour', 'Źród�
 insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slAsortGr', 'Grupy Asortymentowe', 'U');
 insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slTryUdzZp', 'Tryb udzielenia zamówienia', 'U');
 insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slKatPlInw', 'Kategorie pozycji w planie inwestycyjnym', 'U');
+insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slHrPos', 'Stanowiska', 'U');
+insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slHrProcBa', 'Podstawy przetwarania', 'U');
+insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slHrLoc', 'Lokalizacje', 'A');
+insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slHrGrZaw', 'Grupy zawodowe', 'U');
+insert into EMSARCH.DICTIONARIES (CODE,NAME,TYPE) values ('slHrLoc', 'Lokalizacje', 'A');
 REM INSERTING into jedMiar - EMSARCH.DICTIONARY_ITEMS
 SET DEFINE OFF;
 insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'szt', 'sztuka', 1, 'jedMiar');
@@ -58,3 +64,8 @@ insert into EMSARCH.PARAMETERS (CODE,CATEGORY,SECTION,NAME,DESCRIPTION,VALUE_TYP
 insert into EMSARCH.PARAMETERS (CODE,CATEGORY,SECTION,NAME,DESCRIPTION,VALUE_TYPE,VALUE) values ('minCharLength','System','Password','Minimalna ilość znaków w haśle','Minimalna ilość znaków w haśle. Domyślna wartość: 8','N','');
 insert into EMSARCH.PARAMETERS (CODE,CATEGORY,SECTION,NAME,DESCRIPTION,VALUE_TYPE,VALUE) values ('passValidPeriod','System','Password','Okres ważności hasła','Okres waśności hasła (liczba dni), po którym nastąpi wymuszenie zmiany hasła przez użytkownika.','N','30');
 insert into EMSARCH.PARAMETERS (CODE,CATEGORY,SECTION,NAME,DESCRIPTION,VALUE_TYPE,VALUE) values ('euro','Moduł','Zamówienia','Aktualny kurs Euro','Obowiązujący kurs euro dla zamówień publicznych','C','4,2693');
+REM INSERTING into slHrLoc - EMSARCH.DICTIONARY_ITEMS
+SET DEFINE OFF;
+insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'adm','Administracja','1','slHrLoc');
+insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'ceg','Ceglana','1','slHrLoc');
+insert into EMSARCH.DICTIONARY_ITEMS (ID,CODE,NAME,IS_ACTIVE,DICTIONARY_CODE) values (dict_item_seq.nextval,'med','Medyków','1','slHrLoc');

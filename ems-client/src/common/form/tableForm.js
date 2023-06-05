@@ -135,6 +135,14 @@ function desc(a, b, orderBy, cellType) {
             }
             break;
         case 'text':
+            if(b[orderBy] !== undefined && b[orderBy] !== null){
+                if (typeof b[orderBy] !== "string"){
+                    return b[orderBy].toString().toLowerCase().localeCompare(a[orderBy].toString().toLowerCase());
+                } else {
+                    return b[orderBy].toLowerCase().localeCompare(a[orderBy].toLowerCase());
+                }
+            }
+            break;
         case 'numeric':
         case 'boolean':
         case 'amount':

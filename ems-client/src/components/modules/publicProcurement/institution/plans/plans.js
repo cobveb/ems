@@ -63,7 +63,7 @@ class Plans extends Component {
             },
         ],
         rows: [],
-        year: null,
+        year: new Date(),
         selected: {},
         isDetailsVisible: false,
     }
@@ -117,9 +117,7 @@ class Plans extends Component {
                 rows: this.filter(),
             });
         } else if (this.state.year !== prevState.year){
-            this.setState({
-              rows: this.filter(),
-            })
+            this.props.onChangeYear(this.state.year);
         }
     }
 
@@ -169,7 +167,6 @@ class Plans extends Component {
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
                                             rowKey='id'
-                                            defaultOrderBy="id"
                                         />
                                     </Grid>
                                 </Grid>

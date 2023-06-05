@@ -12,6 +12,7 @@ import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.service.modules.accountant.institution.InstitutionPlanService;
+import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -30,10 +31,13 @@ public class InstitutionPlanController {
     @Autowired
     InstitutionPlanService institutionPlanService;
 
-    @GetMapping("/getPlans")
+    @Autowired
+    InvoiceService invoiceService;
+
+    @GetMapping("/{year}/getPlans")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1034')")
-    public ApiResponse getInstitutionPlans() {
-        return new ApiResponse(HttpStatus.FOUND, institutionPlanService.getPlans("accountant"));
+    public ApiResponse getInstitutionPlans(@PathVariable int year) {
+        return new ApiResponse(HttpStatus.FOUND, institutionPlanService.getPlans(year, "accountant"));
     }
 
     @GetMapping("/getPlan/{planId}")
@@ -102,5 +106,12 @@ public class InstitutionPlanController {
     @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('1034', '1025')")
     public ApiResponse checkDisableWithdraw(@PathVariable Long planId) {
         return new ApiResponse(HttpStatus.FOUND, institutionPlanService.disableWithdrawInstitutionPlan(planId));
+    }
+
+    @PutMapping("/export/planPositionInvoicesPositions/{positionId}/{exportType}")
+    public void exportPlanPositionInvoicesPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
+                                                          @PathVariable ExportType exportType, @PathVariable Long positionId, HttpServletResponse response) throws IOException {
+
+        invoiceService.exportPlanPositionInvoicesPositionsToXlsx(exportType, positionId, headRow, generateExportResponse(response, exportType));
     }
 }

@@ -20,7 +20,7 @@ import java.util.Set;
 
 public interface PublicInstitutionPlanService {
 
-    List<PublicInstitutionPlanResponse> getPlans(String levelAccess);
+    Set<PublicInstitutionPlanResponse> getPlans(int year, String levelAccess);
 
     Set<InstitutionPlanPosition> getPlanPositions(Long planId);
 
