@@ -147,6 +147,8 @@ export function isExistsOuNodes(parent, ous){
     return isExist;
 };
 
+//TODO: Po przejściu na pageable table funkcja do usunięcia
+
 export function updateOnCloseDetails(objects, object, prop){
     if(object){
         const idProp = (prop !== undefined ? prop : 'id')
@@ -582,6 +584,10 @@ export const getEmploymentTypes = () => [
         name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_STC,
     },
     {
+        code: 'STP',
+        name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_STP,
+    },
+    {
         code: 'UPO',
         name: constants.HR_EMPLOYEE_EMPLOYMENT_TYPE_UPO,
     },
@@ -613,3 +619,16 @@ export const getEmploymentStatuses = () => [
         name: constants.HR_EMPLOYEE_EMPLOYMENT_STATUS_ZW,
     },
 ];
+
+export function setChangedSearchConditions(name, value, searchConditions, searchConditionsChange){
+    /*
+        Function used in conjunction with a pageable table functionality
+    */
+    const condition = searchConditions.find(condition => condition.name === name);
+
+    if(condition !== undefined && value !== condition.value) {
+        condition.value = value;
+        searchConditionsChange = true;
+    }
+    return {searchConditions, searchConditionsChange}
+};

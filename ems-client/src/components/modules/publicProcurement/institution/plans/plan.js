@@ -444,14 +444,16 @@ class Plan extends Component {
                                     justify="flex-end"
                                     alignItems="flex-start"
                                 >
-                                    <Button
-                                        label={constants.BUTTON_WITHDRAW}
-                                        icon=<Undo />
-                                        iconAlign="left"
-                                        variant="cancel"
-                                        disabled={initialValues.status !== undefined && initialValues.status.code !== 'AZ'}
-                                        onClick={(event) => this.handlePlanAction(event, 'withdraw')}
-                                    />
+                                    {(initialValues.isUpdate !== undefined && !initialValues.isUpdate) &&
+                                        <Button
+                                            label={constants.BUTTON_WITHDRAW}
+                                            icon=<Undo />
+                                            iconAlign="left"
+                                            variant="cancel"
+                                            disabled={initialValues.status === undefined || (initialValues.status !== undefined && initialValues.status.code !== 'AZ')}
+                                            onClick={(event) => this.handlePlanAction(event, 'withdraw')}
+                                        />
+                                    }
                                     <Button
                                         label={constants.BUTTON_CLOSE}
                                         icon=<Cancel/>

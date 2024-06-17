@@ -7,6 +7,7 @@ let ApplicationAssortmentGroupsFormContainer = reduxForm({
     form: 'ApplicationAssortmentGroupsForm',
     validate,
     enableReinitialize: true,
+    touchOnChange: true,
 }) (ApplicationAssortmentGroupsForm)
 
 const selector = formValueSelector('ApplicationAssortmentGroupsForm') // <-- same as form name

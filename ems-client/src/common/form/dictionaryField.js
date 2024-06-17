@@ -9,7 +9,7 @@ import {escapeSpecialCharacters} from 'utils/';
 const filter = (value, items) => {
     const searchValue = escapeSpecialCharacters(value)
     return items.filter((item) => {
-        return item.name.toLowerCase().search(
+        return item.itemName.toLowerCase().search(
             searchValue.toLowerCase()) !== -1 ||
             item.code.toLowerCase().search(
             searchValue.toLowerCase()) !== -1;
@@ -59,7 +59,7 @@ function DictionaryView(props){
             boolean: false,
         },
         {
-            id: 'name',
+            id: 'itemName',
             numeric: false,
             label: 'Nazwa',
             boolean: false,
@@ -219,7 +219,6 @@ export default function DictionaryField({classes, inputProps, labelWidth, disabl
     function handleBlur(event){
 
         const positions = filter(event.target.value, items);
-
         if(positions.length === 0 && event.target.value.length > 0){
             setValue({code: 'err', name: event.target.value})
         } else if (positions.length === 0 && event.target.value.length === 0) {

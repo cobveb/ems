@@ -131,10 +131,17 @@ public class PlanController {
         return new ApiResponse(HttpStatus.ACCEPTED, planService.deleteInvestmentSource(positionId, sourceId));
     }
 
-    @PutMapping("/export/institutionPlanPositionInvoicesPositions/{positionId}/{exportType}")
-    public void exportPlanPositionsInvoicesPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
-                                                           @PathVariable ExportType exportType, @PathVariable Long positionId, HttpServletResponse response) throws IOException {
+    @PutMapping("/export/planPositionInvoicesPositions/{positionId}/{exportType}")
+    public void exportPlanPositionInvoicesPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
+                                                          @PathVariable ExportType exportType, @PathVariable Long positionId, HttpServletResponse response) throws IOException {
 
-        invoiceService.exportPlanPositionInvoicesPositionsToXlsx(exportType, positionId, headRow, generateExportResponse(response, exportType));
+        invoiceService.exportPlanPositionInvoicesPositionsToXlsx(exportType, positionId, headRow, generateExportResponse(response, exportType), null);
+    }
+
+    @PutMapping("/export/planPositionInvoicesPositions/{planType}/{positionId}/{exportType}")
+    public void exportPlanPositionInvoicesPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
+                                                          @PathVariable CoordinatorPlan.PlanType planType, @PathVariable ExportType exportType, @PathVariable Long positionId, HttpServletResponse response) throws IOException {
+
+        invoiceService.exportPlanPositionInvoicesPositionsToXlsx(exportType, positionId, headRow, generateExportResponse(response, exportType), planType);
     }
 }

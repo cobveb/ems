@@ -84,8 +84,6 @@ class ApplicationServiceImplTest {
             new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
-            new HashSet<>(),
-            new HashSet<>(),
             new HashSet<>()
     );
 

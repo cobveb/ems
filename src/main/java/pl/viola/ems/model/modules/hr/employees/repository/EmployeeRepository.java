@@ -7,7 +7,7 @@ import pl.viola.ems.model.modules.hr.employees.Employee;
 import java.util.Set;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+public interface EmployeeRepository extends JpaRepository<Employee, Long>, EmployeeRepositoryCustom {
 
     Set<Employee> findAllByOrderByName();
 }

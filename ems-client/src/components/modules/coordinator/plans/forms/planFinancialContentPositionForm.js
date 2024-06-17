@@ -178,6 +178,7 @@ class PlanFinancialContentPosition extends Component {
     render(){
         const {handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, initialValues, action, planStatus, planUpdate, units, costsTypes, vats} = this.props;
         const {head, selected, openPositionDetails, positionAction, positions, formChanged } = this.state;
+        console.log(initialValues)
         return(
             <>
                 {positionAction === "delete" &&

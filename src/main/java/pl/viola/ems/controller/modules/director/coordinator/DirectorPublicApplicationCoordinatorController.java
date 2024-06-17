@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pl.viola.ems.model.common.search.SearchConditions;
 import pl.viola.ems.model.modules.coordinator.publicProcurement.Application;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.service.modules.coordinator.publicProcurement.PublicProcurementApplicationService;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/director/coordinator/publicProcurement/applications")
@@ -19,6 +22,12 @@ public class DirectorPublicApplicationCoordinatorController {
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1115')")
     public ApiResponse getApplications(@PathVariable int year) {
         return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByAccessLevel(year, "director"));
+    }
+
+    @PostMapping("/getApplicationsPageable")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1115')")
+    public ApiResponse getApplicationsPageable(@RequestBody @Valid SearchConditions conditions) {
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsPageableByAccessLevel(conditions, "director"));
     }
 
     @PutMapping("/application/directorApprove/{applicationId}")

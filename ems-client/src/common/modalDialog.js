@@ -12,6 +12,7 @@ const variantTitle = {
 	warning: constants.MODAL_DIALOG_WARNING,
 	error: constants.MODAL_DIALOG_ERROR,
 	info: constants.MODAL_DIALOG_INFORMATION,
+	warningInfo: constants.MODAL_DIALOG_WARNING,
 };
 
 const variantIcon = {
@@ -19,6 +20,7 @@ const variantIcon = {
 	warning: Warning,
 	error: Error,
 	info: Info,
+	warningInfo: Warning,
 };
 
 const styles = theme => ({
@@ -32,6 +34,9 @@ const styles = theme => ({
 		backgroundColor: theme.palette.primary.dark,
 	},
 	warning: {
+		backgroundColor: amber[700],
+	},
+	warningInfo: {
 		backgroundColor: amber[700],
 	},
 	iconVariant: {
@@ -105,7 +110,6 @@ class modalDialog extends Component {
                     open={this.state.open}
                     fullWidth={true}
                     maxWidth={'sm'}
-                    disableBackdropClick={true}
                 >
                     <DialogTitle
                         id={"dialog-" + variant}
@@ -134,6 +138,7 @@ class modalDialog extends Component {
                         {{
                             error: <InfoAction type={variant} onClose={this.handleClose} />,
                             info: <InfoAction type={variant} onClose={this.handleClose} />,
+                            warningInfo: <InfoAction type={variant} onClose={this.handleClose} />,
                             warning: <DialogAction type={variant} onConfirm={this.handleConfirm} onCancel={this.handleClose}/>,
                             confirm: <DialogAction type={variant} onConfirm={this.handleConfirm} onCancel={this.handleClose}/>,
                         }[variant]}

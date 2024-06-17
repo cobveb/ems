@@ -41,7 +41,7 @@ public class CostTypeServiceImpl implements CostTypeService {
     @Override
     public List<CostTypeResponse> findAll() {
         return costTypeRepository.findAll().stream().map(cost ->
-                new CostTypeResponse(cost.getId(), cost.getCode(), cost.getName(), cost.getActive(), new HashSet<>())
+                new CostTypeResponse(cost.getId(), cost.getCode(), cost.getName(), cost.getName(), cost.getActive(), new HashSet<>())
         ).collect(Collectors.toList());
     }
 
@@ -56,7 +56,7 @@ public class CostTypeServiceImpl implements CostTypeService {
                         year, coordinator.orElse(null)
                 )
         ).stream().map(cost ->
-                new CostTypeResponse(cost.getId(), cost.getCode(), cost.getName(), cost.getActive(), new HashSet<>())
+                new CostTypeResponse(cost.getId(), cost.getCode(), cost.getName(), cost.getName(), cost.getActive(), new HashSet<>())
         ).collect(Collectors.toList());
 
     }

@@ -2,8 +2,8 @@ import Axios from 'axios';
 
 class PublicProcurementApplicationApi {
 
-    static getApplicationProcurementPlanPosition(){
-        return Axios.get(`/api/coordinator/publicProcurement/application/getApplicationProcurementPlanPosition`)
+    static getApplicationProcurementPlanPosition(coordinator){
+        return Axios.get(`/api/coordinator/publicProcurement/application/${coordinator}/getApplicationProcurementPlanPosition`)
     }
 
     static getPlanPositions(planType){
@@ -14,8 +14,12 @@ class PublicProcurementApplicationApi {
         return Axios.get(`/api/ou/getPublicProcurementApplicationCoordinators`)
     }
 
-    static getApplications(year){
-        return Axios.get(`/api/coordinator/publicProcurement/application/${year}/getApplications`)
+    static getReplayApplications(year){
+        return Axios.get(`/api/coordinator/publicProcurement/application/${year}/getReplayApplications`)
+    }
+
+    static getApplicationsPageable(data){
+        return Axios.post(`/api/coordinator/publicProcurement/application/getApplicationsPageable`, data)
     }
 
     static getApplicationsInRealization(){
@@ -78,8 +82,8 @@ class PublicProcurementApplicationApi {
         return Axios.delete(`/api/coordinator/publicProcurement/application/delete/${applicationId}`)
     }
 
-    static exportApplicationsToExcel(exportType, data){
-        return Axios.put(`/api/coordinator/publicProcurement/application/export/${exportType}`, data, {responseType: 'blob'})
+    static exportApplicationsToExcel(exportType, headRows, searchConditions){
+        return Axios.put(`/api/coordinator/publicProcurement/application/export/${exportType}`, {headRows, searchConditions}, {responseType: 'blob'})
     }
 
     static exportApplicationPartToExcel(exportType, applicationId, data){

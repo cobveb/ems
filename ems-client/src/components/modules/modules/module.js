@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles, Button, Typography  } from '@material-ui/core/';
 import {purple, green, teal, cyan} from '@material-ui/core/colors/';
-import { Settings, DescriptionOutlined, AccountBalanceOutlined, HowToReg, People, EuroSymbol, Business, Security } from '@material-ui/icons/';
+import { Settings, DescriptionOutlined, AccountBalanceOutlined, HowToReg, People, EuroSymbol, Business, Security, VpnLock } from '@material-ui/icons/';
 
 const variantIcon = {
     public: EuroSymbol,
@@ -15,6 +15,7 @@ const variantIcon = {
     applicant: DescriptionOutlined,
     administrator: Settings,
     iod: Security,
+    asi: VpnLock,
 };
 
 const styles = theme => ({
@@ -67,6 +68,12 @@ const styles = theme => ({
     },
     iod: {
         backgroundColor: cyan[500],
+        '&:hover': {
+            backgroundColor: cyan[800],
+        },
+    },
+    asi: {
+        backgroundColor: cyan[600],
         '&:hover': {
             backgroundColor: cyan[800],
         },

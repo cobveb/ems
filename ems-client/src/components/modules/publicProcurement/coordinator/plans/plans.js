@@ -159,7 +159,6 @@ class Plans extends Component {
 
     filter = () => {
         let plans = this.props.initialValues;
-        console.log(plans)
         return plans.filter((plan) => {
             return plan.status.code.toLowerCase().search(
                     this.state.status.toLowerCase()) !== -1 &&

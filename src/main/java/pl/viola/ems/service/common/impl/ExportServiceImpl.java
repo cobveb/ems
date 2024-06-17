@@ -61,10 +61,13 @@ public class ExportServiceImpl implements ExportService {
                 createCell(row, counter + 1, dataRow.get(headRows.get(counter).getId()), style, headRows.get(counter).getType(), headRows.get(counter).getDateFormat());
             }
         }
+
+        for (int col = 0; col < headRows.size() + 1; col++) {
+            sheet.autoSizeColumn(col);
+        }
     }
 
     private void createCell(Row row, int columnCount, Object value, CellStyle style, String cellType, String dateFormat) {
-        sheet.autoSizeColumn(columnCount);
         Cell cell = row.createCell(columnCount);
         if (cellType != null) {
             switch (cellType) {

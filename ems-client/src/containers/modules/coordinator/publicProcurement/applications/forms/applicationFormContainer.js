@@ -7,7 +7,7 @@ let ApplicationFormContainer = reduxForm({
     form: 'ApplicationForm',
     validate,
     enableReinitialize: true,
-//    touchOnChange: true,
+    touchOnChange: true,
 }) (ApplicationForm)
 
 ApplicationFormContainer = connect(state => {

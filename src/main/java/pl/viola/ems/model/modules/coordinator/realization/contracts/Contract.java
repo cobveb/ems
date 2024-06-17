@@ -165,8 +165,12 @@ public class Contract implements DictItem {
         return this.number;
     }
 
-    @Override
     public String getName() {
+        return this.contractObject.getContent();
+    }
+
+    @Override
+    public String getItemName() {
         return this.contractObject.getContent();
     }
 }

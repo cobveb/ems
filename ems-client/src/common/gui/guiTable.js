@@ -10,6 +10,7 @@ import { Checkbox } from 'common/gui';
 import format from "date-fns/format";
 import { pl } from 'date-fns/locale';
 import { numberWithSpaces } from 'utils/';
+import * as constants from 'constants/uiNames';
 
 const tablePagination = makeStyles(theme => ({
     root: {
@@ -28,22 +29,23 @@ const StyledTableCell = withStyles(theme => ({
 function TablePaginationActions(props) {
     const classes = tablePagination();
     const theme = useTheme();
-    const { count, page, rowsPerPage, onChangePage } = props;
+    const { count, page, rowsPerPage, onPageChange } = props;
+
 
     function handleFirstPageButtonClick(event) {
-        onChangePage(event, 0);
+        onPageChange(event, 0);
     }
 
     function handleBackButtonClick(event) {
-        onChangePage(event, page - 1);
+        onPageChange(event, page - 1);
     }
 
     function handleNextButtonClick(event) {
-        onChangePage(event, page + 1);
+        onPageChange(event, page + 1);
     }
 
     function handleLastPageButtonClick(event) {
-        onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+        onPageChange(event, Math.max(1, Math.ceil(count / rowsPerPage) - 1));
     }
 
     return (
@@ -62,7 +64,7 @@ function TablePaginationActions(props) {
             >
                 {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
             </IconButton>
-            Strona: {page}
+            {constants.TABLE_PAGINATION_PAGE} {page +1}
             <IconButton
                 onClick={handleNextButtonClick}
                 disabled={page >= Math.ceil(count / rowsPerPage) - 1}
@@ -83,7 +85,7 @@ function TablePaginationActions(props) {
 
 TablePaginationActions.propTypes = {
     count: PropTypes.number.isRequired,
-    onChangePage: PropTypes.func.isRequired,
+    onPageChange: PropTypes.func.isRequired,
     page: PropTypes.number.isRequired,
     rowsPerPage: PropTypes.number.isRequired,
 };
@@ -228,6 +230,7 @@ class ContainedTable extends Component {
 
     handleChangePage = (event, newPage) => {
         this.setState({curPage: newPage});
+        this.props.onSetPage(newPage);
     }
 
     labelRows = ( {from, to, count }) => {
@@ -280,6 +283,7 @@ class ContainedTable extends Component {
             orderBy: property,
             order : isDesc ? 'asc' : 'desc',
         })
+        this.props.onSetSort({"orderBy": property, "orderType": isDesc ? 'asc' : 'desc'});
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -310,7 +314,7 @@ class ContainedTable extends Component {
                                             <StyledTableCell
                                                 key={row.id}
                                                 align={row.type === 'numeric' ? 'right' : 'left'}
-                                                padding="default"
+                                                padding="normal"
                                                 sortDirection={orderBy === row.id ? order : false}
                                                 className={classNames(
                                                     classes.headCell,
@@ -330,7 +334,7 @@ class ContainedTable extends Component {
                                 </TableHead>
                                 <TableBody >
                                     {this.stableSort(rows, this.getSorting(order, orderBy))
-                                    .slice(curPage * rowsPerPage, curPage * rowsPerPage + rowsPerPage)
+                                    .slice(curPage  * rowsPerPage, curPage * rowsPerPage + rowsPerPage)
                                     .map((row, key) => (
                                         <TableRow
                                             hover
@@ -342,7 +346,7 @@ class ContainedTable extends Component {
                                             {headCells.map((cell, key) =>
                                                 <TableCell
                                                     key={key}
-                                                    padding={cell.type === 'boolean' ? "checkbox" : "default"}
+                                                    padding={cell.type === 'boolean' ? "checkbox" : "normal"}
                                                     align={cell.type === 'numeric' ? 'right' : cell.boolean ? 'center' : 'left'}
                                                     classes={{ sizeSmall: classes.tableCell }}
                                                 >
@@ -410,7 +414,7 @@ class ContainedTable extends Component {
                                             rowsPerPage={rowsPerPage}
                                             count = {rows.length}
                                             page = {curPage}
-                                            onChangePage={this.handleChangePage}
+                                            onPageChange={this.handleChangePage}
                                             ActionsComponent={TablePaginationActions}
                                             labelDisplayedRows={this.labelRows}
                                             classes={{spacer: classes.spacer}}
@@ -441,6 +445,8 @@ ContainedTable.defaultProps = {
     defaultOrderBy: 'code',
     onDoubleClick: () => {},
     onExcelExport: () => {},
+    onSetSort: () => {},
+    onSetPage: () => {},
 };
 
 export default withStyles(styles)(ContainedTable);

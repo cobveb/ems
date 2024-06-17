@@ -24,6 +24,11 @@ export const ui = (state = InitialState.ui, action) => {
 			    ...state,
 			        euroRate: action.euroRate,
 			}
+		case 'SET_PAGEABLE_TABLE_PROPERTIES':
+		    return{
+		        ...state,
+		            pageableTableProperties: action.pageableTableProperties,
+		    }
 	    default:
 	      return state
 	}

@@ -26,4 +26,14 @@ public class Workplace extends AbstractPlace implements DictItem {
         return super.getId().toString();
     }
 
+    @Override
+    public String getName() {
+        return super.getName() + " - " + this.getGroup().getName();
+    }
+
+    @Override
+    public String getItemName() {
+        return super.getName() + " - " + this.getGroup().getName();
+    }
+
 }

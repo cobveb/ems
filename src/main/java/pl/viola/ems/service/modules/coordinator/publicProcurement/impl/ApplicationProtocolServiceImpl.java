@@ -31,8 +31,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
 @Service
 public class ApplicationProtocolServiceImpl implements ApplicationProtocolService {
@@ -58,10 +63,18 @@ public class ApplicationProtocolServiceImpl implements ApplicationProtocolServic
         Set<ApplicationProtocol> protocols = new HashSet<>();
         Set<ApplicationProtocolResponse> applicationProtocolResponses = new HashSet<>();
         List<Long> ids = new ArrayList<>();
-        List<Application> applications = publicProcurementApplicationRepository.
-                findByEstimationTypeAndApplicationProtocolIsNotNull(PublicProcurementPosition.EstimationType.DO130);
+        LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
+        Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
+        Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
+
+        Set<Application> applications = publicProcurementApplicationRepository.
+                findBySendDateBetweenAndEstimationTypeAndApplicationProtocolIsNotNull(firstDay, lastDay, PublicProcurementPosition.EstimationType.DO130);
 
         applications.forEach(application -> ids.add(application.getApplicationProtocol().getId()));
+
+        System.out.println(year);
+        System.out.println(ids.size());
+
 
         switch (accessLevel) {
             case "public":

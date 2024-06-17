@@ -85,4 +85,9 @@ public class RegisterCpdoPosition extends RegisterPosition {
         return super.getId().toString();
     }
 
+    @Override
+    public String getItemName() {
+        return super.getName();
+    }
+
 }

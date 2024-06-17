@@ -48,9 +48,9 @@ class CostTypeControllerTest {
     private final CostType costType = new CostType((long) 1, "401-1-02-xxx", "Materiały do remontu i konserwacji budynków", true, new HashSet<>());
     private final CostType costType1 = new CostType((long) 1, "401-1-02-xxx", "Materiały do remontu i konserwacji budynków", true, new HashSet<>());
 
-    private final CostTypeResponse cost = new CostTypeResponse((long) 1, "401-1-02-xxx", "Materiały do remontu i konserwacji budynków", true, new HashSet<>());
-    private final CostTypeResponse cost1 = new CostTypeResponse((long) 2, "401-1-07-002", "Papier ksero", true, new HashSet<>());
-    private final CostTypeResponse cost2 = new CostTypeResponse((long) 3, "401-2-02-001", "Leki do programów lekowych", true, new HashSet<>());
+    private final CostTypeResponse cost = new CostTypeResponse((long) 1, "401-1-02-xxx", "Materiały do remontu i konserwacji budynków", "Materiały do remontu i konserwacji budynków", true, new HashSet<>());
+    private final CostTypeResponse cost1 = new CostTypeResponse((long) 2, "401-1-07-002", "Papier ksero", "Papier ksero", true, new HashSet<>());
+    private final CostTypeResponse cost2 = new CostTypeResponse((long) 3, "401-2-02-001", "Leki do programów lekowych", "Leki do programów lekowych", true, new HashSet<>());
 
     private final List<CostTypeResponse> all = Arrays.asList(cost, cost1, cost2);
     private final List<CostTypeResponse> byCoordinator = Arrays.asList(cost, cost1);

@@ -23,19 +23,37 @@ export const validate =  ( values, props ) => {
         /* Check if current position value not exceeded coordinator plan position awarded value */
         if(values.coordinatorPlanPosition !== undefined){
             if(values.coordinatorPlanPosition.amountRealizedNet !== null){
-                if(values.coordinatorPlanPosition.amountRealizedNet + values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
-                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                if(props.initialValues.amountNet !== undefined){
+                    if(values.coordinatorPlanPosition.amountRealizedNet - props.initialValues.amountNet + values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    }
+                } else {
+                    if(values.coordinatorPlanPosition.amountRealizedNet + values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    }
                 }
             } else {
-                if(values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
-                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                if(props.initialValues.amountNet !== undefined){
+                    if(props.initialValues.amountNet - values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    }
+                } else {
+                    if(values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    }
                 }
             }
         }
         if(props.invoice.contract !== undefined && props.invoice.contract !== null){
             if(props.invoice.contract.realPrevYearsValueNet !== null){
-                if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet + values.amountNet) > props.invoice.contract.contractValueNet){
-                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
+                if(props.action === 'add'){
+                    if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet + values.amountNet) > props.invoice.contract.contractValueNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
+                    }
+                } else {
+                    if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet - props.initialValues.amountNet + values.amountNet) > props.invoice.contract.contractValueNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
+                    }
                 }
             } else {
                 if(props.action === 'edit'){
@@ -55,24 +73,50 @@ export const validate =  ( values, props ) => {
         /* Check if current position value not exceeded coordinator plan position awarded value */
         if(values.coordinatorPlanPosition !== undefined){
             if(values.coordinatorPlanPosition.amountRealizedNet !== null){
-                if(values.coordinatorPlanPosition.amountRealizedNet + values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
-                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
-                    props.dispatch(touch('InvoicePositionForm','amountNet'))
+                if(props.initialValues.amountNet !== undefined){
+                    if(values.coordinatorPlanPosition.amountRealizedNet - props.initialValues.amountNet + values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                        props.dispatch(touch('InvoicePositionForm','amountNet'))
+                    }
+                } else {
+                    if(values.coordinatorPlanPosition.amountRealizedNet + values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                        props.dispatch(touch('InvoicePositionForm','amountNet'))
+                    }
                 }
             } else {
-                if(values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
-                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
-                    props.dispatch(touch('InvoicePositionForm','amountNet'))
+                if(props.initialValues.amountNet !== undefined){
+                    if(props.initialValues.amountNet - values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                        props.dispatch(touch('InvoicePositionForm','amountNet'))
+                    }
+                } else {
+                    if(values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                        props.dispatch(touch('InvoicePositionForm','amountNet'))
+                    }
                 }
             }
 
             if(values.coordinatorPlanPosition.amountRealizedGross !== null){
-                if(values.coordinatorPlanPosition.amountRealizedGross + values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
-                    errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                if(props.initialValues.amountGross !== undefined){
+                    if(values.coordinatorPlanPosition.amountRealizedGross - props.initialValues.amountGross + values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
+                        errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    }
+                } else {
+                    if(values.coordinatorPlanPosition.amountRealizedGross + values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
+                        errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    }
                 }
             } else {
-                if(values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
-                    errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                if(props.initialValues.amountGross !== undefined){
+                    if(props.initialValues.amountGross + values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
+                        errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    }
+                } else {
+                    if(values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
+                        errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    }
                 }
             }
         }
@@ -87,13 +131,24 @@ export const validate =  ( values, props ) => {
         }
         if(props.invoice.contract !== undefined && props.invoice.contract !== null){
             if(props.invoice.contract.realPrevYearsValueGross !== null){
-                if((props.invoice.contract.invoicesValueGross + props.invoice.contract.realPrevYearsValueGross + values.amountGross) > props.invoice.contract.contractValueGross){
-                    errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
-                }
-                /* Check if current position value not exceeded contract amount net */
-                if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet + values.amountNet) > props.invoice.contract.contractValueNet){
-                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
-                    props.dispatch(touch('InvoicePositionForm','amountNet'))
+                if(props.action === 'add'){
+                    if((props.invoice.contract.invoicesValueGross + props.invoice.contract.realPrevYearsValueGross + values.amountGross) > props.invoice.contract.contractValueGross){
+                        errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
+                    }
+                    /* Check if current position value not exceeded contract amount net */
+                    if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet + values.amountNet) > props.invoice.contract.contractValueNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
+                        props.dispatch(touch('InvoicePositionForm','amountNet'))
+                    }
+                } else {
+                    if((props.invoice.contract.invoicesValueGross + props.invoice.contract.realPrevYearsValueGross - props.initialValues.amountGross + values.amountGross) > props.invoice.contract.contractValueGross){
+                        errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
+                    }
+                    /* Check if current position value not exceeded contract amount net */
+                    if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet - props.initialValues.amountNet + values.amountNet) > props.invoice.contract.contractValueNet){
+                        errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
+                        props.dispatch(touch('InvoicePositionForm','amountNet'))
+                    }
                 }
             } else {
                 if(props.action === 'edit'){
@@ -114,7 +169,6 @@ export const validate =  ( values, props ) => {
                         errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
                         props.dispatch(touch('InvoicePositionForm','amountNet'))
                     }
-
                 }
             }
         }
@@ -123,25 +177,53 @@ export const validate =  ( values, props ) => {
     if(values.coordinatorPlanPosition){
         /* Check if current position value not exceeded coordinator plan position awarded value */
         if(values.coordinatorPlanPosition.amountRealizedNet !== null){
-            if(values.coordinatorPlanPosition.amountRealizedNet + values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
-                errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
-                props.dispatch(touch('InvoicePositionForm','amountNet'))
+            if(props.initialValues.amountNet !== undefined) {
+                if(values.coordinatorPlanPosition.amountRealizedNet - props.initialValues.amountNet + values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    props.dispatch(touch('InvoicePositionForm','amountNet'))
+                }
+            } else {
+                if(values.coordinatorPlanPosition.amountRealizedNet + values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    props.dispatch(touch('InvoicePositionForm','amountNet'))
+                }
             }
         } else {
-            if(values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
-                errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
-                props.dispatch(touch('InvoicePositionForm','amountNet'))
+            if(props.initialValues.amountNet !== undefined) {
+                if(props.initialValues.amountNet - values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    props.dispatch(touch('InvoicePositionForm','amountNet'))
+                }
+            } else {
+                if(values.amountNet > values.coordinatorPlanPosition.amountAwardedNet){
+                    errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    props.dispatch(touch('InvoicePositionForm','amountNet'))
+                }
             }
         }
         if(values.coordinatorPlanPosition.amountRealizedGross !== null){
-            if(values.coordinatorPlanPosition.amountRealizedGross + values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
-                errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
-                props.dispatch(touch('InvoicePositionForm','amountGross'))
+            if(props.initialValues.amountGross !== undefined){
+                if(values.coordinatorPlanPosition.amountRealizedGross - props.initialValues.amountGross + values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
+                    errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    props.dispatch(touch('InvoicePositionForm','amountGross'))
+                }
+            } else {
+                if(values.coordinatorPlanPosition.amountRealizedGross + values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
+                    errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    props.dispatch(touch('InvoicePositionForm','amountGross'))
+                }
             }
         } else {
-            if(values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
-                errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
-                props.dispatch(touch('InvoicePositionForm','amountGross'))
+            if(props.initialValues.amountGross !== undefined){
+                if(props.initialValues.amountGross - values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
+                    errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    props.dispatch(touch('InvoicePositionForm','amountGross'))
+                }
+            } else {
+                if(values.amountGross > values.coordinatorPlanPosition.amountAwardedGross){
+                    errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED
+                    props.dispatch(touch('InvoicePositionForm','amountGross'))
+                }
             }
         }
     }

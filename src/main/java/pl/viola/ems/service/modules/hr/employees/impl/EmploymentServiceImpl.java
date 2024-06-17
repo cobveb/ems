@@ -8,8 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.modules.hr.employees.*;
 import pl.viola.ems.model.modules.hr.employees.repository.*;
+import pl.viola.ems.payload.modules.asi.employee.EntitlementEmploymentResponse;
 import pl.viola.ems.service.modules.hr.employees.EmploymentService;
+import pl.viola.ems.utils.Utils;
 
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
@@ -36,8 +39,39 @@ public class EmploymentServiceImpl implements EmploymentService {
     @Override
     public Set<Employment> getEmploymentsByEmployee(final Long employeeId) {
 
-        return employmentRepository.findByEmployeeOrderById(employeeRepository.findById(employeeId).orElseThrow(
+        Set<Employment> employments;
+
+        employments = employmentRepository.findByEmployeeOrderById(employeeRepository.findById(employeeId).orElseThrow(
                 () -> new AppException("Hr.employee.employeeNotFound", HttpStatus.NOT_FOUND)));
+        return employments;
+    }
+
+    @Override
+    public Set<EntitlementEmploymentResponse> getActiveEmploymentsByEmployee(final Long employeeId) {
+        Set<Employment> employments;
+        Set<EntitlementEmploymentResponse> entitlementEmployments = new HashSet<>();
+        employments = employmentRepository.findByEmployeeAndIsActiveTrueOrderById(employeeRepository.findById(employeeId).orElseThrow(
+                () -> new AppException("Hr.employee.employeeNotFound", HttpStatus.NOT_FOUND)));
+
+        employments.forEach(employment -> {
+
+            Set<EmploymentWorkplace> workplaces = employmentWorkplaceRepository.findByEmploymentOrderById(employment);
+
+            String workplaceList = Utils.generateEmployeeEmploymentWorkplaceList(employment, workplaces);
+
+            EntitlementEmploymentResponse entitlementEmployment = new EntitlementEmploymentResponse(
+                    employment.getId(),
+                    employment.getNumber(),
+                    employment.getNumber(),
+                    workplaceList,
+                    workplaceList,
+                    employment.getDateFrom(),
+                    employment.getDateTo()
+            );
+            entitlementEmployments.add(entitlementEmployment);
+
+        });
+        return entitlementEmployments;
     }
 
     @Override

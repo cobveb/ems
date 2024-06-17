@@ -11,5 +11,7 @@ import java.util.Set;
 public interface EmploymentRepository extends JpaRepository<Employment, Long> {
     Set<Employment> findByEmployeeOrderById(Employee employee);
 
+    Set<Employment> findByEmployeeAndIsActiveTrueOrderById(Employee employee);
+
     boolean existsEmploymentByEmployee(Employee employee);
 }

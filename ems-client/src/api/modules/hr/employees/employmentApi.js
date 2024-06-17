@@ -5,6 +5,10 @@ class EmploymentApi {
         return Axios.get(`/api/hr/employees/employee/${employeeId}/employment/getEmployments`)
     }
 
+    static getActiveEmployments(employeeId){
+        return Axios.get(`/api/hr/employees/employee/${employeeId}/employment/getActiveEmployments`)
+    }
+
     static saveEmployment(employeeId, data){
         return Axios.put(`/api/hr/employees/employee/${employeeId}/employment/saveEmployment`, data)
     }

@@ -21,7 +21,7 @@ public class Employee {
     private Long id;
 
     @NonNull
-    @Size(max = 15)
+    @Size(max = 25)
     private String name;
 
     @NonNull

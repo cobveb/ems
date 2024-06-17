@@ -38,7 +38,7 @@ class LoginScreen extends Component {
 		const { classes } = this.props;
 		return(
 		    <>
-                <Grid container direction="row" justify="center" alignItems="center" className={classes.root}>
+                <Grid container direction="row" justifyContent="center" alignItems="center" className={classes.root}>
                     <Grid item xs={12} sm={4}>
                         <Paper className={classes.paper}>
                             <AppBar position="static">

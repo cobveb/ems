@@ -1,23 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
-import { loading, setError } from 'actions/';
+import { loading, setError, resetSearchConditions, setPageableTableProperties, setConditions } from 'actions/';
 import PropTypes from 'prop-types';
 import Employees from 'components/modules/hr/employees/employees';
 import EmployeeApi from 'api/modules/hr/employees/employeeApi';
-import { updateOnCloseDetails, findIndexElement } from 'utils';
+import { findIndexElement, generateExportLink } from 'utils';
 
 class EmployeesContainer extends Component {
     state = {
         employees: [],
     };
 
-    handleGetEmployees(){
+    handleGetEmployeesPageable(){
         this.props.loading(true);
-        EmployeeApi.getEmployees()
+        EmployeeApi.getEmployeesPageable(this.props.searchConditions)
         .then(response => {
+            this.props.setPageableTableProperties({
+                totalElements: response.data.data.totalElements,
+                lastPage: response.data.data.last,
+                firstPage: response.data.data.first,
+            })
             this.setState({
-                employees: response.data.data,
+                employees: response.data.data.content,
             })
             this.props.loading(false);
         })
@@ -41,13 +46,24 @@ class EmployeesContainer extends Component {
         .catch(error => {});
     }
 
-    handleUpdateOnClose = (employee) => {
-        let employees = this.state.employees;
-        return updateOnCloseDetails(employees, employee, "id");
+    handleExcelExport = (exportType, headRow) =>{
+        this.props.loading(true);
+        EmployeeApi.exportEmployeesToExcel(exportType, headRow, this.props.searchConditions)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
     }
 
-    componentDidMount() {
-        this.handleGetEmployees();
+    componentDidUpdate(prevProps){
+        if(this.props.searchConditions !== prevProps.searchConditions){
+            this.handleGetEmployeesPageable();
+        }
+    }
+
+    componentWillUnmount(){
+        this.props.resetSearchConditions();
     }
 
     render(){
@@ -61,7 +77,8 @@ class EmployeesContainer extends Component {
                 error={error}
                 clearError={clearError}
                 onDelete={this.handleDelete}
-                onClose={this.handleUpdateOnClose}
+                onSetSearchConditions={this.props.onSetSearchConditions}
+                onExcelExport={this.handleExcelExport}
             />
         );
     };
@@ -78,6 +95,7 @@ const mapStateToProps = (state) => {
 	return {
 		isLoading: state.ui.loading,
     	error: state.ui.error,
+    	searchConditions: state.search,
 	}
 };
 
@@ -85,6 +103,9 @@ function mapDispatchToProps (dispatch) {
     return {
         loading : bindActionCreators(loading, dispatch),
         clearError : bindActionCreators(setError, dispatch),
+        resetSearchConditions : bindActionCreators(resetSearchConditions, dispatch),
+        onSetSearchConditions : bindActionCreators(setConditions, dispatch),
+        setPageableTableProperties : bindActionCreators(setPageableTableProperties, dispatch)
     }
 };
 

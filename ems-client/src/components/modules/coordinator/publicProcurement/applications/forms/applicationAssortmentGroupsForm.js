@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { change } from 'redux-form';
+import { change, updateSyncErrors, touch } from 'redux-form';
 import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { Spinner, ModalDialog } from 'common/';
@@ -156,6 +156,7 @@ class ApplicationAssortmentGroupsForm extends Component {
 
     handleSubmitApplicationPlanPosition = (values) =>{
         this.props.onSaveApplicationPlanPosition(values, this.state.positionAction, this.props.initialValues.id)
+        this.props.dispatch(updateSyncErrors('ApplicationForm',{'planPositions': undefined}))
         this.handleClosePlanPositionDetails();
     }
 
@@ -219,6 +220,15 @@ class ApplicationAssortmentGroupsForm extends Component {
                 })
             }
         }
+
+        // Validate Art 30
+            if(this.props.isArt30 && this.props.applicationMode.code === 'PL'){
+                if(this.props.initialValues.orderGroupValueNet !== undefined){
+                    if((((this.props.initialValues.applicationProcurementPlanPosition.amountArt30Net + this.props.initialValues.orderGroupValueNet) / this.props.initialValues.applicationProcurementPlanPosition.amountRequestedNet) * 100).toFixed(2) > 20){
+                        this.props.dispatch(touch('ApplicationAssortmentGroupsForm', 'orderGroupValueNet'));
+                    }
+                }
+            }
     }
 
     componentDidMount(){
@@ -359,6 +369,38 @@ class ApplicationAssortmentGroupsForm extends Component {
                                     <Grid item xs={4}>
                                         <FormAmountField
                                             name="applicationProcurementPlanPosition.amountRealizedNet"
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_VALUE_NET}
+                                            disabled
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </div>
+                            <div className={classes.section}>
+                                <Divider />
+                                <Toolbar className={classes.toolbar}>
+                                    <Description className={classes.subHeaderIcon} fontSize="small" />
+                                    <Typography variant="subtitle1" >
+                                        {constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COR_GROUP_INFO}
+                                    </Typography>
+                                </Toolbar>
+                                <Grid container spacing={1} justify="center" className={classes.container}>
+                                    <Grid item xs={4}>
+                                        <FormAmountField
+                                            name="applicationProcurementPlanPosition.coordinatorPlanPosition.amountRequestedNet"
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_COR_VALUE_NET}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <FormAmountField
+                                            name="applicationProcurementPlanPosition.coordinatorPlanPosition.amountInferredNet"
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_INFERRED_VALUE_NET}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <FormAmountField
+                                            name="applicationProcurementPlanPosition.coordinatorPlanPosition.amountRealizedNet"
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_VALUE_NET}
                                             disabled
                                         />

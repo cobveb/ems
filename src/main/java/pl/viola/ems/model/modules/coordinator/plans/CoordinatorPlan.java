@@ -27,7 +27,12 @@ import java.util.Set;
         }),
 })
 @DynamicUpdate
-public class CoordinatorPlan {
+public class CoordinatorPlan implements Comparable<CoordinatorPlan> {
+
+    @Override
+    public int compareTo(@org.jetbrains.annotations.NotNull final CoordinatorPlan o) {
+        return id.compareTo(o.getId());
+    }
 
     public enum PlanStatus {
         ZP, WY, RO, PK, UZ, AK, AD, AZ, AE, AN, ZA, RE, ZR, AA

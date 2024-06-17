@@ -19,10 +19,10 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "dictionary_items", schema = "emsarch")
-public class DictionaryItem {
+public class DictionaryItem implements DictItem {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "dictionaryItemSequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dictionaryItemSequence")
     @SequenceGenerator(name = "dictionaryItemSequence", sequenceName = "dict_item_seq", schema = "emsarch", allocationSize = 1)
     private Long id;
     @NonNull
@@ -57,4 +57,9 @@ public class DictionaryItem {
     @JsonIgnore
     @OneToMany(mappedBy = "mode", cascade = CascadeType.MERGE)
     private Set<PublicProcurementPosition> modes = new HashSet<>();
+
+    @Override
+    public String getItemName() {
+        return this.name;
+    }
 }

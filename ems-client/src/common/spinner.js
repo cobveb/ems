@@ -46,7 +46,7 @@ class Spinner extends Component {
 		return(
 		    <>
 			    <div className={classes.spinner}>
-				    <Grid container direction="row" justify="center" alignItems="center" className={classes.grid}>
+				    <Grid container direction="row" justifyContent="center" alignItems="center" className={classes.grid}>
 					    <CircularProgress
 						    className={classes.progress}
 						    variant="determinate"

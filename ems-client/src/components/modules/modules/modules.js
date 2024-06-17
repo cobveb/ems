@@ -13,6 +13,7 @@ import Director from 'components/modules/director/director';
 import HumanResources from 'components/modules/hr/humanResources';
 import PublicProcurement from 'components/modules/publicProcurement/publicProcurement';
 import Iod from 'components/modules/iod/iod';
+import Asi from 'components/modules/asi/asi';
 
 const styles = theme => ({
     root: {
@@ -44,6 +45,7 @@ class Modules extends Component {
                         <PrivateRoute path='/modules/hr' component={HumanResources}/>
                         <PrivateRoute path='/modules/public' component={PublicProcurement}/>
                         <PrivateRoute path='/modules/iod' component={Iod}/>
+                        <PrivateRoute path='/modules/asi' component={Asi}/>
                     </Switch>
                 </main>
                 </div>

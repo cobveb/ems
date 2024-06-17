@@ -16,6 +16,8 @@ public class ApplicationPlanPosition {
 
     private String name;
 
+    private String itemName;
+
     private BigDecimal amountAwardedNet;
 
     private BigDecimal amountAwardedGross;

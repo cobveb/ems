@@ -1,6 +1,7 @@
 package pl.viola.ems.model.modules.accountant;
 
 import lombok.*;
+import pl.viola.ems.model.common.dictionary.DictItem;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -29,7 +30,7 @@ import java.util.Set;
         )
 })
 
-public class CostType {
+public class CostType implements DictItem {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "costTypeSequence")
     @SequenceGenerator(name = "costTypeSequence", sequenceName = "acc_costs_type_seq", schema = "emsadm", allocationSize = 1)
@@ -53,4 +54,8 @@ public class CostType {
     @ToString.Exclude
     private Set<CostYear> years = new HashSet<>();
 
+    @Override
+    public String getItemName() {
+        return this.name;
+    }
 }

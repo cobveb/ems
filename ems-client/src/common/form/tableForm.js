@@ -252,7 +252,7 @@ function EnhancedTableHead(props) {
                 <TableCell
                     key={row.id}
                     align={row.type === 'numeric' ? 'right' : 'left'}
-                    padding={checkedColumnFirst ? "default" : "checkbox"}
+                    padding={checkedColumnFirst ? "normal" : "checkbox"}
                     size="small"
                     className={classNames(classes.head, classesHead.head)}
                 >
@@ -473,9 +473,19 @@ function EnhancedTable(props) {
                                                                         ?
                                                                             cell.subtype === 'amount'
                                                                                 ?
-                                                                                    row[cell.id.substring(0, cell.id.lastIndexOf('.'))] !== null && row[cell.id.substring(0, cell.id.lastIndexOf('.'))] !== undefined ?
-                                                                                        `${numberWithSpaces((row[cell.id.substring(0, cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.') +1)]))}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}` :
-                                                                                         `${numberWithSpaces(0)}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
+                                                                                    (()=>{
+                                                                                        let idx=[],i=-1;
+                                                                                        while((i=cell.id.indexOf('.',i+1)) >= 0) {
+                                                                                            idx.push(i);
+                                                                                        }
+                                                                                        if (idx.length === 1 && row[cell.id.substring(0, cell.id.lastIndexOf('.'))] !== null && row[cell.id.substring(0, cell.id.lastIndexOf('.'))] !== undefined ){
+                                                                                            return (`${numberWithSpaces((row[cell.id.substring(0, cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.') +1)]))}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`)
+                                                                                        } else if (idx.length > 1) {
+                                                                                            return (`${numberWithSpaces((row[cell.id.substring(0, cell.id.indexOf('.'))][cell.id.substring(cell.id.indexOf('.') +1,cell.id.lastIndexOf('.'))][cell.id.substring(cell.id.lastIndexOf('.')+1)]))}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`)
+                                                                                        } else {
+                                                                                         return `${numberWithSpaces(0)}${cell.suffix !== undefined ? ' ' + cell.suffix : ''}`
+                                                                                     }
+                                                                                    })()
                                                                                 :
                                                                                     //TODO: Find a universal solution for several levels of object properties
                                                                                     (()=>{

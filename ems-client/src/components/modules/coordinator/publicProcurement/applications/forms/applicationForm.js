@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { change } from 'redux-form';
+import { change, updateSyncErrors  } from 'redux-form';
 import PropTypes from 'prop-types';
 import {Spinner, ModalDialog } from 'common/';
 import * as constants from 'constants/uiNames';
 import { withStyles, Grid, Typography, Divider, Toolbar, FormControl, FormLabel, FormHelperText } from '@material-ui/core/';
 import { Save, Cancel, Edit, Assignment, LibraryBooks, Print, Send, CheckCircle, Done, Redo, AssignmentTurnedIn } from '@material-ui/icons/';
+//import { EditNote } from '@mui/icons-material/';
 import { Button, InputField, SplitButton } from 'common/gui';
 import { FormTextField, FormAmountField, FormDateField, FormSelectField, FormTableField, FormCheckBox, FormDictionaryField } from 'common/form';
 import ApplicationPartFormContainer from 'containers/modules/coordinator/publicProcurement/applications/forms/applicationPartFormContainer';
@@ -310,6 +311,10 @@ class ApplicationForm extends Component {
                 this.props.onRollbackRealisation('all')
                 this.setState({applicationAction: null});
             break;
+            case 'publicRealization':
+                this.props.onPublicRealization('all')
+                this.setState({applicationAction: null});
+            break;
             // no default
         }
     }
@@ -324,6 +329,7 @@ class ApplicationForm extends Component {
                                 this.state.applicationAction === "approveAccountant" ? constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_APPROVE_ACCOUNTANT_MSG :
                                     this.state.applicationAction === "approveChief" ? constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_APPROVE_MSG :
                                         this.state.applicationAction === "withdraw" ? constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_WITHDRAW_MSG :
+                                            this.state.applicationAction === "publicRealization" ? constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_PUBLIC_REALIZATION_MSG :
                         constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_SEND_BACK_MSG
                 }
                 variant={this.state.applicationAction === "withdraw" ? "warning" : "confirm"}
@@ -387,6 +393,7 @@ class ApplicationForm extends Component {
 
     handleCloseGroupDetails = () => {
         this.setState({openGroupsDetails: !this.state.openGroupsDetails, selectedGroup: [], groupAction: null});
+        this.allowToSend();
     };
 
     handleSubmitGroups = (value) =>{
@@ -396,6 +403,7 @@ class ApplicationForm extends Component {
 
     handleSubmitGroupApplicationPlanPosition = (values, action, groupId) =>{
         this.props.onSaveAssortmentGroupApplicationPlanPosition(this.state.selectedGroup[0].id, values, action);
+
     }
 
     handleDeleteGroupApplicationPlanPosition = (values) =>{
@@ -420,6 +428,7 @@ class ApplicationForm extends Component {
 
     handleClosePartDetails = () => {
         this.setState({openPartDetails: !this.state.openPartDetails, selectedPart: [], partAction: null});
+        this.allowToSend();
     };
 
     handleSubmitPart = (values) =>{
@@ -432,10 +441,12 @@ class ApplicationForm extends Component {
 
     handleCloseCriterionDetails = () => {
         this.setState({openCriterionDetails: !this.state.openCriterionDetails, selectedCriterion: [], criterionAction: null});
+        this.allowToSend();
     };
 
     handleSubmitCriterion = (values) => {
         this.props.onSaveCriterion(values, this.state.criterionAction, this.handleCloseCriterionDetails);
+        this.allowToSend();
     }
 
     handleOpenPriceDetails = (event, action) => {
@@ -444,6 +455,7 @@ class ApplicationForm extends Component {
 
     handleClosePriceDetails = () => {
         this.setState({openPriceDetails: !this.state.openPriceDetails, selectedPrice: [], priceAction: null});
+        this.allowToSend();
     };
 
     handleSubmitPrice = (values) => {
@@ -522,8 +534,46 @@ class ApplicationForm extends Component {
 
     allowToSend = () => {
         const { formErrors } = this.props;
-        if(formErrors.parts !== undefined || formErrors.assortmentGroups !== undefined || formErrors.planPositions !== undefined || formErrors.criteria !== undefined || (formErrors.applicationProtocol !== undefined && formErrors.applicationProtocol.prices !== undefined)){
+        for (const key in formErrors) {
+            if(this.props.formCurrentValues[key] === undefined || this.props.formCurrentValues[key] === null){
+                this.setState({allowToSend: false})
+            }
+        }
+        if(formErrors.parts !== undefined || formErrors.assortmentGroups !== undefined || formErrors.planPositions !== undefined || formErrors.criteria !== undefined || (formErrors.applicationProtocol !== undefined && formErrors.applicationProtocol.prices !== undefined && formErrors.applicationProtocol.prices[0] !== undefined)){
             this.setState({allowToSend: false})
+        }
+
+        if (this.props.formCurrentValues !== undefined && this.props.formCurrentValues.assortmentGroups !== undefined && this.props.formCurrentValues.assortmentGroups.length >0) {
+            this.props.formCurrentValues.assortmentGroups.forEach(group => {
+                if(group.applicationAssortmentGroupPlanPositions.length === 0){
+                    this.setState({allowToSend: false})
+                    this.props.dispatch(updateSyncErrors('ApplicationForm',{'planPositions': constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE}))
+                }
+            })
+        }
+
+        if (this.props.formCurrentValues !== undefined && this.props.formCurrentValues.criteria !== undefined && this.props.formCurrentValues.criteria.length === 0) {
+            this.setState({allowToSend: false})
+        }
+
+        if(this.props.formCurrentValues !== undefined && this.props.formCurrentValues.estimationType !== undefined && this.props.formCurrentValues.estimationType.code === 'DO50'){
+            if(this.props.formCurrentValues.applicationProtocol.prices.length === 0){
+                this.setState({allowToSend: false})
+                this.props.dispatch(updateSyncErrors('ApplicationForm',{'applicationProtocol':{'prices': constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE}}))
+            }
+        }
+
+        if(this.props.formCurrentValues !== undefined){
+            if(this.props.formCurrentValues.parts !== undefined && this.props.formCurrentValues.parts.length === 0 && this.props.formCurrentValues.isParts === true){
+                this.setState({allowToSend: false})
+                this.props.dispatch(updateSyncErrors('ApplicationForm',{'parts': constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE}))
+            } else if (this.props.formCurrentValues.assortmentGroups !== undefined && this.props.formCurrentValues.assortmentGroups.length === 0) {
+                this.props.dispatch(updateSyncErrors('ApplicationForm',{'assortmentGroups': constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE}))
+                this.setState({allowToSend: false})
+            } else if (this.props.formCurrentValues.criteria !== undefined && this.props.formCurrentValues.criteria.length === 0){
+                this.setState({allowToSend: false})
+                this.props.dispatch(updateSyncErrors('ApplicationForm',{'criteria': constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE}))
+            }
         }
     }
 
@@ -532,7 +582,7 @@ class ApplicationForm extends Component {
     }
 
     componentDidUpdate(prevProps, prevState){
-        if(this.props.formCurrentValues !== prevProps.formCurrentValues && this.props.formCurrentValues.orderValueNet !== undefined && this.props.formCurrentValues.orderValueNet !== prevProps.formCurrentValues.orderValueNet){
+        if(this.props.formCurrentValues !== prevProps.formCurrentValues && prevProps.formCurrentValues !== undefined && this.props.formCurrentValues.orderValueNet !== undefined && this.props.formCurrentValues.orderValueNet !== prevProps.formCurrentValues.orderValueNet){
             this.filterEstimationTypes();
         }
         if(this.props.initialValues !== prevProps.initialValues && this.props.initialValues.parts !== undefined && this.props.initialValues.parts.length > 0){
@@ -562,6 +612,7 @@ class ApplicationForm extends Component {
                                     {
                                         code: group.applicationProcurementPlanPosition.code,
                                         name: group.applicationProcurementPlanPosition.name,
+                                        itemName: group.applicationProcurementPlanPosition.name,
                                     }
                                 )
                                 if(assortmentGroupsParts.length === 0){
@@ -653,7 +704,7 @@ class ApplicationForm extends Component {
         }
 
         //Setup split button disabled option on save parts
-        if(prevProps.formCurrentValues !== undefined && this.props.formCurrentValues.parts !== prevProps.formCurrentValues.parts && this.props.formCurrentValues.parts.length > 0){
+        if(prevProps.formCurrentValues !== undefined && this.props.formCurrentValues.parts !== undefined && this.props.formCurrentValues.parts !== prevProps.formCurrentValues.parts && this.props.formCurrentValues.parts.length > 0){
             this.setState(prevState => {
                 const splitOptions = [...prevState.splitOptions];
                 if(this.props.formCurrentValues.parts.filter(part => (part.isRealized === null || (part.isRealized === true && part.amountContractAwardedNet === null) ||
@@ -666,11 +717,26 @@ class ApplicationForm extends Component {
             });
         }
 
+        if(this.props.formErrors !== undefined && this.props.formErrors !== prevProps.formErrors){
+            if(this.props.formErrors.criteria !== undefined || this.props.formErrors.parts !== undefined || this.props.formErrors.assortmentGroups !== undefined ){
+                this.allowToSend();
+            }
+        }
+
+        if(this.props.formCurrentValues !== prevProps.formCurrentValues && prevProps.formCurrentValues !== undefined && this.props.formCurrentValues.isArt30 && this.props.formCurrentValues.mode !== undefined && this.props.formCurrentValues.mode.code === 'PL' && this.props.levelAccess === undefined){
+            if(this.props.formCurrentValues.assortmentGroups[0] !== undefined && this.props.formCurrentValues.assortmentGroups[0].orderGroupValueNet !== undefined && this.props.initialValues.status.code === 'ZP'){
+                if((((this.props.formCurrentValues.assortmentGroups[0].applicationProcurementPlanPosition.amountArt30Net + this.props.formCurrentValues.assortmentGroups[0].orderGroupValueNet) / this.props.formCurrentValues.assortmentGroups[0].applicationProcurementPlanPosition.amountRequestedNet) * 100).toFixed(2) > 20){
+                    this.setState({allowToSend: false})
+                    this.props.dispatch(updateSyncErrors('ApplicationForm',{'art30' :  constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_ART30_INVALID}))
+                }
+            }
+        }
+
     }
 
     render(){
         const { classes, isLoading, pristine, submitting, invalid, submitSucceeded, action, modes, initialValues, planPositions, formCurrentValues, vats, coordinators, orderProcedures,
-            planTypes, applications, contractors, formErrors, levelAccess } = this.props;
+            planTypes, replayApplications, contractors, formErrors, levelAccess } = this.props;
         const { tableHeadParts, tableHeadCriteria, tableHeadGroups, selectedGroup, selectedPart, selectedCriterion, selectedPrice, openPartDetails, openCriterionDetails, openGroupsDetails,
             openPriceDetails, groupAction, partAction, criterionAction, priceAction, isDelete, estimationTypes, showProtocol, tableHeadPrices, allowToSend, allowSaveOnAdd, applicationAction, splitOptions,
                 splitAction, maxContentHeight } = this.state;
@@ -700,6 +766,7 @@ class ApplicationForm extends Component {
                             applicationMode={initialValues.mode}
                             levelAccess={levelAccess}
                             isParts={formCurrentValues.isParts}
+                            isArt30={formCurrentValues.isArt30}
                             onClose={this.handleCloseGroupDetails}
                             onSubmit={this.handleSubmitGroups}
                             onSaveApplicationPlanPosition={this.handleSubmitGroupApplicationPlanPosition}
@@ -829,6 +896,15 @@ class ApplicationForm extends Component {
                                                 disabled
                                             />
                                         </Grid>
+                                        { levelAccess === 'public' &&
+                                            <Grid item xs={3}>
+                                                <FormCheckBox
+                                                    name="isPublicRealization"
+                                                    label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_IS_PUBLIC_REALIZATION}
+                                                    disabled
+                                                />
+                                            </Grid>
+                                        }
                                         <Grid item xs={3}>
                                             <FormCheckBox
                                                 name="isReplay"
@@ -837,13 +913,13 @@ class ApplicationForm extends Component {
                                             />
                                         </Grid>
                                         { formCurrentValues.isReplay &&
-                                            <Grid item xs={9}>
+                                            <Grid item xs={levelAccess === 'public' ? 6 : 9}>
                                                 <FormDictionaryField
                                                     isRequired={true}
                                                     name="replaySourceApplication"
                                                     dictionaryName={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_TITLE}
                                                     label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SOURCE_APPLICATION}
-                                                    items={applications}
+                                                    items={replayApplications}
                                                     disabled={initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
                                                 />
                                             </Grid>
@@ -980,8 +1056,12 @@ class ApplicationForm extends Component {
                                             <Toolbar className={classes.toolbar}>
                                                 <FormControl error>
                                                     <Typography variant="subtitle1" ><LibraryBooks className={classes.subHeaderIcon} fontSize="small" /> {constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_GROUPS}</Typography>
+                                                    <>
                                                     { formErrors.assortmentGroups !== undefined &&
                                                         <FormHelperText>{formErrors.assortmentGroups}</FormHelperText>
+                                                    }
+                                                    { formErrors.art30 !== undefined &&
+                                                        <FormHelperText>{formErrors.art30}</FormHelperText>
                                                     }
                                                     { formErrors.planPositions !== undefined &&
                                                         <FormHelperText>{initialValues.orderIncludedPlanType.code === 'FIN' ?
@@ -989,6 +1069,7 @@ class ApplicationForm extends Component {
                                                                 `${formErrors.planPositions} ${constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COORDINATOR_TYPE_INVESTMENT}`}
                                                         </FormHelperText>
                                                     }
+                                                    </>
                                                 </FormControl>
                                             </Toolbar>
                                             <FormTableField
@@ -1031,7 +1112,7 @@ class ApplicationForm extends Component {
                                                 name="orderRealizationTerm"
                                                 label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_REALIZATION_TERM}
                                                 isRequired={initialValues.status !== undefined ? true : null }
-                                                inputProps={{ maxLength: 20 }}
+                                                inputProps={{ maxLength: 30 }}
                                                 disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
                                             />
                                         </Grid>
@@ -1509,7 +1590,7 @@ class ApplicationForm extends Component {
                                                 name="description"
                                                 label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_COMMENTS}
                                                 multiline
-                                                rows="2"
+                                                minRows="2"
                                                 inputProps={{ maxLength: 1000 }}
                                                 disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
                                             />
@@ -1702,7 +1783,7 @@ class ApplicationForm extends Component {
                                                         label={constants.COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_RECEIVED_OFFERS}
                                                         multiline
                                                         isRequired
-                                                        inputProps={{ maxLength: 4000 }}
+                                                        inputProps={{ maxLength: 5000 }}
                                                         disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') ||
                                                             (initialValues.status !== undefined && initialValues.status.code === 'ZP' && formCurrentValues.applicationProtocol === null)
                                                                 || (formCurrentValues.applicationProtocol !== null && formCurrentValues.applicationProtocol.id === undefined)
@@ -1798,7 +1879,7 @@ class ApplicationForm extends Component {
                                                             variant='submit'
                                                             type='button'
                                                             disabled={(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || pristine || !allowSaveOnAdd ||
-                                                                (formCurrentValues.applicationProtocol !== null && formCurrentValues.applicationProtocol.contractor !== null && formCurrentValues.applicationProtocol.contractor.code === 'err')
+                                                                (formCurrentValues.applicationProtocol !== undefined && formCurrentValues.applicationProtocol !== null && formCurrentValues.applicationProtocol.contractor !== null && formCurrentValues.applicationProtocol.contractor.code === 'err')
                                                             }
                                                             onClick={this.handleSave}
                                                         />
@@ -1807,7 +1888,7 @@ class ApplicationForm extends Component {
                                                             icon={<Send/>}
                                                             iconAlign="left"
                                                             variant='submit'
-                                                            disabled={initialValues.status === undefined || ((initialValues.status !== undefined && initialValues.status.code !== 'ZP') || (!pristine || submitting || !allowToSend ||  invalid || submitSucceeded)) }
+                                                            disabled={initialValues.status === undefined || ((initialValues.status !== undefined && initialValues.status.code !== 'ZP') || (!pristine || submitting || !allowToSend  || submitSucceeded)) }
                                                             onClick={(event) => this.handleApplicationAction(event, "send")}
 
                                                         />
@@ -1851,6 +1932,16 @@ class ApplicationForm extends Component {
                                                             variant="delete"
                                                             onClick={(event) => this.handleApplicationAction(event, "withdraw")}
                                                         />
+                                                }
+                                                {initialValues.status !== undefined && levelAccess !== undefined && initialValues.status.code === 'ZA' && levelAccess === 'public' &&
+                                                    <Button
+                                                        label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_PUBLIC_REALIZATION}
+                                                        icon=<Edit/>
+                                                        iconAlign="left"
+                                                        variant="cancel"
+                                                        disabled={initialValues.isPublicRealization}
+                                                        onClick={(event) => this.handleApplicationAction(event, "publicRealization")}
+                                                    />
                                                 }
                                             </Grid>
                                         </Grid>

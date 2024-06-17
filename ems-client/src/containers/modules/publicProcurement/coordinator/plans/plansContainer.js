@@ -39,7 +39,6 @@ class PlansContainer extends Component {
     }
 
     handleUpdateOnCloseDetails = (plan) => {
-        console.log(plan)
         let plans = this.state.plans;
         return updateOnCloseDetails(plans, plan, "id");
     }

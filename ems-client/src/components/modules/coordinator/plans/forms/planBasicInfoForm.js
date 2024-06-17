@@ -132,6 +132,12 @@ class PlanBasicInfoForm extends Component {
                 type: 'amount',
             },
             {
+                id: 'amountInferredNet',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_INFERRED_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
                 id: 'initiationTerm',
                 label: constants.COORDINATOR_PLAN_POSITION_PUBLIC_INITIATION_TERM,
                 type: 'text',

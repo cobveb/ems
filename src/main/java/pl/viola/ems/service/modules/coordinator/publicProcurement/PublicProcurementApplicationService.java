@@ -1,11 +1,14 @@
 package pl.viola.ems.service.modules.coordinator.publicProcurement;
 
 import net.sf.jasperreports.engine.JRException;
+import org.springframework.data.domain.Page;
 import pl.viola.ems.model.common.export.ExportType;
+import pl.viola.ems.model.common.search.SearchConditions;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.model.modules.coordinator.publicProcurement.*;
 import pl.viola.ems.payload.export.ExcelHeadRow;
+import pl.viola.ems.payload.export.ExportConditions;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationDetailsPayload;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationPayload;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationPlanPosition;
@@ -20,11 +23,15 @@ import java.util.Set;
 
 public interface PublicProcurementApplicationService {
 
-    List<ApplicationProcurementPlanPosition> getApplicationProcurementPlanPosition();
+    List<ApplicationProcurementPlanPosition> getApplicationProcurementPlanPosition(String coordinator);
 
     List<ApplicationPlanPosition> getPlanPositionByYearAndPlanType(CoordinatorPlan.PlanType planType);
 
     Set<ApplicationPayload> getApplicationsByCoordinator(int year);
+
+    Page<ApplicationPayload> getApplicationsPageable(SearchConditions searchConditions);
+
+    Page<ApplicationPayload> getApplicationsPageableByAccessLevel(SearchConditions searchConditions, String accessLevel);
 
     Set<ApplicationPayload> getApplicationsByCoordinatorInRealization();
 
@@ -62,10 +69,11 @@ public interface PublicProcurementApplicationService {
 
     String deleteApplication(Long applicationId);
 
-    void exportApplicationsToExcel(ExportType exportType, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response, String accessLevel) throws IOException;
+    void exportApplicationsToExcel(ExportType exportType, int year, ExportConditions exportConditions, HttpServletResponse response, String accessLevel) throws IOException;
 
     void exportApplicationsPartsToExcel(ExportType exportType, Long applicationId, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
 
     void exportApplicationToJasper(Long applicationId, HttpServletResponse response) throws IOException, JRException, SQLException;
 
+    ApplicationDetailsPayload setPublicRealization(Long applicationId);
 }

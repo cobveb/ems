@@ -14,7 +14,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @ToString(exclude = {"organizationUnit", "password", "lastPasswordChange"})
 @EqualsAndHashCode(exclude = {"organizationUnit", "password", "lastPasswordChange"})
 @NoArgsConstructor
@@ -22,9 +23,9 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "users", schema = "emsarch", uniqueConstraints = {
-	@UniqueConstraint(columnNames = {
-		"username"
-	})
+        @UniqueConstraint(columnNames = {
+                "username"
+        })
 })
 @DynamicUpdate(true)
 public class User extends UserDateAudit {

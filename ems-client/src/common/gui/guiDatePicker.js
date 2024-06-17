@@ -7,7 +7,7 @@ import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/picker
 import { withStyles } from '@material-ui/core/';
 import {blue} from "@material-ui/core/colors/";
 import { ThemeProvider } from "@material-ui/styles";
-import { createMuiTheme } from "@material-ui/core";
+import { createTheme } from "@material-ui/core";
 import * as constants from 'constants/uiNames';
 
 
@@ -23,7 +23,7 @@ const datePicker = theme => ({
     },
 });
 
-const customDialogTheme = createMuiTheme({
+const customDialogTheme = createTheme({
     palette: {
         primary: {
             main: blue[700],

@@ -139,7 +139,6 @@ class PlanPositionsContainer extends Component {
 
     handleExcelExport = (exportType, headRow) =>{
         this.props.loading(true);
-        console.log(this.state.initData)
         PlansApi.exportPlanSubPositionsToExcel(exportType, this.state.initData.type, this.state.initData.id, headRow)
         .then(response => {
             generateExportLink(response);

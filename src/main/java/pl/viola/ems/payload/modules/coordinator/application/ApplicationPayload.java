@@ -16,9 +16,13 @@ import java.util.Date;
 public class ApplicationPayload {
     private Long id;
 
+    private String code;
+
     private String number;
 
     private String orderedObject;
+
+    private String itemName;
 
     private PublicProcurementPosition.EstimationType estimationType;
 
@@ -34,4 +38,5 @@ public class ApplicationPayload {
 
     private Date sendDate;
 
+    private Boolean isPublicRealization;
 }

@@ -41,3 +41,10 @@ export function getEuroExchangeRate(){
         });
     }
 }
+
+export function setPageableTableProperties(properties){
+    return {
+        type: types.UI_PAGEABLE_TABLE_SET_PAGEABLE_TABLE_PROPERTIES,
+        pageableTableProperties: properties
+    }
+}

@@ -3,9 +3,11 @@ import * as constants from 'constants/uiNames';
 import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
-import { Table, Button, SplitButton, SelectField, DatePicker, SearchField } from 'common/gui';
+import { Button, SplitButton, SelectField, DatePicker, SearchField } from 'common/gui';
+import { TablePageable } from 'containers/common/gui';
 import { Delete, Add, Edit, Visibility, Undo } from '@material-ui/icons/';
 import ApplicationContainer from 'containers/modules/coordinator/publicProcurement/applications/applicationContainer';
+import { setChangedSearchConditions } from 'utils';
 
 const styles = theme => ({
     root: {
@@ -41,7 +43,7 @@ class Applications extends Component {
         estimationType: '',
         mode: '',
         number: '',
-        status: '',
+        status: 'ZP',
         orderedObject: '',
         selected:{},
         rows:[],
@@ -80,6 +82,39 @@ class Applications extends Component {
                 type: 'object',
             },
         ],
+        searchConditionsChange: false,
+        searchConditions: [
+            {
+                name: 'year',
+                value: new Date().getFullYear(),
+                type: 'number'
+            },
+            {
+                name: 'number',
+                value: '',
+                type: 'text'
+            },
+            {
+                name: 'estimationType',
+                value: '',
+                type: 'select'
+            },
+            {
+                name: 'mode',
+                value: '',
+                type: 'select'
+            },
+            {
+                name: 'status',
+                value: 'ZP',
+                type: 'select'
+            },
+            {
+                name: 'orderedObject',
+                value: '',
+                type: 'text'
+            }
+        ]
 //        splitOptions:[
 ////            {
 ////                label: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_WITHDRAW_REALISATION,
@@ -99,20 +134,33 @@ class Applications extends Component {
     }
 
     handleDataChange = (id) => (date) => {
-        this.setState({[id]: date})
+        this.setState(prevState => {
+            let searchConditions = [...prevState.searchConditions];
+            let searchConditionsChange = prevState.searchConditionsChange;
+            let year = `prevState.${id}`;
+            const result = setChangedSearchConditions(id, date instanceof Date ? date.getFullYear() : 0, searchConditions, searchConditionsChange)
+
+            searchConditions = Object.values(result)[0];
+            searchConditionsChange = Object.values(result)[1];
+            year = date;
+
+            return {year, searchConditions, searchConditionsChange};
+        });
     }
 
     handleChangeVisibleDetails = (event, action) =>{
         this.setState({isDetailsVisible: !this.state.isDetailsVisible, action: action});
     }
 
-    handleCloseDetails = (application) => {
+    handleCloseDetails = (isAplMod) => {
         this.setState({
             isDetailsVisible: !this.state.isDetailsVisible,
             selected: [],
-            rows: this.props.onClose(application),
             action: ''
         });
+        if(isAplMod){
+            this.props.onClose(isAplMod);
+        }
     };
 
     handleDoubleClick = (id) => {
@@ -127,81 +175,10 @@ class Applications extends Component {
         this.props.onExcelExport(exportType, this.state.headCells)
     }
 
-    handleSaveApplication = (values) =>{
-        this.props.onSave(values)
-    }
-
     handleSearch = (event) => {
         this.setState({[event.target.name]: event.target.value})
-    }
-
-    filter = () => {
-        let applications = this.props.initialValues;
-        let estimationTypes = this.props.estimationTypes
-
-        if(estimationTypes.filter(estimationType => estimationType.code === '').length === 0 ){
-            estimationTypes.unshift(
-            {
-                code: '',
-                name: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_MODE,
-            })
-        }
-
-        return applications.filter((application) => {
-            return application.status.code.toLowerCase().search(
-                    this.state.status.toLowerCase()) !== -1 &&
-                application.mode.code.toLowerCase().search(
-                    this.state.mode.toLowerCase()) !== -1 &&
-                (
-                    this.state.estimationType !== '' ?
-                    application.estimationType !== undefined ?
-                        application.estimationType.code.toLowerCase().search(
-                            this.state.estimationType.toLowerCase()) !== -1
-                        : null
-                    : application
-                ) &&
-                (
-                    this.state.orderedObject !== '' ?
-                    application.orderedObject !== null ?
-                        application.orderedObject.toLowerCase().search(
-                            this.state.orderedObject.toLowerCase()) !== -1
-                        : null
-                    : application
-                ) &&
-                (
-                    this.state.number !== '' ?
-                        application.number !== null ?
-                            application.number.toLowerCase().search(
-                                this.state.number.toLowerCase()) !== -1
-                        : null
-                    : application
-                )  &&
-                (
-                    this.state.year === null ?
-                        application :
-                            new Date(application.createDate).getFullYear() === this.state.year.getFullYear()
-                )
-        })
-    }
-
-    setupApplications = () => {
-        /*
-            Function returns application that can be the source if the current application is the replay
-        */
-        let tmp = this.props.initialValues;
-
-        tmp = tmp.filter(application => application.number !== null && ['RE', 'ZR', 'AN'].includes(application.status.code));
-        if (tmp.length > 0){
-            tmp.forEach(application => {
-                Object.assign(application,
-                {
-                    code: application.code = application.id.toString(),
-                    name: application.name = application.number,
-                })
-            })
-            return (tmp)
-        } else {
-            return [];
+        if(!['number','orderedObject'].includes(event.target.name)){
+            this.onChangeSearchConditions(event);
         }
     }
 
@@ -215,7 +192,7 @@ class Applications extends Component {
         } else {
             this.props.onWithdraw(this.state.selected.id);
         }
-        this.setState({ action: '', selected: []});
+        this.setState({ action: '', selected: [], });
     }
 
     handleCloseDialog = () => {
@@ -238,48 +215,50 @@ class Applications extends Component {
         )
     }
 
+    onChangeSearchConditions = (event) => {
+        event.persist();
+        this.setState(prevState => {
+            const searchConditions = [...prevState.searchConditions];
+            let searchConditionsChange = prevState.searchConditionsChange;
+            return setChangedSearchConditions(event.target.name, event.target.value, searchConditions, searchConditionsChange);
+        });
+    }
+
+    handleBlur = (event) => {
+        this.onChangeSearchConditions(event);
+    }
+
+    handleKeyDown = (event) => {
+       if (event.key === "Enter") {
+          this.onChangeSearchConditions(event);
+       }
+    }
+
     componentDidUpdate(prevProps, prevState){
-//        if( this.state.selected !== prevState.selected){
-//            if(this.state.selected.status !== undefined && this.state.selected.status.code !== 'ZP'){
-//                this.setState(prevState => {
-//                    const splitOptions = [...prevState.splitOptions];
-//                    if(this.state.selected.status.code === 'WY')
-//                        splitOptions[0].disabled = true;
-////                    if(this.state.selected.status.code === 'ZA'){
-////                        splitOptions[1].disabled = true;
-////                    }
-//                    return {splitOptions}
-//                });
-//            }
-//        }
-        // Filter rows on close application
-        if(this.state.action === '' && this.state.action !== prevState.action){
-            this.setState({
-                rows: this.filter(),
-            });
-        }
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
-                rows: this.filter(),
-                applications: this.setupApplications(),
+                rows: this.props.initialValues,
             });
-        } else if (this.state.status !== prevState.status ||
-            this.state.mode !== prevState.mode ||
-            this.state.orderedObject !== prevState.orderedObject ||
-            this.state.estimationType !== prevState.estimationType ||
-            this.state.number !== prevState.number)
-        {
-            this.setState({
-             rows: this.filter(),
-            })
-        } else if (this.state.year !== prevState.year){
-            this.props.onChangeYear(this.state.year);
         }
+
+        if(this.state.searchConditionsChange){
+            this.setState({
+                searchConditionsChange: false,
+                selected: {},
+                action: ''
+            })
+            this.props.onSetSearchConditions(this.state.searchConditions);
+        }
+    }
+
+    componentDidMount() {
+        this.props.onSetSearchConditions(this.state.searchConditions);
+        this.setState({rows: this.props.initialValues});
     }
 
     render(){
         const { classes, isLoading, error, estimationTypes, vats, planPositions, coordinators, modes, statuses } = this.props;
-        const { initData, isDetailsVisible, action, year, rows, headCells, selected, estimationType, mode, number, orderedObject, status, splitOptions, applications } = this.state;
+        const { initData, isDetailsVisible, action, year, rows, headCells, selected, estimationType, mode, number, orderedObject, status, splitOptions, applications, searchConditionsChange } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -303,7 +282,6 @@ class Applications extends Component {
                         statuses={statuses}
                         open={isDetailsVisible}
                         onPrint={this.handlePrintApplication}
-                        onSave={this.handleSaveApplication}
                         onClose={this.handleCloseDetails}
                     />
                 :
@@ -334,6 +312,7 @@ class Applications extends Component {
                                         <SearchField
                                             name="number"
                                             onChange={this.handleSearch}
+                                            onBlur={this.handleBlur}
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
                                             placeholder={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_NUMBER}
                                             valueType="all"
@@ -371,6 +350,8 @@ class Applications extends Component {
                                         <SearchField
                                             name="orderedObject"
                                             onChange={this.handleSearch}
+                                            onBlur={this.handleBlur}
+                                            onKeyDown={(e) => this.handleKeyDown(e)}
                                             label={constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERED_OBJECT}
                                             valueType="all"
                                             value={orderedObject}
@@ -379,15 +360,16 @@ class Applications extends Component {
                                 </Grid>
                                 <Grid container spacing={0} direction="row" justify="flex-start" className={classes.container}>
                                     <Grid item xs={12} className={classes.item}>
-                                        <Table
+                                        <TablePageable
                                             className={classes.tableWrapper}
                                             rows={rows}
                                             headCells={headCells}
                                             onSelect={this.handleSelect}
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
+                                            resetPageableProperties={searchConditionsChange}
                                             rowKey="id"
-                                            defaultOrderBy="id"
+                                            orderType={"desc"}
                                         />
                                     </Grid>
                                 </Grid>
@@ -471,6 +453,11 @@ Applications.propTypes = {
 	isLoading: PropTypes.bool,
     clearError: PropTypes.func,
     loading: PropTypes.func,
+    onSetSearchConditions: PropTypes.func.isRequired,
+};
+
+Applications.defaultProps = {
+    onSetSearchConditions: () => {},
 };
 
 export default withStyles(styles)(Applications);

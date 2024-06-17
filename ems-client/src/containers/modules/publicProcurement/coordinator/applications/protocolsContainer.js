@@ -76,7 +76,7 @@ class ProtocolsContainer extends Component {
     handleChangeYear = (year) => {
         if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
             this.props.loading(true);
-            ProtocolApi.getApplications(year instanceof Date ? year.getFullYear() : 0)
+            ProtocolApi.getProtocols(year instanceof Date ? year.getFullYear() : 0)
             .then(response =>{
                 this.setState(prevState => {
                     let protocols = [...prevState.protocols];

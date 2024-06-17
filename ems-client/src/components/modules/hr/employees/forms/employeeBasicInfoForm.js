@@ -55,7 +55,7 @@ class EmployeeBasicInfoForm extends Component {
     }
 
     render(){
-        const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes } = this.props;
+        const { handleSubmit, pristine, submitting, invalid, submitSucceeded, classes, levelAccess } = this.props;
         const { formChanged } = this.state;
         return(
             <>
@@ -91,6 +91,7 @@ class EmployeeBasicInfoForm extends Component {
                                         name="hrNumber"
                                         label={constants.EMPLOYEE_BASIC_INFORMATION_HR_NUMBER}
                                         inputProps={{ maxLength: 15 }}
+                                        disabled={levelAccess !== 'hr' ? true : false}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={5}>
@@ -99,6 +100,7 @@ class EmployeeBasicInfoForm extends Component {
                                         label={constants.EMPLOYEE_BASIC_INFORMATION_SURNAME}
                                         isRequired={true}
                                         inputProps={{ maxLength: 80 }}
+                                        disabled={levelAccess !== 'hr' ? true : false}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={3}>
@@ -106,15 +108,17 @@ class EmployeeBasicInfoForm extends Component {
                                         name="name"
                                         label={constants.EMPLOYEE_BASIC_INFORMATION_NAME}
                                         isRequired={true}
-                                        inputProps={{ maxLength: 10 }}
+                                        inputProps={{ maxLength: 25 }}
+                                        disabled={levelAccess !== 'hr' ? true : false}
                                     />
                                 </Grid>
                                 <Grid item xs={12} >
                                     <FormTextField
                                         name="comments.content"
-                                        label={constants.DESCRIPTION}
+                                        label={constants.COMMENTS}
                                         multiline
-                                        rows="5"
+                                        minRows="5"
+                                        disabled={levelAccess !== 'hr' ? true : false}
                                     />
                                 </Grid>
                             </Grid>

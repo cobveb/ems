@@ -75,7 +75,9 @@ public class PublicInstitutionPlanServiceImpl implements PublicInstitutionPlanSe
             institutionPlans.forEach(institutionPlan -> publicInstitutionPlans.add(setPlanAmountValues(institutionPlan)));
         }
 
-        return publicInstitutionPlans;
+        TreeSet<PublicInstitutionPlanResponse> tSet = new TreeSet<>(Collections.reverseOrder());
+        tSet.addAll(publicInstitutionPlans);
+        return tSet;
     }
 
     @Override

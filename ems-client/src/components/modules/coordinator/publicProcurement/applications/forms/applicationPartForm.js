@@ -56,7 +56,6 @@ class ApplicationPartForm extends Component {
 
     handleSubmitPartRealized = () => {
         if(this.props.formCurrentValues.reasonNotRealized !== null){
-            console.log(this.props.formCurrentValues.reasonNotRealized)
             this.setState({isNotRealized: !this.state.isNotRealized});
         } else {
             this.props.onSubmit(this.props.formCurrentValues)
@@ -92,7 +91,7 @@ class ApplicationPartForm extends Component {
             this.props.dispatch(change('ApplicationPartForm', 'amountOptionNet', parseFloat((Math.round(((optionValue / 100) * amountNet) * 100) / 100).toFixed(2))));
             this.props.dispatch(change('ApplicationPartForm', 'amountOptionGross', parseFloat((Math.round((((optionValue / 100) * amountNet) * vat.code) * 100) / 100).toFixed(2))));
             this.props.dispatch(change('ApplicationPartForm', 'amountSumNet', parseFloat((Math.round((((optionValue / 100) * amountNet) + amountNet) * 100) / 100).toFixed(2))));
-            this.props.dispatch(change('ApplicationPartForm', 'amountSumGross', parseFloat((Math.round(((((optionValue / 100) * amountNet) * vat.code) + amountGross) * 100) / 100).toFixed(2))));
+            this.props.dispatch(change('ApplicationPartForm', 'amountSumGross', parseFloat((Math.round(((((optionValue / 100) * amountNet) + amountNet) * vat.code) * 100) / 100).toFixed(2))));
         }
     }
 

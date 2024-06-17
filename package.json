@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "node": "^10.13.0",
+    "redux-form-material-ui": "^4.3.4"
+  }
+}

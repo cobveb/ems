@@ -8,6 +8,7 @@ import Tabs from 'common/gui/guiTabs';
 import Tab from 'common/gui/guiTab';
 import TabPanel from 'common/gui/guiTabPanel';
 import Table from 'common/gui/guiTable';
+import TablePageable from 'common/gui/guiTablePageable';
 import DatePicker from 'common/gui/guiDatePicker';
 
 export { SearchField };
@@ -20,4 +21,5 @@ export { Tabs };
 export { Tab };
 export { TabPanel };
 export { Table };
+export { TablePageable };
 export { DatePicker };

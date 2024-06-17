@@ -5,13 +5,13 @@ import configureStore from "store/configureStore";
 import './index.css';
 import Ems from 'app/ems';
 import * as serviceWorker from './serviceWorker';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import blue from '@material-ui/core/colors/blue';
 import { BrowserRouter as Router } from 'react-router-dom';
 import {setStore} from 'utils/apiUtils';
 import 'fontsource-roboto';
 
-const theme = createMuiTheme({
+const theme = createTheme({
 	palette: {
 		primary: blue,
 	},

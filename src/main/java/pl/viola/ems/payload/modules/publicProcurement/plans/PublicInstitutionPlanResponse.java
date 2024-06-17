@@ -1,6 +1,7 @@
 package pl.viola.ems.payload.modules.publicProcurement.plans;
 
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.administrator.User;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
@@ -11,7 +12,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PublicInstitutionPlanResponse {
+public class PublicInstitutionPlanResponse implements Comparable<PublicInstitutionPlanResponse> {
 
     private Long id;
 
@@ -41,4 +42,8 @@ public class PublicInstitutionPlanResponse {
 
     private InstitutionPlan correctionPlan;
 
+    @Override
+    public int compareTo(@NotNull final PublicInstitutionPlanResponse o) {
+        return id.compareTo(o.getId());
+    }
 }

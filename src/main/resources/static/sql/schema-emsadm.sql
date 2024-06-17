@@ -528,7 +528,7 @@ create TABLE emsadm.cor_pub_proc_application(
     reason_not_included_id NUMBER(19,0),
     ordered_object_id NUMBER(19,0) NOT NULL,
     is_combined NUMBER(1) NOT NULL,
-    order_realization_term VARCHAR2(20),
+    order_realization_term VARCHAR2(30 CHAR),
     estimation_type VARCHAR(5),
     is_art30 NUMBER(1),
     order_value_net NUMBER(20,5),
@@ -1039,7 +1039,7 @@ drop table emsadm.hr_employees cascade constraints purge;
 /
 create TABLE emsadm.hr_employees(
     id NUMBER(19,0) NOT NULL,
-    name VARCHAR2(15) NOT NULL,
+    name VARCHAR2(25 CHAR) NOT NULL,
     surname VARCHAR2(80) NOT NULL,
     hr_number VARCHAR2(20),
     comments_id NUMBER(19,0),
@@ -1052,6 +1052,114 @@ COMMENT on COLUMN hr_employees.name is 'Employee name';
 COMMENT on COLUMN hr_employees.surname is 'Employee surname';
 COMMENT on COLUMN hr_employees.hr_number is 'Employee HR number';
 COMMENT on COLUMN hr_employees.comments_id is 'Employee comments FK (texts)';
+
+/*-----------------------------------------Tables Module HR   -------------------------------------------*/
+
+/* Create the table of ASI entitlement system dictionary */
+drop table emsadm.asi_entitlement_system cascade constraints purge;
+/
+create TABLE emsadm.asi_entitlement_system(
+    id NUMBER(19,0) NOT NULL,
+    name VARCHAR(100 CHAR) NOT NULL,
+    is_active NUMBER(1),
+    desc_id NUMBER(19,0),
+    CONSTRAINT asi_entitlement_system_pk PRIMARY KEY(id),
+    CONSTRAINT asi_entitlement_system_fk FOREIGN KEY (desc_id) REFERENCES emsadm.texts(id)
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN asi_entitlement_system.id is 'Entitlement system PK';
+COMMENT on COLUMN asi_entitlement_system.name is 'Entitlement system name';
+COMMENT on COLUMN asi_entitlement_system.is_active is 'Entitlement system is active';
+COMMENT on COLUMN asi_entitlement_system.desc_id is 'Entitlement system description FK (texts)';
+
+/
+/* Create the table of ASI entitlement system permission */
+drop table emsadm.asi_ent_sys_permission cascade constraints purge;
+/
+create TABLE emsadm.asi_ent_sys_permission(
+    id NUMBER(19,0) NOT NULL,
+    name VARCHAR(100 CHAR) NOT NULL,
+    is_active NUMBER(1),
+    ent_sys_id NUMBER(19,0),
+    desc_id NUMBER(19,0),
+    CONSTRAINT asi_ent_sys_perm_pk PRIMARY KEY(id),
+    CONSTRAINT asi_ent_sys_fk FOREIGN KEY (ent_sys_id) REFERENCES emsadm.asi_entitlement_system(id),
+    CONSTRAINT asi_ent_sys_perm_desc_fk FOREIGN KEY (desc_id) REFERENCES emsadm.texts(id)
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN asi_ent_sys_permission.id is 'Entitlement system permission PK';
+COMMENT on COLUMN asi_ent_sys_permission.name is 'Entitlement system name';
+COMMENT on COLUMN asi_ent_sys_permission.is_active is 'Entitlement system is active';
+COMMENT on COLUMN asi_ent_sys_permission.ent_sys_id is 'Entitlement system FK (asi_entitlement_system)';
+COMMENT on COLUMN asi_ent_sys_permission.desc_id is 'Entitlement system description FK (texts)';
+/
+/* Create the table of ASI employee entitlement */
+drop table emsadm.asi_emp_entitlement cascade constraints purge;
+/
+create TABLE emsadm.asi_emp_entitlement(
+    id NUMBER(19,0) NOT NULL,
+    created_at TIMESTAMP (6),
+	updated_at TIMESTAMP (6),
+	created_by NUMBER(19,0),
+	updated_by NUMBER(19,0),
+	username VARCHAR2(50 CHAR),
+	date_from DATE NOT NULL,
+	date_to DATE,
+	date_withdrawal DATE,
+	ent_sys_id NUMBER(19,0),
+    comments_id NUMBER(19,0),
+    employee_id NUMBER(19,0) NOT NULL,
+    employment_id NUMBER(19,0) NOT NULL,
+    CONSTRAINT asi_emp_ent_pk PRIMARY KEY(id),
+    CONSTRAINT asi_emp_ent_sys_fk FOREIGN KEY (ent_sys_id) REFERENCES emsadm.asi_entitlement_system(id),
+    CONSTRAINT asi_emp_fk FOREIGN KEY (employee_id) REFERENCES emsadm.hr_employees(id),
+    CONSTRAINT asi_emp_empl_fk FOREIGN KEY (employment_id) REFERENCES emsadm.hr_emp_employments(id),
+    CONSTRAINT asi_emp_ent_desc_fk FOREIGN KEY (comments_id) REFERENCES emsadm.texts(id)
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN asi_emp_entitlement.id is 'Employee entitlement PK';
+COMMENT on COLUMN asi_emp_entitlement.created_at is 'Entitlement create date';
+COMMENT on COLUMN asi_emp_entitlement.updated_at is 'Entitlement update date';
+COMMENT on COLUMN asi_emp_entitlement.created_by is 'Entitlement create user name';
+COMMENT on COLUMN asi_emp_entitlement.updated_by is 'Entitlement update user name';
+COMMENT on COLUMN asi_emp_entitlement.username is 'Username in entitlement system';
+COMMENT on COLUMN asi_emp_entitlement.date_from is 'Entitlement date from';
+COMMENT on COLUMN asi_emp_entitlement.date_to is 'Entitlement date to';
+COMMENT on COLUMN asi_emp_entitlement.date_withdrawal is 'Entitlement date withdrawal';
+COMMENT on COLUMN asi_emp_entitlement.comments_id is 'Entitlement comments FK (texts)';
+COMMENT on COLUMN asi_emp_entitlement.ent_sys_id is 'Entitlement system FK (asi_entitlement_system)';
+COMMENT on COLUMN asi_emp_entitlement.employee_id is 'Entitlement employee FK (hr_emp_employments)';
+COMMENT on COLUMN asi_emp_entitlement.employment_id is 'Entitlement employment FK (hr_emp_employments)';
+/
+/* Create the table of ASI employee entitlement permissions */
+drop table emsadm.asi_emp_ent_permission cascade constraints purge;
+/
+create TABLE emsadm.asi_emp_ent_permission(
+    id NUMBER(19,0) NOT NULL,
+    sys_perm_id NUMBER(19,0) NOT NULL,
+    entitlement_id number(19,0) NOT Null,
+    CONSTRAINT asi_emp_ent_perm_pk PRIMARY KEY(id),
+    CONSTRAINT asi_emp_ent_sys_perm_fk FOREIGN KEY (sys_perm_id) REFERENCES emsadm.asi_ent_sys_permission(id),
+    CONSTRAINT asi_emp_ent_fk FOREIGN KEY (entitlement_id) REFERENCES emsadm.asi_emp_entitlement(id)
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN asi_emp_ent_permission.id is 'Employee entitlement permission PK';
+COMMENT on COLUMN asi_emp_ent_permission.sys_perm_id is 'Entitlement system permission FK (asi_ent_sys_permission)';
+COMMENT on COLUMN asi_emp_ent_permission.entitlement_id is 'Employee entitlement FK (asi_emp_entitlement)';
+
+-- Create table witch join permission workplaces
+drop table emsadm.asi_ent_perm_workplace cascade constraints purge;
+/
+create TABLE emsadm.asi_ent_perm_workplace
+(
+    permission_id NUMBER(19,0) NOT NULL,
+    workplace_id NUMBER(19,0) NOT NULL,
+    CONSTRAINT asi_ent_perm_workplace_unq UNIQUE(permission_id, workplace_id)
+
+)TABLESPACE ems_data;
+
+COMMENT on COLUMN asi_ent_perm_workplace.permission_id is 'Employee entitlement permission FK (asi_emp_entitlement)';
+COMMENT on COLUMN asi_ent_perm_workplace.workplace_id is 'Employee entitlement permission workplace FK (hr_places)';
 /*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   SEQUENCE                                            			   */
 /*---------------------------------------------------------------------------------------------------------------------*/
@@ -1205,6 +1313,29 @@ drop sequence hr_employee_seq;
 create sequence hr_employee_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
 /
 
+/*-----------------------------------------Sequence Module ASI -------------------------------------------------*/
+
+-- Create sequence of table ASI entitlement system
+drop sequence asi_entitlement_sys_seq;
+/
+create sequence asi_entitlement_sys_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
+/
+-- Create sequence of table ASI entitlement system permission
+drop sequence asi_ent_sys_perm_seq;
+/
+create sequence asi_ent_sys_perm_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
+/
+-- Create sequence of table ASI employee entitlement
+drop sequence asi_emp_entitlement_seq;
+/
+create sequence asi_emp_entitlement_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
+/
+-- Create sequence of table ASI employee entitlement permission
+drop sequence asi_emp_ent_perm_seq;
+/
+create sequence asi_emp_ent_perm_seq start with 1 increment by 1 nomaxvalue nocache order nocycle;
+/
+
 //*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   PACKAGES                                           		       */
 /*-------------------------------------------------------------------------------------------------------------------- */
@@ -1340,33 +1471,37 @@ end cor_public_procurement_mgmt;
 /
 /* Create package coordinator plan management */
 create or replace package cor_plans_util as
-    procedure update_plan_position_realized_value(p_coordinator in cor_plans.coordinator_id%type);
+    procedure update_plan_position_realized_value(p_coordinator in cor_plans.coordinator_id%type, p_plan_year in cor_plans.year%type, p_mode in varchar2);
     procedure update_corection_plan_position_realized_value(
         p_position in cor_plan_positions.id%type,
         p_position_net in cor_plan_positions.am_rea_net%type,
         p_position_gros in cor_plan_positions.am_rea_gross%type,
-        p_coordinator in cor_plans.coordinator_id%type
+        p_coordinator in cor_plans.coordinator_id%type,
+        p_mode in varchar2
     );
     procedure generate_costs_type(
         p_source_year in acc_cost_years.year%type,
         p_target_year in acc_cost_years.year%type,
         o_msg out varchar2
     );
+    procedure update_plan_position_inferred_value(p_coordinator_id in cor_plans.coordinator_id%type, p_plan_year in cor_plans.year%type, p_mode in varchar2);
 end cor_plans_util;
-/
 create or replace package body cor_plans_util as
-    procedure update_plan_position_realized_value(p_coordinator in cor_plans.coordinator_id%type)as
+    procedure update_plan_position_realized_value(p_coordinator in cor_plans.coordinator_id%type, p_plan_year in cor_plans.year%type, p_mode in varchar2)as
         t_am_rea_net cor_plan_positions.am_rea_net%type;
         t_am_rea_gross cor_plan_positions.am_rea_gross%type;
+        t_am_rea_n50_net cor_plan_positions.am_rea_net%type;
+        t_am_rea_n50_gross cor_plan_positions.am_rea_gross%type;
         cursor c_plan_positions is
                 select  pos.id, pos.am_rea_net, pos.am_rea_gross from cor_plan_positions pos left join cor_plans pl on(pos.plan_id = pl.id)
-                    where pl.plan_type = 'PZP' and pl.coordinator_id = p_coordinator and pos.pos_correction_id is null
+                    where pl.plan_type = 'PZP' and pl.coordinator_id = p_coordinator and pos.pos_correction_id is null and pl.year = p_plan_year
                         order by pos.id;
         r_position c_plan_positions%rowtype;
         begin
             open c_plan_positions;
                 loop
                 fetch c_plan_positions into r_position;
+                    /* Wyliczenie wartośći realizowanej dla wniosków DO50 */
                     select
                         sum(amount_contract_awa_net),
                         sum(amount_contract_awa_gross)
@@ -1381,22 +1516,52 @@ create or replace package body cor_plans_util as
                                 gr.id
                             from
                                 cor_pub_proc_groups gr left join cor_pub_proc_application apl on (gr.application_id = apl.id)
-                            where apl.coordinator_id = p_coordinator and apl.status = 'ZR' and apl.apl_mode = 'PL' and plan_pub_proc_pos_id in
+                            where apl.coordinator_id = p_coordinator and apl.status = 'ZR' and apl.apl_mode = 'PL' and apl.estimation_type = 'DO50'and plan_pub_proc_pos_id in
                                 (
                                     select institution_position_id from acc_institution_plan_cor_pos where cor_position_id = r_position.id
                                 )
                         );
+                    /* Wyliczenie wartości realizowanej dla wniosków innych niż DO50 */
+                    select
+                        sum(AM_CTR_AWA_NET),
+                        sum(AM_CTR_AWA_GROSS)
+                    into
+                        t_am_rea_n50_net,
+                        t_am_rea_n50_gross
+                    from
+                        cor_pub_proc_groups gr left join cor_pub_proc_application apl on (gr.application_id = apl.id)
+                    where
+                        apl.coordinator_id = p_coordinator and apl.status in ('ZR', 'RE') and apl.apl_mode = 'PL' and apl.estimation_type <> 'DO50' and
+                        gr.PLAN_PUB_PROC_POS_ID in (
+                            select institution_position_id from acc_institution_plan_cor_pos where cor_position_id = r_position.id
+                        );
+
+                    if (t_am_rea_net is not null and t_am_rea_n50_net is not null) then
+                        t_am_rea_net := t_am_rea_net + t_am_rea_n50_net;
+                        t_am_rea_gross := t_am_rea_gross + t_am_rea_n50_gross;
+
+                    elsif (t_am_rea_net is null and t_am_rea_n50_net is not null) then
+                        t_am_rea_net := t_am_rea_n50_net;
+                        t_am_rea_gross := t_am_rea_n50_gross;
+                    end if;
 
                     if r_position.am_rea_net is not null then
-
                         if r_position.am_rea_net <> t_am_rea_net then
                             -- Update coordinator plan position amount realized
                             DBMS_OUTPUT.PUT_LINE( r_position.id || ' - old net ' || r_position.am_rea_net || ' - new net ' || t_am_rea_net || ' - old gross ' || r_position.am_rea_gross || ' - new gross ' || t_am_rea_gross );
-                            --update cor_plan_positions set am_rea_net = t_am_rea_net, am_rea_gross = t_am_rea_gross where id = r_position.id;
+                            if p_mode = 'U' then
+                                DBMS_OUTPUT.PUT_LINE('In update mode');
+                                update cor_plan_positions set am_rea_net = t_am_rea_net, am_rea_gross = t_am_rea_gross where id = r_position.id;
+                            end if;
                         end if;
 
                         if r_position.id is not null then
-                            cor_plans_util.update_corection_plan_position_realized_value(r_position.id, t_am_rea_net, t_am_rea_gross, p_coordinator);
+                            cor_plans_util.update_corection_plan_position_realized_value(r_position.id, t_am_rea_net, t_am_rea_gross, p_coordinator, p_mode);
+                        end if;
+                    else
+--                     DBMS_OUTPUT.PUT_LINE( r_position.id);
+                        if r_position.id is not null then
+                            cor_plans_util.update_corection_plan_position_realized_value(r_position.id, t_am_rea_net, t_am_rea_gross, p_coordinator, p_mode);
                         end if;
                     end if;
 
@@ -1409,11 +1574,14 @@ create or replace package body cor_plans_util as
             p_position in cor_plan_positions.id%type,
             p_position_net in cor_plan_positions.am_rea_net%type,
             p_position_gros in cor_plan_positions.am_rea_gross%type,
-            p_coordinator in cor_plans.coordinator_id%type
+            p_coordinator in cor_plans.coordinator_id%type,
+            p_mode varchar2
         ) as
         t_corected_position cor_plan_positions%rowtype;
         t_am_rea_net cor_plan_positions.am_rea_net%type;
         t_am_rea_gross cor_plan_positions.am_rea_gross%type;
+        t_am_rea_n50_net cor_plan_positions.am_rea_net%type;
+        t_am_rea_n50_gross cor_plan_positions.am_rea_gross%type;
 
         begin
             begin
@@ -1430,7 +1598,7 @@ create or replace package body cor_plans_util as
                             t_corected_position.id := null;
             end;
             if t_corected_position.id is not null then
-
+                /* Wyliczenie wartośći realizowanej dla wniosków DO50 */
                 select
                     sum(amount_contract_awa_net),
                     sum(amount_contract_awa_gross)
@@ -1451,9 +1619,35 @@ create or replace package body cor_plans_util as
                         )
                     );
 
+                    /* Wyliczenie wartości realizowanej dla wniosków innych niż DO50 */
+                    select
+                        sum(AM_CTR_AWA_NET),
+                        sum(AM_CTR_AWA_GROSS)
+                    into
+                        t_am_rea_n50_net,
+                        t_am_rea_n50_gross
+                    from
+                        cor_pub_proc_groups gr left join cor_pub_proc_application apl on (gr.application_id = apl.id)
+                    where
+                        apl.coordinator_id = p_coordinator and apl.status in ('ZR', 'RE') and apl.apl_mode = 'PL' and apl.estimation_type <> 'DO50' and
+                        gr.PLAN_PUB_PROC_POS_ID in (
+                            select institution_position_id from acc_institution_plan_cor_pos where cor_position_id = t_corected_position.id
+                        );
+
+                    if (t_am_rea_net is not null and t_am_rea_n50_net is not null) then
+                        t_am_rea_net := t_am_rea_net + t_am_rea_n50_net;
+                        t_am_rea_gross := t_am_rea_gross + t_am_rea_n50_gross;
+
+                    elsif (t_am_rea_net is null and t_am_rea_n50_net is not null) then
+                        t_am_rea_net := t_am_rea_n50_net;
+                        t_am_rea_gross := t_am_rea_n50_gross;
+                    end if;
+
                     if t_am_rea_net is not null then
-                        t_am_rea_net := t_am_rea_net + p_position_net;
-                        t_am_rea_gross := t_am_rea_gross + p_position_gros;
+                        if p_position_net is not null then
+                            t_am_rea_net := t_am_rea_net + p_position_net;
+                            t_am_rea_gross := t_am_rea_gross + p_position_gros;
+                        end if;
                     else
                         t_am_rea_net := p_position_net;
                         t_am_rea_gross := p_position_gros;
@@ -1461,10 +1655,12 @@ create or replace package body cor_plans_util as
                 if t_corected_position.am_rea_net <> t_am_rea_net then
                     -- Update coordinator plan position amount realized
                     DBMS_OUTPUT.PUT_LINE('is corrented ' || p_position || ' - ' || 'corected position ' || t_corected_position.id || ' old net '|| t_corected_position.am_rea_net || ' new net ' || t_am_rea_net || ' old gross ' || t_corected_position.am_rea_gross || ' new gross ' || t_am_rea_gross);
-                    --update cor_plan_positions set am_rea_net = t_am_rea_net, am_rea_gross = t_am_rea_gross where id = t_corected_position.id;
+                    if p_mode = 'U' then
+                        update cor_plan_positions set am_rea_net = t_am_rea_net, am_rea_gross = t_am_rea_gross where id = t_corected_position.id;
+                    end if;
                 end if;
 
-                cor_plans_util.update_corection_plan_position_realized_value(t_corected_position.id, t_am_rea_net, t_am_rea_gross, p_coordinator);
+                cor_plans_util.update_corection_plan_position_realized_value(t_corected_position.id, t_am_rea_net, t_am_rea_gross, p_coordinator, p_mode);
 
             end if;
         end;
@@ -1528,9 +1724,8 @@ create or replace package body cor_plans_util as
 
                             if coordniator_ids_t.count <> 0 then
                                 --DBMS_OUTPUT.PUT_LINE('cost_type: ' || c_cost_t(i).cost_type_id);
-                                /*forall i in 1..coordniator_ids_t.count
-                                    insert into acc_cost_years_coordinators(cost_year_id, coordinator_id) values(new_year_ids_t(i),coordniator_ids_t(i));
-                                */
+--                                forall i in 1..coordniator_ids_t.count
+--                                    insert into acc_cost_years_coordinators(cost_year_id, coordinator_id) values(new_year_ids_t(i),coordniator_ids_t(i));
                                 for idx in 1 .. coordniator_ids_t.count loop
                                     --DBMS_OUTPUT.PUT_LINE('new cost year id: ' || new_year_ids_t(i) || 'coordinator id: ' ||  coordniator_ids_t(idx));
                                     insert into acc_cost_years_coordinators(cost_year_id, coordinator_id) values(new_year_ids_t(i),coordniator_ids_t(idx));
@@ -1543,11 +1738,226 @@ create or replace package body cor_plans_util as
 
             o_msg := 'Wygenerowano ' || c_cost_t.count || ' rodzajów kosztów na rok ' || p_target_year;
         end;
-end cor_plans_util;
+
+        procedure update_plan_position_inferred_value(p_coordinator_id in cor_plans.coordinator_id%type, p_plan_year in cor_plans.year%type, p_mode in varchar2) as
+        t_am_inf_net cor_pub_procurement_positions.am_inferred_net%type;
+        t_am_inf_gross cor_pub_procurement_positions.am_inferred_gross%type;
+        t_am_inf_net_parts cor_pub_proc_parts.amount_net%type;
+        t_am_inf_gross_parts cor_pub_proc_parts.amount_gross%type;
+        t_cor_pos_id cor_plan_positions.pos_correction_id%type;
+        t_exist_corrected cor_plan_positions.pos_correction_id%type;
+        t_cor_pub_pos cor_pub_procurement_positions%rowtype;
+        t_am_opt_net cor_pub_procurement_positions.am_inferred_net%type;
+        t_am_opt_gross cor_pub_procurement_positions.am_inferred_gross%type;
+
+        type upd_position is record
+        (
+          id   cor_pub_procurement_positions.id%type,
+          am_inferred_net  cor_pub_procurement_positions.am_inferred_net%type,
+          am_inferred_gross  cor_pub_procurement_positions.am_inferred_gross%type,
+          old_inferred_net  cor_pub_procurement_positions.am_inferred_net%type,
+          old_inferred_gross  cor_pub_procurement_positions.am_inferred_gross%type,
+          assortment_id  cor_pub_procurement_positions.assortment_id%type
+        );
+        -- table type
+        type position_ids_tab is table of cor_pub_procurement_positions%rowtype;
+        type plan_ids_tab is table of cor_plans.id%type index by pls_integer;
+        type upd_position_tab is table of upd_position;
+        -- table
+        plans_table plan_ids_tab;
+        plan_positions_table position_ids_tab;
+        upd_plan_position_table upd_position_tab:=upd_position_tab();
+
+        begin
+            select
+                id bulk collect into plans_table
+            from
+                cor_plans pl
+            where
+                pl.plan_type = 'PZP'
+                and pl.coordinator_id = p_coordinator_id
+                and pl.year = p_plan_year
+            order by 1;
+
+            /* Loop for the coordinator plans of type PZP */
+            for idx in 1 .. plans_table.count loop
+                begin
+                    select plpp.*
+                    bulk collect into plan_positions_table
+                    from cor_plan_positions plp left join cor_pub_procurement_positions plpp on (plp.id = plpp.id)
+                    where plp.plan_id = plans_table(idx);
+
+                    /* Pętla po wszystkich pozycjach w ramach planu */
+                    for idx in 1 .. plan_positions_table.count loop
+                        begin
+
+                            /* Obicz wartość zożonych wniosków w ramach pozyji planu jeżeli status różny od RE */
+                            select
+                                sum(gr.order_group_value_net),
+                                sum(gr.am_option_net),
+                                sum(gr.order_group_value_gross),
+                                sum(gr.am_option_gross)
+                            into
+                                t_am_inf_net,
+                                t_am_opt_net,
+                                t_am_inf_gross,
+                                t_am_opt_gross
+                            from cor_pub_proc_application apl left join cor_pub_proc_groups gr on (apl.id = gr.application_id)
+                            where
+                                gr.plan_pub_proc_pos_id in (
+                                    select aipcp.institution_position_id
+                                        from
+                                            acc_institution_plan_cor_pos aipcp
+                                            where aipcp.cor_position_id = plan_positions_table(idx).id
+                                )
+                                and apl.status not in ('ZR', 'RE', 'ZP', 'AN')
+                                and apl.apl_mode = 'PL'
+                                and apl.coordinator_id = p_coordinator_id;
+
+                                if t_am_opt_net is not null then
+                                    t_am_inf_net:= t_am_inf_net + t_am_opt_net;
+                                    t_am_inf_gross:= t_am_inf_gross + t_am_opt_gross;
+                                end if;
+
+                            /* Jeżeli w ramach pozycji nie ma zlożonyc wniosków, a występuje wartość inna niż 0 to wyzeruj wartość pozycji*/
+                            if t_am_inf_net is null and plan_positions_table(idx).am_inferred_net is not null and plan_positions_table(idx).am_inferred_net < 0 then
+--                                DBMS_OUTPUT.PUT_LINE('position id: ' || plan_positions_table(idx).id || ' resetowanie wartości na podstawie blednyc danych zlozonyc wnioskow');
+                                upd_plan_position_table.extend();
+                                upd_plan_position_table(upd_plan_position_table.count) := upd_position(plan_positions_table(idx).id, 0, 0, plan_positions_table(idx).am_inferred_net, plan_positions_table(idx).am_inferred_gross, plan_positions_table(idx).assortment_id);
+                            end if;
+
+                            /*
+                                Obicz wartość wniosków na podstawie częći dla ststusu wniosku RE,
+                                kwota może zostać zwolniona w ramach części, oblicz wartość na
+                                podstawie niezwolnonych części
+                            */
+                            select
+                                sum(pr.amount_net),
+                                sum(pr.amount_gross)
+                            into
+                                t_am_inf_net_parts,
+                                t_am_inf_gross_parts
+                            from
+                                cor_pub_proc_application apl left join cor_pub_proc_groups gr on (apl.id = gr.application_id)
+                                    left join cor_pub_proc_parts pr on (gr.id = pr.apl_pub_proc_gr_id)
+                            where
+                                gr.plan_pub_proc_pos_id in (
+                                        select aipcp.institution_position_id
+                                        from
+                                            acc_institution_plan_cor_pos aipcp
+                                            where aipcp.cor_position_id = plan_positions_table(idx).id
+                                )
+                                and apl.status ='RE'
+                                and apl.apl_mode = 'PL'
+                                and apl.coordinator_id = p_coordinator_id
+                                and pr.reason_not_rea_id is null;
+
+                                if t_am_inf_net_parts is not null then
+                                    begin
+                                        t_am_inf_net:= t_am_inf_net + t_am_inf_net_parts;
+                                        t_am_inf_gross:= t_am_inf_gross + t_am_inf_gross_parts;
+                                    end;
+                                end if;
+
+                                if (t_am_inf_net <> plan_positions_table(idx).am_inferred_net) or (t_am_inf_net is null and (plan_positions_table(idx).am_inferred_net is not null and plan_positions_table(idx).am_inferred_net <> 0)) then
+                                    begin
+                                        /* Check if exists corrected position */
+                                        begin
+                                            select
+                                                pos.pos_correction_id
+                                            into
+                                                t_cor_pos_id
+                                            from
+                                                cor_plan_positions pos
+                                            where
+                                                pos.id = plan_positions_table(idx).id;
+                                            exception
+                                                    when NO_DATA_FOUND then
+                                                        t_cor_pos_id := null;
+                                        end;
+
+
+                                        if t_cor_pos_id is not null then
+                                            begin
+                                                t_exist_corrected:=null;
+
+                                                for idx in 1 .. upd_plan_position_table.count loop
+                                                        if upd_plan_position_table(idx).id = t_cor_pos_id then
+                                                            begin
+                                                                if t_am_inf_net is not null then
+                                                                    begin
+                                                                        t_am_inf_net:= t_am_inf_net + upd_plan_position_table(idx).am_inferred_net;
+                                                                        t_am_inf_gross:= t_am_inf_gross + upd_plan_position_table(idx).am_inferred_gross;
+                                                                    end;
+                                                                else
+                                                                    begin
+                                                                        t_am_inf_net:= upd_plan_position_table(idx).am_inferred_net;
+                                                                        t_am_inf_gross:= upd_plan_position_table(idx).am_inferred_gross;
+                                                                    end;
+                                                                end if;
+                                                                t_exist_corrected := upd_plan_position_table(idx).id;
+                                                            end;
+                                                        end if;
+                                                end loop;
+
+                                                if t_exist_corrected is null then
+                                                    begin
+                                                        select
+                                                            *
+                                                        into
+                                                            t_cor_pub_pos
+                                                        from
+                                                            cor_pub_procurement_positions pos
+                                                        where
+                                                            pos.id = t_cor_pos_id;
+                                                        if t_cor_pub_pos.am_inferred_net >= 0 then
+                                                            if t_am_inf_net is null then
+                                                                t_am_inf_net:= t_cor_pub_pos.am_inferred_net;
+                                                                t_am_inf_gross:= t_cor_pub_pos.am_inferred_gross;
+                                                            else
+                                                                t_am_inf_net:= t_am_inf_net + t_cor_pub_pos.am_inferred_net;
+                                                                t_am_inf_gross:= t_am_inf_gross + t_cor_pub_pos.am_inferred_gross;
+                                                            end if;
+                                                        end if;
+                                                  end;
+                                                end if;
+                                            end;
+                                        end if;
+
+                                        if t_am_inf_net is not null and t_am_inf_net <> plan_positions_table(idx).am_inferred_net then
+                                            upd_plan_position_table.extend();
+                                            upd_plan_position_table(upd_plan_position_table.count) := upd_position(plan_positions_table(idx).id, t_am_inf_net, t_am_inf_gross, plan_positions_table(idx).am_inferred_net, plan_positions_table(idx).am_inferred_gross, plan_positions_table(idx).assortment_id);
+                                        end if;
+                                    end;
+                            end if;
+                        end;
+
+                    end loop;
+                end;
+            END LOOP;
+            FOR idx IN 1 .. upd_plan_position_table.COUNT LOOP
+            DBMS_OUTPUT.PUT_LINE( 'update position id ' || upd_plan_position_table(idx).id || ' old inferred net: '
+                    ||  upd_plan_position_table(idx).old_inferred_net || ' old inferred gross: ' || upd_plan_position_table(idx).old_inferred_gross
+                    || ' assortment_id ' || upd_plan_position_table(idx).assortment_id || ' inferred net: ' || upd_plan_position_table(idx).am_inferred_net
+                    || ' inferred gross: ' || upd_plan_position_table(idx).am_inferred_gross
+                );
+
+           end loop;
+
+            DBMS_OUTPUT.PUT_LINE('position count: ' || upd_plan_position_table.COUNT);
+            /* Update positions from all coordinator plans */
+            if p_mode = 'U' then
+                DBMS_OUTPUT.PUT_LINE('In update mode');
+                FORALL idx IN 1 .. upd_plan_position_table.COUNT
+                    update cor_pub_procurement_positions set am_inferred_net = upd_plan_position_table(idx).am_inferred_net, am_inferred_gross = upd_plan_position_table(idx).am_inferred_gross where id = upd_plan_position_table(idx).id;
+            end if;
+        END;
+END cor_plans_util;
 /
 /* Create package institution plan management */
 create or replace package ins_plans_util as
     procedure update_plan_position_realized_value(p_plan in acc_institution_plan_positions.plan_id%type);
+    procedure update_public_procurement_plan_position_art30_value(p_plan_year in acc_institution_plans.year%type, p_mode in varchar2);
 end ins_plans_util;
 create or replace package body ins_plans_util as
     procedure update_plan_position_realized_value(p_plan in acc_institution_plan_positions.plan_id%type)as
@@ -1595,13 +2005,184 @@ create or replace package body ins_plans_util as
                     if r_position.am_awa_gross <> t_am_awa_gross then
                         DBMS_OUTPUT.PUT_LINE('AWA');
                         DBMS_OUTPUT.PUT_LINE( r_position.id || ' - old net ' || r_position.am_awa_net || ' - new net ' || t_am_awa_net || ' - old gross ' || r_position.am_awa_gross || ' - new gross ' || t_am_awa_gross );
-                        update acc_institution_plan_positions set am_awa_net = t_am_awa_net, am_awa_gross = t_am_awa_gross where id = r_position.id;
+                        --update acc_institution_plan_positions set am_awa_net = t_am_awa_net, am_awa_gross = t_am_awa_gross where id = r_position.id;
                     end if;
                 exit when c_plan_positions%notfound;
                 end loop;
             close c_plan_positions;
         end;
-end ins_plans_util;
+
+        procedure update_public_procurement_plan_position_art30_value(p_plan_year in acc_institution_plans.year%type, p_mode in varchar2) as
+        t_am_art_net pub_institution_plan_pos.am_art30_net%type;
+        t_am_art_gross pub_institution_plan_pos.am_art30_gross%type;
+        t_am_opt_net pub_institution_plan_pos.am_art30_net%type;
+        t_am_opt_gross pub_institution_plan_pos.am_art30_gross%type;
+        t_cor_pos_id acc_institution_plan_positions.pos_correction_id%type;
+        t_exist_corrected acc_institution_plan_positions.pos_correction_id%type;
+        t_cor_pub_pos pub_institution_plan_pos%rowtype;
+        type upd_position is record
+        (
+          id   pub_institution_plan_pos.id%type,
+          am_art_net  pub_institution_plan_pos.am_art30_net%type,
+          am_art_gross  pub_institution_plan_pos.am_art30_gross%type,
+          old_art_net  pub_institution_plan_pos.am_art30_net%type,
+          old_art_gross  pub_institution_plan_pos.am_art30_gross%type,
+          assortment_id  pub_institution_plan_pos.assortment_id%type
+        );
+        -- table type
+        type pub_position_tab is table of pub_institution_plan_pos%rowtype;
+        type plan_ids_tab is table of acc_institution_plans.id%type index by pls_integer;
+        type upd_position_tab is table of upd_position;
+        -- table
+        plans_table plan_ids_tab;
+        plan_positions_table pub_position_tab;
+        upd_plan_position_table upd_position_tab:=upd_position_tab();
+        begin
+            select
+                id bulk collect into plans_table
+            from
+                acc_institution_plans pl
+            where
+                pl.plan_type = 'PZP'
+                and pl.year = p_plan_year
+            order by 1;
+
+            /* Loop for the plans of type PZP */
+            for idx in 1 .. plans_table.count loop
+                begin
+                select
+                    plpp.*
+                bulk collect into
+                    plan_positions_table
+                from
+                    acc_institution_plan_positions plp left join pub_institution_plan_pos plpp on (plp.id = plpp.id)
+                where
+                    plp.plan_id = plans_table(idx);
+                end;
+                /* Pętla po wszystkich pozycjach w ramach planu */
+                for idx in 1 .. plan_positions_table.count loop
+                    begin
+                        /* Obicz wartość zożonych wniosków w ramach pozyji planu */
+                        select
+                            sum(gr.order_group_value_net),
+                            sum(gr.am_option_net),
+                            sum(gr.order_group_value_gross),
+                            sum(gr.am_option_gross)
+                        into
+                            t_am_art_net,
+                            t_am_opt_net,
+                            t_am_art_gross,
+                            t_am_opt_gross
+                        from
+                            cor_pub_proc_groups gr left join cor_pub_proc_application apl on (gr.application_id = apl.id)
+                        where
+                            apl.is_art30 = 1 and
+                            apl.apl_mode = 'PL' and
+                            apl.status not in ('ZP', 'AN') and
+                            gr.plan_pub_proc_pos_id = plan_positions_table(idx).id;
+
+                        if t_am_opt_net is not null then
+                            t_am_art_net:= t_am_art_net + t_am_opt_net;
+                            t_am_art_gross:= t_am_art_gross + t_am_opt_gross;
+                        end if;
+
+                        /* if exists negative values, correct to 0 */
+                        if t_am_art_net is null and plan_positions_table(idx).am_art30_net is not null and plan_positions_table(idx).am_art30_net < 0 then
+                            upd_plan_position_table.extend();
+                            upd_plan_position_table(upd_plan_position_table.count) := upd_position(plan_positions_table(idx).id, 0, 0, plan_positions_table(idx).am_art30_net, plan_positions_table(idx).am_art30_gross, plan_positions_table(idx).assortment_id);
+                        end if;
+
+                        if (t_am_art_net <> plan_positions_table(idx).am_art30_net) or (t_am_art_net is null and (plan_positions_table(idx).am_art30_net is not null and plan_positions_table(idx).am_art30_net <> 0)) then
+                            /* Check if exists corrected position */
+                            begin
+                                select
+                                    pos.pos_correction_id
+                                into
+                                    t_cor_pos_id
+                                from
+                                    acc_institution_plan_positions pos
+                                where
+                                    pos.id = plan_positions_table(idx).id;
+                                exception
+                                        when NO_DATA_FOUND then
+                                            t_cor_pos_id := null;
+                            end;
+
+                            if t_cor_pos_id is not null then
+                                begin
+                                    t_exist_corrected:=null;
+
+                                    for idx in 1 .. upd_plan_position_table.count loop
+                                        if upd_plan_position_table(idx).id = t_cor_pos_id then
+                                            begin
+                                                if t_am_art_net is not null then
+                                                    begin
+                                                        t_am_art_net:= t_am_art_net + upd_plan_position_table(idx).am_art_net;
+                                                        t_am_art_gross:= t_am_art_gross + upd_plan_position_table(idx).am_art_gross;
+                                                    end;
+                                                else
+                                                    begin
+                                                        t_am_art_net:= upd_plan_position_table(idx).am_art_net;
+                                                        t_am_art_gross:= upd_plan_position_table(idx).am_art_gross;
+                                                    end;
+                                                end if;
+                                                t_exist_corrected := upd_plan_position_table(idx).id;
+                                            end;
+                                        end if;
+                                    end loop;
+                                    if t_exist_corrected is null then
+                                        begin
+                                            select
+                                                *
+                                            into
+                                                t_cor_pub_pos
+                                            from
+                                                pub_institution_plan_pos pos
+                                            where
+                                                pos.id = t_cor_pos_id;
+
+                                            if t_cor_pub_pos.am_art30_net >= 0 then
+                                                if t_am_art_net is null then
+                                                    t_am_art_net:= t_cor_pub_pos.am_art30_net;
+                                                    t_am_art_gross:= t_cor_pub_pos.am_art30_gross;
+                                                else
+                                                    t_am_art_net:= t_am_art_net + t_cor_pub_pos.am_art30_net;
+                                                    t_am_art_gross:= t_am_art_gross + t_cor_pub_pos.am_art30_gross;
+                                                end if;
+                                            end if;
+                                        end;
+                                    end if;
+                                end;
+                            end if;
+
+                            if t_am_art_net is not null and t_am_art_net <> plan_positions_table(idx).am_art30_net then
+                                upd_plan_position_table.extend();
+                                upd_plan_position_table(upd_plan_position_table.count) := upd_position(plan_positions_table(idx).id, t_am_art_net, t_am_art_gross, plan_positions_table(idx).am_art30_net, plan_positions_table(idx).am_art30_gross, plan_positions_table(idx).assortment_id);
+                            end if;
+                        end if;
+                    end;
+                end loop;
+            end loop;
+
+
+            /* Display position to update */
+            FOR idx IN 1 .. upd_plan_position_table.COUNT LOOP
+            DBMS_OUTPUT.PUT_LINE( 'update position id ' || upd_plan_position_table(idx).id || ' old art net: '
+                    ||  upd_plan_position_table(idx).old_art_net || ' old art gross: ' || upd_plan_position_table(idx).old_art_gross
+                    || ' assortment_id ' || upd_plan_position_table(idx).assortment_id || ' new art net: ' || upd_plan_position_table(idx).am_art_net
+                    || ' art gross: ' || upd_plan_position_table(idx).am_art_gross
+                );
+            END LOOP;
+
+            /* Update positions from all coordinator plans */
+            if p_mode = 'U' then
+                DBMS_OUTPUT.PUT_LINE( 'In update mode');
+                FORALL idx IN 1 .. upd_plan_position_table.COUNT
+                    update pub_institution_plan_pos set am_art30_net = upd_plan_position_table(idx).am_art_net, am_art30_gross = upd_plan_position_table(idx).am_art_gross where id = upd_plan_position_table(idx).id;
+            end if;
+
+        END;
+END ins_plans_util;
 /*---------------------------------------------------------------------------------------------------------------------*/
 /*                                                   TRIGGERS                                            			    */
 /*-------------------------------------------------------------------------------------------------------------------- */

@@ -38,7 +38,6 @@ import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.time.Year;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class PlanServiceImpl implements PlanService {
@@ -943,6 +942,7 @@ public class PlanServiceImpl implements PlanService {
                     row.put("orderType.name", position.getOrderType().name());
                     row.put("estimationType.name", position.getEstimationType().name());
                     row.put("amountRequestedNet", position.getAmountRequestedNet());
+                    row.put("amountInferredNet", position.getAmountInferredNet());
                     row.put("initiationTerm", position.getInitiationTerm());
                     rows.add(row);
                 });
@@ -1389,9 +1389,13 @@ public class PlanServiceImpl implements PlanService {
                 CoordinatorPlan.PlanStatus.AA
         );
 
-        return coordinatorPlans.stream().filter(coordinatorPlan ->
+        coordinatorPlans.stream().filter(coordinatorPlan ->
                 (!coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) ||
                         (coordinatorPlan.getType().equals(CoordinatorPlan.PlanType.PZP) && publicProcurementStatuses.contains(coordinatorPlan.getStatus())
-                        ))).collect(Collectors.toSet());
+                        )));
+
+        TreeSet<CoordinatorPlan> tSet = new TreeSet<>(Collections.reverseOrder());
+        tSet.addAll(coordinatorPlans);
+        return tSet;
     }
 }

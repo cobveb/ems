@@ -87,4 +87,5 @@ public class ApplicationDetailsPayload {
     private Set<ApplicationCriterion> criteria;
     private ApplicationProtocolPayload applicationProtocol;
     private ApplicationPayload replaySourceApplication;
+    private Boolean isPublicRealization;
 }

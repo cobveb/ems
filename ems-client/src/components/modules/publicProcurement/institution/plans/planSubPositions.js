@@ -66,6 +66,10 @@ class PlanSubPositions extends Component {
         });
     }
 
+    handleChangeVisibleDetails = () => {
+        this.setState({openPositionDetails: !this.state.openPositionDetails});
+    }
+
     handleCloseDialog = () => {
         this.setState({planAction: ""})
         this.props.clearError()
