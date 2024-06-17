@@ -24,9 +24,6 @@ export const validate =  ( values, props ) => {
                 errors.value = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_INVALID_VALUE;
         } else {
             const curCriteriaValue = props.criteria.reduce((prev, cur) => prev + cur.value, 0)
-            console.log(curCriteriaValue)
-            console.log(values.value)
-            console.log(props.initialValues.value)
             if(props.action === 'add'){
                 if( curCriteriaValue + values.value > 100){
                     errors.value = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CRITERION_INVALID_COUNT_VALUE;

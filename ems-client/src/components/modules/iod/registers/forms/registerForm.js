@@ -128,7 +128,7 @@ class RegisterForm extends Component {
                 }
                 { openPositionDetails ?
                     <RegisterPositionFormContainer
-                        initialValues={positionAction === 'add' ? {} : selected[0]}
+                        initialValues={positionAction === 'add' ? {isActive: true} : selected[0]}
                         action={positionAction}
                         applications={this.props.applications}
                         contracts={this.props.contracts}

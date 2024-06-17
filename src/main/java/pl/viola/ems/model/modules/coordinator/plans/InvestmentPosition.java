@@ -179,4 +179,13 @@ public class InvestmentPosition extends CoordinatorPlanPosition {
         return null;
     }
 
+    @Override
+    public String getCode() {
+        return super.getId().toString();
+    }
+
+    @Override
+    public String getItemName() {
+        return this.name;
+    }
 }

@@ -7,7 +7,7 @@ drop table emsadm.hr_emp_employments cascade constraints purge;
 create TABLE emsadm.hr_emp_employments(
     id NUMBER(19,0) NOT NULL,
     emp_type VARCHAR(3) NOT NULL,
-    emp_number VARCHAR2(10) NOT NULL,
+    emp_number VARCHAR2(120) NOT NULL,
     emp_date DATE,
     date_from DATE NOT NULL,
     date_to DATE,

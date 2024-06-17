@@ -7,7 +7,7 @@ import { Spinner } from 'common/';
 import { Info, RecentActors, Work, VerifiedUser } from '@material-ui/icons/';
 import EmployeeBasicInfoFormContainer from 'containers/modules/hr/employees/forms/employeeBasicInfoFormContainer';
 import EmployeeEmploymentsContainer from 'containers/modules/hr/employees/employeeEmploymentsContainer';
-import EmployeeEntitlementsContainer from 'containers/modules/hr/employees/employeeEntitlementsContainer';
+import EmployeeEntitlementsContainer from 'containers/modules/asi/employees/employeeEntitlementsContainer';
 import EmployeeTrainingsContainer from 'containers/modules/hr/employees/employeeTrainingsContainer';
 
 const styles = theme => ({
@@ -35,9 +35,6 @@ class Employee extends Component {
         this.props.onSubmitBasic(values);
     }
 
-
-
-
     render(){
         const { classes, initialValues, action, error, isLoading, onClose, levelAccess } = this.props;
         const { numTab } = this.state;
@@ -64,12 +61,12 @@ class Employee extends Component {
                             <Tab label={constants.EMPLOYEE_BASIC_INFORMATION} icon={<Info />} index={0} />
                             {levelAccess === 'hr' &&
                                 <Tab label={constants.EMPLOYEE_EMPLOYMENTS} icon={<Work />} index={1} disabled={action==="add"}/>
+                                /*
+                                    <Tab label={constants.EMPLOYEE_TRAINING} icon={<RecentActors />} index={2} disabled={action==="add"}/>
+                                */
                             }
-                            {/*
-                                <Tab label={constants.EMPLOYEE_TRAINING} icon={<RecentActors />} index={3} disabled={action==="add"}/>
-                            */}
                             {levelAccess === 'asi' &&
-                                <Tab label={constants.EMPLOYEE_ENTITLEMENTS} icon={<VerifiedUser />} index={2} disabled={action==="add"} />
+                                <Tab label={constants.EMPLOYEE_ENTITLEMENTS} icon={<VerifiedUser />} index={1} disabled={action==="add"} />
                             }
                         </Tabs>
                         <TabPanel value={numTab} index={0} className={classes.tabPanel}>
@@ -77,35 +74,42 @@ class Employee extends Component {
                                 onSubmit={this.handleSubmitBasic}
                                 initialValues={initialValues}
                                 action={action}
+                                levelAccess={levelAccess}
                                 onClose={() => onClose(initialValues)}
                             />
                         </TabPanel>
-
-                        <TabPanel value={numTab} index={1} className={classes.tabPanel}>
-                            <EmployeeEmploymentsContainer
-                                initialValues={initialValues}
-                                hrNumber={initialValues.hrNumber}
-                                error = {error}
-                                onSubmit={this.handleSubmitEmployment}
-                                onClose={() => onClose(initialValues)}
-                            />
-                        </TabPanel>
-                        {/*
-                        <TabPanel value={numTab} index={2} className={classes.tabPanel}>
-                            <EmployeeEntitlementsContainer
-                                initialValues={initialValues}
-                                error = {error}
-                                onClose={() => onClose(initialValues)}
-                            />
-                        </TabPanel>
-                        <TabPanel value={numTab} index={3} className={classes.tabPanel}>
-                            <EmployeeTrainingsContainer
-                                initialValues={initialValues}
-                                error = {error}
-                                onClose={() => onClose(initialValues)}
-                            />
-                        </TabPanel>
-                        */}
+                        {levelAccess === 'hr' &&
+                            <>
+                                <TabPanel value={numTab} index={1} className={classes.tabPanel}>
+                                    <EmployeeEmploymentsContainer
+                                        initialValues={initialValues}
+                                        hrNumber={initialValues.hrNumber}
+                                        error = {error}
+                                        onClose={() => onClose(initialValues)}
+                                    />
+                                </TabPanel>
+                                {/*
+                                <TabPanel value={numTab} index={2} className={classes.tabPanel}>
+                                    <EmployeeTrainingsContainer
+                                        initialValues={initialValues}
+                                        error = {error}
+                                        onClose={() => onClose(initialValues)}
+                                    />
+                                </TabPanel>
+                                */}
+                            </>
+                        }
+                        {levelAccess === 'asi' &&
+                            <>
+                                <TabPanel value={numTab} index={1} className={classes.tabPanel}>
+                                    <EmployeeEntitlementsContainer
+                                        initialValues={initialValues}
+                                        error = {error}
+                                        onClose={() => onClose(initialValues)}
+                                    />
+                                </TabPanel>
+                            </>
+                        }
                     </div>
                 </Grid>
             </>

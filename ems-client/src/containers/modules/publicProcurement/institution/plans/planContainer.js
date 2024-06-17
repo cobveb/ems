@@ -26,7 +26,6 @@ class PlanContainer extends Component {
                 let initData = {...prevState.initData};
                 Object.assign(initData, this.props.initialValues);
                 initData.planPositions = response.data.data;
-                console.log(response.data.data)
                 initData["planPositions"].map(position => (
                     Object.assign(position,
                     {

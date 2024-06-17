@@ -1,5 +1,6 @@
 package pl.viola.ems.model.modules.hr.employees;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.viola.ems.model.common.Text;
 
@@ -16,7 +17,7 @@ import java.util.Date;
 public class Employment {
 
     public enum EmploymentType {
-        UPR, KON, STC, UPO, CYW, CYR, WOL
+        UPR, KON, STC, STP, UPO, CYW, CYR, WOL
     }
 
     private enum EmploymentStatus {
@@ -71,5 +72,6 @@ public class Employment {
     @JoinColumn(name = "employee_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Employee employee;
 }

@@ -1,0 +1,1 @@
+ALTER TABLE emsadm.cor_pub_proc_application MODIFY order_realization_term VARCHAR2(30 CHAR);

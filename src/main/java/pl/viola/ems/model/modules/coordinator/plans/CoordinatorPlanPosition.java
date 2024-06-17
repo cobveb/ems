@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
+import pl.viola.ems.model.common.dictionary.DictItem;
 import pl.viola.ems.model.common.dictionary.DictionaryItem;
 import pl.viola.ems.model.modules.accountant.CostType;
 
@@ -36,7 +37,7 @@ import java.util.Set;
         @JsonSubTypes.Type(value = InvestmentPosition.class, name = "inw"),
 })
 @DynamicUpdate
-public abstract class CoordinatorPlanPosition implements Serializable {
+public abstract class CoordinatorPlanPosition implements Serializable, DictItem {
 
     public enum PlanPositionStatus {
         ZP, WY, UZ, ZA, SK, RE, ZR, AA, KR

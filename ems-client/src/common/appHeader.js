@@ -36,16 +36,16 @@ class AppHeader extends Component {
 			<>
 				<div className={classes.root}>
 					<AppBar position="static" className={classes.appBar}>
-						<Grid className={classes.grid} container spacing={0} direction="row" justify="flex-start" alignItems="center">
+						<Grid className={classes.grid} container spacing={0} direction="row" justifyContent="flex-start" alignItems="center">
 							<Grid item xs={3}>
                                 <AppHeaderNavPanel />
 							</Grid>
-							<Grid item xs={6} container direction="row" justify="center" alignItems="center">
+							<Grid item xs={6} container direction="row" justifyContent="center" alignItems="center">
 							    <Typography align="center" variant="h6" color="inherit">
 								    {title}
 								</Typography>
 							</Grid>
-							<Grid item xs={3} container direction="row" justify="flex-end" alignItems="center">
+							<Grid item xs={3} container direction="row" justifyContent="flex-end" alignItems="center">
 								<AppHeaderMenu />
 							</Grid>
 						</Grid>

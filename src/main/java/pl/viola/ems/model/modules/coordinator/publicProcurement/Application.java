@@ -77,13 +77,14 @@ public class Application implements DictItem {
     @NonNull
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ordered_object_id", referencedColumnName = "id")
+    @Lob
     private Text orderedObject;
 
     @NonNull
     @Column(name = "is_combined")
     private Boolean isCombined;
 
-    @Size(max = 20)
+    @Size(max = 30)
     @Column(name = "order_realization_term")
     private String orderRealizationTerm;
 
@@ -224,6 +225,9 @@ public class Application implements DictItem {
     @Column(name = "is_securing_ctr")
     private Boolean isSecuringContract;
 
+    @Column(name = "is_pub_real")
+    private Boolean isPublicRealization;
+
     @ManyToOne
     @JoinColumn(name = "ord_proc_id")
     private DictionaryItem orderProcedure;
@@ -292,7 +296,7 @@ public class Application implements DictItem {
     }
 
     @Override
-    public String getName() {
+    public String getItemName() {
         return this.orderedObject.getContent();
     }
 }

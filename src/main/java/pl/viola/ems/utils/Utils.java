@@ -12,6 +12,8 @@ import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPosition;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
+import pl.viola.ems.model.modules.hr.employees.Employment;
+import pl.viola.ems.model.modules.hr.employees.EmploymentWorkplace;
 import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.security.impl.UserPrincipal;
 import pl.viola.ems.service.common.ExportService;
@@ -24,10 +26,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class Utils {
@@ -141,5 +140,19 @@ public class Utils {
         }
 
         return existsEconomicApprovePlan;
+    }
+
+    public static String generateEmployeeEmploymentWorkplaceList(final Employment employment, final Set<EmploymentWorkplace> workplaces) {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        String dateTo = employment.getDateTo() == null ? " " : formatter.format(employment.getDateTo());
+        String dateFrom = employment.getDateFrom() == null ? " " : formatter.format(employment.getDateFrom());
+        String workplaceList = dateFrom + " - " + dateTo + "; ";
+        for (EmploymentWorkplace employmentWorkplace : workplaces) {
+            workplaceList += employmentWorkplace.getWorkplace().getName().substring(0, employmentWorkplace.getWorkplace().getName().indexOf("-")) + " - " + employmentWorkplace.getPlace().getItemName() + "; ";
+        }
+
+        return workplaceList;
     }
 }

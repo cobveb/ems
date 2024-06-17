@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface PublicProcurementApplicationRepository extends JpaRepository<Application, Long> {
+public interface PublicProcurementApplicationRepository extends JpaRepository<Application, Long>, PublicProcurementApplicationCustomRepository {
     Set<Application> findByCoordinatorIn(List<OrganizationUnit> organizationUnits);
 
     Set<Application> findByCreateDateBetweenAndCoordinatorIn(Date createDateFrom, Date createDateTo, List<OrganizationUnit> organizationUnits);
@@ -27,6 +27,8 @@ public interface PublicProcurementApplicationRepository extends JpaRepository<Ap
     Set<Application> findByCreateDateBetweenAndStatusInAndCoordinatorIn(Date createDateFrom, Date createDateTo, List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> organizationUnits);
 
     List<Application> findByEstimationTypeAndApplicationProtocolIsNotNull(PublicProcurementPosition.EstimationType estimationType);
+
+    Set<Application> findBySendDateBetweenAndEstimationTypeAndApplicationProtocolIsNotNull(Date sendDateFrom, Date sendDateTo, PublicProcurementPosition.EstimationType estimationType);
 
     @Procedure(name = "publicProcurementGenerateApplicationNumber")
     String generateApplicationNumber(@Param("p_coordinator") String coordinator, @Param("p_mode") String mode, @Param("p_estimation_type") String estimation_type);

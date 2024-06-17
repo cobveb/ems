@@ -111,6 +111,7 @@ public class ApplicationAssortmentGroup {
                     this.institutionPublicProcurementPlanPosition.getId(),
                     this.institutionPublicProcurementPlanPosition.getAssortmentGroup().getCode(),
                     this.institutionPublicProcurementPlanPosition.getAssortmentGroup().getName(),
+                    this.institutionPublicProcurementPlanPosition.getAssortmentGroup().getName(),
                     this.institutionPublicProcurementPlanPosition.getEstimationType().name(),
                     this.institutionPublicProcurementPlanPosition.getOrderType().name(),
 //                this.coordinatorPlanPosition.getInitiationTerm(),
@@ -119,8 +120,10 @@ public class ApplicationAssortmentGroup {
                     this.institutionPublicProcurementPlanPosition.getAmountInferredNet(),
                     getArt30percent(this.institutionPublicProcurementPlanPosition.getAmountRequestedNet(), this.institutionPublicProcurementPlanPosition.getAmountArt30Net()),
                     this.institutionPublicProcurementPlanPosition.getAmountArt30Net(),
-                    this.institutionPublicProcurementPlanPosition.getAmountArt30Gross()
+                    this.institutionPublicProcurementPlanPosition.getAmountArt30Gross(),
 //                this.coordinatorPlanPosition.getVat()
+                    this.institutionPublicProcurementPlanPosition.getInstitutionCoordinatorPlanPositions().stream().filter(coordinatorPlanPosition ->
+                            coordinatorPlanPosition.getCoordinatorPlanPosition().getPlan().getCoordinator().getCode().equals(this.getApplication().getCoordinator().getCode())).findAny().orElse(null).getCoordinatorPlanPosition()
             );
         }
         return this.applicationProcurementPlanPosition;

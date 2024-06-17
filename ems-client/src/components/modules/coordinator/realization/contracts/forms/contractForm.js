@@ -42,6 +42,7 @@ class ContractForm extends Component {
         invoices: [],
         openPositionDetails: false,
         positionAction: '',
+        realPercent: null,
         heads: [
             {
                 id: 'number',
@@ -122,14 +123,26 @@ class ContractForm extends Component {
                 invoices: this.props.initialValues.invoices,
             });
         }
+        if(this.props.initialValues.contractValueGross !== null && this.props.initialValues.realizedValueGross !== null && this.state.realPercent === null && this.state.realPercent === prevState.realPercent){
+            this.setState({
+                realPercent: ((this.props.initialValues.realizedValueGross / this.props.initialValues.contractValueGross) * 100).toFixed(2),
+            });
+        }
     }
 
     render(){
         const { classes, isLoading, handleSubmit, pristine, submitting, invalid, submitSucceeded, initialValues, action, contractors } = this.props;
-        const { heads, selected, invoices, openPositionDetails, positionAction } = this.state;
+        const { heads, selected, invoices, openPositionDetails, positionAction, realPercent } = this.state;
         return (
             <>
                 {(submitting || isLoading) && <Spinner /> }
+                { realPercent > 80 &&
+                    <ModalDialog
+                        message={constants.COORDINATOR_REALIZATION_CONTRACT_PERCENT_REALIZATION_MSG}
+                        variant="warningInfo"
+                        onClose={this.handleCloseDialog}
+                    />
+                }
                 {positionAction === 'delete' &&
                     <ModalDialog
                         message={constants.COORDINATOR_REALIZATION_INVOICE_DELETE_POSITION_MSG}
@@ -140,7 +153,7 @@ class ContractForm extends Component {
                 }
                 { openPositionDetails ?
                     <InvoiceContainer
-                        initialValues={positionAction === 'add' ? {contract: initialValues} : selected[0]}
+                        initialValues={positionAction === 'add' ? {contract: initialValues, contractor: initialValues.contractor} : selected[0]}
                         action={positionAction}
                         applications={this.props.applications}
                         contracts={this.props.contracts}

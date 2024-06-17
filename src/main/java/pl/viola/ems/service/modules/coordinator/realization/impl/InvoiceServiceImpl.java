@@ -256,6 +256,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                         planPosition.getId(),
                         planType.equals(CoordinatorPlan.PlanType.FIN) ? planPosition.getCostType().getCode() : planPosition.getId().toString(),
                         planType.equals(CoordinatorPlan.PlanType.FIN) ? planPosition.getCostType().getName() : planPosition.getTask(),
+                        planType.equals(CoordinatorPlan.PlanType.FIN) ? planPosition.getCostType().getName() : planPosition.getTask(),
                         planPosition.getAmountAwardedNet(),
                         planPosition.getAmountAwardedGross(),
                         planPosition.getAmountRealizedNet(),
@@ -302,19 +303,34 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public void exportPlanPositionInvoicesPositionsToXlsx(final ExportType exportType, final Long positionId, final ArrayList<ExcelHeadRow> headRow, final HttpServletResponse response) throws IOException {
+    public void exportPlanPositionInvoicesPositionsToXlsx(final ExportType exportType, final Long positionId, final ArrayList<ExcelHeadRow> headRow, final HttpServletResponse response, final CoordinatorPlan.PlanType planType) throws IOException {
         ArrayList<Map<String, Object>> rows = new ArrayList<>();
-        this.getInvoicesByInstitutionPlanPositions(positionId).stream().sorted(Comparator.comparing(InvoiceInstitutionPositionsResponse::getInvoiceSellDate)).forEach(invoicesInstitutionPosition -> {
-            Map<String, Object> row = new HashMap<>();
-            row.put("invoiceNumber", invoicesInstitutionPosition.getInvoiceNumber());
-            row.put("coordinatorName", invoicesInstitutionPosition.getCoordinatorName());
-            row.put("invoiceSellDate", invoicesInstitutionPosition.getInvoiceSellDate());
-            row.put("invoiceContractorName", invoicesInstitutionPosition.getInvoiceContractorName());
-            row.put("name.content", invoicesInstitutionPosition.getName().getContent());
-            row.put("amountNet", invoicesInstitutionPosition.getAmountNet());
-            row.put("amountGross", invoicesInstitutionPosition.getAmountGross());
-            rows.add(row);
-        });
+        if (planType == null) {
+            this.getInvoicesByInstitutionPlanPositions(positionId).stream().sorted(Comparator.comparing(InvoiceInstitutionPositionsResponse::getInvoiceSellDate)).forEach(invoicesInstitutionPosition -> {
+                Map<String, Object> row = new HashMap<>();
+                row.put("invoiceNumber", invoicesInstitutionPosition.getInvoiceNumber());
+                row.put("coordinatorName", invoicesInstitutionPosition.getCoordinatorName());
+                row.put("invoiceSellDate", invoicesInstitutionPosition.getInvoiceSellDate());
+                row.put("invoiceContractorName", invoicesInstitutionPosition.getInvoiceContractorName());
+                row.put("name.content", invoicesInstitutionPosition.getName().getContent());
+                row.put("amountNet", invoicesInstitutionPosition.getAmountNet());
+                row.put("amountGross", invoicesInstitutionPosition.getAmountGross());
+                rows.add(row);
+            });
+
+        } else {
+            getInvoicesPositionsByCoordinatorPlanPosition(planType, positionId).forEach(invoicePositionPayload -> {
+                Map<String, Object> row = new HashMap<>();
+                row.put("invoiceNumber", invoicePositionPayload.getInvoiceNumber());
+                row.put("coordinatorName", Utils.getCurrentUser().getOrganizationUnit().getName());
+                row.put("invoiceSellDate", invoicePositionPayload.getInvoiceSellDate());
+                row.put("invoiceContractorName", invoicePositionPayload.getInvoiceContractorName());
+                row.put("name.content", invoicePositionPayload.getName().getContent());
+                row.put("amountNet", invoicePositionPayload.getAmountNet());
+                row.put("amountGross", invoicePositionPayload.getAmountGross());
+                rows.add(row);
+            });
+        }
 
         Utils.generateExcelExport(exportType, headRow, rows, response);
     }

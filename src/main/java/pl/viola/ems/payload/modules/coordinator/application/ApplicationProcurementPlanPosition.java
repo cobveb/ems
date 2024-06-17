@@ -1,6 +1,9 @@
 package pl.viola.ems.payload.modules.coordinator.application;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlanPosition;
 
 import java.math.BigDecimal;
 
@@ -13,6 +16,8 @@ public class ApplicationProcurementPlanPosition {
     private String code;
 
     private String name;
+
+    private String itemName;
 
     private String estimationType;
 
@@ -32,5 +37,6 @@ public class ApplicationProcurementPlanPosition {
 
     private BigDecimal amountArt30Gross;
 
-//    private BigDecimal vat;
+    //    private BigDecimal vat;
+    private CoordinatorPlanPosition coordinatorPlanPosition;
 }

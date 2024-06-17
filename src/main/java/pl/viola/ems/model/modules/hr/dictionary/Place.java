@@ -26,4 +26,9 @@ public class Place extends AbstractPlace implements DictItem {
         return super.getId().toString();
     }
 
+    @Override
+    public String getItemName() {
+        return super.getName();
+    }
+
 }

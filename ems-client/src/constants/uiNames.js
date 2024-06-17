@@ -321,6 +321,7 @@ export const COORDINATOR_PLAN_POSITION_AMOUNT_REQUESTED_GROSS = 'Kwota szacowana
 export const COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_NET = 'Kwota przyznana netto';
 export const COORDINATOR_PLAN_POSITION_AMOUNT_AWARDED_GROSS = 'Kwota przyznana brutto';
 export const COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_NET = 'Kwota zrealizowana netto';
+export const COORDINATOR_PLAN_POSITION_AMOUNT_INFERRED_NET = 'Kwota złożonych wniosków netto';
 export const COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_GROSS = 'Kwota zrealizowana brutto';
 export const COORDINATOR_PLAN_POSITION_VAT = 'VAT';
 /* components/modules/coordinator/plans/forms/planFinancialContentPositionForm.js */
@@ -468,6 +469,7 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CREATE_DATE = 'Data utwo
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SEND_DATE = 'Data przekazania do ZP';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS = 'Status';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_IS_REPLAY = 'Czy obecny wniosek jest powtórką?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_IS_PUBLIC_REALIZATION = 'Czy wniosek realizowany przez ZP?';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_SOURCE_APPLICATION = 'Numer wniosku źródłowego';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ACCEPT_PATH = 'Akceptacja wniosku';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_GROUPS = 'Grupy asortymentowe';
@@ -500,7 +502,7 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_DESCRIPTION = 'Opi
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_PREPARING_DESCRIPTION = 'Osoby przygotowujące opis przedmiotu zamówienia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_REQUIREMENTS_VARIANT_BIDS = 'Wymogi dotyczące ewentualnych ofert wariantowych';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PROPOSED_ORDERING_PROCEDURE = 'W przypadku proponowania trybu innego niż przetarg nieograniczony (UE) lub ograniczony (UE), tryb podstawowy (BZP) - wskazać uzasadnienie';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_PREPARING_JUSTIFICATION = 'Osoby przygotowujące uzasadnienie faktyczne i prawne wyboru trybu udzielenia zamówienia';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PERSONS_PREPARING_JUSTIFICATION = 'Osoba przygotowująca uzasadnienie wyboru trybu udzielenia zamówienia innego niż przetarg nieograniczony (UE) lub ograniczony (UE), tryb podstawowy (BZP)';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_REALIZATION_TERM = 'Termin realizacji zamówienia';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_CONTRACTOR_NAME = 'Nazwa wykonawcy, z którym będą przeprowadzone negocjacje';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_JUSTIFICATION_NON_COMPETITIVE_PROCEDURE = 'Uzasadnienie niekonkurencyjnej procedury';
@@ -546,12 +548,15 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_APPROVE_ACCOUNTA
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_WITHDRAW_MSG = 'Wniosek zostanie anulowany. Kwota realizacji zostanie zwrócona do ponownego wykożystania. Operacja nie będzie możliwa do wycofania. Czy kontynuować?';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_SEND_BACK_MSG = 'Wniosek zostanie zwrócony do Koordynatora. Czy kontynuować?';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_REALIZATION_MSG = 'Realizacja wniosku zostanie zakończona. Czy kontynuować?';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONFIRM_PUBLIC_REALIZATION_MSG = 'Wniosek zostanie oznaczony jako realizowany przez Pracownika Działu Zamówień Publicznych. Czy kontynuować?';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ROLLBACK_REALIZATION_MSG = 'Realizacja wniosku zostanie wycofana. Wniosek zostanie anulowany. Czy kontynuować?';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ROLLBACK_PARTS_REALIZATION_MSG = 'Realizacja części wniosku zostanie wycofana. Czy kontyniować?';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_PROTOCOL = 'Protokół';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_REALIZED = 'Zakończ';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_ROLLBACK_REALIZATION = 'Anuluj wniosek';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_ROLLBACK_PART_REALIZATION = 'Wycofaj część realizacji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_BUTTON_PUBLIC_REALIZATION = 'Realizacja ZP';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PUBLIC_REALIZATION = 'ZP';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationFormValid.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENTS_GROUPS_NET_EXCEEDED = 'Wartość zamówienia większa niż wartość grup asortymentowych';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VALUE_NET_EXCEEDED = 'Wartość w roku bieżącym większa niż wartość zamówienia';
@@ -561,8 +566,10 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENTS_GROUPS_PLAN_
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationAssortmentGroupsForm.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP = 'Grupa asortymentowa wniosku o udzielenie zamówienia publicznego';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_GROUP_INFO = 'Dane grupy asortymentowej w ramach planu zamówień publicznych instytucji';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PLAN_COR_GROUP_INFO = 'Dane grupy asortymentowej w ramach planu Koordynatora';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_INFO = 'Dane grupy asortymentowej w ramach wniosku';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_VALUE_NET = 'Całkowita wartość netto grupy asortymentowej';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_COR_VALUE_NET = 'Wartość netto grupy asortymentowej';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_PLAN_TYPE_FIN = 'Pozycja w ramach planu finansowego';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_FINANCIAL_PLAN_POSITION = 'Numer kosztu rodzajowego z planu finansowego';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_POSITION_NET = 'Wartość pozycji netto w roku bieżącym';
@@ -576,9 +583,9 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_VALUE_NET_OT
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_VALUE_GROSS_50 = 'Wartość udzielanego zamówienia brutto / cena wybranej oferty brutto';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_VALUE_GROSS_OTHER = 'Szacunkowa wartość udzielanego zamówienia brutto';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_GROUP_NEXT_YEARS = 'Wydatki w latach kolejnych';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_ART30 = 'Realizacja art. 30 ust. 4';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_NET_ART30 = 'Realizacja netto art. 30 ust. 4';
-export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_GROSS_ART30 = 'Realizacja brutto art. 30 ust. 4';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_ART30 = 'Instytucja realizacja art. 30 ust. 4';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_NET_ART30 = 'Instytucja netto art. 30 ust. 4';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_REALIZED_GROSS_ART30 = 'Instytucja brutto art. 30 ust. 4';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_VALUE_CONTRACT_AWARDED_NET = 'Wartość udzielonego zamówienia netto w ramach grupy';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_GROUP_VALUE_CONTRACT_AWARDED_GROSS = 'Wartość udzielonego zamówienia brutto w ramach grupy';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationAssortmentGroupsFormValid.js */
@@ -586,6 +593,7 @@ export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_GROUP_EXISTS 
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_YEAR_REQUESTED_INVALID = 'Kwota do wydania w roku większa od wartości zamówienia w ramach grupy';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_REQUESTED_INVALID = 'Kwota do wydania w roku większa od wartości grupy';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_INVALID = 'Kwota do wydania w roku większa od możliwej wartości realizacji grupy';
+export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_ART30_INVALID = 'Przekroczona wartość 20% dla art. 30 ust 4';
 /* components/modules/coordinator/publicProcurement/applications/forms/applicationPlanPositionForm.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_TITLE_CREATE = 'Nowa pozycja';
 export const COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_APPLICATION_PLAN_POSITION_TITLE_EDIT = 'Edycja pozycji';
@@ -705,6 +713,7 @@ export const COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_TO_REALIZE_NET = 'Pozo
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_TO_REALIZE_GROSS = 'Pozostała do realizacji brutto';
 export const COORDINATOR_REALIZATION_CONTRACT_CONTRACTOR_REPRESENTATIVE = 'Przedstawiciel dostawcy';
 export const COORDINATOR_REALIZATION_CONTRACT_CHANGES = 'Zmiany';
+export const COORDINATOR_REALIZATION_CONTRACT_PERCENT_REALIZATION_MSG = 'Realizacja umowy przekroczyła 80%';
 /* components/modules/coordinator/realization/invoices/invoices.js */
 export const COORDINATOR_REALIZATION_INVOICES_TITLE = 'Faktury';
 export const COORDINATOR_REALIZATION_INVOICE_NUMBER = 'Numer faktury';
@@ -868,6 +877,7 @@ export const PUBLIC_INSTITUTION_PLAN_BUTTON_PRINT_DOUBLE_GROUPS = 'Zdublowane gr
 export const PUBLIC_INSTITUTION_PLAN_BUTTON_PRINT_UPDATE = 'Aktualizacja';
 /* components/modules/accountant/coordinator/publicProcurement/protocols.js */
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOLS_TITLE = 'Protokoły o udzielenie zamówienia publicznego';
+export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOLS_APL_YEAR = 'Rok wniosku';
 /*components/modules/hr/humanResources.js*/
 export const HR_MENU_EMPLOYEES = 'Personel';
 export const HR_MENU_EMPLOYEES_EMPLOYEES = 'Pracownicy';
@@ -898,12 +908,9 @@ export const EMPLOYEE_EMPLOYMENTS_PERIODS = 'Okresy zatrudnienia:';
 export const EMPLOYEE_EMPLOYMENTS_TABLE_HEAD_ROW_WORKPLACE = 'Stanowisko';
 export const EMPLOYEE_EMPLOYMENTS_TABLE_HEAD_ROW_OU = 'Jednostka';
 export const EMPLOYEE_EMPLOYMENTS_DELETE_MSG = 'Zatrudnienie zostanie usunięte. Oświadczenia, upoważnienia oraz informacje o stanowiskach rówież zostaną usunięte. Czy kontynować?';
-/* components/modules/hr/employees/forms/employeeEntitlementsForm.js */
-export const EMPLOYEE_ENTITLEMENTS_SYSTEMS = 'Lista systemów:';
-export const EMPLOYEE_ENTITLEMENTS_SYSTEM_NAME = 'Nazwa systemu';
-export const EMPLOYEE_ENTITLEMENTS_SYSTEM_USERNAME = 'Identyfikator';
-export const EMPLOYEE_ENTITLEMENTS_SYSTEM_ENTITLEMENT_FROM = 'Czas obowiązywania od';
-export const EMPLOYEE_ENTITLEMENTS_SYSTEM_ENTITLEMENT_TO = 'Czas obowiązywania do';
+/* components/modules/hr/employees/employeeEntitlements.js */
+export const EMPLOYEE_ENTITLEMENTS_SYSTEMS = 'Lista uprawnień:';
+export const EMPLOYEE_ENTITLEMENTS_DELETE_MSG = 'Uprawnienie zostanie usunięte. Czy kontynuować?';
 /* components/modules/hr/employees/forms/employeeTrainingForm.js */
 export const EMPLOYEE_TRAININGS = 'Ukończone szkolenia:';
 export const EMPLOYEE_TRAINING_TABLE_HEAD_ROW_TYPE = 'Rodzaj';
@@ -999,6 +1006,40 @@ export const IOD_REGISTER_CPDO_POSITION_THIRD_COUNTRY_DOCUMENTATION = 'Transfer 
 export const IOD_REGISTER_CPDO_CREATE_NEW_POSITION_TITLE = 'Nowa pozycja';
 export const IOD_REGISTER_CPDO_CREATE_EDIT_POSITION_TITLE = 'Edycja pozycji: ';
 export const IOD_REGISTER_CPDO_POSITION_OU = 'Komórki organizacyjne';
+/* components/modules/asi/asi.js */
+export const ASI_MENU_DICTIONARY_SYSTEMS = 'Systemy';
+/* components/modules/asi/dictionary/employees/entitlementSystems.js */
+export const EMPLOYEE_ENTITLEMENT_SYSTEMS_DELETE_MSG = 'Systemy uprawnień zostanie usunięty. Czy kontynuować?';
+/* components/modules/asi/employees/forms/entitlementForm.js */
+export const EMPLOYEE_ENTITLEMENT_TITLE = 'Szczegóły uprawnienia';
+export const EMPLOYEE_ENTITLEMENT_SYSTEM_NAME = 'Nazwa systemu';
+export const EMPLOYEE_ENTITLEMENT_SYSTEM_USERNAME = 'Identyfikator';
+export const EMPLOYEE_ENTITLEMENT_PERMISSION_GROUPS = 'Grupy uprawnień';
+export const EMPLOYEE_ENTITLEMENT_FROM = 'Data utworzenia konta';
+export const EMPLOYEE_ENTITLEMENT_TO = 'Data obowiązywania do';
+export const EMPLOYEE_ENTITLEMENT_REVOKE_DATE = 'Data odebrania uprawnień';
+export const EMPLOYEE_ENTITLEMENT_VERIFICATION_DATE = 'Data weryfikacji';
+export const EMPLOYEE_ENTITLEMENT_CREATED_BY = 'Użytkownik tworzący';
+export const EMPLOYEE_ENTITLEMENT_CREATED_AT = 'Data utworzenia';
+export const EMPLOYEE_ENTITLEMENT_UPDATED_BY = 'Użytkownik modyfikujący';
+export const EMPLOYEE_ENTITLEMENT_UPDATED_AT = 'Data modyfikacji';
+export const EMPLOYEE_ENTITLEMENT_CONFIRM_DELETE_PERMISSION_MSG = 'Uprawnienie zostanie usunięte. Czy Kontynuować?';
+/* components/modules/asi/employees/forms/entitlementGroupForm.js */
+export const EMPLOYEE_ENTITLEMENT_GROUP_TITLE = 'Szczególy grupy uprawnień';
+export const EMPLOYEE_ENTITLEMENT_GROUP_NAME = 'Nazwa grupy';
+export const EMPLOYEE_ENTITLEMENT_GROUP_ALL_OUS = 'Jednostki organizacyjne';
+export const EMPLOYEE_ENTITLEMENT_GROUP_OUS = 'Przypisane jednostki organizacyjne';
+/* components/modules/asi/dictionary/employees/forms/entitlementSystemForm.js */
+export const ASI_DICTIONARY_SYSTEMS_CREATE_SYSTEM_TITLE = 'Nowy system uprawnień';
+export const ASI_DICTIONARY_SYSTEMS_EDIT_SYSTEM_TITLE = 'Edycja systemu uprawnień: ';
+export const ASI_DICTIONARY_SYSTEMS_SYSTEM_ACTIVE = 'Aktywny';
+export const ASI_DICTIONARY_SYSTEMS_SYSTEM_NAME = 'Nazwa systemu';
+export const ASI_DICTIONARY_SYSTEMS_SYSTEM_PERMISSIONS = 'Uprawnienia';
+export const ASI_DICTIONARY_SYSTEMS_SYSTEM_PERMISSION_DELETE_MSG = 'Uprawnienie zostanie usunięte. Czy kontynuować?';
+/* components/modules/asi/dictionary/employees/forms/entitlementSystemPermissionForm.js */
+export const ASI_DICTIONARY_SYSTEM_PERMISSION_CREATE_TITLE = 'Nowe uprawnienie';
+export const ASI_DICTIONARY_SYSTEM_PERMISSION_EDIT_TITLE = 'Edycja uprawnienia:';
+export const ASI_DICTIONARY_SYSTEM_PERMISSION_NAME = 'Nazwa uprawnienia';
 /* Commons sections */
 export const BUTTON_SAVE = 'Zapisz';
 export const BUTTON_CANCEL = 'Anuluj';
@@ -1044,7 +1085,8 @@ export const TRANSFER_LIST_SELECTED_RIGHT = '>';
 export const TRANSFER_LIST_ALL_LEFT = '<<';
 export const TRANSFER_LIST_SELECTED_LEFT = '<';
 export const MENU_DICTIONARIES = 'Słowniki';
-export const SEARCH_CODE_NAME = 'Kod / Nazwa'
+export const SEARCH_CODE_NAME = 'Kod / Nazwa';
+export const SEARCH_NAME = 'Nazwa';
 export const INSTITUTION_PLAN_STATUS_CREATED = 'Utworzony';
 export const INSTITUTION_PLAN_STATUS_APPROVED_ACCOUNTANT = 'Akceptacja - Główny księgowy';
 export const INSTITUTION_PLAN_STATUS_APPROVED_DIRECTOR = 'Akceptacja  - Dyrektor pionu';
@@ -1057,6 +1099,7 @@ export const INSTITUTION_PLAN_STATUS_UPDATE = 'Zaktualizowany';
 export const TABLE_HEAD_ROW_CODE = 'Kod';
 export const TABLE_HEAD_ROW_NAME = 'Nazwa';
 export const TABLE_HEAD_ROW_ACTIVE = 'Aktywna';
+export const TABLE_PAGINATION_PAGE = 'Strona:'
 /* public procurement protocol statuses */
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_SAVED = 'Zapisany';
 export const COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOL_SEND = 'Wysłany';
@@ -1068,6 +1111,7 @@ export const HR_EMPLOYEE_EMPLOYMENT_TYPE_UPR = 'Umowa o pracę';
 export const HR_EMPLOYEE_EMPLOYMENT_TYPE_KON = 'Kontrakt';
 export const HR_EMPLOYEE_EMPLOYMENT_TYPE_WOL = 'Wolontariat';
 export const HR_EMPLOYEE_EMPLOYMENT_TYPE_STC = 'Staż cząstkowy';
+export const HR_EMPLOYEE_EMPLOYMENT_TYPE_STP = 'Staż podyplomowy';
 export const HR_EMPLOYEE_EMPLOYMENT_TYPE_UPO = 'Umowa powierzenia';
 export const HR_EMPLOYEE_EMPLOYMENT_TYPE_CYW = 'Cywilnoprawna';
 export const HR_EMPLOYEE_EMPLOYMENT_TYPE_CYR = 'Cywilnoprawna - tryb pozarezydencki';
@@ -1103,7 +1147,8 @@ export const FORM_AMOUNT_FIELD_DEFAULT_SUFFIX = 'zł.';
 export const VAT = 'Vat';
 export const VAT_DIFF = 'Różny';
 export const YEAR = 'Rok';
-export const DESCRIPTION = 'Uwagi';
+export const DESCRIPTION = 'Opis';
+export const COMMENTS = 'Uwagi';
 /* Form error names */
 export const FORM_ERROR_MSG_REQUIRED_FIELD = 'Pole wymagane';
 export const FORM_ERROR_MSG_INVALID_EMAIL_ADDRESS = 'Nieprawidłowy adres email';

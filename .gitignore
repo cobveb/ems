@@ -33,6 +33,8 @@
 /ems-client/node/
 /ems-client/coverage/
 /ems-client/node_modules/
+/ems-client/node_modules_1/
+/ems-client/node_modules_old/
 /ems-client/build/
 /ems/ems-client/package-lock.json
 /src/ems-client/
@@ -53,4 +55,4 @@
 /package-lock.json
 /src/main/resources/application.properties
 /ems-client/package-lock.json
-
+/ems-client/package-lock.json_old

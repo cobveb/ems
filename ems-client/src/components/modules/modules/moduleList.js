@@ -25,7 +25,7 @@ class ModuleList extends Component {
         const { classes, modules } = this.props;
 		return(
 		    <>
-		        <Grid container className={classes.content} direction="row" justify="center" alignItems="flex-start">
+		        <Grid container className={classes.content} direction="row" justifyContent="center" alignItems="flex-start">
                     {modules.map((module, i) =>
                         <ModuleContainer module={module} key={i}/>
                     )}

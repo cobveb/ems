@@ -2,7 +2,7 @@ package pl.viola.ems.model.modules.administrator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import pl.viola.ems.model.modules.accountant.CostYear;
+import pl.viola.ems.model.common.dictionary.DictItem;
 import pl.viola.ems.model.modules.applicant.ApplicantApplication;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 
@@ -11,8 +11,8 @@ import javax.validation.constraints.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@ToString(exclude = {"coordinators", "applicants", "coordinatorsPlans", "directorCoordinators", "director", "users"})
-@EqualsAndHashCode(exclude = {"coordinators", "applicants", "coordinatorsPlans", "directorCoordinators", "director", "users"})
+@ToString(exclude = {"coordinators", "applicants", "coordinatorsPlans", "directorCoordinators", "users"})
+@EqualsAndHashCode(exclude = {"coordinators", "applicants", "coordinatorsPlans", "directorCoordinators", "users"})
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
@@ -23,7 +23,8 @@ import java.util.Set;
                 "code"
         })
 })
-public class OrganizationUnit {
+public class OrganizationUnit implements DictItem {
+
 
     public enum Role {
         CHIEF, ECONOMIC, DIRECTOR, COORDINATOR
@@ -94,7 +95,7 @@ public class OrganizationUnit {
     @JoinColumn(name = "director_id")
     private OrganizationUnit director;
 
-    @OneToMany(mappedBy = "director", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "director", cascade = CascadeType.ALL)
     private Set<OrganizationUnit> directorCoordinators;
 
     @JsonIgnore
@@ -105,16 +106,16 @@ public class OrganizationUnit {
     @OneToMany(mappedBy = "coordinator", cascade = CascadeType.ALL)
     private Set<ApplicantApplication> coordinators = new HashSet<>();
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL)
-    private Set<ApplicantApplication> applicants = new HashSet<>();
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL)
+//    private Set<ApplicantApplication> applicants = new HashSet<>();
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "acc_cost_years_coordinators", schema = "emsadm",
-            joinColumns = @JoinColumn(name = "coordinator_id", referencedColumnName = "code"),
-            inverseJoinColumns = @JoinColumn(name = "cost_year_id", referencedColumnName = "id"))
-    private Set<CostYear> costTypeYears = new HashSet<>();
+//    @JsonIgnore
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "acc_cost_years_coordinators", schema = "emsadm",
+//            joinColumns = @JoinColumn(name = "coordinator_id", referencedColumnName = "code"),
+//            inverseJoinColumns = @JoinColumn(name = "cost_year_id", referencedColumnName = "id"))
+//    private Set<CostYear> costTypeYears = new HashSet<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "coordinator", cascade = CascadeType.ALL)
@@ -137,5 +138,10 @@ public class OrganizationUnit {
     public Set<OrganizationUnit> removeDirectorCoordinator(OrganizationUnit coordinator) {
         directorCoordinators.removeIf(directorCoordinator -> directorCoordinator.code.equals(coordinator.code));
         return directorCoordinators;
+    }
+
+    @Override
+    public String getItemName() {
+        return this.name;
     }
 }

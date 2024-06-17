@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
 import { Spinner, ModalDialog } from 'common/';
-import { Table, Button, SearchField, SelectField } from 'common/gui';
+import { Table, Button, DatePicker, SearchField, SelectField } from 'common/gui';
 import { Visibility } from '@material-ui/icons/';
 import ApplicationProtocolContainer from 'containers/modules/coordinator/publicProcurement/applications/applicationProtocolContainer';
 
@@ -40,6 +40,7 @@ class Protocols extends Component {
         status: '',
         coordinator:'',
         rows:[],
+        year: new Date(),
         headCells: [
             {
                 id: 'number',
@@ -133,12 +134,14 @@ class Protocols extends Component {
             this.setState({
                 rows: this.filter(),
             })
+        } else if (this.state.year !== prevState.year){
+            this.props.onChangeYear(this.state.year);
         }
     }
 
     render(){
         const { classes, isLoading, error, coordinators, statuses, levelAccess, vats } = this.props;
-        const { selected, isDetailsVisible, status, headCells, rows, coordinator, number } = this.state;
+        const { selected, isDetailsVisible, status, headCells, rows, coordinator, number, year } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -170,6 +173,17 @@ class Protocols extends Component {
                             <Divider />
                             <div className={classes.content}>
                                 <Grid container spacing={0} direction="row" justify="center" className={classes.container}>
+                                    <Grid item xs={2} className={classes.item}>
+                                        <DatePicker
+                                            id="year"
+                                            onChange={this.handleDataChange('year')}
+                                            label={constants.COORDINATOR_PUBLIC_PROCUREMENT_PROTOCOLS_APL_YEAR}
+                                            value={year}
+                                            format="yyyy"
+                                            mask="____"
+                                            views={["year"]}
+                                        />
+                                    </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <SearchField
                                             name="number"
@@ -180,7 +194,7 @@ class Protocols extends Component {
                                             valueType="all"
                                         />
                                     </Grid>
-                                    <Grid item xs={7} className={classes.item}>
+                                    <Grid item xs={5} className={classes.item}>
                                         <SelectField
                                             name="coordinator"
                                             onChange={this.handleSearch}

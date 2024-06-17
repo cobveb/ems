@@ -37,6 +37,6 @@ public interface InvoiceService {
 
     Set<InvoiceInstitutionPositionsResponse> getInvoicesByInstitutionPlanPositions(Long institutionPlanPositionId);
 
-    void exportPlanPositionInvoicesPositionsToXlsx(ExportType exportType, Long positionId, final ArrayList<ExcelHeadRow> headRow, final HttpServletResponse response) throws IOException;
+    void exportPlanPositionInvoicesPositionsToXlsx(ExportType exportType, Long positionId, final ArrayList<ExcelHeadRow> headRow, final HttpServletResponse response, CoordinatorPlan.PlanType planType) throws IOException;
 
 }

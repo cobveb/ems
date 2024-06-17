@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import { withStyles, Typography, Divider, Grid } from '@material-ui/core/';
 import { ModalDialog, Spinner} from 'common/';
 import * as constants from 'constants/uiNames';
-import { Table, Button, SearchField } from 'common/gui';
+import { Button, SearchField } from 'common/gui';
+import { TablePageable } from 'containers/common/gui';
 import { Delete, Add, Edit } from '@material-ui/icons/';
 import EmployeeContainer from 'containers/modules/hr/employees/employeeContainer';
+import { setChangedSearchConditions } from 'utils';
 
 const styles = theme => ({
     root: {
@@ -55,6 +57,19 @@ class Employees extends Component {
         surname: '',
         name: '',
         action: null,
+        searchConditionsChange: false,
+        searchConditions: [
+            {
+                name: 'name',
+                value: '',
+                type: 'text'
+            },
+            {
+                name: 'surname',
+                value: '',
+                type: 'text'
+            }
+        ]
     }
 
     handleSelect = (id) => {
@@ -63,6 +78,26 @@ class Employees extends Component {
 
     handleSearch = (event) => {
         this.setState({[event.target.id]: event.target.value})
+    }
+
+    onChangeSearchConditions = (event) => {
+        event.persist();
+        this.setState(prevState => {
+            const searchConditions = [...prevState.searchConditions];
+            let searchConditionsChange = prevState.searchConditionsChange;
+
+            return setChangedSearchConditions(event.target.name, event.target.value, searchConditions, searchConditionsChange);
+        });
+    }
+
+    handleBlur = (event) => {
+        this.onChangeSearchConditions(event);
+    }
+
+    handleKeyDown = (event) => {
+       if (event.key === "Enter") {
+          this.onChangeSearchConditions(event);
+       }
     }
 
     handleDoubleClick = (row) => {
@@ -82,7 +117,6 @@ class Employees extends Component {
                 isDetailsVisible: false,
                 action: null,
                 selected: {},
-                rows: this.props.onClose(employee),
             })
         );
     }
@@ -109,33 +143,20 @@ class Employees extends Component {
         });
     }
 
-    filter = () => {
-        let employees = this.props.initialValues;
-        return employees.filter((employee) => {
-            return employee.name.toLowerCase().search(
-                    this.state.name.toLowerCase()) !== -1 &&
-                employee.surname.toLowerCase().search(
-                    this.state.surname.toLowerCase()) !== -1
-        })
+    handleExcelExport = (exportType) =>{
+        this.props.onExcelExport(exportType, this.state.headCells);
     }
 
     componentDidUpdate(prevProps, prevState){
-        // Filter rows on close employee
-        if(this.state.action === null && this.state.action !== prevState.action){
-            this.setState({
-                rows: this.filter(),
-            });
-        }
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
-                rows: this.filter(),
+                rows: this.props.initialValues,
             });
         }
-        if (this.state.surname !== prevState.surname ||
-            this.state.name !== prevState.name)
-        {
+        if(this.state.searchConditionsChange){
+            this.props.onSetSearchConditions(this.state.searchConditions)
             this.setState({
-                rows: this.filter(),
+                searchConditionsChange: false,
             })
         }
     }
@@ -146,8 +167,8 @@ class Employees extends Component {
 
 
     render(){
-        const { classes, isLoading, error } = this.props;
-        const { headCells, rows, selected, isDetailsVisible, action, surname, name } = this.state;
+        const { classes, isLoading, error, levelAccess } = this.props;
+        const { headCells, rows, selected, isDetailsVisible, action, surname, name, searchConditionsChange } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -164,7 +185,7 @@ class Employees extends Component {
                         <EmployeeContainer
                             initialValues={action === 'add' ? {} : selected}
                             action={action}
-                            levelAccess={this.props.levelAccess}
+                            levelAccess={levelAccess}
                             onClose={this.handleClose}
                         />
                     :
@@ -178,11 +199,13 @@ class Employees extends Component {
                                 <Typography variant="h6">{constants.HR_MENU_EMPLOYEES_EMPLOYEES}</Typography>
                                 <Divider />
                                 <div className={classes.content}>
-                                    <Grid container spacing={0} direction="row" justify="center" className={classes.container}>
+                                    <Grid container spacing={0} direction="row" justifyContent="center" className={classes.container}>
                                         <Grid item xs={6} className={classes.item}>
                                             <SearchField
                                                 name="surname"
                                                 onChange={this.handleSearch}
+                                                onBlur={this.handleBlur}
+                                                onKeyDown={(e) => this.handleKeyDown(e)}
                                                 label={constants.EMPLOYEES_SEARCH_SURNAME}
                                                 placeholder={constants.EMPLOYEES_SEARCH_SURNAME}
                                                 valueType="all"
@@ -193,6 +216,8 @@ class Employees extends Component {
                                             <SearchField
                                                 name="name"
                                                 onChange={this.handleSearch}
+                                                onBlur={this.handleBlur}
+                                                onKeyDown={this.handleKeyDown}
                                                 label={constants.EMPLOYEES_SEARCH_NAME}
                                                 placeholder={constants.EMPLOYEES_SEARCH_NAME}
                                                 valueType="all"
@@ -200,15 +225,17 @@ class Employees extends Component {
                                             />
                                         </Grid>
                                     </Grid>
-                                    <Grid container spacing={0} direction="row" justify="flex-start" className={classes.container}>
-                                        <Table
+                                    <Grid container spacing={0} direction="row" justifyContent="flex-start" className={classes.container}>
+                                        <TablePageable
                                             className={classes.tableWrapper}
                                             rows={rows}
                                             headCells={headCells}
                                             onSelect={this.handleSelect}
                                             onDoubleClick={this.handleDoubleClick}
+                                            onExcelExport={this.handleExcelExport}
+                                            resetPageableProperties={searchConditionsChange}
                                             rowKey="id"
-                                            defaultOrderBy="surname"
+                                            orderBy={headCells[1]}
                                         />
                                     </Grid>
                                 </div>
@@ -216,7 +243,7 @@ class Employees extends Component {
                             <Grid
                                 container
                                 direction="row"
-                                justify="center"
+                                justifyContent="center"
                                 alignItems="flex-start"
                                 className={classes.container}
                             >
@@ -224,17 +251,19 @@ class Employees extends Component {
                                     <Grid
                                         container
                                         direction="row"
-                                        justify="center"
+                                        justifyContent="center"
                                         alignItems="flex-start"
                                     >
-                                        <Button
-                                            label={constants.BUTTON_ADD}
-                                            icon=<Add/>
-                                            iconAlign="right"
-                                            variant="add"
-                                            onClick = { (event) => this.handleChangeVisibleDetails(event, 'add', )}
-                                            data-action="add"
-                                        />
+                                        { levelAccess !== 'asi' &&
+                                            <Button
+                                                label={constants.BUTTON_ADD}
+                                                icon=<Add/>
+                                                iconAlign="right"
+                                                variant="add"
+                                                onClick = { (event) => this.handleChangeVisibleDetails(event, 'add', )}
+                                                data-action="add"
+                                            />
+                                        }
                                         <Button
                                             label={constants.BUTTON_EDIT}
                                             icon=<Edit/>
@@ -244,14 +273,16 @@ class Employees extends Component {
                                             onClick = { (event) => this.handleChangeVisibleDetails(event, 'edit', )}
                                             data-action="edit"
                                         />
-                                        <Button
-                                            label={constants.BUTTON_DELETE}
-                                            icon=<Delete/>
-                                            iconAlign="right"
-                                            disabled={Object.keys(selected).length === 0 }
-                                            onClick = {(event) => this.handleDelete(event, 'delete', )}
-                                            variant="delete"
-                                        />
+                                        { levelAccess !== 'asi' &&
+                                            <Button
+                                                label={constants.BUTTON_DELETE}
+                                                icon=<Delete/>
+                                                iconAlign="right"
+                                                disabled={Object.keys(selected).length === 0 }
+                                                onClick = {(event) => this.handleDelete(event, 'delete', )}
+                                                variant="delete"
+                                            />
+                                        }
                                     </Grid>
                                 </Grid>
                             </Grid>

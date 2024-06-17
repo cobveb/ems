@@ -33,6 +33,7 @@
         <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
         <apache.poi.version>5.0.0</apache.poi.version>
         <jasper.reports.version>6.16.0</jasper.reports.version>
+        <jetbrains.annotations.version>24.0.1</jetbrains.annotations.version>
     </properties>
     <dependencies>
         <dependency>
@@ -143,7 +144,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
+            <version>${jetbrains.annotations.version}</version>
             <scope>compile</scope>
         </dependency>
 		<dependency>
@@ -172,10 +173,10 @@
 						<goals>
 							<goal>install-node-and-npm</goal>
 						</goals>
-						<configuration>
-							<nodeVersion>v10.13.0</nodeVersion>
-							<npmVersion>6.4.1</npmVersion>
-						</configuration>
+                        <configuration>
+                            <nodeVersion>v20.5.1</nodeVersion>
+                            <npmVersion>9.8.1</npmVersion>
+                        </configuration>
 					</execution>
 					<execution>
 						<id>npm install</id>

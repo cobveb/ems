@@ -112,6 +112,6 @@ public class InstitutionPlanController {
     public void exportPlanPositionInvoicesPositionsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
                                                           @PathVariable ExportType exportType, @PathVariable Long positionId, HttpServletResponse response) throws IOException {
 
-        invoiceService.exportPlanPositionInvoicesPositionsToXlsx(exportType, positionId, headRow, generateExportResponse(response, exportType));
+        invoiceService.exportPlanPositionInvoicesPositionsToXlsx(exportType, positionId, headRow, generateExportResponse(response, exportType), null);
     }
 }

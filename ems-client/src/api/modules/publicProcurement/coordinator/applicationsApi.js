@@ -1,8 +1,9 @@
 import Axios from 'axios';
 
 class ApplicationsApi {
-    static getApplications(year){
-        return Axios.get(`/api/public/coordinator/applications/${year}/getAllApplications`)
+
+    static getApplicationsPageable(data){
+        return Axios.post(`/api/public/coordinator/applications/getApplicationsPageable`, data)
     }
 
     static approveApplication(applicationId){
@@ -23,6 +24,14 @@ class ApplicationsApi {
 
     static rollbackRealization(applicationId, data){
         return Axios.put(`/api/public/coordinator/applications/rollbackRealization/${applicationId}`)
+    }
+
+    static setPublicRealization(applicationId){
+        return Axios.put(`/api/public/coordinator/applications/${applicationId}/setPublicRealization`)
+    }
+
+    static exportApplicationsToExcel(exportType, headRows, searchConditions){
+        return Axios.put(`/api/public/coordinator/applications/export/${exportType}`, {headRows, searchConditions}, {responseType: 'blob'})
     }
 }
 

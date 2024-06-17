@@ -78,6 +78,12 @@ insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (74,'3116','Usuwanie poz
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (75,'1126','Odczyt pracowników');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (76,'2126','Modyfikacja danych pracownika');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (77,'3126','Usuwanie pracownika');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (78,'1118','Odczyt uprawnień pracowników');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (79,'2118','Modyfikacja uprawnień pracowników');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (80,'3118','Usuwanie uprawnień pracowników');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (81,'1128','Odczyt słowników');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (82,'2128','Modyfikacja pozycji słownika');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (83,'3128','Usuwanie pozycji słownika');
 
 REM INSERTING into EMSARCH.AC_OBJECTS
 SET DEFINE OFF;
@@ -88,6 +94,7 @@ insert into EMSARCH.AC_OBJECTS (ID,domain_model_id,NAME,domain_model_class) valu
 insert into EMSARCH.AC_OBJECTS (ID,domain_model_id,NAME,domain_model_class) values (5,1,'Moduł Dyrektor','MODULE');
 insert into EMSARCH.AC_OBJECTS (ID,domain_model_id,NAME,domain_model_class) values (6,6,'Moduł Kadry','MODULE');
 insert into EMSARCH.AC_OBJECTS (ID,domain_model_id,NAME,domain_model_class) values (7,7,'Moduł IODO','MODULE');
+insert into EMSARCH.AC_OBJECTS (ID,domain_model_id,NAME,domain_model_class) values (8,8,'Moduł ASI','MODULE');
 
 REM INSERTING into EMSARCH.AC_OBJECT_PRIVILEGES
 SET DEFINE OFF;
@@ -174,3 +181,10 @@ insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (6,75);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (6,76);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (6,77);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,1);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,78);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,79);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,80);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,81);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,82);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,83);

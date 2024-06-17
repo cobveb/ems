@@ -168,4 +168,14 @@ public class FinancialPosition extends CoordinatorPlanPosition {
     public BigDecimal getRealizedPositionGross() {
         return null;
     }
+
+    @Override
+    public String getCode() {
+        return super.getId().toString();
+    }
+
+    @Override
+    public String getItemName() {
+        return this.costType.getName();
+    }
 }

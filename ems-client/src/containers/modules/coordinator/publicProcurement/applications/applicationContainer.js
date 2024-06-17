@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import PublicProcurementApplicationApi from 'api/modules/coordinator/publicProcurement/publicProcurementApplicationApi';
 import ApplicationFormContainer from 'containers/modules/coordinator/publicProcurement/applications/forms/applicationFormContainer';
 import {findIndexElement, findSelectFieldPosition, generateExportLink} from 'utils/';
-import ContractorApi from 'api/modules/accountant/dictionary/contractorApi';
 import ApplicationProtocolApi from 'api/modules/coordinator/publicProcurement/applicationProtocolApi';
 import PublicApplicationsApi from 'api/modules/publicProcurement/coordinator/applicationsApi';
 
@@ -35,18 +34,12 @@ class ApplicationContainer extends Component {
         planPositions: [],
         applicationTypes: [],
         contractors: [],
+        replayApplications:[],
         action: this.props.action,
+        isAplMod: false,
     }
 
-    handleContractors = () => {
-        ContractorApi.getActiveContractors()
-        .then(response =>{
-            this.setState({
-                contractors: response.data.data,
-            })
-        })
-        .catch(error =>{})
-    }
+
 
     handleApplicationDetails = () => {
         this.props.loading(true);
@@ -62,7 +55,7 @@ class ApplicationContainer extends Component {
                     response.data.data.orderProcedure = findSelectFieldPosition(this.props.orderProcedures, response.data.data.orderProcedure.code);
                 }
                 if(response.data.data.replaySourceApplication !== null){
-                    response.data.data.replaySourceApplication = this.props.applications.filter(application => application.id === response.data.data.replaySourceApplication.id)[0];
+                    response.data.data.replaySourceApplication.name = response.data.data.replaySourceApplication.number;
                 }
                 if(response.data.data.applicationProtocol === null){
                     response.data.data.applicationProtocol = prevState.initData.applicationProtocol;
@@ -161,8 +154,8 @@ class ApplicationContainer extends Component {
         return years
     }
 
-    handlePlanPositions = () =>{
-        PublicProcurementApplicationApi.getApplicationProcurementPlanPosition()
+    handlePlanPositions = ( coordinator ) =>{
+        PublicProcurementApplicationApi.getApplicationProcurementPlanPosition(coordinator)
         .then(response => {
             this.setState( prevState =>{
                 let planPositions = [...prevState.planPositions];
@@ -254,6 +247,7 @@ class ApplicationContainer extends Component {
                 this.setState( prevState => {
                     const initData = {...prevState.initData};
                     let action = prevState.action;
+                    let isAplMod = prevState.isAplMod;
                     if(response.data.data.applicationProtocol === null){
                         response.data.data.applicationProtocol = prevState.initData.applicationProtocol;
                     } else {
@@ -283,7 +277,7 @@ class ApplicationContainer extends Component {
                     initData.status = values.status !== undefined ? values.status : findSelectFieldPosition(this.props.statuses, response.data.data.status);
                     initData.estimationType = response.data.data.estimationType = findSelectFieldPosition(this.props.estimationTypes, response.data.data.estimationType);
                     if(response.data.data.replaySourceApplication !== null){
-                        initData.replaySourceApplication = this.props.applications.filter(application => application.id === response.data.data.replaySourceApplication.id)[0];
+                        initData.replaySourceApplication = this.state.replayApplications.filter(application => application.id === response.data.data.replaySourceApplication.id)[0];
                     }
                     initData.assortmentGroups = values.assortmentGroups;
                     if(initData["assortmentGroups"].length > 0){
@@ -299,8 +293,13 @@ class ApplicationContainer extends Component {
                         })
                     }
 
+                    /* Get institution public procurement plan position on action add */
+                    if(action === 'add'){
+                        this.handlePlanPositions(response.data.data.coordinator.code);
+                    }
                     action = "edit";
-                    return {initData, action};
+                    isAplMod = true;
+                    return {initData, action, isAplMod};
                 });
             })
             .catch(error => {
@@ -723,7 +722,7 @@ class ApplicationContainer extends Component {
     }
 
     handleClose = () => {
-        this.props.onClose(this.state.initData);
+        this.props.onClose(this.state.isAplMod);
     }
 
     handleSendApplication = () => {
@@ -732,6 +731,7 @@ class ApplicationContainer extends Component {
         .then(response => {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
+                let isAplMod = prevState.isAplMod;
                 initData.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
                 initData.sendUser = response.data.data.sendUser;
                 initData.number = response.data.data.number;
@@ -751,7 +751,8 @@ class ApplicationContainer extends Component {
                     }
                     return group;
                 })
-                return {initData};
+                isAplMod = true;
+                return {initData, isAplMod};
             });
             this.props.loading(false);
         })
@@ -898,9 +899,46 @@ class ApplicationContainer extends Component {
         }
     }
 
+    handlePublicRealization = () => {
+        this.props.loading(true);
+        PublicApplicationsApi.setPublicRealization(this.state.initData.id)
+        .then(response => {
+            this.setUpApplicationDetails(response);
+            this.props.loading(false);
+        })
+        .catch(error =>{
+            this.props.loading(false);
+        })
+    }
+
+    handleGetReplayApplications(){
+        this.props.loading(true);
+        PublicProcurementApplicationApi.getReplayApplications(new Date(this.props.initialValues.createDate).getFullYear())
+        .then(response =>{
+            this.setState(prevState => {
+                let replayApplications = [...prevState.replayApplications];
+                replayApplications = response.data.data;
+                replayApplications.map(application => (
+                    Object.assign(application,
+                        {
+                            status: application.status = findSelectFieldPosition(this.props.statuses, application.status),
+                            mode: application.mode = findSelectFieldPosition(this.props.modes, application.mode),
+                            estimationType: application.estimationType = findSelectFieldPosition(this.props.estimationTypes, application.estimationType),
+                            name: application.name = application.number,
+                        }
+                    )
+                ))
+                return {replayApplications};
+            });
+            this.props.loading(false)
+        })
+        .catch(error =>{});
+    }
+
     setUpApplicationDetails = (response) => {
         this.setState(prevState => {
             let initData = {...prevState.initData};
+            let isAplMod = prevState.isAplMod;
             response.data.data.status = findSelectFieldPosition(this.props.statuses, response.data.data.status);
             response.data.data.mode = findSelectFieldPosition(this.props.modes, response.data.data.mode);
             response.data.data.estimationType = findSelectFieldPosition(this.props.estimationTypes, response.data.data.estimationType);
@@ -959,7 +997,8 @@ class ApplicationContainer extends Component {
                     )
                 })
             }
-            return {initData};
+            isAplMod = true;
+            return {initData, isAplMod};
         });
     }
 
@@ -978,15 +1017,19 @@ class ApplicationContainer extends Component {
             this.handleApplicationDetails();
         }
         if(this.props.levelAccess === undefined){
-            this.handlePlanPositions();
-            this.handleContractors()
+            if(this.state.action === 'edit'){
+                this.handlePlanPositions(this.props.initialValues.coordinator.code);
+                if(this.props.initialValues.status.code === 'ZP'){
+                    this.handleGetReplayApplications();
+                }
+            }
         }
     }
 
 
     render(){
         const { isLoading, estimationTypes, vats, coordinators, modes, reasonsNotRealizedApplication } = this.props;
-        const { initData, planPositions, applicationTypes, contractors, action } = this.state;
+        const { initData, planPositions, applicationTypes, contractors, action, replayApplications } = this.state;
         return(
             <ApplicationFormContainer
                 isLoading={isLoading}
@@ -995,7 +1038,7 @@ class ApplicationContainer extends Component {
                 action={action}
                 estimationTypes={estimationTypes}
                 applicationTypes={applicationTypes}
-                applications={this.props.applications}
+                replayApplications={replayApplications}
                 vats={vats}
                 planPositions={planPositions}
                 coordinators={coordinators}
@@ -1025,6 +1068,7 @@ class ApplicationContainer extends Component {
                 onRollbackRealisation={this.handleRollbackRealization}
                 onSend={this.handleSendApplication}
                 onRealized={this.handleConfirmRealization}
+                onPublicRealization={this.handlePublicRealization}
                 onExcelPartsExport={this.handlePartsExcelExport}
                 onClose={this.handleClose}
             />

@@ -34,7 +34,7 @@ export const validate =  ( values, props ) => {
                         errors.amountNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_INVALID_COUNT_VALUE_NET;
                 }
             } else {
-                if( curPartsValue + values.amountNet - props.initialValues.amountNet > props.orderValueNet){
+                if( (curPartsValue + values.amountNet - props.initialValues.amountNet).toFixed(2) > props.orderValueNet){
                     errors.amountNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PART_INVALID_COUNT_VALUE_NET;
                 }
             }

@@ -191,6 +191,12 @@ class PlanBasicInfoForm extends Component {
                 type: 'amount',
             },
             {
+                id: 'amountInferredNet',
+                label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_INFERRED_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
                 id: 'amountRealizedNet',
                 label: constants.COORDINATOR_PLAN_POSITION_AMOUNT_REALIZED_NET,
                 suffix: 'zł.',
@@ -438,7 +444,9 @@ class PlanBasicInfoForm extends Component {
 
     handleCloseDetails = () => {
         this.setState({openPositionDetails: !this.state.openPositionDetails, selected: [], positionAction: '',});
-        this.props.setNewPositionToNull();
+        if(this.props.levelAccess === undefined){
+            this.props.setNewPositionToNull();
+        }
     };
 
     handleOpenRealization = () => {

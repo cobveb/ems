@@ -4,11 +4,14 @@ import pl.viola.ems.model.modules.hr.employees.Employment;
 import pl.viola.ems.model.modules.hr.employees.EmploymentAuthorization;
 import pl.viola.ems.model.modules.hr.employees.EmploymentStatement;
 import pl.viola.ems.model.modules.hr.employees.EmploymentWorkplace;
+import pl.viola.ems.payload.modules.asi.employee.EntitlementEmploymentResponse;
 
 import java.util.Set;
 
 public interface EmploymentService {
     Set<Employment> getEmploymentsByEmployee(Long employeeId);
+
+    Set<EntitlementEmploymentResponse> getActiveEmploymentsByEmployee(Long employeeId);
 
     Employment saveEmployment(Long employeeId, Employment employment);
 

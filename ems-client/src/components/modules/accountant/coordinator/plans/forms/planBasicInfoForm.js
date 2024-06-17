@@ -656,6 +656,7 @@ class PlanBasicInfoForm extends Component {
         const { handleSubmit, submitting, classes, initialValues, isLoading, levelAccess } = this.props
         const { headFin, headFinUpd, headInv, headInvUpd, headPzp, selected, positions, planAction, isDetailsVisible,
             openRealization, disabledForward, codeNameSearch, openFinancialPositionDetails, disabledApprove } = this.state;
+            console.log("tutaj")
         return(
             <>
                 {(submitting || isLoading) && <Spinner /> }
@@ -1039,6 +1040,7 @@ class PlanBasicInfoForm extends Component {
                                                 onClick={this.handleOpenRealization}
                                             />
                                         }
+                                        {(initialValues.type !== undefined && ['FIN'].includes(initialValues.type.code)) &&
                                         <Button
                                             label={constants.BUTTON_DETAILS}
                                             icon=<Info />
@@ -1047,6 +1049,7 @@ class PlanBasicInfoForm extends Component {
                                             disabled={selected.length === 0 || selected.length > 1}
                                             onClick={this.handleOpenFinancialPositionDetails}
                                         />
+                                        }
                                         {((initialValues.type !== undefined && ['FIN'].includes(initialValues.type.code)) &&
                                             (initialValues.status !== undefined && ['WY', 'RO'].includes(initialValues.status.code)))  &&
                                             <Button

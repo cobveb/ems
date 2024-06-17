@@ -59,8 +59,7 @@ class AppHeaderMenu extends Component {
 					color="inherit"
 					aria-owns={open ? 'menu-list-grow' : undefined}
 					aria-haspopup="true"
-					buttonRef={node => {
-					//console.log(node)
+					ref={node => {
 						this.anchorEl = node;
 					}}
 					classes={{label: classes.label}}

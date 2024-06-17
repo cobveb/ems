@@ -70,8 +70,6 @@ public class OrganizationUnitServiceImplTest {
             new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
-            new HashSet<>(),
-            new HashSet<>(),
             new HashSet<>()
     );
     private final OrganizationUnit subChild = new OrganizationUnit(
@@ -92,8 +90,6 @@ public class OrganizationUnitServiceImplTest {
             true,
             child.getCode(),
             null,
-            new HashSet<>(),
-            new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
             new HashSet<>(),
@@ -241,8 +237,6 @@ public class OrganizationUnitServiceImplTest {
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
-                new HashSet<>(),
-                new HashSet<>(),
                 new HashSet<>()
         );
 
@@ -272,8 +266,6 @@ public class OrganizationUnitServiceImplTest {
                 true,
                 null,
                 null,
-                new HashSet<>(),
-                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
@@ -307,8 +299,6 @@ public class OrganizationUnitServiceImplTest {
                 true,
                 null,
                 null,
-                new HashSet<>(),
-                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),

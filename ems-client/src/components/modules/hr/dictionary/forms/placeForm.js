@@ -5,7 +5,7 @@ import * as constants from 'constants/uiNames';
 import PropTypes from 'prop-types';
 import { Save, Cancel, Description } from '@material-ui/icons/';
 import { Button } from 'common/gui';
-import { FormTextField, FormCheckBox, FormSelectField } from 'common/form';
+import { FormTextField, FormCheckBox, FormDictionaryField } from 'common/form';
 
 const styles = theme => ({
     content: {
@@ -84,11 +84,12 @@ class PlaceForm extends Component {
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
-                                    <FormSelectField
-                                        isRequired={true}
+                                    <FormDictionaryField
                                         name={initialValues.type==='WP' ? "group" : "location"}
+                                        dictionaryName={initialValues.type==='WP' ? constants.HR_WORKPLACE_SEARCH_GROUP : constants.HR_PLACE_SEARCH_LOCATION}
                                         label={initialValues.type==='WP' ? constants.HR_WORKPLACE_SEARCH_GROUP : constants.HR_PLACE_SEARCH_LOCATION}
-                                        options={initialValues.type==='WP' ? groups : locations}
+                                        items={initialValues.type==='WP' ? groups : locations}
+                                        isRequired={true}
                                     />
                                 </Grid>
                             </Grid>

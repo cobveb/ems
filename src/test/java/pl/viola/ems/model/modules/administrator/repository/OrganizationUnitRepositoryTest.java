@@ -48,8 +48,6 @@ public class OrganizationUnitRepositoryTest {
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
-                new HashSet<>(),
-                new HashSet<>(),
                 new HashSet<>()
 
         );
@@ -86,8 +84,6 @@ public class OrganizationUnitRepositoryTest {
                 true,
                 null,
                 null,
-                new HashSet<>(),
-                new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),
                 new HashSet<>(),

@@ -26,6 +26,13 @@ public class EmploymentController {
         return new ApiResponse(HttpStatus.FOUND, employmentService.getEmploymentsByEmployee(employeeId));
     }
 
+    @GetMapping("/getActiveEmployments")
+    //TODO Dodać uprawnie z modułu ASI
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1126')")
+    public ApiResponse getActiveEmployments(@PathVariable Long employeeId) {
+        return new ApiResponse(HttpStatus.FOUND, employmentService.getActiveEmploymentsByEmployee(employeeId));
+    }
+
     @PutMapping("/saveEmployment")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('2126')")
     public ApiResponse saveEmployment(@PathVariable Long employeeId, @RequestBody @Valid Employment employment) {

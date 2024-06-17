@@ -25,7 +25,7 @@ public class PlaceController {
     }
 
     @GetMapping("/getActivePlaces")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('1116')")
+    @PreAuthorize("hasGroup('admin') or hasAnyPrivilege('1116', '1128')")
     public ApiResponse getActivePlace() {
         return new ApiResponse(HttpStatus.FOUND, placeService.getActivePlaces(AbstractPlace.Type.PL));
     }

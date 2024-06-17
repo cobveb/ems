@@ -285,7 +285,7 @@ class ApplicationProtocolContainer extends Component {
         .then(response => {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
-                initData.status = findSelectFieldPosition(this.props.statuses, response.data.data);
+                initData.status = findSelectFieldPosition(getPublicProcurementProtocolStatuses(), response.data.data);
                 return {initData}
             })
             if(this.props.levelAccess !== 'coordinator'){
@@ -306,14 +306,13 @@ class ApplicationProtocolContainer extends Component {
     }
 
     render(){
-        const { contractors, assortmentGroups, vats, applicationStatus, applicationEstimationType, levelAccess } = this.props;
+        const { assortmentGroups, vats, applicationStatus, applicationEstimationType, levelAccess } = this.props;
         const { initData } = this.state;
         return(
             <ApplicationProtocolFormContainer
                 initialValues={initData}
                 assortmentGroups={assortmentGroups}
                 vats={vats}
-                contractors={contractors}
                 applicationStatus={applicationStatus}
                 applicationEstimationType={applicationEstimationType}
                 levelAccess={levelAccess}

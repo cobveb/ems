@@ -30,4 +30,9 @@ public class Contractor implements DictItem {
     public String getCode() {
         return "KTR" + this.id;
     }
+
+    @Override
+    public String getItemName() {
+        return this.name;
+    }
 }

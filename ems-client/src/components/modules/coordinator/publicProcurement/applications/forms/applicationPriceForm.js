@@ -52,14 +52,13 @@ class ApplicationPriceForm extends Component {
             this.props.dispatch(change('ApplicationPriceForm', 'vat', applicationAssortmentGroup.vat));
         }
         //Setup amountContractAwardedGross
-        if(vat !== undefined && amountContractAwardedNet !== undefined && (vat !== prevProps.vat || (prevProps.amountContractAwardedNet !== undefined && amountContractAwardedNet !== prevProps.amountContractAwardedNet))){
+        if((vat !== undefined && amountContractAwardedNet !== undefined && vat !== prevProps.vat) || (amountContractAwardedNet !== undefined && amountContractAwardedNet !== prevProps.amountContractAwardedNet && vat !== undefined)){
             this.props.dispatch(change('ApplicationPriceForm', 'amountContractAwardedGross', parseFloat((Math.round((amountContractAwardedNet * vat.code) * 100) / 100).toFixed(2))));
         }
     }
 
     render(){
         const { classes, pristine, invalid, submitting, submitSucceeded, handleSubmit, isLoading, open, applicationStatus, applicationEstimationType, protocolStatus, assortmentGroups, vats } = this.props;
-        console.log(protocolStatus)
         return(
             <>
                 <Dialog

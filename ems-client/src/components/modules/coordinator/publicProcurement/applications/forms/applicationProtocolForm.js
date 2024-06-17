@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { updateSyncErrors } from 'redux-form';
 import PropTypes from 'prop-types';
 import { ModalDialog } from 'common/';
 import * as constants from 'constants/uiNames';
@@ -166,8 +167,27 @@ class ProtocolForm extends Component {
         }
     }
 
+    componentDidUpdate(prevProps, prevState){
+            const requireCheckboxFields = [
+                    'email', 'phone', 'internet', 'paper', 'other', 'renouncement'
+                ]
+
+            if(this.props.initialValues.status !== undefined && this.props.initialValues.status.code === 'ZP'){
+                if(requireCheckboxFields.find(field => this.props.formCurrentValues[field] !== false) === undefined){
+                    this.props.dispatch(updateSyncErrors('ApplicationProtocolForm',{'email': constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CHECKBOX_FIELD_REQUIRE}))
+//                    this.props.dispatch(updateSyncErrors('ApplicationProtocolForm',{'email': constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CHECKBOX_FIELD_REQUIRE}))
+                } else {
+                    this.props.dispatch(updateSyncErrors('ApplicationProtocolForm',{'email': undefined}))
+                }
+
+                if(this.props.formCurrentValues.prices.length === 0){
+                    this.props.dispatch(updateSyncErrors('ApplicationProtocolForm',{'prices': constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ARRAY_FIELD_REQUIRE}))
+                }
+            }
+        }
+
     render(){
-        const { classes, isLoading, vats, handleSubmit, initialValues, pristine, invalid, submitting, submitSucceeded, contractors, formCurrentValues, formErrors, levelAccess } = this.props;
+        const { classes, isLoading, vats, handleSubmit, initialValues, pristine, invalid, submitting, submitSucceeded, formCurrentValues, formErrors, levelAccess } = this.props;
         const { selected, tableHeadPrices, openPriceDetails, action, isDelete, protocolSendLevel } = this.state;
         return(
             <>
@@ -279,7 +299,7 @@ class ProtocolForm extends Component {
                                             isRequired={true}
                                             dictionaryName={constants.ACCOUNTANT_SUBMENU_DICTIONARIES_CONTRACTORS}
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_CONTRACTOR_CONTRACT}
-                                            items={contractors}
+                                            items={[]}
                                             disabled = {(initialValues.status !== undefined && initialValues.status.code !== 'ZP') || levelAccess !== undefined}
                                         />
                                     :
@@ -515,7 +535,7 @@ class ProtocolForm extends Component {
                                             }
                                             iconAlign="left"
                                             variant='submit'
-                                            disabled = {!pristine || formErrors.prices !== undefined || submitting || submitSucceeded}
+                                            disabled = {!pristine || (formErrors.prices !== undefined && formErrors.prices[0] !== undefined) || submitting || submitSucceeded}
                                             onClick={levelAccess === undefined ? (event) =>  this.handleSendLevel(event, "coordinator") :
                                                 levelAccess !== undefined && levelAccess === 'public' && (initialValues.status !== undefined && [undefined, 'ZP', 'WY'].includes(initialValues.status.code)) ? (event) => this.handleSendLevel(event, "public") :
                                                     levelAccess !== undefined && levelAccess === 'accountant' ? (event) => this.handleSendLevel(event, "accountant") : (event) => this.handleSendLevel(event, "chief")

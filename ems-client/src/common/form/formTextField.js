@@ -55,7 +55,7 @@ function FormTextField(props) {
                 readOnly: other.readOnly && true,
                 endAdornment: suffix !== undefined  ? <InputAdornment position="end">{suffix}</InputAdornment> : null,
             }}
-            rows={other.multiline && other.rows}
+            minRows={other.multiline && other.minRows}
             rowsMax={other.multiline && other.rowsMax}
             {...other}
         />

@@ -147,4 +147,15 @@ public class PublicProcurementPosition extends CoordinatorPlanPosition {
     public CostType getCostType() {
         return null;
     }
+
+    @Override
+    public String getCode() {
+        return null;
+    }
+
+    @Override
+    public String getItemName() {
+        return null;
+    }
+
 }

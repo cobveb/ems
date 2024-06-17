@@ -1,8 +1,9 @@
 import Axios from 'axios';
 
 class EmployeeApi {
-    static getEmployees(){
-        return Axios.get(`/api/hr/employees/employee/getEmployees`)
+
+    static getEmployeesPageable(data){
+        return Axios.post(`/api/hr/employees/employee/getEmployeesPageable`, data)
     }
 
     static saveEmployee(data){
@@ -12,5 +13,10 @@ class EmployeeApi {
     static deleteEmployee(employeeId){
         return Axios.delete(`/api/hr/employees/employee/${employeeId}/deleteEmployee`)
     }
+
+    static exportEmployeesToExcel(exportType, headRows, searchConditions){
+        return Axios.put(`/api/hr/employees/employee/export/${exportType}`, {headRows, searchConditions}, {responseType: 'blob'})
+    }
+
 }
 export default EmployeeApi;

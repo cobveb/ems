@@ -70,7 +70,11 @@ class PlanPositionForm extends Component {
     };
 
     handleSelect = (id) => {
-        this.setState({selected: id});
+        this.setState(prevState =>{
+            const selected = [...prevState.selected];
+            selected[0] = id;
+            return {selected}
+        });
     }
 
     handleChangeVisibleDetails = () => {
@@ -157,7 +161,7 @@ class PlanPositionForm extends Component {
     render(){
         const { classes, handleSubmit, pristine, initialValues, isLoading, levelAccess, planStatus, orderTypes, estimationTypes } = this.props;
         const { headCells, rows, selected, isDetailsVisible, correctionPossible, correction } = this.state;
-        console.log(planStatus.code)
+
         return(
             <>
                 {isLoading && <Spinner />}

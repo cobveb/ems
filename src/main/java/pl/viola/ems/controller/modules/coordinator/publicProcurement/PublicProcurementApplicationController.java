@@ -7,10 +7,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.viola.ems.model.common.export.ExportType;
 import pl.viola.ems.model.common.export.JasperExportType;
+import pl.viola.ems.model.common.search.SearchConditions;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.model.modules.coordinator.publicProcurement.*;
 import pl.viola.ems.payload.api.ApiResponse;
 import pl.viola.ems.payload.export.ExcelHeadRow;
+import pl.viola.ems.payload.export.ExportConditions;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationDetailsPayload;
 import pl.viola.ems.service.modules.coordinator.publicProcurement.PublicProcurementApplicationService;
 import pl.viola.ems.utils.Utils;
@@ -31,10 +33,10 @@ public class PublicProcurementApplicationController {
     @Autowired
     PublicProcurementApplicationService publicProcurementApplicationService;
 
-    @GetMapping("/getApplicationProcurementPlanPosition")
+    @GetMapping("/{coordinator}/getApplicationProcurementPlanPosition")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1032')")
-    public ApiResponse getApplicationProcurementPlanPosition() {
-        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationProcurementPlanPosition());
+    public ApiResponse getApplicationProcurementPlanPosition(@PathVariable String coordinator) {
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationProcurementPlanPosition(coordinator));
     }
 
     @GetMapping("/{planType}/getPlanPositions")
@@ -43,10 +45,16 @@ public class PublicProcurementApplicationController {
         return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getPlanPositionByYearAndPlanType(planType));
     }
 
-    @GetMapping("{year}/getApplications")
+    @GetMapping("{year}/getReplayApplications")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1032')")
     public ApiResponse getApplications(@PathVariable int year) {
         return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByCoordinator(year));
+    }
+
+    @PostMapping("/getApplicationsPageable")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1032')")
+    public ApiResponse getApplicationsPageable(@RequestBody @Valid SearchConditions conditions) {
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsPageable(conditions));
     }
 
     @GetMapping("/getApplicationsInRealization")
@@ -140,10 +148,10 @@ public class PublicProcurementApplicationController {
     }
 
     @PutMapping("/export/{exportType}")
-    public void exportApplicationsToXlsx(@RequestBody ArrayList<ExcelHeadRow> headRow,
+    public void exportApplicationsToXlsx(@RequestBody ExportConditions exportConditions,
                                          @PathVariable ExportType exportType, HttpServletResponse response) throws IOException {
 
-        publicProcurementApplicationService.exportApplicationsToExcel(exportType, headRow, generateExportResponse(response, exportType), "coordinator");
+        publicProcurementApplicationService.exportApplicationsToExcel(exportType, 0, exportConditions, generateExportResponse(response, exportType), "coordinator");
     }
 
     @PutMapping("/{applicationId}/export/parts/{exportType}")

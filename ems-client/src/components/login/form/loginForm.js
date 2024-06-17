@@ -118,7 +118,7 @@ class LoginForm extends Component {
 			<>
 				{ msgError && <Notification message={msgError} onClose={this.handleCloseNotification} variant="error"/> }
 				<form onSubmit={this.handleSubmit} >
-					<Grid container direction="column" className={classes.root} justify="space-around" alignItems="center" >
+					<Grid container direction="column" className={classes.root} justifyContent="space-around" alignItems="center" >
 						<FormControl fullWidth className={classes.formControl}>
 							<TextField
 								id="user"

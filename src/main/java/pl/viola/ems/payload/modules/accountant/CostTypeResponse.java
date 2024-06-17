@@ -18,6 +18,8 @@ public class CostTypeResponse {
 
     private String name;
 
+    private String itemName;
+
     private Boolean active;
 
     private Set<CostYear> years;
