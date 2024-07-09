@@ -448,7 +448,7 @@ function EnhancedTable(props) {
                                         {headCells.map((cell, key) =>
                                             <TableCell
                                                 key={key}
-                                                padding={cell.type === 'boolean' ? "checkbox" : "default"}
+                                                padding={cell.type === 'boolean' ? "checkbox" : "normal"}
                                                 size="small"
                                                 align={cell.type === 'numeric' ? 'right' : cell.boolean ? 'center' : 'left'}
                                                 classes={{ sizeSmall: classes.tableCell }}

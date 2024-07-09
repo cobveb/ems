@@ -7,6 +7,8 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pl.viola.ems.model.modules.administrator.Group;
+import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.administrator.User;
 
 import java.util.Collection;
@@ -23,10 +25,10 @@ public class UserPrincipal implements UserDetails{
 	private Long id;
 
     private String name;
-    
-    private String surname;
 
-    private String username;
+	private String surname;
+
+	private String username;
 
 	private Boolean isActive;
 
@@ -35,31 +37,34 @@ public class UserPrincipal implements UserDetails{
 	private Boolean isExpired;
 
 	private Boolean isCredentialsExpired;
-    
-    @JsonIgnore
-    private String password;
-    
-    @Setter
-    private Collection<? extends GrantedAuthority> authorities;
+
+	@JsonIgnore
+	private String password;
+
+	private OrganizationUnit.Role ouRole;
+
+	@Setter
+	private Collection<? extends GrantedAuthority> authorities;
 
 
 	private Collection<String> groups;
 
-    public static UserPrincipal create(User user) {
+	public static UserPrincipal create(User user) {
 		return new UserPrincipal(
-			user.getId(),
-			user.getName(),
-			user.getSurname(),
-			user.getUsername(),
-			user.getIsActive(),
-			!user.getIsLocked(),
-			!user.getIsExpired(),
-			!user.getIsCredentialsExpired(),
-			user.getPassword(),
-			setAuthorities(user),
-			setGroups(user)
+				user.getId(),
+				user.getName(),
+				user.getSurname(),
+				user.getUsername(),
+				user.getIsActive(),
+				!user.getIsLocked(),
+				!user.getIsExpired(),
+				!user.getIsCredentialsExpired(),
+				user.getPassword(),
+				user.getOrganizationUnit().getRole(),
+				setAuthorities(user),
+				setGroups(user)
 		);
-    }
+	}
     
 	public boolean isAccountNonExpired() {
 		return isExpired;
@@ -84,20 +89,19 @@ public class UserPrincipal implements UserDetails{
 		).collect(Collectors.toList());
 
     	if (!user.getGroups().isEmpty()) {
-			user.getGroups().stream().forEach(group ->
-				authorities.addAll(group.getAcPermissions().stream().map(acPermission ->
-					new SimpleGrantedAuthority(acPermission.getAcPrivilege().getCode() + "_" +
-						acPermission.getAcObject().getDomainModelId() + "_" +
-						acPermission.getAcObject().getObjectClass())
-				).collect(Collectors.toList()))
+			user.getGroups().forEach(group ->
+					authorities.addAll(group.getAcPermissions().stream().map(acPermission ->
+							new SimpleGrantedAuthority(acPermission.getAcPrivilege().getCode() + "_" +
+									acPermission.getAcObject().getDomainModelId() + "_" +
+									acPermission.getAcObject().getObjectClass())
+					).collect(Collectors.toList()))
 			);
 		}
     	return authorities;
 	}
 
 	private static List<String> setGroups(final User user){
-    	List<String> groups = user.getGroups().stream().map(group -> group.getName()).collect(Collectors.toList());
-    	return groups;
+		return user.getGroups().stream().map(Group::getName).collect(Collectors.toList());
 	}
 
 }

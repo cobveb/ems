@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface EntitlementRepository extends JpaRepository<Entitlement, Long> {
+public interface EntitlementRepository extends JpaRepository<Entitlement, Long>, EntitlementPermissionCustomRepository {
     Set<Entitlement> findByEmployeeOrderById(Employee employee);
 
     Optional<Entitlement> findByIdAndEmployee(Long Id, Employee employee);

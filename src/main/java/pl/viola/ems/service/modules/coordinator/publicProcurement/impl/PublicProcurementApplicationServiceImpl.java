@@ -222,7 +222,7 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
     }
 
     @Override
-    public Page<ApplicationPayload> getApplicationsPageable(final SearchConditions searchConditions) {
+    public Page<ApplicationPayload> getApplicationsPageable(final SearchConditions searchConditions, final boolean isExport) {
 
         List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
                 Utils.getCurrentUser().getOrganizationUnit().getCode()
@@ -239,25 +239,17 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
     }
 
     @Override
-    public Page<ApplicationPayload> getApplicationsPageableByAccessLevel(final SearchConditions searchConditions, final String accessLevel) {
-        List<Application.ApplicationStatus> statuses;
+    public Page<ApplicationPayload> getApplicationsPageableByAccessLevel(final SearchConditions searchConditions, final String accessLevel, final boolean isExport) {
+        List<Application.ApplicationStatus> statuses = null;
+
+        if (!Arrays.asList("public", "accountant", "director").contains(accessLevel)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "PublicProcurement.application.invalidAccessLevel");
+        }
 
         switch (accessLevel) {
             case "public":
                 statuses = Arrays.asList(
                         Application.ApplicationStatus.WY,
-                        Application.ApplicationStatus.AZ,
-                        Application.ApplicationStatus.AD,
-                        Application.ApplicationStatus.AM,
-                        Application.ApplicationStatus.AK,
-                        Application.ApplicationStatus.ZA,
-                        Application.ApplicationStatus.RE,
-                        Application.ApplicationStatus.ZR,
-                        Application.ApplicationStatus.AN
-                );
-                break;
-            case "director":
-                statuses = Arrays.asList(
                         Application.ApplicationStatus.AZ,
                         Application.ApplicationStatus.AD,
                         Application.ApplicationStatus.AM,
@@ -278,83 +270,91 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
                         Application.ApplicationStatus.AN
                 );
                 break;
-            default:
-                throw new AppException(HttpStatus.BAD_REQUEST, "PublicProcurement.application.invalidAccessLevel");
         }
 
-//        if(!accessLevel.equals("director")) {
-        return publicProcurementApplicationRepository.findApplicationsPageableByAccessLevel(statuses, searchConditions.getConditions(), PageRequest.of(
-                searchConditions.getPage(),
-                searchConditions.getRowsPerPage(),
-                searchConditions.getSort().getOrderType() != null ? searchConditions.getSort().getOrderType().equals("desc") ?
-                        Sort.by(searchConditions.getSort().getOrderBy()).descending() : Sort.by(searchConditions.getSort().getOrderBy()).ascending() : Sort.by("id")
-        ), false);
+        if (Arrays.asList("public", "accountant").contains(accessLevel)) {
+            return publicProcurementApplicationRepository.findApplicationsPageableByAccessLevel(statuses, searchConditions.getConditions(), PageRequest.of(
+                    searchConditions.getPage(),
+                    searchConditions.getRowsPerPage(),
+                    searchConditions.getSort().getOrderType() != null ? searchConditions.getSort().getOrderType().equals("desc") ?
+                            Sort.by(searchConditions.getSort().getOrderBy()).descending() : Sort.by(searchConditions.getSort().getOrderBy()).ascending() : Sort.by("id")
+            ), isExport);
+        } else {
+            if (Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.DIRECTOR) && Utils.getCurrentUser().getOrganizationUnit().getCode().equals("dyrm")) {
 
-//        }
-//        else {
-//
-//            Page<ApplicationPayload> page = publicProcurementApplicationRepository.findApplicationsPageableByAccessLevel(statuses, searchConditions.getConditions(), PageRequest.of(
-//                    searchConditions.getPage(),
-//                    searchConditions.getRowsPerPage(),
-//                    searchConditions.getSort().getOrderType() != null ? searchConditions.getSort().getOrderType().equals("desc") ?
-//                            Sort.by(searchConditions.getSort().getOrderBy()).descending() : Sort.by(searchConditions.getSort().getOrderBy()).ascending() : Sort.by("id")
-//            ), false);
-//        }
-////        Set<ApplicationPayload> applicationPayloads = new HashSet<>();
-//        Set<Application> applications = new HashSet<>();
-//        List<Application.ApplicationStatus> statuses;
-//        switch (accessLevel) {
+                statuses = Arrays.asList(
+                        Application.ApplicationStatus.AZ,
+                        Application.ApplicationStatus.AD,
+                        Application.ApplicationStatus.AM,
+                        Application.ApplicationStatus.AK,
+                        Application.ApplicationStatus.ZA,
+                        Application.ApplicationStatus.RE,
+                        Application.ApplicationStatus.ZR,
+                        Application.ApplicationStatus.AN
+                );
 
-//            case "director":
-//                statuses = Arrays.asList(
-//                        Application.ApplicationStatus.AZ,
-//                        Application.ApplicationStatus.AD,
-//                        Application.ApplicationStatus.AM,
-//                        Application.ApplicationStatus.AK,
-//                        Application.ApplicationStatus.ZA,
-//                        Application.ApplicationStatus.RE,
-//                        Application.ApplicationStatus.ZR,
-//                        Application.ApplicationStatus.AN
-//                );
-//
-//                if (Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.DIRECTOR) && Utils.getCurrentUser().getOrganizationUnit().getCode().equals("dyrm")) {
-//
-//                    if (year != 0) {
-//                        LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-//                        Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-//                        Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-//                        applications = publicProcurementApplicationRepository.findByCreateDateBetweenAndStatusIn(firstDay, lastDay, statuses);
-//                    } else {
-//                        applications = publicProcurementApplicationRepository.findByStatusIn(statuses);
-//                    }
-//
-//                    applications = applications.stream().filter(application -> ((application.getOrderIncludedPlanType().equals(CoordinatorPlan.PlanType.INW) &&
-//                                    application.getCoordinator().getCode().equals("dam")) || Utils.getCurrentUser().getOrganizationUnit().getDirectorCoordinators().contains(application.getCoordinator())))
-//                            .collect(Collectors.toSet());
-//                } else if (Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.DIRECTOR) || Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.ECONOMIC)) {
-//
-//                    if (year != 0) {
-//                        LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-//                        Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-//                        Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-//                        applications = publicProcurementApplicationRepository.findByCreateDateBetweenAndStatusInAndCoordinatorIn(firstDay, lastDay, statuses, Utils.getCurrentUser().getOrganizationUnit().getDirectorCoordinators());
-//                    } else {
-//                        applications = publicProcurementApplicationRepository.findByStatusInAndCoordinatorIn(statuses, Utils.getCurrentUser().getOrganizationUnit().getDirectorCoordinators());
-//                    }
-//
-//                } else if (Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.CHIEF) ||
-//                        Utils.getCurrentUser().getGroups().stream().anyMatch(group -> group.getCode().equals("admin"))) {
-//
-//                    if (year != 0) {
-//                        LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-//                        Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-//                        Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-//                        applications = publicProcurementApplicationRepository.findByCreateDateBetweenAndStatusIn(firstDay, lastDay, statuses);
-//                    } else {
-//                        applications = publicProcurementApplicationRepository.findByStatusIn(statuses);
-//                    }
-//                }
-//                break;
+                return publicProcurementApplicationRepository.findApplicationsPageableByDirector(statuses, Utils.getCurrentUser().getOrganizationUnit().getDirectorCoordinators(), "MED", searchConditions.getConditions(), PageRequest.of(
+                        searchConditions.getPage(),
+                        searchConditions.getRowsPerPage(),
+                        searchConditions.getSort().getOrderType() != null ? searchConditions.getSort().getOrderType().equals("desc") ?
+                                Sort.by(searchConditions.getSort().getOrderBy()).descending() : Sort.by(searchConditions.getSort().getOrderBy()).ascending() : Sort.by("id")
+                ), isExport);
+
+            } else if (Arrays.asList(OrganizationUnit.Role.DIRECTOR, OrganizationUnit.Role.ECONOMIC).contains(Utils.getCurrentUser().getOrganizationUnit().getRole())) {
+
+                statuses = Arrays.asList(
+                        Application.ApplicationStatus.AZ,
+                        Application.ApplicationStatus.AD,
+                        Application.ApplicationStatus.AM,
+                        Application.ApplicationStatus.AK,
+                        Application.ApplicationStatus.ZA,
+                        Application.ApplicationStatus.RE,
+                        Application.ApplicationStatus.ZR,
+                        Application.ApplicationStatus.AN
+                );
+
+                return publicProcurementApplicationRepository.findApplicationsPageableByDirector(statuses, Utils.getCurrentUser().getOrganizationUnit().getDirectorCoordinators(), "DIRECTOR", searchConditions.getConditions(), PageRequest.of(
+                        searchConditions.getPage(),
+                        searchConditions.getRowsPerPage(),
+                        searchConditions.getSort().getOrderType() != null ? searchConditions.getSort().getOrderType().equals("desc") ?
+                                Sort.by(searchConditions.getSort().getOrderBy()).descending() : Sort.by(searchConditions.getSort().getOrderBy()).ascending() : Sort.by("id")
+                ), isExport);
+
+            } else if (Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.CHIEF)) {
+                statuses = Arrays.asList(
+                        Application.ApplicationStatus.AK,
+                        Application.ApplicationStatus.ZA,
+                        Application.ApplicationStatus.RE,
+                        Application.ApplicationStatus.ZR,
+                        Application.ApplicationStatus.AN
+                );
+                return publicProcurementApplicationRepository.findApplicationsPageableByDirector(statuses, new HashSet<>(), "CHIEF", searchConditions.getConditions(), PageRequest.of(
+                        searchConditions.getPage(),
+                        searchConditions.getRowsPerPage(),
+                        searchConditions.getSort().getOrderType() != null ? searchConditions.getSort().getOrderType().equals("desc") ?
+                                Sort.by(searchConditions.getSort().getOrderBy()).descending() : Sort.by(searchConditions.getSort().getOrderBy()).ascending() : Sort.by("id")
+                ), isExport);
+            } else if (Utils.getCurrentUser().getGroups().stream().anyMatch(group -> group.getCode().equals("admin"))) {
+                statuses = Arrays.asList(
+                        Application.ApplicationStatus.AZ,
+                        Application.ApplicationStatus.AD,
+                        Application.ApplicationStatus.AM,
+                        Application.ApplicationStatus.AK,
+                        Application.ApplicationStatus.ZA,
+                        Application.ApplicationStatus.RE,
+                        Application.ApplicationStatus.ZR,
+                        Application.ApplicationStatus.AN
+                );
+                return publicProcurementApplicationRepository.findApplicationsPageableByDirector(statuses, new HashSet<>(), "ADMIN", searchConditions.getConditions(), PageRequest.of(
+                        searchConditions.getPage(),
+                        searchConditions.getRowsPerPage(),
+                        searchConditions.getSort().getOrderType() != null ? searchConditions.getSort().getOrderType().equals("desc") ?
+                                Sort.by(searchConditions.getSort().getOrderBy()).descending() : Sort.by(searchConditions.getSort().getOrderBy()).ascending() : Sort.by("id")
+                ), isExport);
+            } else {
+                throw new AppException(HttpStatus.BAD_REQUEST, "PublicProcurement.application.invalidAccessLevel");
+            }
+        }
     }
 
     @Override
@@ -391,127 +391,6 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
         });
 
         return applications;
-    }
-
-    //TODO Usunąć po przejściu na paegable
-    @Override
-    public Set<ApplicationPayload> getApplicationsByAccessLevel(final int year, final String accessLevel) {
-        Set<ApplicationPayload> applicationPayloads = new HashSet<>();
-        Set<Application> applications = new HashSet<>();
-        List<Application.ApplicationStatus> statuses;
-        switch (accessLevel) {
-            case "public":
-                statuses = Arrays.asList(
-                        Application.ApplicationStatus.WY,
-                        Application.ApplicationStatus.AZ,
-                        Application.ApplicationStatus.AD,
-                        Application.ApplicationStatus.AM,
-                        Application.ApplicationStatus.AK,
-                        Application.ApplicationStatus.ZA,
-                        Application.ApplicationStatus.RE,
-                        Application.ApplicationStatus.ZR,
-                        Application.ApplicationStatus.AN
-                );
-
-                if (year != 0) {
-                    LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-                    Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-                    Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-                    applications = publicProcurementApplicationRepository.findByCreateDateBetweenAndStatusIn(firstDay, lastDay, statuses);
-                } else {
-                    applications = publicProcurementApplicationRepository.findByStatusIn(statuses);
-                }
-
-                break;
-            case "director":
-                statuses = Arrays.asList(
-                        Application.ApplicationStatus.AZ,
-                        Application.ApplicationStatus.AD,
-                        Application.ApplicationStatus.AM,
-                        Application.ApplicationStatus.AK,
-                        Application.ApplicationStatus.ZA,
-                        Application.ApplicationStatus.RE,
-                        Application.ApplicationStatus.ZR,
-                        Application.ApplicationStatus.AN
-                );
-
-                if (Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.DIRECTOR) && Utils.getCurrentUser().getOrganizationUnit().getCode().equals("dyrm")) {
-
-                    if (year != 0) {
-                        LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-                        Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-                        Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-                        applications = publicProcurementApplicationRepository.findByCreateDateBetweenAndStatusIn(firstDay, lastDay, statuses);
-                    } else {
-                        applications = publicProcurementApplicationRepository.findByStatusIn(statuses);
-                    }
-
-                    applications = applications.stream().filter(application -> ((application.getOrderIncludedPlanType().equals(CoordinatorPlan.PlanType.INW) &&
-                                    application.getCoordinator().getCode().equals("dam")) || Utils.getCurrentUser().getOrganizationUnit().getDirectorCoordinators().contains(application.getCoordinator())))
-                            .collect(Collectors.toSet());
-                } else if (Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.DIRECTOR) || Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.ECONOMIC)) {
-
-                    if (year != 0) {
-                        LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-                        Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-                        Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-                        applications = publicProcurementApplicationRepository.findByCreateDateBetweenAndStatusInAndCoordinatorIn(firstDay, lastDay, statuses, Utils.getCurrentUser().getOrganizationUnit().getDirectorCoordinators());
-                    } else {
-                        applications = publicProcurementApplicationRepository.findByStatusInAndCoordinatorIn(statuses, Utils.getCurrentUser().getOrganizationUnit().getDirectorCoordinators());
-                    }
-
-                } else if (Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.CHIEF) ||
-                        Utils.getCurrentUser().getGroups().stream().anyMatch(group -> group.getCode().equals("admin"))) {
-
-                    if (year != 0) {
-                        LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-                        Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-                        Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-                        applications = publicProcurementApplicationRepository.findByCreateDateBetweenAndStatusIn(firstDay, lastDay, statuses);
-                    } else {
-                        applications = publicProcurementApplicationRepository.findByStatusIn(statuses);
-                    }
-                }
-                break;
-            case "accountant":
-                statuses = Arrays.asList(
-                        Application.ApplicationStatus.AD,
-                        Application.ApplicationStatus.AK,
-                        Application.ApplicationStatus.ZA,
-                        Application.ApplicationStatus.RE,
-                        Application.ApplicationStatus.ZR,
-                        Application.ApplicationStatus.AN
-                );
-
-                if (year != 0) {
-                    LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-                    Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-                    Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-                    applications = publicProcurementApplicationRepository.findByCreateDateBetweenAndStatusIn(firstDay, lastDay, statuses);
-                } else {
-                    applications = publicProcurementApplicationRepository.findByStatusIn(statuses);
-                }
-        }
-
-        applications.forEach(application -> {
-            ApplicationPayload applicationPayload = new ApplicationPayload(
-                    application.getId(),
-                    application.getCode(),
-                    application.getNumber(),
-                    application.getOrderedObject().getContent(),
-                    application.getOrderedObject().getContent(),
-                    application.getEstimationType(),
-                    application.getMode(),
-                    application.getOrderValueNet(),
-                    application.getStatus(),
-                    application.getCoordinator(),
-                    application.getCreateDate(),
-                    application.getSendDate(),
-                    application.getIsPublicRealization()
-            );
-            applicationPayloads.add(applicationPayload);
-        });
-        return applicationPayloads;
     }
 
     @Override
@@ -1173,90 +1052,67 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
         exportConditions.getHeadRows().add(new ExcelHeadRow("createDate", "Data utworzenia", "", null));
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 
-        if (accessLevel.equals("coordinator")) {
-            List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
-                    Utils.getCurrentUser().getOrganizationUnit().getCode()
-            ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
+        switch (accessLevel) {
+            case "coordinator":
 
-            coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
+                this.getApplicationsPageable(exportConditions.getSearchConditions(), true).forEach(application -> {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("number", application.getNumber());
+                    row.put("orderedObject", application.getOrderedObject());
+                    row.put("estimationType.name", application.getEstimationType());
+                    row.put("mode.name", application.getMode().name());
+                    row.put("orderValueNet", application.getOrderValueNet());
+                    row.put("status.name", application.getStatus());
+                    row.put("createDate", formatter.format(application.getCreateDate()));
+                    rows.add(row);
+                });
 
-            publicProcurementApplicationRepository.findApplicationsPageable(coordinators, exportConditions.getSearchConditions().getConditions(), PageRequest.of(
-                    exportConditions.getSearchConditions().getPage(),
-                    exportConditions.getSearchConditions().getRowsPerPage(),
-                    exportConditions.getSearchConditions().getSort().getOrderType() != null ? exportConditions.getSearchConditions().getSort().getOrderType().equals("desc") ?
-                            Sort.by(exportConditions.getSearchConditions().getSort().getOrderBy()).descending() : Sort.by(exportConditions.getSearchConditions().getSort().getOrderBy()).ascending() : Sort.by("id")
-            ), true).forEach(application -> {
-                Map<String, Object> row = new HashMap<>();
-                row.put("number", application.getNumber());
-                row.put("orderedObject", application.getOrderedObject());
-                row.put("estimationType.name", application.getEstimationType());
-                row.put("mode.name", application.getMode().name());
-                row.put("orderValueNet", application.getOrderValueNet());
-                row.put("status.name", application.getStatus());
-                row.put("createDate", formatter.format(application.getCreateDate()));
-                rows.add(row);
-            });
+                break;
+            case "public":
+                this.getApplicationsPageableByAccessLevel(exportConditions.getSearchConditions(), "accountant", true).forEach(application -> {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("number", application.getNumber());
+                    row.put("orderedObject", application.getOrderedObject());
+                    row.put("coordinator.name", application.getCoordinator().getName());
+                    row.put("estimationType.name", application.getEstimationType());
+                    row.put("mode.name", application.getMode().name());
+                    row.put("orderValueNet", application.getOrderValueNet());
+                    row.put("status.name", application.getStatus());
+                    row.put("createDate", formatter.format(application.getCreateDate()));
+                    row.put("isPublicRealization", application.getIsPublicRealization());
+                    rows.add(row);
+                });
+                break;
+            case "accountant":
 
-        } else if (accessLevel.equals("public")) {
+                this.getApplicationsPageableByAccessLevel(exportConditions.getSearchConditions(), "accountant", true).forEach(application -> {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("number", application.getNumber());
+                    row.put("orderedObject", application.getOrderedObject());
+                    row.put("coordinator.name", application.getCoordinator().getName());
+                    row.put("estimationType.name", application.getEstimationType());
+                    row.put("mode.name", application.getMode().name());
+                    row.put("orderValueNet", application.getOrderValueNet());
+                    row.put("status.name", application.getStatus());
+                    row.put("createDate", formatter.format(application.getCreateDate()));
+                    rows.add(row);
+                });
+                break;
+            case "director":
 
-            publicProcurementApplicationRepository.findApplicationsPageableByAccessLevel(
-                    Arrays.asList(
-                            Application.ApplicationStatus.WY,
-                            Application.ApplicationStatus.AZ,
-                            Application.ApplicationStatus.AD,
-                            Application.ApplicationStatus.AM,
-                            Application.ApplicationStatus.AK,
-                            Application.ApplicationStatus.ZA,
-                            Application.ApplicationStatus.RE,
-                            Application.ApplicationStatus.ZR,
-                            Application.ApplicationStatus.AN
-                    ),
-                    exportConditions.getSearchConditions().getConditions(), PageRequest.of(
-                            exportConditions.getSearchConditions().getPage(),
-                            exportConditions.getSearchConditions().getRowsPerPage(),
-                            exportConditions.getSearchConditions().getSort().getOrderType() != null ? exportConditions.getSearchConditions().getSort().getOrderType().equals("desc") ?
-                                    Sort.by(exportConditions.getSearchConditions().getSort().getOrderBy()).descending() : Sort.by(exportConditions.getSearchConditions().getSort().getOrderBy()).ascending() : Sort.by("id")
-                    ), true).forEach(application -> {
-                Map<String, Object> row = new HashMap<>();
-                row.put("number", application.getNumber());
-                row.put("orderedObject", application.getOrderedObject());
-                row.put("coordinator.name", application.getCoordinator().getName());
-                row.put("estimationType.name", application.getEstimationType());
-                row.put("mode.name", application.getMode().name());
-                row.put("orderValueNet", application.getOrderValueNet());
-                row.put("status.name", application.getStatus());
-                row.put("createDate", formatter.format(application.getCreateDate()));
-                row.put("isPublicRealization", application.getIsPublicRealization());
-                rows.add(row);
-            });
-        } else if (accessLevel.equals("accountant")) {
-
-            publicProcurementApplicationRepository.findApplicationsPageableByAccessLevel(
-                    Arrays.asList(
-                            Application.ApplicationStatus.AD,
-                            Application.ApplicationStatus.AK,
-                            Application.ApplicationStatus.ZA,
-                            Application.ApplicationStatus.RE,
-                            Application.ApplicationStatus.ZR,
-                            Application.ApplicationStatus.AN
-                    ),
-                    exportConditions.getSearchConditions().getConditions(), PageRequest.of(
-                            exportConditions.getSearchConditions().getPage(),
-                            exportConditions.getSearchConditions().getRowsPerPage(),
-                            exportConditions.getSearchConditions().getSort().getOrderType() != null ? exportConditions.getSearchConditions().getSort().getOrderType().equals("desc") ?
-                                    Sort.by(exportConditions.getSearchConditions().getSort().getOrderBy()).descending() : Sort.by(exportConditions.getSearchConditions().getSort().getOrderBy()).ascending() : Sort.by("id")
-                    ), true).forEach(application -> {
-                Map<String, Object> row = new HashMap<>();
-                row.put("number", application.getNumber());
-                row.put("orderedObject", application.getOrderedObject());
-                row.put("coordinator.name", application.getCoordinator().getName());
-                row.put("estimationType.name", application.getEstimationType());
-                row.put("mode.name", application.getMode().name());
-                row.put("orderValueNet", application.getOrderValueNet());
-                row.put("status.name", application.getStatus());
-                row.put("createDate", formatter.format(application.getCreateDate()));
-                rows.add(row);
-            });
+                this.getApplicationsPageableByAccessLevel(exportConditions.getSearchConditions(), "director", true).forEach(application -> {
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("number", application.getNumber());
+                    row.put("orderedObject", application.getOrderedObject());
+                    row.put("coordinator.name", application.getCoordinator().getName());
+                    row.put("estimationType.name", application.getEstimationType());
+                    row.put("mode.name", application.getMode().name());
+                    row.put("orderValueNet", application.getOrderValueNet());
+                    row.put("status.name", application.getStatus());
+                    row.put("createDate", formatter.format(application.getCreateDate()));
+                    rows.add(row);
+                });
+                break;
         }
         Utils.generateExcelExport(exportType, exportConditions.getHeadRows(), rows, response);
     }

@@ -28,7 +28,7 @@ public class PublicApplicationCoordinatorController {
     @PostMapping("/getApplicationsPageable")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1113')")
     public ApiResponse getApplicationsPageable(@RequestBody @Valid SearchConditions conditions) {
-        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsPageableByAccessLevel(conditions, "public"));
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsPageableByAccessLevel(conditions, "public", false));
     }
 
     @PutMapping({"/approve/{applicationId}"})

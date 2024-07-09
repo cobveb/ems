@@ -12,6 +12,9 @@ const selectField = theme => ({
     input: {
         padding: theme.spacing(1.5),
     },
+    inputRequired: {
+        backgroundColor: '#faffbd',
+    },
 });
 
 function SelectField(props){
@@ -39,7 +42,7 @@ function SelectField(props){
     }
 
     return(
-        <FormControl variant="outlined" className={classes.field} fullWidth={true}>
+        <FormControl variant="outlined" className={classes.field} fullWidth={true} disabled={custom.disabled}>
             <InputLabel ref={inputLabel} htmlFor="selectField"  className={classes.inputLabel}>
                 {label}
             </InputLabel>

@@ -5,7 +5,7 @@ import { loading, setError, setConditions, resetSearchConditions, setPageableTab
 import * as constants from 'constants/uiNames';
 import Applications from 'components/modules/coordinator/publicProcurement/applications/applications';
 import PublicProcurementApplicationApi from 'api/modules/coordinator/publicProcurement/publicProcurementApplicationApi';
-import {updateOnCloseDetails, publicProcurementEstimationTypes, publicProcurementApplicationStatuses, publicProcurementApplicationModes, getVats, findSelectFieldPosition, generateExportLink, getPlanTypes } from 'utils/';
+import { publicProcurementEstimationTypes, publicProcurementApplicationStatuses, publicProcurementApplicationModes, getVats, findSelectFieldPosition, generateExportLink, getPlanTypes } from 'utils/';
 import DictionaryApi from 'api/common/dictionaryApi';
 
 class ApplicationsContainer extends Component {

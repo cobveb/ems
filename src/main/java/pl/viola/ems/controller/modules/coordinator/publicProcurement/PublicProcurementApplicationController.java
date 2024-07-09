@@ -54,7 +54,7 @@ public class PublicProcurementApplicationController {
     @PostMapping("/getApplicationsPageable")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1032')")
     public ApiResponse getApplicationsPageable(@RequestBody @Valid SearchConditions conditions) {
-        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsPageable(conditions));
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsPageable(conditions, false));
     }
 
     @GetMapping("/getApplicationsInRealization")

@@ -137,7 +137,7 @@ public class UserControllerTest {
 
     private UserPrincipal curentUser = UserPrincipal.create(user);
 
-    private UserSummary mockUser = new UserSummary((long)0, "User", " Test", "UserTest");
+    private UserSummary mockUser = new UserSummary((long) 0, "User", " Test", "UserTest", OrganizationUnit.Role.DIRECTOR);
 
     private AcObject acObject = new AcObject((long)1, (long)1, "Moduł testowy", "MODULE", new HashSet<AcPermission>(), new HashSet<AcPrivilege>());
     private AcPrivilege privilege = new AcPrivilege((long)1, "0001", "Przywilej testowy", new HashSet<AcObject>(),new HashSet<AcPermission>());

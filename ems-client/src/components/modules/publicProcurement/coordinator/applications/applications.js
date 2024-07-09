@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import * as constants from 'constants/uiNames';
 import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
 import { Spinner, ModalDialog } from 'common/';
-import { Table, Button, DatePicker, SearchField, SelectField } from 'common/gui';
+import { Button, DatePicker, SearchField, SelectField } from 'common/gui';
 import { TablePageable } from 'containers/common/gui';
 import { Visibility } from '@material-ui/icons/';
 import ApplicationContainer from 'containers/modules/coordinator/publicProcurement/applications/applicationContainer';
@@ -41,7 +41,8 @@ class Applications extends Component {
         mode: '',
         number: '',
         status: this.props.levelAccess === "public" ? 'WY' :
-            this.props.levelAccess === "accountant" ? 'AD' : '',
+            this.props.levelAccess === "accountant" ? 'AD' :
+                ["DIRECTOR", "ECONOMIC"].includes(this.props.role) ? 'AZ' : 'AK',
         orderedObject: '',
         coordinator:'',
         sendFrom: null,
@@ -129,53 +130,6 @@ class Applications extends Component {
             },
         ],
         searchConditionsChange: false,
-        publicSearchConditions: [
-            {
-                name: 'year',
-                value: new Date().getFullYear(),
-                type: 'number'
-            },
-            {
-                name: 'number',
-                value: '',
-                type: 'text'
-            },
-            {
-                name: 'estimationType',
-                value: '',
-                type: 'select'
-            },
-            {
-                name: 'coordinator',
-                value: '',
-                type: 'select'
-            },
-            {
-                name: 'mode',
-                value: '',
-                type: 'select'
-            },
-            {
-                name: 'status',
-                value: 'WY',
-                type: 'select'
-            },
-            {
-                name: 'orderedObject',
-                value: '',
-                type: 'text'
-            },
-            {
-                name: 'sendFrom',
-                value: '',
-                type: 'date'
-            },
-            {
-                name: 'sendTo',
-                value: '',
-                type: 'date'
-            }
-        ],
         searchConditions: [
             {
                 name: 'year',
@@ -204,7 +158,9 @@ class Applications extends Component {
             },
             {
                 name: 'status',
-                value: this.props.levelAccess === "accountant" ? 'AD' : '',
+                value: this.props.levelAccess ==="public" ? 'WY' :
+                    this.props.levelAccess === "accountant" ? 'AD' :
+                        ["DIRECTOR", "ECONOMIC"].includes(this.props.role) ? 'AZ' : 'AK',
                 type: 'select'
             },
             {
@@ -212,6 +168,16 @@ class Applications extends Component {
                 value: '',
                 type: 'text'
             },
+            {
+                name: 'sendFrom',
+                value: '',
+                type: 'date'
+            },
+            {
+                name: 'sendTo',
+                value: '',
+                type: 'date'
+            }
         ],
     }
 
@@ -221,7 +187,7 @@ class Applications extends Component {
 
     handleDataChange = (id) => (date) => {
         this.setState(prevState => {
-            let searchConditions = this.props.levelAccess === 'public' ? [...prevState.publicSearchConditions] : [...prevState.searchConditions];
+            let searchConditions = [...prevState.searchConditions];
             let searchConditionsChange = prevState.searchConditionsChange;
             switch(id) {
                 case "sendTo":
@@ -276,10 +242,6 @@ class Applications extends Component {
 
             isDetailsVisible = !this.state.isDetailsVisible;
             selected = [];
-            if(!['public','accountant'].includes(this.props.levelAccess)){
-                rows =  this.props.onClose(application);
-                rows = this.filter();
-            }
             return {selected, rows, isDetailsVisible};
         });
     };
@@ -302,67 +264,6 @@ class Applications extends Component {
         });
     }
 
-    filter = () => {
-
-        let applications = this.props.initialValues;
-        let estimationTypes = this.props.estimationTypes
-
-        if(estimationTypes.filter(estimationType => estimationType.code === '').length === 0 ){
-            estimationTypes.unshift(
-            {
-                code: '',
-                name: constants.COORDINATOR_PLAN_POSITION_PUBLIC_ORDERING_MODE,
-            })
-        }
-
-        return applications.filter((application) => {
-            return application.status.code.toLowerCase().search(
-                    this.state.status.toLowerCase()) !== -1 &&
-                application.mode.code.toLowerCase().search(
-                    this.state.mode.toLowerCase()) !== -1 &&
-                application.coordinator.code.toLowerCase().search(
-                    this.state.coordinator.toLowerCase()) !== -1 &&
-                (
-                    this.state.estimationType !== '' ?
-                    application.estimationType !== undefined ?
-                        application.estimationType.code.toLowerCase().search(
-                            this.state.estimationType.toLowerCase()) !== -1
-                        : null
-                    : application
-                ) &&
-                (
-                    this.state.orderedObject !== '' ?
-                    application.orderedObject !== null ?
-                        application.orderedObject.toLowerCase().search(
-                            this.state.orderedObject.toLowerCase()) !== -1
-                        : null
-                    : application
-                ) &&
-                (
-                    this.state.number !== '' ?
-                        application.number !== null ?
-                            application.number.toLowerCase().search(
-                                this.state.number.toLowerCase()) !== -1
-                        : null
-                    : application
-                )  &&
-                (
-                    this.state.year === null ?
-                        application :
-                            new Date(application.createDate).getFullYear() === this.state.year.getFullYear()
-                ) &&
-                (
-                    (this.state.sendFrom !== null && this.state.sendTo !== null) ?
-                        new Date(application.sendDate) >= this.state.sendFrom && new Date(application.sendDate) <= this.state.sendTo :
-                            this.state.sendFrom !== null ?
-                            new Date(application.sendDate) >= this.state.sendFrom :
-                                this.state.sendFrom === null && this.state.sendTo === null ?
-                                    application :
-                                        new Date(application.sendDate) <= this.state.sendTo
-                )
-        })
-    }
-
     handleChangeVisibleDetails = () =>{
         this.setState({isDetailsVisible: !this.state.isDetailsVisible});
     }
@@ -378,7 +279,7 @@ class Applications extends Component {
     onChangeSearchConditions = (event) => {
         event.persist();
         this.setState(prevState => {
-            const searchConditions = this.props.levelAccess === 'public' ? [...prevState.publicSearchConditions] : [...prevState.searchConditions];
+            const searchConditions =  [...prevState.searchConditions];
             let searchConditionsChange = prevState.searchConditionsChange;
             return setChangedSearchConditions(event.target.name, event.target.value, searchConditions, searchConditionsChange);
         });
@@ -395,46 +296,22 @@ class Applications extends Component {
     }
 
     componentDidUpdate(prevProps, prevState){
-        if(['public','accountant'].includes(this.props.levelAccess)){
-            if(this.props.initialValues !== prevProps.initialValues){
-                this.setState({
-                    rows: this.props.initialValues,
-                });
-            }
-            if(this.state.searchConditionsChange){
-                this.props.onSetSearchConditions(this.state.searchConditions)
-                this.setState({
-                    searchConditionsChange: false,
-                    selected: {},
-                })
-            }
+        if(this.props.initialValues !== prevProps.initialValues){
+            this.setState({
+                rows: this.props.initialValues,
+            });
         }
-        else {
-            if(this.props.initialValues !== prevProps.initialValues){
-                this.setState({
-                    rows: this.filter(),
-                });
-            } else if (this.state.coordinator !== prevState.coordinator ||
-                this.state.status !== prevState.status ||
-                this.state.mode !== prevState.mode ||
-                this.state.orderedObject !== prevState.orderedObject ||
-                this.state.estimationType !== prevState.estimationType ||
-                this.state.sendFrom !== prevState.sendFrom ||
-                this.state.sendTo !== prevState.sendTo ||
-                this.state.number !== prevState.number)
-            {
-                this.setState({
-                    rows: this.filter(),
-                })
-            } else if (this.state.year !== prevState.year){
-                this.props.onChangeYear(this.state.year);
-            }
+        if(this.state.searchConditionsChange){
+            this.props.onSetSearchConditions(this.state.searchConditions)
+            this.setState({
+                searchConditionsChange: false,
+                selected: {},
+            })
         }
     }
 
     componentDidMount() {
-        this.props.onSetSearchConditions(this.props.levelAccess === 'public' ?
-            this.state.publicSearchConditions : this.state.searchConditions);
+        this.props.onSetSearchConditions(this.state.searchConditions);
         this.setState({rows: this.props.initialValues});
     }
 
@@ -568,37 +445,19 @@ class Applications extends Component {
                                             value={sendTo}
                                         />
                                     </Grid>
-                                    { ["public", "accountant"].includes(levelAccess)
-                                        ?
-                                            <Grid item xs={12} className={classes.item}>
-                                                <TablePageable
-                                                    className={classes.tableWrapper}
-                                                    rows={rows}
-                                                    headCells={levelAccess === 'public' ? headCellsPublic : headCells}
-                                                    onSelect={this.handleSelect}
-                                                    onDoubleClick={this.handleDoubleClick}
-                                                    onExcelExport={this.handleExcelExport}
-                                                    resetPageableProperties={searchConditionsChange}
-                                                    rowKey="id"
-                                                    orderType={"desc"}
-                                                />
-                                            </Grid>
-                                        :
-
-                                            <Grid item xs={12} className={classes.item}>
-                                                <Table
-                                                    className={classes.tableWrapper}
-                                                    rows={rows}
-                                                    headCells={levelAccess === 'public' ? headCellsPublic : headCells}
-                                                    onSelect={this.handleSelect}
-                                                    onDoubleClick={this.handleDoubleClick}
-                                                    onExcelExport={this.handleExcelExport}
-                                                    rowKey="id"
-                                                    defaultOrderBy="id"
-                                                />
-                                            </Grid>
-
-                                    }
+                                        <Grid item xs={12} className={classes.item}>
+                                            <TablePageable
+                                                className={classes.tableWrapper}
+                                                rows={rows}
+                                                headCells={levelAccess === 'public' ? headCellsPublic : headCells}
+                                                onSelect={this.handleSelect}
+                                                onDoubleClick={this.handleDoubleClick}
+                                                onExcelExport={this.handleExcelExport}
+                                                resetPageableProperties={searchConditionsChange}
+                                                rowKey="id"
+                                                orderType={"desc"}
+                                            />
+                                        </Grid>
                                 </Grid>
                             </div>
                         </Grid>

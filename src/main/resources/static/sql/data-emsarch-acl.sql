@@ -84,6 +84,7 @@ insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (80,'3118','Usuwanie upr
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (81,'1128','Odczyt słowników');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (82,'2128','Modyfikacja pozycji słownika');
 insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (83,'3128','Usuwanie pozycji słownika');
+insert into EMSARCH.AC_PRIVILEGES (ID,CODE,NAME) values (84,'1138','Odczyt pozycji rejestrów');
 
 REM INSERTING into EMSARCH.AC_OBJECTS
 SET DEFINE OFF;
@@ -188,3 +189,4 @@ insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,81);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,82);
 insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,83);
+insert into EMSARCH.AC_OBJECT_PRIVILEGES (ac_object_id,ac_privilege_id) values (8,84);

@@ -1,8 +1,10 @@
 package pl.viola.ems.model.modules.asi.dictionary.employee;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.viola.ems.model.common.Text;
 import pl.viola.ems.model.common.dictionary.DictItem;
+import pl.viola.ems.model.modules.asi.dictionary.register.DictionaryRegister;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -14,6 +16,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"description", "dictionaryRegister"})
+@EqualsAndHashCode(exclude = {"description", "dictionaryRegister"})
 @Table(name = "asi_entitlement_system", schema = "emsadm")
 public class EntitlementSystem implements DictItem {
     @Id
@@ -33,6 +37,11 @@ public class EntitlementSystem implements DictItem {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "desc_id", referencedColumnName = "id")
     private Text description;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "register_id")
+    @JsonIgnore
+    private DictionaryRegister register;
 
     @Override
     public String getCode() {

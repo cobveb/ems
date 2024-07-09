@@ -10,6 +10,7 @@ import pl.viola.ems.model.modules.asi.dictionary.employee.EntitlementSystem;
 import pl.viola.ems.model.modules.asi.dictionary.employee.EntitlementSystemPermission;
 import pl.viola.ems.model.modules.asi.dictionary.employee.repository.EntitlementSystemPermissionRepository;
 import pl.viola.ems.model.modules.asi.dictionary.employee.repository.EntitlementSystemRepository;
+import pl.viola.ems.model.modules.asi.dictionary.register.DictionaryRegister;
 import pl.viola.ems.service.modules.asi.dictionary.employee.EntitlementSystemService;
 
 import java.util.Locale;
@@ -34,6 +35,16 @@ public class EntitlementSystemServiceImpl implements EntitlementSystemService {
     @Override
     public Set<EntitlementSystem> getActiveEntitlementSystems() {
         return entitlementSystemRepository.findByIsActiveTrueOrderByName();
+    }
+
+    @Override
+    public Set<EntitlementSystem> getActiveUnassignedEntitlementSystemsInRegister() {
+        return entitlementSystemRepository.findByRegisterIsNullAndIsActiveTrueOrderByName();
+    }
+
+    @Override
+    public Set<EntitlementSystem> getActiveEntitlementSystemsByRegister(final DictionaryRegister register) {
+        return entitlementSystemRepository.findByRegisterAndIsActiveTrueOrderByName(register);
     }
 
     @Override

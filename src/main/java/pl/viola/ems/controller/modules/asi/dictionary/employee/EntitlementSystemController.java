@@ -29,6 +29,12 @@ public class EntitlementSystemController {
         return new ApiResponse(HttpStatus.FOUND, entitlementSystemService.getActiveEntitlementSystems());
     }
 
+    @GetMapping("/getActiveUnassignedEntitlementSystems")
+    @PreAuthorize("hasGroup('admin') or hasPrivilege('1128')")
+    public ApiResponse getActiveUnassignedEntitlementSystems() {
+        return new ApiResponse(HttpStatus.FOUND, entitlementSystemService.getActiveUnassignedEntitlementSystemsInRegister());
+    }
+
     @PutMapping("/saveEntitlementSystem")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('2128')")
     public ApiResponse saveEntitlementSystem(@RequestBody @Valid EntitlementSystem entitlementSystem) {

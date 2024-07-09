@@ -1007,7 +1007,9 @@ export const IOD_REGISTER_CPDO_CREATE_NEW_POSITION_TITLE = 'Nowa pozycja';
 export const IOD_REGISTER_CPDO_CREATE_EDIT_POSITION_TITLE = 'Edycja pozycji: ';
 export const IOD_REGISTER_CPDO_POSITION_OU = 'Komórki organizacyjne';
 /* components/modules/asi/asi.js */
+export const ASI_MENU_REGISTERS = 'Rejestry';
 export const ASI_MENU_DICTIONARY_SYSTEMS = 'Systemy';
+export const ASI_MENU_DICTIONARY_REGISTERS = 'Rejestry';
 /* components/modules/asi/dictionary/employees/entitlementSystems.js */
 export const EMPLOYEE_ENTITLEMENT_SYSTEMS_DELETE_MSG = 'Systemy uprawnień zostanie usunięty. Czy kontynuować?';
 /* components/modules/asi/employees/forms/entitlementForm.js */
@@ -1040,6 +1042,20 @@ export const ASI_DICTIONARY_SYSTEMS_SYSTEM_PERMISSION_DELETE_MSG = 'Uprawnienie 
 export const ASI_DICTIONARY_SYSTEM_PERMISSION_CREATE_TITLE = 'Nowe uprawnienie';
 export const ASI_DICTIONARY_SYSTEM_PERMISSION_EDIT_TITLE = 'Edycja uprawnienia:';
 export const ASI_DICTIONARY_SYSTEM_PERMISSION_NAME = 'Nazwa uprawnienia';
+/* components/modules/asi/dictionary/registers/registers.js */
+export const ASI_DICTIONARY_REGISTER_DELETE_MSG = 'Rejestr zostanie usunięty. Czy kontynuować?';
+/* components/modules/asi/dictionary/registers/forms/registerForm.js */
+export const ASI_DICTIONARY_REGISTER_CREATE_REGISTER_TITLE = 'Nowy rejestr';
+export const ASI_DICTIONARY_REGISTER_EDIT_REGISTER_TITLE = 'Edycja rejestru:';
+export const ASI_DICTIONARY_REGISTER_NAME = 'Nazwa rejestru';
+export const ASI_DICTIONARY_REGISTER_BASE_TYPE = 'Podstawa utworzenia';
+export const ASI_DICTIONARY_REGISTER_PERMISSION_SYSTEMS = 'Systemy uprawnień';
+export const ASI_DICTIONARY_REGISTER_SYSTEM_DELETE_MSG = 'System uprawnień zostanie usunięty z rejestru. Czy kontynuować?';
+/* components/modules/asi/registers/registers.js */
+export const ASI_REGISTERS_REGISTER = 'Rejestr';
+export const ASI_REGISTERS_REGISTER_ENTITLEMENT_SYSTEM = 'System uprawnień';
+export const ASI_REGISTERS_REGISTER_TABLE_HEAD_ROW_PERMISSIONS = 'Uprawnienia';
+export const ASI_REGISTERS_REGISTER_TABLE_HEAD_ROW_EMPLOYEE = 'Pracownik';
 /* Commons sections */
 export const BUTTON_SAVE = 'Zapisz';
 export const BUTTON_CANCEL = 'Anuluj';

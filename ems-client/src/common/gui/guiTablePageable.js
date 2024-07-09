@@ -325,14 +325,13 @@ class TablePageable extends Component {
                         </div>
                         <div>
                             <Table>
-                                <TableFooter>
+                                <TableFooter classes={{root: classes.tableFooter}}>
                                     <TableRow>
                                         <TablePagination
                                             rowsPerPageOptions={[rowsPerPage]}
                                             rowsPerPage={rowsPerPage}
                                             page={page}
                                             count={pageableTableProperties.totalElements}
-
                                             onPageChange={this.handleChangePage}
                                             labelDisplayedRows={this.labelPaginationTableRow}
                                             ActionsComponent={(props) =>

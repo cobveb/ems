@@ -5,8 +5,16 @@ class EntitlementSystemApi {
         return Axios.get(`/api/asi/dict/employee/entitlementSystem/getEntitlementSystems`)
     }
 
+    static getEntitlementSystemsByRegister(){
+        return Axios.get(`/api/asi/dict/employee/entitlementSystem/getEntitlementSystemsByRegister`)
+    }
+
     static getActiveEntitlementSystems(){
         return Axios.get(`/api/asi/dict/employee/entitlementSystem/getActiveEntitlementSystems`)
+    }
+
+    static getActiveUnassignedEntitlementSystems(){
+        return Axios.get(`/api/asi/dict/employee/entitlementSystem/getActiveUnassignedEntitlementSystems`)
     }
 
     static saveEntitlementSystem(data){

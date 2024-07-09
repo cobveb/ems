@@ -54,6 +54,8 @@ public class DictionaryServiceImpl implements DictionaryService {
             case "hr":
                 dictionaries.add("slHrGrZaw");
                 dictionaries.add("slHrLoc");
+            case "asi":
+                dictionaries.add("slAsRegPod");
         }
         return dictionaryRepository.findByCodeIn(dictionaries);
     }

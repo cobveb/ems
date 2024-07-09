@@ -29,13 +29,11 @@ public interface PublicProcurementApplicationService {
 
     Set<ApplicationPayload> getApplicationsByCoordinator(int year);
 
-    Page<ApplicationPayload> getApplicationsPageable(SearchConditions searchConditions);
+    Page<ApplicationPayload> getApplicationsPageable(SearchConditions searchConditions, boolean isExport);
 
-    Page<ApplicationPayload> getApplicationsPageableByAccessLevel(SearchConditions searchConditions, String accessLevel);
+    Page<ApplicationPayload> getApplicationsPageableByAccessLevel(SearchConditions searchConditions, String accessLevel, boolean isExport);
 
     Set<ApplicationPayload> getApplicationsByCoordinatorInRealization();
-
-    Set<ApplicationPayload> getApplicationsByAccessLevel(int year, String accessLevel);
 
     ApplicationDetailsPayload getApplication(Long applicationId);
 

@@ -25,7 +25,7 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    private AcPermissionService acPermissionService;
+    AcPermissionService acPermissionService;
 
     @GetMapping("/user")
     public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
@@ -33,7 +33,8 @@ public class UserController {
                 currentUser.getId(),
                 currentUser.getName(),
                 currentUser.getSurname(),
-                currentUser.getUsername()
+                currentUser.getUsername(),
+                currentUser.getOuRole()
         );
     }
 
