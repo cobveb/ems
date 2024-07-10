@@ -4,7 +4,7 @@ import * as constants from 'constants/uiNames';
 import { bindActionCreators } from 'redux';
 import { loading, setError, setConditions, resetSearchConditions, setPageableTableProperties } from 'actions/';
 import Applications from 'components/modules/publicProcurement/coordinator/applications/applications';
-import {updateOnCloseDetails, publicProcurementEstimationTypes, publicProcurementPlanTypes, publicProcurementApplicationStatuses, publicProcurementApplicationModes, getVats, findSelectFieldPosition, generateExportLink} from 'utils/';
+import { publicProcurementEstimationTypes, publicProcurementPlanTypes, publicProcurementApplicationStatuses, publicProcurementApplicationModes, getVats, findSelectFieldPosition, generateExportLink} from 'utils/';
 import PublicProcurementApplicationApi from 'api/modules/accountant/coordinator/publicProcurementApplicationApi';
 import DictionaryApi from 'api/common/dictionaryApi';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
