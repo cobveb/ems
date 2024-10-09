@@ -71,6 +71,6 @@ public class PublicApplicationCoordinatorController {
     public void exportApplicationsToXlsx(@RequestBody ExportConditions exportConditions,
                                          @PathVariable ExportType exportType, HttpServletResponse response) throws IOException {
 
-        publicProcurementApplicationService.exportApplicationsToExcel(exportType, 0, exportConditions, generateExportResponse(response, exportType), "public");
+        publicProcurementApplicationService.exportApplicationsToExcel(exportType, exportConditions, generateExportResponse(response, exportType), "public");
     }
 }

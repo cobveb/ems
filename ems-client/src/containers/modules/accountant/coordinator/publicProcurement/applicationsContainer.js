@@ -166,6 +166,7 @@ class ApplicationsContainer extends Component {
                 loading={loading}
                 error={error}
                 clearError={clearError}
+                searchConditions={this.props.searchConditions}
                 onSetSearchConditions={this.props.onSetSearchConditions}
                 onApproveApplication={this.handleApproveApplication}
                 onSendBackApplication={this.handleSendBackApplication}

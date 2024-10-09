@@ -1,8 +1,17 @@
 import Axios from 'axios';
 
 class ContractApi {
-    static getContracts(year){
-        return Axios.get(`/api/coordinator/realization/contract/${year}/getContracts`)
+
+    static getContracts(conditions){
+        return Axios.post(`/api/coordinator/realization/contract/getContracts`, conditions)
+    }
+
+    static getContractDetails(contractId){
+        return Axios.get(`/api/coordinator/realization/contract/${contractId}/getContractDetails`)
+    }
+
+    static getContractsDictionary(conditions){
+        return Axios.post(`/api/coordinator/realization/contract/getContractsDictionary`, conditions)
     }
 
     static saveContract(action, data){
@@ -15,6 +24,10 @@ class ContractApi {
 
     static getInvoices(contractId){
         return Axios.get(`/api/coordinator/realization/contract/${contractId}/getInvoices`)
+    }
+
+    static exportContractsToExcel(exportType, headRows, searchConditions){
+        return Axios.put(`/api/coordinator/realization/contract/export/${exportType}`, {headRows, searchConditions}, {responseType: 'blob'})
     }
 }
 export default ContractApi;

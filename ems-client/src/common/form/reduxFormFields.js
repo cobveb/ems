@@ -5,6 +5,7 @@ import { green, grey } from '@material-ui/core/colors/';
 import TableTransferList from 'common/form/tableTransferList';
 import TableForm from 'common/form/tableForm';
 import DictionaryField from 'common/form/dictionaryField';
+import DictionaryPageableField from 'common/form/dictionaryPageableField';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
 import format from "date-fns/format";
@@ -264,6 +265,41 @@ export function RenderDictionaryField({ label, input, value, meta, meta: { touch
                 items={custom.items}
                 error={error}
                 isRequired={custom.isRequired}
+                {...input}
+            />
+
+            <FormHelperText>{touched && error}</FormHelperText>
+        </FormControl>
+    );
+};
+
+export function RenderPageableDictionaryField({ label, input, value, meta, meta: { touched, invalid, error }, onClick, validate, ...custom} ){
+    const inputLabel = React.useRef(null);
+    const [labelWidth, setLabelWidth] = React.useState(0);
+    React.useEffect(() => {
+        setLabelWidth(inputLabel.current.offsetWidth);
+    }, []);
+
+    return(
+        <FormControl variant="outlined" fullWidth={true} error={touched && error ? true : false} disabled={custom.disabled}>
+            <InputLabel ref={inputLabel} htmlFor={input.name} className={custom.classes.label}>
+                {label}
+            </InputLabel>
+
+            <DictionaryPageableField
+                labelWidth={labelWidth}
+                name={input.name}
+                dictionaryName={custom.dictionaryName}
+                classes={custom.classes.isRequired}
+                inputProps={custom.inputProps.classes}
+                disabled={custom.disabled}
+                items={custom.items}
+                error={error}
+                isRequired={custom.isRequired}
+                isLoading={custom.isLoading}
+                onChangeDictionarySearchConditions={custom.onChangeDictionarySearchConditions}
+                onSetDictionaryName={custom.onSetDictionaryName}
+
                 {...input}
             />
 

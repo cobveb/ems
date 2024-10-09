@@ -2,10 +2,14 @@ package pl.viola.ems.service.modules.coordinator.realization.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import pl.viola.ems.exception.AppException;
 import pl.viola.ems.model.common.export.ExportType;
+import pl.viola.ems.model.common.search.SearchConditions;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionCoordinatorPlanPosition;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlan;
 import pl.viola.ems.model.modules.accountant.institution.plans.InstitutionPlanPosition;
@@ -23,8 +27,10 @@ import pl.viola.ems.model.modules.coordinator.realization.invoice.InvoicePositio
 import pl.viola.ems.model.modules.coordinator.realization.invoice.repository.InvoicePositionRepository;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.repository.InvoiceRepository;
 import pl.viola.ems.payload.export.ExcelHeadRow;
+import pl.viola.ems.payload.export.ExportConditions;
 import pl.viola.ems.payload.modules.accountant.institution.plans.InvoiceInstitutionPositionsResponse;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationPlanPosition;
+import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePayload;
 import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePositionPayload;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 import pl.viola.ems.service.modules.coordinator.plans.PlanService;
@@ -35,12 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.*;
-
-import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
-import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
@@ -76,34 +77,27 @@ public class InvoiceServiceImpl implements InvoiceService {
     InstitutionPlanPositionRepository institutionPlanPositionRepository;
 
     @Override
-    public Set<Invoice> getInvoices(final int year) {
-        List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
-                Utils.getCurrentUser().getOrganizationUnit().getCode()
-        ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
+    public Page<InvoicePayload> getInvoicesPageable(final SearchConditions searchConditions, final boolean isExport, final String accessLevel) {
+        List<OrganizationUnit> coordinators = new ArrayList<>();
 
-        coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
+        if (accessLevel.equals("coordinator")) {
+            coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
+                    Utils.getCurrentUser().getOrganizationUnit().getCode()
+            ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
 
-        if (year != 0) {
-            LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-            Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-            Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-            return invoiceRepository.findBySellDateBetweenAndCoordinatorIn(firstDay, lastDay, coordinators);
-        } else {
-            return invoiceRepository.findByCoordinatorIn(coordinators);
+            coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
         }
-
+        return invoiceRepository.findInvoicesPageable(coordinators, searchConditions.getConditions(), PageRequest.of(
+                searchConditions.getPage(),
+                searchConditions.getRowsPerPage(),
+                searchConditions.getSort().getOrderType() != null ? searchConditions.getSort().getOrderType().equals("desc") ?
+                        Sort.by(searchConditions.getSort().getOrderBy()).descending() : Sort.by(searchConditions.getSort().getOrderBy()).ascending() : Sort.by("id")
+        ), isExport, accessLevel);
     }
 
     @Override
-    public Set<Invoice> getInvoicesByYear(final int year) {
-        if (year != 0) {
-            LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-            Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-            Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-            return invoiceRepository.findBySellDateBetween(firstDay, lastDay);
-        } else {
-            return new HashSet<>(invoiceRepository.findAll());
-        }
+    public Invoice getInvoiceDetails(final Long invoiceId) {
+        return invoiceRepository.findById(invoiceId).orElseThrow(() -> new AppException("Coordinator.invoice.notFound", HttpStatus.NOT_FOUND));
     }
 
     @Transactional
@@ -111,8 +105,8 @@ public class InvoiceServiceImpl implements InvoiceService {
     public Invoice saveInvoice(final Invoice invoice, final String action) {
         if (action.equals("add")) {
             invoice.setCoordinator(Utils.getCurrentUser().getOrganizationUnit());
-        } else if (action.equals("edit")) {
-            invoice.setInvoicePositions(new HashSet<>(this.getInvoicePositions(invoice.getId())));
+        } else if (action.equals("edit") && !invoice.getInvoicePositions().isEmpty()) {
+            invoice.getInvoicePositions().forEach(invoicePosition -> invoicePosition.setInvoice(invoice));
         }
 
         if (invoice.getPublicProcurementApplication() != null) {
@@ -144,16 +138,9 @@ public class InvoiceServiceImpl implements InvoiceService {
                 }
             });
         }
+
         invoiceRepository.deleteById(invoice.getId());
         return messageSource.getMessage("Coordinator.invoice.deleteMsg", null, Locale.getDefault());
-    }
-
-    @Override
-    public List<InvoicePosition> getInvoicePositions(final Long invoiceId) {
-        Invoice invoice = invoiceRepository.findById(invoiceId)
-                .orElseThrow(() -> new AppException("Coordinator.invoice.notFound", HttpStatus.NOT_FOUND));
-
-        return new ArrayList<>(invoice.getInvoicePositions());
     }
 
     @Override
@@ -223,7 +210,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                 this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition);
             }
         }
-
         return invoicePositionRepository.save(invoicePosition);
     }
 
@@ -300,6 +286,25 @@ public class InvoiceServiceImpl implements InvoiceService {
         });
 
         return invoicesPositions;
+    }
+
+    @Override
+    public void exportInvoicesToExcel(final ExportType exportType, final ExportConditions exportConditions, final HttpServletResponse response, final String accessLevel) throws IOException {
+        ArrayList<Map<String, Object>> rows = new ArrayList<>();
+
+        this.getInvoicesPageable(exportConditions.getSearchConditions(), true, accessLevel).forEach(invoice -> {
+            Map<String, Object> row = new HashMap<>();
+            row.put("number", invoice.getNumber());
+            row.put("sellDate", invoice.getSellDate());
+            row.put("invoiceValueGross", invoice.getInvoiceValueGross());
+            if (!accessLevel.equals("coordinator")) {
+                row.put("coordinator.name", invoice.getCoordinator().getName());
+            }
+            row.put("contractor.name", invoice.getContractor().getName());
+            rows.add(row);
+        });
+
+        Utils.generateExcelExport(exportType, exportConditions.getHeadRows(), rows, response);
     }
 
     @Override

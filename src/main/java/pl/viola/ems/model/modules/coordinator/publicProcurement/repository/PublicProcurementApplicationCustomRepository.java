@@ -16,4 +16,6 @@ public interface PublicProcurementApplicationCustomRepository {
     Page<ApplicationPayload> findApplicationsPageableByAccessLevel(List<Application.ApplicationStatus> statuses, List<SearchCondition> conditions, Pageable pageable, Boolean isExport);
 
     Page<ApplicationPayload> findApplicationsPageableByDirector(List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> coordinators, String role, List<SearchCondition> conditions, Pageable pageable, Boolean isExport);
+
+    Page<ApplicationPayload> findApplicationsInRealizationAsDictionary(List<Application.ApplicationStatus> statuses, List<OrganizationUnit> coordinators, List<SearchCondition> conditions, Pageable pageable, Boolean isExport);
 }

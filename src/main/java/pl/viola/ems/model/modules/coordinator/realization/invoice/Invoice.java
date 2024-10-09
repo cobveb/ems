@@ -1,6 +1,5 @@
 package pl.viola.ems.model.modules.coordinator.realization.invoice;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import pl.viola.ems.model.common.Text;
 import pl.viola.ems.model.modules.accountant.dictionary.Contractor;
@@ -70,7 +69,7 @@ public class Invoice {
     private Contract contract;
 
 
-    @JsonIgnore
+//    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice", cascade = {CascadeType.ALL})
     @ToString.Exclude
     private Set<InvoicePosition> invoicePositions = new HashSet<>();

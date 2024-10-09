@@ -29,6 +29,11 @@ export const ui = (state = InitialState.ui, action) => {
 		        ...state,
 		            pageableTableProperties: action.pageableTableProperties,
 		    }
+        case 'SET_DICTIONARY_PAGEABLE_TABLE_PROPERTIES':
+		    return{
+		        ...state,
+		            dictionaryPageableTableProperties: action.dictionaryPageableTableProperties,
+		    }
 	    default:
 	      return state
 	}

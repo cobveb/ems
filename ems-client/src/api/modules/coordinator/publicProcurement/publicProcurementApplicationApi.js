@@ -22,8 +22,8 @@ class PublicProcurementApplicationApi {
         return Axios.post(`/api/coordinator/publicProcurement/application/getApplicationsPageable`, data)
     }
 
-    static getApplicationsInRealization(){
-        return Axios.get(`/api/coordinator/publicProcurement/application/getApplicationsInRealization`)
+    static getApplicationsDictionary(conditions){
+        return Axios.post(`/api/coordinator/publicProcurement/application/getApplicationsDictionary`, conditions)
     }
 
     static getApplication(applicationId){

@@ -143,7 +143,7 @@ class Registers extends Component {
 
     render(){
         const {classes, isLoading, error } = this.props;
-        const {selected, rows, name, headCells, action, isDetailsVisible, searchConditionsChange} = this.state;
+        const {selected, rows, name, headCells, action, isDetailsVisible} = this.state;
         return(
             <>
                 {isLoading && <Spinner />}

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
+public interface InvoiceRepository extends JpaRepository<Invoice, Long>, InvoiceCustomRepository {
     Set<Invoice> findByCoordinatorIn(List<OrganizationUnit> coordinators);
 
     Set<Invoice> findBySellDateBetweenAndCoordinatorIn(Date signingDateFrom, Date signingDateTo, List<OrganizationUnit> coordinators);

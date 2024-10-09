@@ -24,7 +24,7 @@ class ApplicationsContainer extends Component {
                 code: '',
                 name: constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_STATUS,
             }
-        ].concat(this.props.role === "CHIEF" ? publicProcurementApplicationStatuses().filter(status => !['ZP','WY','AZ','AM','AD'].includes(status.code)) :
+        ].concat(this.props.role === "CHIEF" ? publicProcurementApplicationStatuses().filter(status => !['ZP','WY','AM','AD'].includes(status.code)) :
             publicProcurementApplicationStatuses().filter(status => !['ZP','WY',].includes(status.code))),
         modes: [
             {
@@ -212,6 +212,8 @@ class ApplicationsContainer extends Component {
                 loading={loading}
                 error={error}
                 clearError={clearError}
+                searchConditions={this.props.searchConditions}
+                onSetSearchConditions={this.props.onSetSearchConditions}
                 onApproveApplication={this.handleApproveApplication}
                 onSendBackApplication={this.handleSendBackApplication}
                 onExcelExport={this.handleExcelExport}

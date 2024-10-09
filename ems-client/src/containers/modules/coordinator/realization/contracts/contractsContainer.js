@@ -1,75 +1,30 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
-import { loading, setError } from 'actions/';
+import { loading, setError, setConditions, resetSearchConditions, setPageableTableProperties } from 'actions/';
 import Contracts from 'components/modules/coordinator/realization/contracts/contracts';
-import {updateOnCloseDetails} from 'utils/';
+import { generateExportLink } from 'utils/';
 import ContractApi from 'api/modules/coordinator/realization/contractApi';
-import PublicProcurementApplicationApi from 'api/modules/coordinator/publicProcurement/publicProcurementApplicationApi';
 
 class ContractsContainer extends Component {
     state = {
         contracts: [],
-        financialPlanPositions:[],
-        investmentPlanPositions:[],
-        applications:[],
     }
 
-    handleGetApplications = () =>{
-        PublicProcurementApplicationApi.getApplicationsInRealization()
-        .then(response =>{
-            this.setState(prevState => {
-                let applications = [...prevState.applications];
-                applications = response.data.data;
-                applications.map(application => (
-                    Object.assign(application,
-                        {
-                            code: application.code = application.number !== null ? application.number : "",
-                            name: application.name = application.orderedObject !== null ? application.orderedObject : "",
-                        }
-                    )
-                ))
-                return {applications};
-            });
-        })
-        .catch(error =>{});
-    }
-
-    handleGetFinancialPlanPositions = () => {
-        PublicProcurementApplicationApi.getPlanPositions('FIN')
-        .then(response => {
-            this.setState( prevState =>{
-                let financialPlanPositions = [...prevState.financialPlanPositions];
-                financialPlanPositions = response.data.data;
-                return {financialPlanPositions}
-            })
-        })
-        .catch(error => {});
-    }
-
-    handleGetInvestmentPlanPositions = () => {
-        PublicProcurementApplicationApi.getPlanPositions('INW')
-        .then(response => {
-            this.setState( prevState =>{
-                let investmentPlanPositions = [...prevState.investmentPlanPositions];
-                investmentPlanPositions = response.data.data;
-                return {investmentPlanPositions}
-            })
-        })
-        .catch(error => {});
-    }
-
-    handleGetContracts = () =>{
+    handleGetContracts = () => {
         this.props.loading(true);
-        ContractApi.getContracts(new Date().getFullYear())
+        this.props.searchConditions.rowsPerPage = 25;
+        ContractApi.getContracts(this.props.searchConditions)
         .then(response =>{
+            this.props.setPageableTableProperties({
+                totalElements: response.data.data.totalElements,
+                lastPage: response.data.data.last,
+                firstPage: response.data.data.first,
+            })
             this.setState({
-                contracts: response.data.data,
+                contracts: response.data.data.content,
             })
             this.props.loading(false);
-            this.handleGetApplications();
-            this.handleGetFinancialPlanPositions();
-            this.handleGetInvestmentPlanPositions();
         })
         .catch(error => {})
     }
@@ -78,37 +33,29 @@ class ContractsContainer extends Component {
         this.props.loading(true);
         ContractApi.deleteContract(contractId)
         .then(response => {
-            const idx = this.state.contracts.findIndex(contract => contract.id === contractId);
-            this.setState(prevState => {
-                const contracts = [...prevState.contracts];
-                contracts.splice(idx, 1);
-                return {contracts}
-            })
+            this.handleGetContracts();
+        })
+        .catch(error => {});
+    }
+
+    handleExcelExport = (exportType, headRow) =>{
+        this.props.loading(true);
+        ContractApi.exportContractsToExcel(exportType, headRow, this.props.searchConditions)
+        .then(response => {
+            generateExportLink(response);
             this.props.loading(false);
         })
         .catch(error => {});
     }
 
-    handleChangeYear = (year) => {
-        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
-            this.props.loading(true);
-            ContractApi.getContracts(year instanceof Date ? year.getFullYear() : 0)
-            .then(response =>{
-                this.setState({
-                    contracts: response.data.data,
-                })
-                this.props.loading(false);
-            })
-            .catch(error => {})
+    componentDidUpdate(prevProps){
+        if(this.props.searchConditions !== prevProps.searchConditions){
+            this.handleGetContracts();
         }
     }
 
-    handleUpdateOnCloseDetails = (contract) => {
-        return updateOnCloseDetails(this.state.contracts, contract);
-    }
-
-    componentDidMount(){
-        this.handleGetContracts();
+    componentWillUnmount(){
+        this.props.resetSearchConditions();
     }
 
     render(){
@@ -117,15 +64,14 @@ class ContractsContainer extends Component {
             <>
                 <Contracts
                     initialValues={this.state.contracts}
-                    financialPlanPositions={this.state.financialPlanPositions}
-                    investmentPlanPositions={this.state.investmentPlanPositions}
-                    applications={this.state.applications}
                     isLoading={isLoading}
                     error={error}
                     clearError={clearError}
-                    onChangeYear={this.handleChangeYear}
+                    searchConditions={this.props.searchConditions}
+                    onSetSearchConditions={this.props.onSetSearchConditions}
                     onDelete={this.handleDelete}
-                    onClose={this.handleUpdateOnCloseDetails}
+                    onExcelExport={this.handleExcelExport}
+                    onClose={this.handleGetContractsPageable}
                 />
             </>
         );
@@ -137,6 +83,7 @@ const mapStateToProps = (state) => {
 	return {
 		isLoading: state.ui.loading,
 		error: state.ui.error,
+		searchConditions: state.search,
 	}
 };
 
@@ -144,6 +91,9 @@ function mapDispatchToProps (dispatch) {
     return {
         loading : bindActionCreators(loading, dispatch),
         clearError : bindActionCreators(setError, dispatch),
+        onSetSearchConditions : bindActionCreators(setConditions, dispatch),
+        resetSearchConditions : bindActionCreators(resetSearchConditions, dispatch),
+        setPageableTableProperties : bindActionCreators(setPageableTableProperties, dispatch),
     }
 };
 

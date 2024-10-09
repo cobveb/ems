@@ -58,6 +58,6 @@ public class DirectorPublicApplicationCoordinatorController {
     public void exportApplicationsToXlsx(@RequestBody ExportConditions exportConditions,
                                          @PathVariable ExportType exportType, HttpServletResponse response) throws IOException {
 
-        publicProcurementApplicationService.exportApplicationsToExcel(exportType, 0, exportConditions, generateExportResponse(response, exportType), "accountant");
+        publicProcurementApplicationService.exportApplicationsToExcel(exportType, exportConditions, generateExportResponse(response, exportType), "accountant");
     }
 }

@@ -2,18 +2,15 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as constants from 'constants/uiNames';
 import { bindActionCreators } from 'redux';
-import { loading, setError } from 'actions/';
+import { loading, setError, setConditions, resetSearchConditions, setPageableTableProperties } from 'actions/';
 import Contracts from 'components/modules/accountant/realization/contracts/contracts';
-import {updateOnCloseDetails} from 'utils/';
+import { generateExportLink } from 'utils/';
 import ContractApi from 'api/modules/accountant/realization/contractApi';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 
 class ContractsContainer extends Component {
     state = {
         contracts: [],
-        financialPlanPositions:[],
-        investmentPlanPositions:[],
-        applications:[],
         coordinators: [
             {
                 code: '',
@@ -24,10 +21,16 @@ class ContractsContainer extends Component {
 
     handleGetContracts = () =>{
         this.props.loading(true);
-        ContractApi.getContracts(new Date().getFullYear())
+        this.props.searchConditions.rowsPerPage = 25;
+        ContractApi.getContracts(this.props.searchConditions)
         .then(response =>{
+            this.props.setPageableTableProperties({
+                totalElements: response.data.data.totalElements,
+                lastPage: response.data.data.last,
+                firstPage: response.data.data.first,
+            })
             this.setState({
-                contracts: response.data.data,
+                contracts: response.data.data.content,
             })
             this.props.loading(false);
         })
@@ -48,37 +51,28 @@ class ContractsContainer extends Component {
         .catch(error => {});
     }
 
-    handleChangeYear = (year) => {
-        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
+    handleExcelExport = (exportType, headRow) =>{
         this.props.loading(true);
-            ContractApi.getContracts(year instanceof Date ? year.getFullYear() : 0)
-            .then(response =>{
-                this.setState({
-                    contracts: response.data.data,
-                })
-                this.props.loading(false);
-            })
-            .catch(error => {})
-        }
-//        else {
-//            ContractApi.getAllContracts()
-//            .then(response =>{
-//                this.setState({
-//                    contracts: response.data.data,
-//                })
-//                this.props.loading(false);
-//            })
-//            .catch(error => {})
-//        }
+        ContractApi.exportContractsToExcel(exportType, headRow, this.props.searchConditions)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
     }
 
-    handleUpdateOnCloseDetails = (contract) => {
-        return updateOnCloseDetails(this.state.contracts, contract);
+    componentDidUpdate(prevProps){
+        if(this.props.searchConditions !== prevProps.searchConditions){
+            this.handleGetContracts();
+        }
     }
 
     componentDidMount(){
-        this.handleGetContracts();
         this.handleGetCoordinators();
+    }
+
+    componentWillUnmount(){
+        this.props.resetSearchConditions();
     }
 
     render(){
@@ -87,15 +81,13 @@ class ContractsContainer extends Component {
             <>
                 <Contracts
                     initialValues={this.state.contracts}
-                    financialPlanPositions={this.state.financialPlanPositions}
-                    investmentPlanPositions={this.state.investmentPlanPositions}
-                    applications={this.state.applications}
                     coordinators={this.state.coordinators}
                     isLoading={isLoading}
                     error={error}
                     clearError={clearError}
-                    onChangeYear={this.handleChangeYear}
-                    onClose={this.handleUpdateOnCloseDetails}
+                    searchConditions={this.props.searchConditions}
+                    onSetSearchConditions={this.props.onSetSearchConditions}
+                    onExcelExport={this.handleExcelExport}
                 />
             </>
         );
@@ -106,6 +98,7 @@ const mapStateToProps = (state) => {
 	return {
 		isLoading: state.ui.loading,
 		error: state.ui.error,
+		searchConditions: state.search,
 	}
 };
 
@@ -113,6 +106,9 @@ function mapDispatchToProps (dispatch) {
     return {
         loading : bindActionCreators(loading, dispatch),
         clearError : bindActionCreators(setError, dispatch),
+        onSetSearchConditions : bindActionCreators(setConditions, dispatch),
+        resetSearchConditions : bindActionCreators(resetSearchConditions, dispatch),
+        setPageableTableProperties : bindActionCreators(setPageableTableProperties, dispatch)
     }
 };
 

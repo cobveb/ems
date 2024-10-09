@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux';
-import { loading, setError } from 'actions/';
+import { loading, setError, setDictionaryPageableTableProperties, resetDictionarySearchConditions, setDictionaryConditions, setDictionaryName} from 'actions/';
 import * as constants from 'constants/uiNames';
 import InvoiceFormContainer from 'containers/modules/coordinator/realization/invoices/forms/invoiceFormContainer';
 import { getPlanTypes, getVats, findSelectFieldPosition, findIndexElement } from 'utils/';
 import ContractorApi from 'api/modules/accountant/dictionary/contractorApi';
 import InvoicesApi from 'api/modules/coordinator/realization/invoicesApi';
+import PublicProcurementApplicationApi from 'api/modules/coordinator/publicProcurement/publicProcurementApplicationApi';
+import ContractApi from 'api/modules/coordinator/realization/contractApi';
 
 class InvoiceContainer extends Component {
     state = {
@@ -24,6 +26,9 @@ class InvoiceContainer extends Component {
         financialPlanPositions:[],
         investmentPlanPositions:[],
         action: this.props.action,
+        applications: [],
+        contracts: [],
+        isUpdate: false,
     };
 
     handleContractors = () => {
@@ -36,26 +41,74 @@ class InvoiceContainer extends Component {
         .catch(error =>{})
     }
 
-    handleGetInvoicePositions = () =>{
+    handleGetApplications = () =>{
+        this.props.loading(true)
+        PublicProcurementApplicationApi.getApplicationsDictionary(this.props.dictionarySearchConditions)
+        .then(response =>{
+            this.setState(prevState => {
+                this.props.setDictionaryPageableTableProperties({
+                    totalElements: response.data.data.totalElements,
+                    lastPage: response.data.data.last,
+                    firstPage: response.data.data.first,
+                })
+                let applications = [...prevState.applications];
+                applications = response.data.data.content;
+                return {applications};
+            });
+            this.props.loading(false)
+        })
+        .catch(error =>{});
+    }
+
+    handleGetContracts = () =>{
+        this.props.loading(true)
+        ContractApi.getContractsDictionary(this.props.dictionarySearchConditions)
+        .then(response =>{
+            this.setState(prevState => {
+                this.props.setDictionaryPageableTableProperties({
+                    totalElements: response.data.data.totalElements,
+                    lastPage: response.data.data.last,
+                    firstPage: response.data.data.first,
+                })
+                let contracts = [...prevState.contracts];
+                contracts = response.data.data.content;
+                return {contracts};
+            });
+            this.props.loading(false)
+        })
+        .catch(error => {})
+    }
+
+    handleGetInvoiceDetails = () =>{
         this.props.loading(true);
+        InvoicesApi.getInvoiceDetails(this.props.initialValues.id)
+        .then(response =>{
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                response.data.data.invoicePositions.map(position =>(
+                    this.setupPositionIncludedPlanType(position)
+                ))
+                Object.assign(initData, response.data.data);
+                return {initData}
+            })
+            this.props.loading(false)
+        })
+        .catch(error => {})
+    }
+
+    handleGetInvoicePositions = () =>{
         InvoicesApi.getInvoicePositions(this.props.initialValues.id)
         .then(response =>{
             this.setState( prevState => {
                 let initData = {...prevState.initData};
                 Object.assign(initData, this.props.initialValues);
-                if(initData.publicProcurementApplication !== null){
-                   initData.publicProcurementApplication = this.setupPublicProcurementApplication(initData.publicProcurementApplication);
-                }
-                if(initData.contract !== undefined &&  initData.contract !== null){
-                   initData.contract = this.setupContract(initData.contract);
-                }
                 response.data.data.map(position =>(
                     this.setupPositionIncludedPlanType(position)
                 ))
                 initData.invoicePositions = response.data.data;
                 return {initData}
             })
-        this.props.loading(false);
+            this.props.loading(false);
         })
         .catch(error => {})
     }
@@ -87,43 +140,32 @@ class InvoiceContainer extends Component {
     handleSubmit = (values) =>{
         this.props.loading(true)
         const payload = JSON.parse(JSON.stringify(values));
+        if(this.state.action === "edit" && payload.invoicePositions.length > 0){
+            payload.invoicePositions.forEach(position => {
+                position.positionIncludedPlanType =  position.positionIncludedPlanType.code;
+                position.vat =  position.vat.code;
+            });
+        }
         InvoicesApi.saveInvoice(this.state.action, payload)
         .then(response => {
             this.setState(prevState =>{
                 let initData = {...prevState.initData};
                 let action = prevState.action;
+                let isUpdate = prevState.isUpdate;
                 Object.assign(initData, response.data.data);
-                if(initData.publicProcurementApplication !== null){
-                   initData.publicProcurementApplication = this.setupPublicProcurementApplication(initData.publicProcurementApplication);
-                }
-                if(initData.contract !== null){
-                   initData.contract = this.setupContract(initData.contract);
-                }
-
+                initData.invoicePositions = values.invoicePositions;
                 /* Get plans position on add invoice action */
                 this.handleGetFinancialPlanPositions(response.data.data.sellDate);
                 this.handleGetInvestmentPlanPositions(response.data.data.sellDate);
 
 
                 action = 'edit';
-
-                return {initData, action}
+                isUpdate = true;
+                return {initData, action, isUpdate}
             });
             this.props.loading(false)
         })
         .catch(error => {})
-    }
-
-    setupPublicProcurementApplication = (publicProcurementApplication) =>{
-        if(publicProcurementApplication !== undefined){
-            return this.props.applications.filter(application => application.id === publicProcurementApplication.id)[0];
-        }
-    }
-
-    setupContract = (curContract) =>{
-        if(curContract !== undefined){
-            return this.props.contracts.filter(contract => contract.id === curContract.id)[0];
-        }
     }
 
     setupPositionIncludedPlanType = (position) =>{
@@ -145,6 +187,7 @@ class InvoiceContainer extends Component {
         .then(response => {
             this.setState(prevState => {
                 let initData = {...prevState.initData};
+                let isUpdate = prevState.isUpdate;
                 this.setupPositionIncludedPlanType(response.data.data);
                 if(action === 'add'){
                     initData.invoicePositions.push(response.data.data);
@@ -160,7 +203,8 @@ class InvoiceContainer extends Component {
                         initData.invoiceValueGross = initData.invoiceValueGross + response.data.data.amountGross;
                     }
                 }
-                return {initData};
+                isUpdate = true;
+                return {initData, isUpdate};
             })
             this.props.loading(false);
         })
@@ -187,7 +231,7 @@ class InvoiceContainer extends Component {
     }
 
     handleClose = () => {
-        this.props.onClose(this.state.initData);
+        this.props.onClose(this.state.isUpdate);
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -195,37 +239,36 @@ class InvoiceContainer extends Component {
             this.setState(prevState =>{
                 let initData = {...prevState.initData};
                 Object.assign(initData, this.props.initialValues);
-                if(initData.publicProcurementApplication !== null){
-                   initData.publicProcurementApplication = this.setupPublicProcurementApplication(initData.publicProcurementApplication);
-                }
-                if(initData.contract !== undefined &&  initData.contract !== null){
-                   initData.contract = this.setupContract(initData.contract);
-                }
-
                 return {initData}
             });
+        }
+
+        if(this.props.dictionarySearchConditions !== prevProps.dictionarySearchConditions){
+            if(this.props.dictionarySearchConditions.dictionaryName === constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_TITLE){
+                this.handleGetApplications();
+            } else if (this.props.dictionarySearchConditions.dictionaryName === constants.COORDINATOR_REALIZATION_INVOICE_CONTRACT){
+                this.handleGetContracts();
+            }
         }
     }
 
     componentDidMount(){
-        this.setState(prevState =>{
-            let initData = {...prevState.initData};
-            Object.assign(initData, this.props.initialValues);
-            if(initData.publicProcurementApplication !== null){
-               initData.publicProcurementApplication = this.setupPublicProcurementApplication(initData.publicProcurementApplication);
-            }
-            if(initData.contract !== undefined &&  initData.contract !== null){
-               initData.contract = this.setupContract(initData.contract);
-            }
-            return {initData}
-        });
-
-        if(this.props.action !== "add"){
-            this.handleGetInvoicePositions()
+        if(this.props.action === "add"){
+            this.setState(prevState =>{
+                let initData = {...prevState.initData};
+                Object.assign(initData, this.props.initialValues);
+                return {initData}
+            });
+        } else {
+            this.handleGetInvoiceDetails();
             this.handleGetFinancialPlanPositions(this.props.initialValues.sellDate);
             this.handleGetInvestmentPlanPositions(this.props.initialValues.sellDate);
         }
         this.handleContractors()
+    }
+
+    componentWillUnmount(){
+        this.props.resetDictionarySearchConditions();
     }
 
     render(){
@@ -238,12 +281,14 @@ class InvoiceContainer extends Component {
                     planTypes={this.state.planTypes}
                     vats={this.state.vats}
                     contractors={this.state.contractors}
-                    applications={this.props.applications}
-                    contracts={this.props.contracts}
+                    applications={this.state.applications}
+                    contracts={this.state.contracts}
                     financialPlanPositions={this.state.financialPlanPositions}
                     investmentPlanPositions={this.state.investmentPlanPositions}
                     error={this.props.error}
                     clearError={this.props.clearError}
+                    onChangeDictionarySearchConditions={this.props.setDictionarySearchConditions}
+                    onSetDictionaryName={this.props.setDictionaryName}
                     onSubmit={this.handleSubmit}
                     onSubmitPosition={this.handleSubmitPosition}
                     onDeletePosition={this.handleDeletePosition}
@@ -259,6 +304,7 @@ const mapStateToProps = (state) => {
 	return {
 		isLoading: state.ui.loading,
 		error: state.ui.error,
+		dictionarySearchConditions: state.dictionarySearch,
 	}
 };
 
@@ -266,6 +312,10 @@ function mapDispatchToProps (dispatch) {
     return {
         loading : bindActionCreators(loading, dispatch),
         clearError : bindActionCreators(setError, dispatch),
+        resetDictionarySearchConditions : bindActionCreators(resetDictionarySearchConditions, dispatch),
+        setDictionarySearchConditions : bindActionCreators(setDictionaryConditions, dispatch),
+        setDictionaryPageableTableProperties : bindActionCreators(setDictionaryPageableTableProperties, dispatch),
+        setDictionaryName : bindActionCreators(setDictionaryName, dispatch),
     }
 };
 

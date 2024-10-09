@@ -51,7 +51,7 @@ export const validate =  ( values, props ) => {
                         errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
                     }
                 } else {
-                    if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet - props.initialValues.amountNet + values.amountNet) > props.invoice.contract.contractValueNet){
+                    if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet - props.initialValues.amountNet + values.amountNet).toFixed(2) > props.invoice.contract.contractValueNet){
                         errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
                     }
                 }
@@ -141,11 +141,11 @@ export const validate =  ( values, props ) => {
                         props.dispatch(touch('InvoicePositionForm','amountNet'))
                     }
                 } else {
-                    if((props.invoice.contract.invoicesValueGross + props.invoice.contract.realPrevYearsValueGross - props.initialValues.amountGross + values.amountGross) > props.invoice.contract.contractValueGross){
+                    if((props.invoice.contract.invoicesValueGross + props.invoice.contract.realPrevYearsValueGross - props.initialValues.amountGross + values.amountGross).toFixed(2) > props.invoice.contract.contractValueGross){
                         errors["amountGross"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
                     }
                     /* Check if current position value not exceeded contract amount net */
-                    if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet - props.initialValues.amountNet + values.amountNet) > props.invoice.contract.contractValueNet){
+                    if((props.invoice.contract.invoicesValueNet + props.invoice.contract.realPrevYearsValueNet - props.initialValues.amountNet + values.amountNet).toFixed(2) > props.invoice.contract.contractValueNet){
                         errors["amountNet"] = constants.COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED
                         props.dispatch(touch('InvoicePositionForm','amountNet'))
                     }

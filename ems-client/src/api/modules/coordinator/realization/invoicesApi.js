@@ -2,8 +2,12 @@ import Axios from 'axios';
 
 class InvoicesApi {
 
-    static getInvoices(year){
-        return Axios.get(`/api/coordinator/realization/invoice/${year}/getInvoices`)
+    static getInvoicesPageable(conditions){
+        return Axios.post(`/api/coordinator/realization/invoice/getInvoicesPageable`, conditions)
+    }
+
+    static getInvoiceDetails(invoiceId){
+        return Axios.get(`/api/coordinator/realization/invoice/${invoiceId}/getInvoiceDetails`)
     }
 
     static saveInvoice(action, data){
@@ -12,10 +16,6 @@ class InvoicesApi {
 
     static deleteInvoice(invoiceId){
         return Axios.delete(`/api/coordinator/realization/invoice/deleteInvoice/${invoiceId}`)
-    }
-
-    static getInvoicePositions(invoiceId){
-        return Axios.get(`/api/coordinator/realization/invoice/${invoiceId}/getInvoicePositions`)
     }
 
     static getInvoicesPositionsByCoordinatorPlanPosition(planType, planPositionId){
@@ -40,6 +40,10 @@ class InvoicesApi {
 
     static exportPlanPositionInvoicesPositionToExcel(exportType, positionId, data){
         return Axios.put(`/api/accountant/institution/plans/export/planPositionInvoicesPositions/${positionId}/${exportType}`, data, {responseType: 'blob'})
+    }
+
+    static exportInvoicesToExcel(exportType, headRows, searchConditions){
+        return Axios.put(`/api/coordinator/realization/invoice/export/${exportType}`, {headRows, searchConditions}, {responseType: 'blob'})
     }
 }
 

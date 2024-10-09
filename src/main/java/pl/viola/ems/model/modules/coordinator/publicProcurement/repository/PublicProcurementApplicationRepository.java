@@ -22,8 +22,6 @@ public interface PublicProcurementApplicationRepository extends JpaRepository<Ap
 
     Set<Application> findByCreateDateBetweenAndStatusIn(Date createDateFrom, Date createDateTo, List<Application.ApplicationStatus> statuses);
 
-    Set<Application> findByStatusInAndCoordinatorIn(List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> organizationUnits);
-
     Set<Application> findByCreateDateBetweenAndStatusInAndCoordinatorIn(Date createDateFrom, Date createDateTo, List<Application.ApplicationStatus> statuses, Set<OrganizationUnit> organizationUnits);
 
     List<Application> findByEstimationTypeAndApplicationProtocolIsNotNull(PublicProcurementPosition.EstimationType estimationType);

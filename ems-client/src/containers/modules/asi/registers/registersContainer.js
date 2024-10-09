@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import Registers from 'components/modules/asi/registers/registers';
 import { bindActionCreators } from 'redux';
 import { loading, setError, resetSearchConditions, setPageableTableProperties, setConditions } from 'actions/';
-import { updateOnCloseDetails, findIndexElement, generateExportLink } from 'utils';
+import { generateExportLink } from 'utils';
 import RegisterApi from 'api/modules/asi/register/registerApi';
 import DictionaryRegisterApi from 'api/modules/asi/dictionary/register/registerApi';
 import * as constants from 'constants/uiNames';

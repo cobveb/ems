@@ -18,7 +18,24 @@ class ContractContainer extends Component {
         contractors: [],
         action: this.props.action,
         closeInvoice: false,
+        isUpdate: false,
     };
+
+    handleGetContractDetails = () =>{
+        this.props.loading(true);
+        ContractApi.getContractDetails(this.props.initialValues.id)
+        .then(response =>{
+            this.setState( prevState => {
+                let initData = {...prevState.initData};
+                Object.assign(initData, response.data.data);
+                this.handleGetInvoices(response.data.data.id);
+                return {initData}
+            })
+            this.props.loading(false)
+        })
+        .catch(error => {})
+    }
+
 
     handleContractors = () => {
         ContractorApi.getActiveContractors()
@@ -75,10 +92,12 @@ class ContractContainer extends Component {
             const idx = this.state.initData.invoices.findIndex(invoice => invoice.id === invoiceId);
             this.setState(prevState => {
                 const initData = {...prevState.initData};
+                let isUpdate = prevState.isUpdate;
                 initData.invoices.splice(idx, 1);
                 //Update contract realized value on delete invoice
                 this.setupContractRealizedValues(initData);
-                return {initData}
+                isUpdate = true;
+                return {initData, isUpdate}
             })
             this.props.loading(false);
         })
@@ -94,6 +113,7 @@ class ContractContainer extends Component {
             this.setState(prevState =>{
                 let initData = {...prevState.initData};
                 let action = prevState.action;
+                let isUpdate = prevState.isUpdate;
                 const contracts = [...prevState.contracts];
                 Object.assign(initData, response.data.data);
                 if (action === 'add'){
@@ -103,7 +123,8 @@ class ContractContainer extends Component {
                     this.setupContractRealizedValues(initData);
                 }
                 action = 'edit';
-                return {initData, action, contracts}
+                isUpdate = true;
+                return {initData, action, contracts, isUpdate}
             });
             this.props.loading(false)
         })
@@ -111,12 +132,13 @@ class ContractContainer extends Component {
     }
 
     handleClose = () => {
-        this.props.onClose(this.state.initData);
+        this.props.onClose(this.state.isUpdate);
     }
 
-    handleCloseInvoiceDetails = () =>{
+    handleCloseInvoiceDetails = (isUpdate) =>{
         this.setState({
             closeInvoice: !this.state.closeInvoice,
+            isUpdate: isUpdate,
         })
         this.handleGetInvoices(this.state.initData.id);
     }
@@ -129,7 +151,7 @@ class ContractContainer extends Component {
             return {initData}
         });
         if(this.props.action !== 'add'){
-            this.handleGetInvoices(this.props.initialValues.id);
+            this.handleGetContractDetails();
         }
         this.handleContractors();
     }
@@ -142,10 +164,7 @@ class ContractContainer extends Component {
                     action= {this.state.action}
                     isLoading={this.props.isLoading}
                     contractors={this.state.contractors}
-                    financialPlanPositions={this.props.financialPlanPositions}
-                    investmentPlanPositions={this.props.investmentPlanPositions}
                     contracts={this.state.contracts}
-                    applications={this.props.applications}
                     error={this.props.error}
                     clearError={this.props.clearError}
                     onSubmit={this.handleSubmit}

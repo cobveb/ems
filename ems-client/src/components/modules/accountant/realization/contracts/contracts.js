@@ -4,9 +4,10 @@ import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
 import { Visibility, } from '@material-ui/icons/';
-import { Button, Table, SearchField, DatePicker, SelectField } from 'common/gui';
+import { Button, SearchField, DatePicker, SelectField } from 'common/gui';
+import { TablePageable } from 'containers/common/gui';
 import ContractContainer from 'containers/modules/coordinator/realization/contracts/contractContainer';
-import {escapeSpecialCharacters} from 'utils/';
+import { setChangedSearchConditions } from 'utils/';
 
 const styles = theme => ({
     root: {
@@ -43,6 +44,7 @@ class Contracts extends Component {
         isDetailsVisible: false,
         year: new Date(),
         coordinator:'',
+        searchConditionsChange: false,
         headCells: [
             {
                 id: 'number',
@@ -50,14 +52,14 @@ class Contracts extends Component {
                 type: 'text',
             },
             {
-                id: 'coordinator.name',
+                id: 'coordinator',
                 label: constants.ACCOUNTANT_COORDINATOR_PLANS_TABLE_HEAD_ROW_COORDINATOR,
-                type:'object',
+                type:'text',
             },
             {
-                id: 'contractObject.content',
+                id: 'contractObject',
                 label: constants.COORDINATOR_REALIZATION_CONTRACT_OBJECTS,
-                type: 'object',
+                type: 'text',
             },
             {
                 id: 'signingDate',
@@ -78,18 +80,109 @@ class Contracts extends Component {
                 type: 'amount',
             },
         ],
+        searchConditions: [
+            {
+                name: 'year',
+                value: new Date().getFullYear(),
+                type: 'number'
+            },
+            {
+                name: 'number',
+                value: '',
+                type: 'text'
+            },
+            {
+                name: 'coordinator',
+                value: '',
+                type: 'select'
+            },
+            {
+                name: 'contractObject',
+                value: '',
+                type: 'text'
+            },
+            {
+                name: 'signedFrom',
+                value: '',
+                type: 'date'
+            },
+            {
+                name: 'signedTo',
+                value: '',
+                type: 'date'
+            }
+        ]
+
     };
 
     handleSelect = (id) => {
         this.setState({selected: id});
     }
 
+    onChangeSearchConditions = (event) => {
+        event.persist();
+        this.setState(prevState => {
+            const searchConditions = [...prevState.searchConditions];
+            let searchConditionsChange = prevState.searchConditionsChange;
+            return setChangedSearchConditions(event.target.name, event.target.value, searchConditions, searchConditionsChange);
+        });
+    }
+
     handleSearch = (event) => {
-        this.setState({[event.target.name]: escapeSpecialCharacters(event.target.value)})
+        this.setState({[event.target.name]: event.target.value})
+        if(!['number', 'contractObject'].includes(event.target.name)){
+            this.onChangeSearchConditions(event);
+        }
     }
 
     handleDataChange = (id) => (date) => {
         this.setState({[id]: date})
+    }
+
+    handleDataChange = (id) => (date) => {
+        this.setState(prevState => {
+            let searchConditions = [...prevState.searchConditions];
+            let searchConditionsChange = prevState.searchConditionsChange;
+            switch(id) {
+                case "signedTo":
+                    let signedTo = `prevState.${id}`;
+                    signedTo = date;
+                    if(!isNaN(date)){
+                        const signedToResult = setChangedSearchConditions(id, date instanceof Date ? date : '', searchConditions, searchConditionsChange)
+                        searchConditions = Object.values(signedToResult)[0];
+                        searchConditionsChange = Object.values(signedToResult)[1];
+                    }
+                    return {signedTo, searchConditions, searchConditionsChange};
+                case "signedFrom":
+                    let signedFrom = `prevState.${id}`;
+                    signedFrom = date;
+                    if(!isNaN(date)){
+                        const signedFromResult = setChangedSearchConditions(id, date instanceof Date ? date : '', searchConditions, searchConditionsChange)
+                        searchConditions = Object.values(signedFromResult)[0];
+                        searchConditionsChange = Object.values(signedFromResult)[1];
+                    }
+                    return {signedFrom, searchConditions, searchConditionsChange};
+                default:
+                    let year = `prevState.${id}`;
+                    if(!isNaN(date)){
+                        const yearResult = setChangedSearchConditions(id, date instanceof Date ? date.getFullYear() : 0, searchConditions, searchConditionsChange)
+                        year = date;
+                        searchConditions = Object.values(yearResult)[0];
+                        searchConditionsChange = Object.values(yearResult)[1];
+                    }
+                    return {year, searchConditions, searchConditionsChange};
+            }
+        });
+    }
+
+    handleBlur = (event) => {
+        this.onChangeSearchConditions(event);
+    }
+
+    handleKeyDown = (event) => {
+       if (event.key === "Enter") {
+          this.onChangeSearchConditions(event);
+       }
     }
 
     handleCloseDialogError = () => {
@@ -113,68 +206,39 @@ class Contracts extends Component {
             isDetailsVisible: !this.state.isDetailsVisible,
             selected: [],
             action: null,
-            rows: this.props.onClose(contract),
         });
     };
 
-    filter = () => {
-        let contracts = this.props.initialValues;
-        return contracts.filter((contract) => {
-            return this.state.number !== '' ?
-                contract.number !== null ?
-                    contract.number.toLowerCase().search(
-                        this.state.number.toLowerCase()) !== -1
-                : null
-            : contract
-            && (
-                (this.state.signedFrom !== null && this.state.signedTo !== null) ?
-                    new Date(contract.signingDate) >= this.state.signedFrom && new Date(contract.signingDate) <= this.state.signedTo :
-                     this.state.signedFrom !== null ?
-                        new Date(contract.signingDate) >= this.state.signedFrom :
-                            this.state.signedFrom === null && this.state.signedTo === null ?
-                                contract :
-                                    new Date(contract.signingDate) <= this.state.signedTo
-            )
-            && (
-                this.state.contractObject !== '' ?
-                contract.contractObject.content !== null ?
-                    contract.contractObject.content.toLowerCase().search(
-                        this.state.contractObject.toLowerCase()) !== -1
-                : null
-            : contract
-            ) &&
-            contract.coordinator.code.toLowerCase().search(
-                this.state.coordinator.toLowerCase()) !== -1
-        })
 
+    handleExcelExport = (exportType) => {
+        this.props.onExcelExport(exportType, this.state.headCells);
     }
+
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
-                rows: this.filter(),
+                rows: this.props.initialValues,
             });
-        } else if(this.state.action !== prevState.action){
-            this.setState({
-                rows: this.filter(),
-            })
-        } else if (this.state.number !== prevState.number ||
-            this.state.contractObject !== prevState.contractObject ||
-            this.state.signedFrom !== prevState.signedFrom ||
-            this.state.signedTo !== prevState.signedTo ||
-            this.state.coordinator !== prevState.coordinator
-        ){
-            this.setState({
-                rows: this.filter(),
-            })
-        } else if (this.state.year !== prevState.year){
-            this.props.onChangeYear(this.state.year);
         }
+        if(this.state.searchConditionsChange){
+            this.setState({
+                searchConditionsChange: false,
+                selected: {},
+                action: ''
+            })
+            this.props.onSetSearchConditions(this.state.searchConditions);
+        }
+    }
+
+    componentDidMount() {
+        this.props.onSetSearchConditions(this.state.searchConditions);
+        this.setState({rows: this.props.initialValues});
     }
 
     render(){
         const { classes, isLoading, error, coordinators } = this.props;
-        const { headCells, rows, selected, year, signedFrom, signedTo, isDetailsVisible, action, coordinator } = this.state;
+        const { headCells, rows, selected, year, signedFrom, signedTo, isDetailsVisible, action, coordinator, searchConditionsChange } = this.state;
         return (
             <>
                 {isLoading && <Spinner />}
@@ -217,6 +281,8 @@ class Contracts extends Component {
                                         <SearchField
                                             name="number"
                                             onChange={this.handleSearch}
+                                            onBlur={this.handleBlur}
+                                            onKeyDown={(e) => this.handleKeyDown(e)}
                                             label={constants.COORDINATOR_REALIZATION_CONTRACTS_NUMBER}
                                             valueType="all"
                                         />
@@ -250,20 +316,25 @@ class Contracts extends Component {
                                         <SearchField
                                             name="contractObject"
                                             onChange={this.handleSearch}
+                                            onBlur={this.handleBlur}
+                                            onKeyDown={(e) => this.handleKeyDown(e)}
                                             label={constants.COORDINATOR_REALIZATION_CONTRACT_OBJECTS}
                                             valueType="all"
                                         />
                                     </Grid>
                                 </Grid>
                                 <Grid container spacing={0} direction="row" justify="flex-start" className={classes.container}>
-                                    <Table
+                                    <TablePageable
                                         className={classes.tableWrapper}
                                         rows={rows}
                                         headCells={headCells}
                                         onSelect={this.handleSelect}
                                         onDoubleClick={this.handleDoubleClick}
+                                        onExcelExport={this.handleExcelExport}
+                                        resetPageableProperties={searchConditionsChange}
                                         rowKey="id"
-                                        defaultOrderBy="id"
+                                        orderBy={this.props.searchConditions.sort.orderBy !== undefined ? {id: this.props.searchConditions.sort.orderBy} : headCells[2]}
+                                        orderType={this.props.searchConditions.sort.orderType !== undefined ? this.props.searchConditions.sort.orderType : "desc"}
                                     />
                                 </Grid>
                             </div>

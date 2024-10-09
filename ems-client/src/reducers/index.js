@@ -3,6 +3,7 @@ import { auth } from "reducers/auth";
 import { ui } from "reducers/ui";
 import { modules } from "reducers/modules";
 import { search } from "reducers/search";
+import { dictionarySearch } from "reducers/dictionarySearch";
 import { reducer as formReducer } from 'redux-form';
 
 const appReducer = combineReducers({
@@ -10,6 +11,7 @@ const appReducer = combineReducers({
     ui,
     modules,
     search,
+    dictionarySearch,
     form: formReducer,
 })
 

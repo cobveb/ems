@@ -1,20 +1,11 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { OutlinedInput, InputAdornment, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Typography, Grid, Divider} from '@material-ui/core/';
-import { SearchField, Button, Table } from 'common/gui';
+import { SearchField, Button, } from 'common/gui';
+import { Spinner } from 'common/';
+import { DictionaryTablePageable } from 'containers/common/gui';
 import {Check, Close, Cancel, LibraryBooks} from '@material-ui/icons';
 import * as constants from 'constants/uiNames';
-import {escapeSpecialCharacters} from 'utils/';
-
-const filter = (value, items) => {
-    const searchValue = escapeSpecialCharacters(value)
-    return items.filter((item) => {
-        return item.itemName.toLowerCase().search(
-            searchValue.toLowerCase()) !== -1 ||
-            item.code.toLowerCase().search(
-            searchValue.toLowerCase()) !== -1;
-    });
-}
 
 const useDictionaryViewStyles = makeStyles(theme => ({
     root: {
@@ -49,19 +40,20 @@ function DictionaryView(props){
     const classes = useDictionaryViewStyles();
     const {open, setOpen, dictionaryName, onSelectValue, searchValue, rows} = props;
     const [selected, setSelected] = React.useState(null);
-    const [search, setSearch] = React.useState(searchValue !== null ? searchValue : "");
-    const [positions, setPositions] = React.useState(search ? filter(search, rows) : (rows));
+    const [value, setValue] = React.useState(searchValue !== null && searchValue.itemName !== "" ? searchValue.itemName : "");
+    const [search, setSearch] = React.useState(value);
+
     const headRows = [
         {
             id: 'code',
             numeric: false,
-            label: 'Kod',
+            label: constants.TABLE_HEAD_ROW_CODE,
             boolean: false,
         },
         {
             id: 'itemName',
             numeric: false,
-            label: 'Nazwa',
+            label: constants.TABLE_HEAD_ROW_NAME,
             boolean: false,
         },
     ];
@@ -78,8 +70,24 @@ function DictionaryView(props){
     }
 
     const onSearch = (event) => {
-        setSearch(event.target.value)
-        setPositions(filter(event.target.value, rows))
+        setValue(event.target.value)
+    }
+
+    const handleBlur = (event) => {
+        if(value !== search){
+            props.onChangeDictionarySearchConditions([{name: 'searchValue', value: value, type: 'text'}]);
+            setSearch(value);
+        }
+    }
+
+    const handleKeyDown = (event) => {
+        event.persist()
+        if (event.key === "Enter") {
+            if(value !== search){
+                props.onChangeDictionarySearchConditions([{name: 'searchValue', value: value, type: 'text'}])
+                setSearch(value);
+            }
+        }
     }
 
     const onDouble = (row) => {
@@ -120,21 +128,25 @@ function DictionaryView(props){
                         <Divider />
                         <Grid item xs={12}>
                             <SearchField
-                                value={search}
+                                value={value}
                                 autoFocus={true}
                                 onChange={(event) => onSearch(event)}
+                                onBlur={(event) => handleBlur(event)}
+                                onKeyDown={(event) => handleKeyDown(event)}
                                 valueType="all"
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <Table
+                            {props.isLoading && <Spinner />}
+                            <DictionaryTablePageable
                                 className={classes.tableWrapper}
-                                rows={positions}
+                                rows={rows}
                                 headCells={headRows}
                                 onSelect={onSelect}
                                 onDoubleClick={onDouble}
-                                clearSelect={!selected}
+                                resetPageableProperties={false}
                                 rowKey='code'
+                                orderBy={headRows[1]}
                             />
                         </Grid>
                     </Grid>
@@ -175,78 +187,111 @@ function DictionaryView(props){
     );
 }
 
-export default function DictionaryField({classes, inputProps, labelWidth, disabled, dictionaryName, isRequired, items,  ...input}){
+export default function DictionaryField({classes, inputProps, labelWidth, disabled, dictionaryName, isRequired, items, onChangeDictionarySearchConditions, onSetDictionaryName, isLoading, ...input}){
     const [openDictionary, setOpenDictionary] = React.useState(false);
-    const [value, setValue] = React.useState(input.value.name !== undefined && isRequired ? input.value : {code: 'err', name: ''});
+    const [value, setValue] = React.useState(isRequired ?
+        input.value.itemName !== undefined ? input.value : {code: 'err', itemName: ''} :
+            input.value.itemName !== undefined ? input.value : {code: '', itemName: ''});
     const [action, setAction] = React.useState(null);
-    const [searchValue, setSearchValue] = React.useState(null);
+    const [searchValue, setSearchValue] = React.useState(input.value.itemName !== undefined ? input.value.itemName : {code: '', itemName: ''});
+    const [positions, setPositions] = React.useState(items);
 
     React.useEffect(() => {
+
+
+        if(positions !== items){
+            setPositions(items);
+            if(action !== null && action !=='select' && !openDictionary){
+                if(items.length === 0 && searchValue.itemName.length > 0){
+                    setValue({code: 'err', itemName: searchValue.itemName})
+                } else if (items.length === 0 && searchValue.itemName.length === 0) {
+                    setValue({code: '', itemName: searchValue.itemName})
+                } else if (items.length === 1){
+                    if(!openDictionary){
+                        setValue(items[0]);
+                    }
+                } else if (items.length > 1 && searchValue.itemName.length > 0) {
+                    setValue({code: 'err', itemName: searchValue.itemName})
+                    setOpenDictionary(true)
+                    setSearchValue({code: 'err', itemName: searchValue.itemName})
+                } else if (searchValue.itemName.length === 0) {
+                    setValue({code: '', itemName: searchValue.itemName})
+                }
+            }
+        };
+
         if (action === 'blur'){
             if(value !== null && value.code.length > 0){
                 input.onBlur(value);
             } else  {
                 if (isRequired === true){
-                    setValue({code: 'err', name: ''})
+                    setValue({code: 'err', itemName: ''})
                 } else {
-                    setValue(null)
+                    input.onBlur(null)
                 }
             }
-        } else {
-            if(value !== input.value && value.code === 'err' && input.value.name !== undefined && input.value.name.length> 0){
-                setValue(input.value)
+        } else if (action !== 'change'){
+            if(value !== input.value && input.value.itemName !== undefined && input.value.itemName.length> 0){
+                setValue(input.value);
+                setSearchValue(value);
             } else {
                 setValue(value)
+                setSearchValue(value);
                 if (isRequired !== true && value.code !== undefined && value.code.length === 0){
                     input.onBlur(null)
                 }
             }
         }
-    },  [value, input, action, isRequired])
+    },  [searchValue, value, input, action, isRequired, items, openDictionary, positions])
 
 
     const handleOpenDictionary = () =>{
-        if(openDictionary === true){
-            setSearchValue(null);
+        if(openDictionary){
+            setSearchValue('');
         } else {
             if(value !== null){
-                setSearchValue(value.name);
+                setSearchValue(value);
+                onSetDictionaryName(dictionaryName);
+                if(value.code !== 'err'){
+                    onChangeDictionarySearchConditions([{name: 'searchValue', value: value.itemName, type: 'text'}])
+                }
+            } else {
+                onSetDictionaryName(dictionaryName);
+                onChangeDictionarySearchConditions([{name: 'searchValue', value: '', type: 'text'}])
             }
         }
-
         setOpenDictionary(!openDictionary);
     }
 
     function handleBlur(event){
-
-        const positions = filter(event.target.value, items);
-        if(positions.length === 0 && event.target.value.length > 0){
-            setValue({code: 'err', name: event.target.value})
-        } else if (positions.length === 0 && event.target.value.length === 0) {
-            setValue({code: '', name: event.target.value})
-        } else if (positions.length === 1){
-            if (isRequired === true){
-                setValue(positions[0]);
+        if(action !== 'blur'){
+            if (value !== null){
+                if(searchValue === null || value.itemName !== searchValue.itemName){
+                    setSearchValue(value)
+                    onSetDictionaryName(dictionaryName);
+                    onChangeDictionarySearchConditions([{name: 'searchValue', value: value.itemName, type: 'text'}])
+                }
             }
-        } else if (positions.length > 1 && event.target.value.length > 0) {
-            setValue({code: 'err', name: event.target.value})
-            setOpenDictionary(true)
-            setSearchValue(event.target.value)
-        } else if (event.target.value.length === 0) {
-            setValue({code: '', name: event.target.value})
+            setAction('blur');
         }
-        setAction('blur');
     }
 
     function handleChange(event){
         setAction('change');
-        setValue({code: '', name: event.target.value});
+        if(event.target.value.length === 0 ){
+            setValue(null);
+            setSearchValue(null);
+        } else {
+            setValue({code: 'err', itemName: event.target.value});
+        }
     }
 
     const onSelect = (value) =>{
         setOpenDictionary(!openDictionary)
         setValue(value);
-        setAction('blur');
+        setSearchValue({code: '', itemName: ''});
+        input.onBlur(value)
+        setAction('select');
     }
 
     return(
@@ -258,12 +303,14 @@ export default function DictionaryField({classes, inputProps, labelWidth, disabl
                     onSelectValue={onSelect}
                     searchValue={searchValue}
                     dictionaryName={dictionaryName}
-                    rows={items}
+                    onChangeDictionarySearchConditions={onChangeDictionarySearchConditions}
+                    isLoading={isLoading}
+                    rows={positions}
                 />
             }
             <OutlinedInput
                 fullWidth
-                value={value !== null ? value.name : ''}
+                value={value !== null ? value.itemName : ''}
                 className={classes}
                 classes={inputProps}
                 labelWidth={labelWidth}

@@ -104,7 +104,7 @@ class ApplicationsContainer extends Component {
             })
             this.setState(prevState => {
                 let applications = [...prevState.applications];
-                applications = response.data.data.content;
+                    applications = response.data.data.content;
                 applications.map(application => (
                     Object.assign(application,
                         {
@@ -191,6 +191,7 @@ class ApplicationsContainer extends Component {
                 onClose={this.handleGetApplicationsPageable}
                 onDelete={this.handleDelete}
                 onWithdraw={this.handleWithdraw}
+                searchConditions={this.props.searchConditions}
                 onSetSearchConditions={this.props.onSetSearchConditions}
                 isLoading={isLoading}
                 loading={loading}

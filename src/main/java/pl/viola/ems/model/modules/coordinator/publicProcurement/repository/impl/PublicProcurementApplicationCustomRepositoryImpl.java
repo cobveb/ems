@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
 import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
@@ -298,6 +299,7 @@ public class PublicProcurementApplicationCustomRepositoryImpl implements PublicP
         List<ApplicationPayload> results = new ArrayList<>();
         final AtomicBoolean isCoordinatorCondition = new AtomicBoolean(false);
         final AtomicBoolean isValidCoordinatorCondition = new AtomicBoolean(true);
+        final AtomicReference<String> currentStatusSearch = new AtomicReference<>();
 
         if (!conditions.isEmpty()) {
             final AtomicBoolean isStatusCondition = new AtomicBoolean(false);
@@ -334,6 +336,7 @@ public class PublicProcurementApplicationCustomRepositoryImpl implements PublicP
                         medPredicates.add(criteriaBuilder.equal(criteriaRoot.get(cond.getName()), Application.ApplicationStatus.valueOf(cond.getValue())));
                         predicatesCount.add(criteriaBuilder.equal(criteriaRootCount.get(cond.getName()), Application.ApplicationStatus.valueOf(cond.getValue())));
                         isStatusCondition.set(true);
+                        currentStatusSearch.set(cond.getValue());
                     } else if (cond.getName().equals("estimationType")) {
                         predicates.add(criteriaBuilder.equal(criteriaRoot.get(cond.getName()), PublicProcurementPosition.EstimationType.valueOf(cond.getValue())));
                         medPredicates.add(criteriaBuilder.equal(criteriaRoot.get(cond.getName()), PublicProcurementPosition.EstimationType.valueOf(cond.getValue())));
@@ -380,12 +383,22 @@ public class PublicProcurementApplicationCustomRepositoryImpl implements PublicP
                 predicatesCount.add(criteriaRootCount.get("coordinator").in(coordinators));
             }
 
+            if (role.equals("CHIEF") && isStatusCondition.get() && currentStatusSearch.get().equals("AZ") && !coordinators.isEmpty()) {
+                predicates.add(criteriaRoot.get("coordinator").in(coordinators));
+                predicatesCount.add(criteriaRootCount.get("coordinator").in(coordinators));
+            }
+
         } else {
             predicates.add(criteriaRoot.get("status").in(statuses));
             medPredicates.add(criteriaRoot.get("status").in(statuses));
             predicatesCount.add(criteriaRootCount.get("status").in(statuses));
 
             if (Arrays.asList("DIRECTOR", "MED").contains(role) && !coordinators.isEmpty()) {
+                predicates.add(criteriaRoot.get("coordinator").in(coordinators));
+                predicatesCount.add(criteriaRootCount.get("coordinator").in(coordinators));
+            }
+
+            if (role.equals("CHIEF") && currentStatusSearch.get().equals("AZ") && !coordinators.isEmpty()) {
                 predicates.add(criteriaRoot.get("coordinator").in(coordinators));
                 predicatesCount.add(criteriaRootCount.get("coordinator").in(coordinators));
             }
@@ -469,6 +482,92 @@ public class PublicProcurementApplicationCustomRepositoryImpl implements PublicP
         } else {
             return new PageImpl<>(new ArrayList<>(), pageable, 0);
         }
+    }
+
+    @Override
+    public Page<ApplicationPayload> findApplicationsInRealizationAsDictionary(final List<Application.ApplicationStatus> statuses, final List<OrganizationUnit> coordinators, final List<SearchCondition> conditions, final Pageable pageable, final Boolean isExport) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Application> query = criteriaBuilder.createQuery(Application.class);
+        CriteriaQuery<Long> count = criteriaBuilder.createQuery(Long.class);
+
+        Root<Application> criteriaRoot = query.from(Application.class);
+        criteriaRoot.join("orderedObject", JoinType.LEFT);
+
+        Root<Application> criteriaRootCount = count.from(Application.class);
+        criteriaRootCount.join("orderedObject", JoinType.LEFT);
+
+        Sort.Order order = pageable.getSort().stream().findFirst().orElse(null);
+        List<Predicate> predicates = new ArrayList<>();
+        List<Predicate> predicatesCount = new ArrayList<>();
+        List<ApplicationPayload> results = new ArrayList<>();
+
+
+        predicates.add(criteriaRoot.get("status").in(statuses));
+        predicatesCount.add(criteriaRootCount.get("status").in(statuses));
+
+        predicates.add(criteriaRoot.get("coordinator").in(coordinators));
+        predicatesCount.add(criteriaRootCount.get("coordinator").in(coordinators));
+
+        if (!conditions.isEmpty()) {
+            conditions.forEach(cond -> {
+                if (!cond.getValue().isEmpty()) {
+                    if (cond.getName().equals("searchValue")) {
+                        Predicate orderedObject = criteriaBuilder.like(criteriaBuilder.lower(criteriaRoot.get("orderedObject").get("content")), "%" + cond.getValue().toLowerCase() + "%");
+                        Predicate code = criteriaBuilder.like(criteriaBuilder.lower(criteriaRoot.get("number")), "%" + cond.getValue().toLowerCase() + "%");
+
+                        predicates.add(criteriaBuilder.or(orderedObject, code));
+                        predicatesCount.add(criteriaBuilder.or(orderedObject, code));
+                    }
+                }
+            });
+        }
+
+        query.where(predicates.toArray(new Predicate[0]));
+        count.select(criteriaBuilder.count(criteriaRootCount)).where(predicatesCount.toArray(new Predicate[0]));
+
+        if (order != null) {
+
+            if (order.getProperty().equals("code")) {
+                Sort sort = new Sort(order.getDirection(), "number");
+                query.orderBy(QueryUtils.toOrders(sort, criteriaRoot, criteriaBuilder));
+            }
+        }
+
+        TypedQuery<Application> typedQuery = entityManager.createQuery(query);
+        if (!isExport) {
+            typedQuery.setFirstResult(Math.toIntExact(pageable.getOffset()));
+            typedQuery.setMaxResults(pageable.getPageSize());
+        }
+
+        typedQuery.getResultList().forEach(application -> {
+            ApplicationPayload applicationPayload = new ApplicationPayload(
+                    application.getId(),
+                    application.getCode(),
+                    application.getNumber(),
+                    application.getOrderedObject().getContent(),
+                    application.getOrderedObject().getContent(),
+                    application.getEstimationType(),
+                    application.getMode(),
+                    application.getOrderValueNet(),
+                    application.getStatus(),
+                    application.getCoordinator(),
+                    application.getCreateDate(),
+                    application.getSendDate(),
+                    application.getIsPublicRealization()
+            );
+            results.add(applicationPayload);
+        });
+
+        if (order != null && order.getProperty().equals("orderedObject")) {
+            if (order.getDirection().isAscending()) {
+                results.sort(Comparator.comparing(ApplicationPayload::getOrderedObject, String::compareToIgnoreCase));
+            } else {
+                results.sort(Comparator.comparing(ApplicationPayload::getOrderedObject, String::compareToIgnoreCase).reversed());
+            }
+        }
+
+        return new PageImpl<>(results, pageable, entityManager.createQuery(count).getSingleResult());
     }
 }
 

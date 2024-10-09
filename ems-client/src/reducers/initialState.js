@@ -16,6 +16,11 @@ export default {
             totalElements:0,
             lastPage: false,
             firstPage: false,
+        },
+        dictionaryPageableTableProperties:{
+            totalElements:0,
+            lastPage: false,
+            firstPage: false,
         }
     },
     modules: {
@@ -26,6 +31,18 @@ export default {
             page: 0,
             rowsPerPage: 50,
             sort: {},
+            conditions: [],
+        },
+    },
+    dictionarySearch:{
+        searchConditions:{
+            page: 0,
+            rowsPerPage: 50,
+            sort: {
+                orderBy: "itemName",
+                orderType: "asc",
+            },
+            dictionaryName: null,
             conditions: [],
         },
     },

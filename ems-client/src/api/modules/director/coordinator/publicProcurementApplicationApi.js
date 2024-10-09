@@ -6,10 +6,6 @@ class PublicProcurementApplicationApi {
         return Axios.post(`/api/director/coordinator/publicProcurement/applications/getApplicationsPageable`, data)
     }
 
-    static getApplicationsPageable(data){
-        return Axios.post(`/api/director/coordinator/publicProcurement/applications/getApplicationsPageable`, data)
-    }
-
     static approveDirector(applicationId){
         return Axios.put(`/api/director/coordinator/publicProcurement/applications/application/directorApprove/${applicationId}`)
     }

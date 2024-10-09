@@ -1,12 +1,16 @@
 package pl.viola.ems.service.modules.coordinator.realization;
 
+import org.springframework.data.domain.Page;
 import pl.viola.ems.model.common.export.ExportType;
+import pl.viola.ems.model.common.search.SearchConditions;
 import pl.viola.ems.model.modules.coordinator.plans.CoordinatorPlan;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.Invoice;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.InvoicePosition;
 import pl.viola.ems.payload.export.ExcelHeadRow;
+import pl.viola.ems.payload.export.ExportConditions;
 import pl.viola.ems.payload.modules.accountant.institution.plans.InvoiceInstitutionPositionsResponse;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationPlanPosition;
+import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePayload;
 import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePositionPayload;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,15 +21,13 @@ import java.util.Set;
 
 public interface InvoiceService {
 
-    Set<Invoice> getInvoices(int year);
+    Page<InvoicePayload> getInvoicesPageable(SearchConditions searchConditions, boolean isExport, String accessLevel);
 
-    Set<Invoice> getInvoicesByYear(int year);
+    Invoice getInvoiceDetails(Long invoiceId);
 
     Invoice saveInvoice(Invoice invoice, String action);
 
     String deleteInvoice(Long invoiceId);
-
-    List<InvoicePosition> getInvoicePositions(Long invoiceId);
 
     Set<InvoicePositionPayload> getInvoicesPositionsByCoordinatorPlanPosition(CoordinatorPlan.PlanType planType, Long positionId);
 
@@ -37,6 +39,9 @@ public interface InvoiceService {
 
     Set<InvoiceInstitutionPositionsResponse> getInvoicesByInstitutionPlanPositions(Long institutionPlanPositionId);
 
+    void exportInvoicesToExcel(ExportType exportType, ExportConditions exportConditions, HttpServletResponse response, String accessLevel) throws IOException;
+
     void exportPlanPositionInvoicesPositionsToXlsx(ExportType exportType, Long positionId, final ArrayList<ExcelHeadRow> headRow, final HttpServletResponse response, CoordinatorPlan.PlanType planType) throws IOException;
+
 
 }

@@ -48,3 +48,10 @@ export function setPageableTableProperties(properties){
         pageableTableProperties: properties
     }
 }
+
+export function setDictionaryPageableTableProperties(properties){
+    return {
+        type: types.UI_PAGEABLE_DICTIONARY_TABLE_SET_PAGEABLE_TABLE_PROPERTIES,
+        dictionaryPageableTableProperties: properties
+    }
+}

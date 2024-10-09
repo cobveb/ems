@@ -4,9 +4,10 @@ import { Spinner, ModalDialog } from 'common/';
 import PropTypes from 'prop-types';
 import { withStyles, Grid, Typography, Divider } from '@material-ui/core/';
 import { Visibility } from '@material-ui/icons/';
-import { Button, Table, SearchField, DatePicker, SelectField } from 'common/gui';
+import { Button, SearchField, DatePicker, SelectField } from 'common/gui';
+import { TablePageable } from 'containers/common/gui';
 import InvoiceContainer from 'containers/modules/coordinator/realization/invoices/invoiceContainer';
-import {escapeSpecialCharacters} from 'utils/';
+import {setChangedSearchConditions} from 'utils/';
 
 const styles = theme => ({
     root: {
@@ -42,6 +43,7 @@ class Invoices extends Component {
         year: new Date(),
         coordinator:'',
         isDetailsVisible: false,
+        searchConditionsChange: false,
         headCells: [
             {
                 id: 'number',
@@ -72,6 +74,33 @@ class Invoices extends Component {
                 subtype: 'text'
             },
         ],
+        searchConditions: [
+            {
+                name: 'year',
+                value: new Date().getFullYear(),
+                type: 'number'
+            },
+            {
+                name: 'number',
+                value: '',
+                type: 'text'
+            },
+            {
+                name: 'coordinator',
+                value: '',
+                type: 'select'
+            },
+            {
+                name: 'saleFrom',
+                value: '',
+                type: 'date'
+            },
+            {
+                name: 'saleTo',
+                value: '',
+                type: 'date'
+            }
+        ]
     }
 
     handleSelect = (id) => {
@@ -79,11 +108,56 @@ class Invoices extends Component {
     }
 
     handleSearch = (event) => {
-        this.setState({[event.target.name]: escapeSpecialCharacters(event.target.value)})
+        this.setState({[event.target.name]: event.target.value})
+        if(!['number'].includes(event.target.name)){
+            this.onChangeSearchConditions(event);
+        }
     }
 
     handleDataChange = (id) => (date) => {
-        this.setState({[id]: date})
+        this.setState(prevState => {
+            let searchConditions = [...prevState.searchConditions];
+            let searchConditionsChange = prevState.searchConditionsChange;
+            switch(id) {
+                case "saleTo":
+                    let saleTo = `prevState.${id}`;
+                    saleTo = date;
+                    if(!isNaN(date)){
+                        const saleToResult = setChangedSearchConditions(id, date instanceof Date ? date : '', searchConditions, searchConditionsChange)
+                        searchConditions = Object.values(saleToResult)[0];
+                        searchConditionsChange = Object.values(saleToResult)[1];
+                    }
+                    return {saleTo, searchConditions, searchConditionsChange};
+                case "saleFrom":
+                    let saleFrom = `prevState.${id}`;
+                    saleFrom = date;
+                    if(!isNaN(date)){
+                        const saleFromResult = setChangedSearchConditions(id, date instanceof Date ? date : '', searchConditions, searchConditionsChange)
+                        searchConditions = Object.values(saleFromResult)[0];
+                        searchConditionsChange = Object.values(saleFromResult)[1];
+                    }
+                    return {saleFrom, searchConditions, searchConditionsChange};
+                default:
+                    let year = `prevState.${id}`;
+                    if(!isNaN(date)){
+                        const yearResult = setChangedSearchConditions(id, date instanceof Date ? date.getFullYear() : 0, searchConditions, searchConditionsChange)
+                        year = date;
+                        searchConditions = Object.values(yearResult)[0];
+                        searchConditionsChange = Object.values(yearResult)[1];
+                    }
+                    return {year, searchConditions, searchConditionsChange};
+            }
+        });
+    }
+
+    handleBlur = (event) => {
+        this.onChangeSearchConditions(event);
+    }
+
+    handleKeyDown = (event) => {
+       if (event.key === "Enter") {
+          this.onChangeSearchConditions(event);
+       }
     }
 
     handleCloseDialogError = () => {
@@ -98,65 +172,51 @@ class Invoices extends Component {
         });
     }
 
+    onChangeSearchConditions = (event) => {
+        event.persist();
+        this.setState(prevState => {
+            const searchConditions = [...prevState.searchConditions];
+            let searchConditionsChange = prevState.searchConditionsChange;
+            return setChangedSearchConditions(event.target.name, event.target.value, searchConditions, searchConditionsChange);
+        });
+    }
+
     handleCloseDetails = (invoice) => {
         this.setState({
             isDetailsVisible: !this.state.isDetailsVisible,
             selected: [],
             action: null,
-            rows: this.props.onClose(invoice),
         });
     };
 
-    filter = () => {
-        let invoices = this.props.initialValues;
-        return invoices.filter((invoice) => {
-            return this.state.number !== '' ?
-                invoice.number !== null ?
-                    invoice.number.toLowerCase().search(
-                        this.state.number.toLowerCase()) !== -1
-                : null
-            : invoice
-            && (
-                (this.state.saleFrom !== null && this.state.saleTo !== null) ?
-                    new Date(invoice.sellDate) >= this.state.saleFrom && new Date(invoice.sellDate) <= this.state.saleTo :
-                     this.state.saleFrom !== null ?
-                        new Date(invoice.sellDate) >= this.state.saleFrom :
-                            this.state.saleFrom === null && this.state.saleTo === null ?
-                                invoice :
-                                    new Date(invoice.sellDate) <= this.state.saleTo
-            )
-            &&
-            invoice.coordinator.code.toLowerCase().search(
-                this.state.coordinator.toLowerCase()) !== -1
-        })
-
+    handleExcelExport = (exportType) => {
+        this.props.onExcelExport(exportType, this.state.headCells)
     }
 
     componentDidUpdate(prevProps, prevState) {
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
-                rows: this.filter(),
+                rows: this.props.initialValues,
             });
-        } else if(this.state.action !== prevState.action){
-            this.setState({
-                rows: this.filter(),
-            })
-        } else if (this.state.number !== prevState.number ||
-             this.state.saleFrom !== prevState.saleFrom ||
-             this.state.saleTo !== prevState.saleTo ||
-             this.state.coordinator !== prevState.coordinator
-        ){
-            this.setState({
-                rows: this.filter(),
-            })
-        } else if (this.state.year !== prevState.year){
-            this.props.onChangeYear(this.state.year);
         }
+        if(this.state.searchConditionsChange){
+            this.setState({
+                searchConditionsChange: false,
+                selected: {},
+                action: ''
+            })
+            this.props.onSetSearchConditions(this.state.searchConditions);
+        }
+    }
+
+    componentDidMount() {
+        this.props.onSetSearchConditions(this.state.searchConditions);
+        this.setState({rows: this.props.initialValues});
     }
 
     render(){
         const { classes, isLoading, error, coordinators} = this.props;
-        const { headCells, rows, selected, saleFrom, saleTo, year, isDetailsVisible, action, coordinator } = this.state;
+        const { headCells, rows, selected, saleFrom, saleTo, year, isDetailsVisible, action, coordinator, searchConditionsChange } = this.state;
         return(
             <>
                 {isLoading && <Spinner />}
@@ -199,6 +259,8 @@ class Invoices extends Component {
                                         <SearchField
                                             name="number"
                                             onChange={this.handleSearch}
+                                            onBlur={this.handleBlur}
+                                            onKeyDown={(e) => this.handleKeyDown(e)}
                                             label={constants.COORDINATOR_REALIZATION_INVOICE_NUMBER}
                                             valueType="all"
                                         />
@@ -230,14 +292,17 @@ class Invoices extends Component {
                                     </Grid>
                                 </Grid>
                                 <Grid container spacing={0} direction="row" justify="flex-start" className={classes.container}>
-                                    <Table
+                                    <TablePageable
                                         className={classes.tableWrapper}
                                         rows={rows}
                                         headCells={headCells}
                                         onSelect={this.handleSelect}
                                         onDoubleClick={this.handleDoubleClick}
+                                        onExcelExport={this.handleExcelExport}
+                                        resetPageableProperties={searchConditionsChange}
                                         rowKey="id"
-                                        defaultOrderBy="id"
+                                        orderBy={this.props.searchConditions.sort.orderBy !== undefined ? {id: this.props.searchConditions.sort.orderBy} : headCells[1]}
+                                        orderType={this.props.searchConditions.sort.orderType !== undefined ? this.props.searchConditions.sort.orderType : "desc"}
                                     />
                                 </Grid>
                             </div>
@@ -271,6 +336,10 @@ Invoices.propTypes = {
 	isLoading: PropTypes.bool,
     clearError: PropTypes.func,
     loading: PropTypes.func,
+};
+
+Invoices.defaultProps = {
+    onSetSearchConditions: () => {},
 };
 
 export default withStyles(styles)(Invoices);

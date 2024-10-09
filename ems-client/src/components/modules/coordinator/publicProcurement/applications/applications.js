@@ -138,12 +138,13 @@ class Applications extends Component {
             let searchConditions = [...prevState.searchConditions];
             let searchConditionsChange = prevState.searchConditionsChange;
             let year = `prevState.${id}`;
-            const result = setChangedSearchConditions(id, date instanceof Date ? date.getFullYear() : 0, searchConditions, searchConditionsChange)
+            if(!isNaN(date)){
+                const result = setChangedSearchConditions(id, date instanceof Date ? date.getFullYear() : 0, searchConditions, searchConditionsChange)
 
-            searchConditions = Object.values(result)[0];
-            searchConditionsChange = Object.values(result)[1];
-            year = date;
-
+                searchConditions = Object.values(result)[0];
+                searchConditionsChange = Object.values(result)[1];
+                year = date;
+            }
             return {year, searchConditions, searchConditionsChange};
         });
     }
@@ -369,7 +370,8 @@ class Applications extends Component {
                                             onExcelExport={this.handleExcelExport}
                                             resetPageableProperties={searchConditionsChange}
                                             rowKey="id"
-                                            orderType={"desc"}
+                                            orderBy={this.props.searchConditions.sort.orderBy !== undefined ? {id: this.props.searchConditions.sort.orderBy} : {id: "id"}}
+                                            orderType={this.props.searchConditions.sort.orderType !== undefined ? this.props.searchConditions.sort.orderType : "desc"}
                                         />
                                     </Grid>
                                 </Grid>

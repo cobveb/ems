@@ -4,7 +4,7 @@ import * as constants from 'constants/uiNames';
 import { withStyles, Grid, Typography, Divider, Toolbar } from '@material-ui/core/';
 import { FormTextField, FormCheckBox, FormTableField, FormSelectField } from 'common/form';
 import { Button } from 'common/gui';
-import { Save, Cancel, Edit, List } from '@material-ui/icons/';
+import { Save, Cancel, List } from '@material-ui/icons/';
 import RegisterEntitlementSystemFormContainer from 'containers/modules/asi/dictionary/registers/forms/registerEntitlementSystemFormContainer';
 import { ModalDialog } from 'common/';
 

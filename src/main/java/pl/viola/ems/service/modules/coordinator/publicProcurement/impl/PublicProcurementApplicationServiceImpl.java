@@ -322,6 +322,9 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
 
             } else if (Utils.getCurrentUser().getOrganizationUnit().getRole().equals(OrganizationUnit.Role.CHIEF)) {
                 statuses = Arrays.asList(
+                        Application.ApplicationStatus.AZ,
+                        Application.ApplicationStatus.AD,
+                        Application.ApplicationStatus.AM,
                         Application.ApplicationStatus.AK,
                         Application.ApplicationStatus.ZA,
                         Application.ApplicationStatus.RE,
@@ -358,39 +361,23 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
     }
 
     @Override
-    public Set<ApplicationPayload> getApplicationsByCoordinatorInRealization() {
-        Set<ApplicationPayload> applications = new HashSet<>();
-
+    public Page<ApplicationPayload> getApplicationsDictionary(final SearchConditions searchConditions, final boolean isExport) {
         List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
                 Utils.getCurrentUser().getOrganizationUnit().getCode()
         ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
 
         coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
 
-        publicProcurementApplicationRepository.findByStatusInAndCoordinatorIn(new ArrayList<>(Arrays.asList(
+        return publicProcurementApplicationRepository.findApplicationsInRealizationAsDictionary(Arrays.asList(
                 Application.ApplicationStatus.ZA,
                 Application.ApplicationStatus.RE,
                 Application.ApplicationStatus.ZR
-        )), new HashSet<>(coordinators)).forEach(application -> {
-            ApplicationPayload applicationPayload = new ApplicationPayload(
-                    application.getId(),
-                    application.getCode(),
-                    application.getNumber(),
-                    application.getOrderedObject().getContent(),
-                    application.getOrderedObject().getContent(),
-                    application.getEstimationType(),
-                    application.getMode(),
-                    application.getOrderValueNet(),
-                    application.getStatus(),
-                    application.getCoordinator(),
-                    application.getCreateDate(),
-                    application.getSendDate(),
-                    application.getIsPublicRealization()
-            );
-            applications.add(applicationPayload);
-        });
-
-        return applications;
+        ), coordinators, searchConditions.getConditions(), PageRequest.of(
+                searchConditions.getPage(),
+                searchConditions.getRowsPerPage(),
+                searchConditions.getSort().getOrderType() != null ? searchConditions.getSort().getOrderType().equals("desc") ?
+                        Sort.by(searchConditions.getSort().getOrderBy()).descending() : Sort.by(searchConditions.getSort().getOrderBy()).ascending() : Sort.by("id")
+        ), isExport);
     }
 
     @Override
@@ -1044,7 +1031,7 @@ public class PublicProcurementApplicationServiceImpl implements PublicProcuremen
 
 
     @Override
-    public void exportApplicationsToExcel(final ExportType exportType, final int year, final ExportConditions exportConditions, final HttpServletResponse response, String accessLevel) throws IOException {
+    public void exportApplicationsToExcel(final ExportType exportType, final ExportConditions exportConditions, final HttpServletResponse response, String accessLevel) throws IOException {
 
         ArrayList<Map<String, Object>> rows = new ArrayList<>();
 

@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as constants from 'constants/uiNames';
 import { bindActionCreators } from 'redux';
-import { loading, setError } from 'actions/';
+import { loading, setError, setConditions, resetSearchConditions, setPageableTableProperties } from 'actions/';
 import Invoices from 'components/modules/accountant/realization/invoices/invoices';
 import OrganizationUnitsApi from 'api/modules/administrator/organizationUnitsApi';
 import InvoiceApi from 'api/modules/accountant/realization/invoiceApi';
-import {updateOnCloseDetails} from 'utils/';
+import {generateExportLink} from 'utils/';
 
 class InvoicesContainer extends Component {
     state = {
@@ -25,10 +25,15 @@ class InvoicesContainer extends Component {
 
     handleGetInvoices = () =>{
         this.props.loading(true);
-        InvoiceApi.getInvoices(new Date().getFullYear())
+        InvoiceApi.getInvoicesPageable(this.props.searchConditions)
         .then(response =>{
+            this.props.setPageableTableProperties({
+                totalElements: response.data.data.totalElements,
+                lastPage: response.data.data.last,
+                firstPage: response.data.data.first,
+            })
             this.setState({
-                invoices: response.data.data,
+                invoices: response.data.data.content,
             })
             this.props.loading(false);
         })
@@ -47,27 +52,28 @@ class InvoicesContainer extends Component {
         .catch(error => {});
     }
 
-    handleChangeYear = (year) => {
-        if((year instanceof Date && !Number.isNaN(year.getFullYear())) || year === null ){
-            this.props.loading(true);
-            InvoiceApi.getInvoices(year instanceof Date ? year.getFullYear() : 0)
-            .then(response =>{
-                this.setState({
-                    invoices: response.data.data,
-                })
-                this.props.loading(false);
-            })
-            .catch(error => {})
+    handleExcelExport = (exportType, headRow) =>{
+        this.props.loading(true);
+        InvoiceApi.exportInvoicesToExcel(exportType, headRow, this.props.searchConditions)
+        .then(response => {
+            generateExportLink(response);
+            this.props.loading(false);
+        })
+        .catch(error => {});
+    }
+
+    componentDidUpdate(prevProps){
+        if(this.props.searchConditions !== prevProps.searchConditions){
+            this.handleGetInvoices();
         }
     }
 
-    handleUpdateOnCloseDetails = (invoice) => {
-        return updateOnCloseDetails(this.state.invoices, invoice);
+    componentDidMount(){
+        this.handleGetCoordinators();
     }
 
-    componentDidMount(){
-        this.handleGetInvoices();
-        this.handleGetCoordinators();
+    componentWillUnmount(){
+        this.props.resetSearchConditions();
     }
 
     render(){
@@ -84,8 +90,9 @@ class InvoicesContainer extends Component {
                 investmentPlanPositions={this.state.investmentPlanPositions}
                 error={error}
                 clearError={clearError}
-                onChangeYear={this.handleChangeYear}
-                onClose={this.handleUpdateOnCloseDetails}
+                searchConditions={this.props.searchConditions}
+                onSetSearchConditions={this.props.onSetSearchConditions}
+                onExcelExport={this.handleExcelExport}
             />
         );
     };
@@ -95,6 +102,7 @@ const mapStateToProps = (state) => {
 	return {
 		isLoading: state.ui.loading,
 		error: state.ui.error,
+		searchConditions: state.search,
 	}
 };
 
@@ -102,6 +110,9 @@ function mapDispatchToProps (dispatch) {
     return {
         loading : bindActionCreators(loading, dispatch),
         clearError : bindActionCreators(setError, dispatch),
+        onSetSearchConditions : bindActionCreators(setConditions, dispatch),
+        resetSearchConditions : bindActionCreators(resetSearchConditions, dispatch),
+        setPageableTableProperties : bindActionCreators(setPageableTableProperties, dispatch)
     }
 };
 

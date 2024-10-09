@@ -33,7 +33,9 @@ public interface PublicProcurementApplicationService {
 
     Page<ApplicationPayload> getApplicationsPageableByAccessLevel(SearchConditions searchConditions, String accessLevel, boolean isExport);
 
-    Set<ApplicationPayload> getApplicationsByCoordinatorInRealization();
+//    Set<ApplicationPayload> getApplicationsByCoordinatorInRealization();
+
+    Page<ApplicationPayload> getApplicationsDictionary(SearchConditions searchConditions, boolean isExport);
 
     ApplicationDetailsPayload getApplication(Long applicationId);
 
@@ -67,7 +69,7 @@ public interface PublicProcurementApplicationService {
 
     String deleteApplication(Long applicationId);
 
-    void exportApplicationsToExcel(ExportType exportType, int year, ExportConditions exportConditions, HttpServletResponse response, String accessLevel) throws IOException;
+    void exportApplicationsToExcel(ExportType exportType, ExportConditions exportConditions, HttpServletResponse response, String accessLevel) throws IOException;
 
     void exportApplicationsPartsToExcel(ExportType exportType, Long applicationId, ArrayList<ExcelHeadRow> headRow, HttpServletResponse response) throws IOException;
 

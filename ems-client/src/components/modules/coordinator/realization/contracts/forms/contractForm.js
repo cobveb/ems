@@ -108,13 +108,13 @@ class ContractForm extends Component {
         this.setState({positionAction: null, selected: []});
     }
 
-    handleClosePositionDetails = (invoice) => {
+    handleClosePositionDetails = (isUpdate) => {
         this.setState({
             openPositionDetails: !this.state.openPositionDetails,
             positionAction: null,
             selected:[],
         });
-        this.props.onCloseInvoiceDetails();
+        this.props.onCloseInvoiceDetails(isUpdate);
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -155,10 +155,7 @@ class ContractForm extends Component {
                     <InvoiceContainer
                         initialValues={positionAction === 'add' ? {contract: initialValues, contractor: initialValues.contractor} : selected[0]}
                         action={positionAction}
-                        applications={this.props.applications}
                         contracts={this.props.contracts}
-                        financialPlanPositions={this.props.financialPlanPositions}
-                        investmentPlanPositions={this.props.investmentPlanPositions}
                         onClose={this.handleClosePositionDetails}
                     />
                 :
@@ -312,7 +309,7 @@ class ContractForm extends Component {
                                             name="changes.content"
                                             label={constants.COORDINATOR_REALIZATION_CONTRACT_CHANGES}
                                             multiline
-                                            rows="1"
+                                            minRows="1"
                                             inputProps={{ maxLength: 500 }}
                                         />
                                     </Grid>

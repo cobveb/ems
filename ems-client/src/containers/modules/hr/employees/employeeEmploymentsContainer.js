@@ -246,7 +246,7 @@ class EmployeeEmploymentsContainer extends Component {
                 if(action === 'add'){
                     employment.workplaces.push(response.data.data)
                 } else if (action === 'edit'){
-                    const idx = employment.workplaces.findIndex(statement => workplace.id === response.data.data.id);
+                    const idx = employment.workplaces.findIndex(workplace => workplace.id === response.data.data.id);
                     if(idx !== null){
                         employment.workplaces.splice(idx, 1, response.data.data);
                         if(employment !== null){

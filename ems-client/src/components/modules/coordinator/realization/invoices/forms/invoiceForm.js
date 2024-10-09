@@ -3,7 +3,7 @@ import {Spinner, ModalDialog } from 'common/';
 import { withStyles, Grid, Typography, Divider, Toolbar } from '@material-ui/core/';
 import * as constants from 'constants/uiNames';
 import PropTypes from 'prop-types';
-import { FormTextField, FormDateField, FormDictionaryField, FormAmountField, FormTableField } from 'common/form';
+import { FormTextField, FormDateField, FormDictionaryField, FormPageableDictionaryField, FormAmountField, FormTableField } from 'common/form';
 import { Edit, LibraryBooks, Save, Cancel, Description } from '@material-ui/icons/';
 import { Button } from 'common/gui';
 import InvoicePositionFormContainer from 'containers/modules/coordinator/realization/invoices/forms/invoicePositionFormContainer';
@@ -46,16 +46,6 @@ class InvoiceForm extends Component {
         openPositionDetails: false,
         positionAction: '',
         heads: [
-//            {
-//                id: 'coordinatorPlanPosition.costType.code',
-//                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_TYPE,
-//                type: 'object',
-//            },
-//            {
-//                id: 'coordinatorPlanPosition.costType.name',
-//                label: constants.COORDINATOR_PLAN_POSITIONS_HEAD_COST_NAME,
-//                type: 'object',
-//            },
             {
                 id: 'name.content',
                 label: constants.COORDINATOR_REALIZATION_INVOICE_POSITION_NAME,
@@ -135,7 +125,7 @@ class InvoiceForm extends Component {
         const { heads, selected, invoicePositions, openPositionDetails, positionAction } = this.state;
         return (
             <>
-                {(submitting || isLoading) && <Spinner /> }
+                {(isLoading) && <Spinner /> }
                 {positionAction === 'delete' &&
                     <ModalDialog
                         message={constants.COORDINATOR_REALIZATION_INVOICE_DELETE_POSITION_MSG}
@@ -201,18 +191,24 @@ class InvoiceForm extends Component {
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <FormDictionaryField
+                                    <FormPageableDictionaryField
                                         name="publicProcurementApplication"
                                         dictionaryName={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_TITLE}
                                         label={constants.COORDINATOR_REALIZATION_INVOICE_PUBLIC_PROCUREMENT_APPLICATION}
+                                        onChangeDictionarySearchConditions={this.props.onChangeDictionarySearchConditions}
+                                        onSetDictionaryName={this.props.onSetDictionaryName}
+                                        isLoading={isLoading}
                                         items={applications}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <FormDictionaryField
+                                    <FormPageableDictionaryField
                                         name="contract"
-                                        dictionaryName={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATIONS_TITLE}
+                                        dictionaryName={constants.COORDINATOR_REALIZATION_INVOICE_CONTRACT}
                                         label={constants.COORDINATOR_REALIZATION_INVOICE_CONTRACT}
+                                        onChangeDictionarySearchConditions={this.props.onChangeDictionarySearchConditions}
+                                        onSetDictionaryName={this.props.onSetDictionaryName}
+                                        isLoading={isLoading}
                                         items={contracts}
                                     />
                                 </Grid>
@@ -221,7 +217,7 @@ class InvoiceForm extends Component {
                                         name="description.content"
                                         label={constants.DESCRIPTION}
                                         multiline
-                                        rows="2"
+                                        minRows="2"
                                         inputProps={{ maxLength: 500 }}
                                     />
                                 </Grid>

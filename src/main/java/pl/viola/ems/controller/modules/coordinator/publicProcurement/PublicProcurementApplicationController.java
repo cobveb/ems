@@ -57,10 +57,10 @@ public class PublicProcurementApplicationController {
         return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsPageable(conditions, false));
     }
 
-    @GetMapping("/getApplicationsInRealization")
+    @PostMapping("/getApplicationsDictionary")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1032')")
-    public ApiResponse getApplicationsInRealization() {
-        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsByCoordinatorInRealization());
+    public ApiResponse getApplicationsDictionary(@RequestBody @Valid SearchConditions conditions) {
+        return new ApiResponse(HttpStatus.FOUND, publicProcurementApplicationService.getApplicationsDictionary(conditions, false));
     }
 
     @GetMapping("/getApplication/{applicationId}")
@@ -151,7 +151,7 @@ public class PublicProcurementApplicationController {
     public void exportApplicationsToXlsx(@RequestBody ExportConditions exportConditions,
                                          @PathVariable ExportType exportType, HttpServletResponse response) throws IOException {
 
-        publicProcurementApplicationService.exportApplicationsToExcel(exportType, 0, exportConditions, generateExportResponse(response, exportType), "coordinator");
+        publicProcurementApplicationService.exportApplicationsToExcel(exportType, exportConditions, generateExportResponse(response, exportType), "coordinator");
     }
 
     @PutMapping("/{applicationId}/export/parts/{exportType}")

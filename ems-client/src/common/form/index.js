@@ -6,6 +6,7 @@ import FormTableTransferListField from 'common/form/formTableTransferListField';
 import FormTableField from 'common/form/formTableField';
 import FormDateField from 'common/form/formDateField';
 import FormDictionaryField from 'common/form/formDictionaryField';
+import FormPageableDictionaryField from 'common/form/formPageableDictionaryField';
 import FormDigitsField from 'common/form/formDigitsField';
 import FormAmountField from 'common/form/formAmountField';
 import FormRadioButtonField from 'common/form/formRadioButtonField';
@@ -21,6 +22,7 @@ export {
     FormTableField,
     FormDateField,
     FormDictionaryField,
+    FormPageableDictionaryField,
     FormDigitsField,
     FormAmountField,
     FormRadioButtonField,
