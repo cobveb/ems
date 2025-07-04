@@ -28,10 +28,9 @@ class ContractContainer extends Component {
             this.setState( prevState => {
                 let initData = {...prevState.initData};
                 Object.assign(initData, response.data.data);
-                this.handleGetInvoices(response.data.data.id);
                 return {initData}
             })
-            this.props.loading(false)
+            this.handleGetInvoices(response.data.data.id);
         })
         .catch(error => {})
     }
@@ -89,17 +88,8 @@ class ContractContainer extends Component {
         this.props.loading(true);
         InvoicesApi.deleteInvoice(invoiceId)
         .then(response => {
-            const idx = this.state.initData.invoices.findIndex(invoice => invoice.id === invoiceId);
-            this.setState(prevState => {
-                const initData = {...prevState.initData};
-                let isUpdate = prevState.isUpdate;
-                initData.invoices.splice(idx, 1);
-                //Update contract realized value on delete invoice
-                this.setupContractRealizedValues(initData);
-                isUpdate = true;
-                return {initData, isUpdate}
-            })
-            this.props.loading(false);
+            //Update contract details on delete invoice
+            this.handleGetContractDetails();
         })
         .catch(error => {});
     }
@@ -136,11 +126,13 @@ class ContractContainer extends Component {
     }
 
     handleCloseInvoiceDetails = (isUpdate) =>{
-        this.setState({
-            closeInvoice: !this.state.closeInvoice,
-            isUpdate: isUpdate,
-        })
-        this.handleGetInvoices(this.state.initData.id);
+//        this.setState({
+////            closeInvoice: !this.state.closeInvoice,
+//            isUpdate: isUpdate,
+//        })
+        if(isUpdate){
+            this.handleGetContractDetails();
+        }
     }
 
     componentDidMount(){

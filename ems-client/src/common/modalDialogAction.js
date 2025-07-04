@@ -19,6 +19,9 @@ const styles = theme => ({
 	warning: {
 		backgroundColor: amber[700],
 	},
+    warningInfo: {
+		backgroundColor: amber[700],
+	},
     confirm: {
 		backgroundColor: grey[500],
 	},
@@ -45,7 +48,7 @@ function ModalDialogActionInfo(props) {
 }
 
 ModalDialogActionInfo.propTypes = {
-	type: PropTypes.oneOf(['confirm', 'warning', 'error', 'info']).isRequired,
+	type: PropTypes.oneOf(['confirm', 'warning', 'error', 'info', 'warningInfo']).isRequired,
 	onClose: PropTypes.func.isRequired,
 };
 
@@ -79,7 +82,7 @@ function ModalDialogActionDialog(props) {
 }
 
 ModalDialogActionDialog.propTypes = {
-	type: PropTypes.oneOf(['confirm', 'warning', 'error', 'info']).isRequired,
+	type: PropTypes.oneOf(['confirm', 'warning', 'error', 'info', 'warningInfo']).isRequired,
 	onConfirm: PropTypes.func.isRequired,
 	onCancel: PropTypes.func.isRequired,
 };

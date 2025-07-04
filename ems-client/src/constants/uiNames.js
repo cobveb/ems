@@ -698,15 +698,15 @@ export const COORDINATOR_REALIZATION_CONTRACT_TITLE_CREATE = 'Nowa umowa';
 export const COORDINATOR_REALIZATION_CONTRACT_TITLE_EDIT = 'Edycja umowy nr: ';
 export const COORDINATOR_REALIZATION_CONTRACT_NUMBER = 'Numer';
 export const COORDINATOR_REALIZATION_CONTRACT_SIGNING_PLACE = 'Miejsce zawarcia';
-export const COORDINATOR_REALIZATION_CONTRACT_PERIOD_FROM = 'Okres obowiązywania od';
-export const COORDINATOR_REALIZATION_CONTRACT_PERIOD_TO = 'Okres obowiązywania do';
+export const COORDINATOR_REALIZATION_CONTRACT_PERIOD_FROM = 'Data obowiązywania od';
+export const COORDINATOR_REALIZATION_CONTRACT_PERIOD_TO = 'Data obowiązywania do';
 export const COORDINATOR_REALIZATION_CONTRACT_OBJECT = 'Przedmiot umowy';
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_NET = 'Wartość umowy netto';
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_GROSS = 'Wartość umowy brutto';
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_PREV_YEARS_VALUE_NET = 'Realizacja w latach ubiegłych netto';
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_PREV_YEARS_VALUE_GROSS = 'Realizacja w latach ubiegłych brutto';
-export const COORDINATOR_REALIZATION_CONTRACT_ORDER_INVOICES_VALUE_NET = 'Realizacja umowy z faktur netto';
-export const COORDINATOR_REALIZATION_CONTRACT_ORDER_INVOICES_VALUE_GROSS = 'Realizacja umowy z faktur brutto';
+export const COORDINATOR_REALIZATION_CONTRACT_ORDER_INVOICES_VALUE_NET = 'Realizacja z faktur netto';
+export const COORDINATOR_REALIZATION_CONTRACT_ORDER_INVOICES_VALUE_GROSS = 'Realizacja z faktur brutto';
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_VALUE_NET = 'Realizacja umowy netto';
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_VALUE_GROSS = 'Realizacja umowy brutto';
 export const COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_TO_REALIZE_NET = 'Pozostała do realizacji netto';
@@ -714,6 +714,12 @@ export const COORDINATOR_REALIZATION_CONTRACT_ORDER_VALUE_TO_REALIZE_GROSS = 'Po
 export const COORDINATOR_REALIZATION_CONTRACT_CONTRACTOR_REPRESENTATIVE = 'Przedstawiciel dostawcy';
 export const COORDINATOR_REALIZATION_CONTRACT_CHANGES = 'Zmiany';
 export const COORDINATOR_REALIZATION_CONTRACT_PERCENT_REALIZATION_MSG = 'Realizacja umowy przekroczyła 80%';
+export const COORDINATOR_REALIZATION_CONTRACT_PERCENT_OPTION = 'Opcja %';
+export const COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_NET = 'Wartość opcji netto';
+export const COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_GROSS = 'Wartość opcji brutto';
+export const COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_INVALID = 'Wartość opcji nie może być mniejsza od realizacji opcji';
+export const COORDINATOR_REALIZATION_CONTRACT_OPTION_REALIZED_VALUE_NET = 'Realizacja opcji netto';
+export const COORDINATOR_REALIZATION_CONTRACT_OPTION_REALIZED_VALUE_GROSS = 'Realizacja opcji brutto';
 /* components/modules/coordinator/realization/invoices/invoices.js */
 export const COORDINATOR_REALIZATION_INVOICES_TITLE = 'Faktury';
 export const COORDINATOR_REALIZATION_INVOICE_NUMBER = 'Numer faktury';
@@ -732,6 +738,7 @@ export const COORDINATOR_REALIZATION_INVOICE_POSITION_AMOUNT_NET = 'Kwota netto'
 export const COORDINATOR_REALIZATION_INVOICE_POSITION_AMOUNT_GROSS = 'Kwota brutto';
 export const COORDINATOR_REALIZATION_INVOICE_DESCRIPTION = 'Uwagi';
 export const COORDINATOR_REALIZATION_INVOICE_CONTRACT = 'Umowa';
+export const COORDINATOR_REALIZATION_INVOICE_CONTRACT_OPTION_VALUE_NOT_EXISTS = 'Umowa nie posiada zdefiniowanej wartości opcji';
 export const COORDINATOR_REALIZATION_INVOICE_PUBLIC_PROCUREMENT_APPLICATION = 'Wniosek o udzielenie zamówienia publicznego';
 export const COORDINATOR_REALIZATION_INVOICE_DELETE_POSITION_MSG = 'Pozycja zostanie usunięta. Czy kontynuować?';
 /* components/modules/coordinator/realization/invoices/forms/invoicePositionForm.js */
@@ -741,8 +748,11 @@ export const COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_COORDINATOR_TYPE = 'P
 export const COORDINATOR_REALIZATION_INVOICE_POSITION_COORDINATOR_PLAN_POSITION = 'Pozycja w ramach planu';
 /* components/modules/coordinator/realization/invoices/forms/invoicePositionFormValid.js */
 export const COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_VALUE_EXCEEDED = 'Przekroczona wartość umowy';
+export const COORDINATOR_REALIZATION_INVOICE_POSITION_CONTRACT_OPTION_VALUE_EXCEEDED = 'Przekroczona wartość opcji dla umowy';
 export const COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_VALUE_EXCEEDED = 'Kwota większa od dostępnej kwoty pozycji w ramach planu';
+export const COORDINATOR_REALIZATION_INVOICE_POSITION_PLAN_POSITION_OPTION_VALUE_EXCEEDED = 'Kwota + opcja większa od dostępnej kwoty pozycji w ramach planu';
 export const COORDINATOR_REALIZATION_INVOICE_POSITION_VALUE_NET_INVALID = 'Kwota netto większa niż kwota brutto';
+export const COORDINATOR_REALIZATION_INVOICE_POSITION_OPTION_VALUE_NET_INVALID = 'Kwota netto opcji większa niż kwota brutto';
 /* components/modules/coordinator/realization/expenses/expenses.js */
 export const COORDINATOR_REALIZATION_EXPENSES_TITLE = 'Wydatki jednorazowe';
 /* components/modules/accountant/accountant.js */

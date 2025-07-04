@@ -1,4 +1,4 @@
-package pl.viola.ems.payload.modules.coordinator.application.realization.contract;
+package pl.viola.ems.payload.modules.coordinator.realization.contract;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,11 +23,19 @@ public class ContractPayload {
 
     private Date signingDate;
 
+    private Date periodFrom;
+
+    private Date periodTo;
+
     private String itemName;
 
     private BigDecimal contractValueNet;
 
     private BigDecimal contractValueGross;
+
+    private BigDecimal optionValueNet;
+
+    private BigDecimal optionValueGross;
 
     private BigDecimal invoicesValueNet;
 
@@ -37,6 +45,12 @@ public class ContractPayload {
 
     private BigDecimal realPrevYearsValueGross;
 
+    private BigDecimal realizedValueNet;
+
     private BigDecimal realizedValueGross;
+
+    private BigDecimal realizedOptionValueNet;
+
+    private BigDecimal realizedOptionValueGross;
 
 }

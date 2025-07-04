@@ -13,7 +13,6 @@ import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -77,12 +76,10 @@ public class Contract implements DictItem {
     @Column(name = "rel_prev_val_gross")
     private BigDecimal realPrevYearsValueGross;
 
-    @Transient
-    @ToString.Exclude
+    @Column(name = "inv_val_net")
     private BigDecimal invoicesValueNet;
 
-    @Transient
-    @ToString.Exclude
+    @Column(name = "inv_val_gross")
     private BigDecimal invoicesValueGross;
 
     @Transient
@@ -92,6 +89,21 @@ public class Contract implements DictItem {
     @Transient
     @ToString.Exclude
     private BigDecimal realizedValueGross;
+
+    @Column(name = "percent_opt")
+    private Integer percentOption;
+
+    @Column(name = "opt_val_net")
+    private BigDecimal optionValueNet;
+
+    @Column(name = "opt_val_gross")
+    private BigDecimal optionValueGross;
+
+    @Column(name = "rel_opt_val_net")
+    private BigDecimal realizedOptionValueNet;
+
+    @Column(name = "rel_opt_val_gross")
+    private BigDecimal realizedOptionValueGross;
 
     @NonNull
     @ManyToOne
@@ -107,20 +119,6 @@ public class Contract implements DictItem {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "contract", cascade = {CascadeType.ALL})
     @ToString.Exclude
     private Set<Invoice> invoices = new HashSet<>();
-
-    public BigDecimal getInvoicesValueNet() {
-        if (!invoices.isEmpty()) {
-            invoicesValueNet = invoices.stream().map(Invoice::getInvoiceValueNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
-        return invoicesValueNet;
-    }
-
-    public BigDecimal getInvoicesValueGross() {
-        if (!invoices.isEmpty()) {
-            invoicesValueGross = invoices.stream().map(Invoice::getInvoiceValueGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
-        return invoicesValueGross;
-    }
 
     public BigDecimal getRealizedValueNet() {
         if (invoicesValueNet != null) {

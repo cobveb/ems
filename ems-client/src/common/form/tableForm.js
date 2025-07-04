@@ -326,7 +326,7 @@ const useTableStyles = makeStyles(theme => ({
 function EnhancedTable(props) {
     const { headCells, rows, checked, setChecked, multiChecked, defaultOrderBy, className, checkedColumnFirst, onDouble, onExcelExport } = props;
     const classes = useTableStyles();
-    const [order, setOrder] = React.useState('asc');
+    const [order, setOrder] = React.useState('desc');
     const [orderBy, setOrderBy] = React.useState(defaultOrderBy);
     const [allSelect, setAllSelect] = React.useState(rows.length === checked.length && checked.length !== 0);
     const [cellType, setCellType] = React.useState('text');

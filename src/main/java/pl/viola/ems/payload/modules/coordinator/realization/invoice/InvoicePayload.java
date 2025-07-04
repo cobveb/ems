@@ -1,4 +1,4 @@
-package pl.viola.ems.payload.modules.coordinator.application.realization.invoice;
+package pl.viola.ems.payload.modules.coordinator.realization.invoice;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

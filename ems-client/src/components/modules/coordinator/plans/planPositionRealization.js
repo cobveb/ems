@@ -54,6 +54,18 @@ class PlanPositionRealization extends Component {
                 suffix: 'zł.',
                 type: 'amount',
             },
+            {
+                id: 'amountOptionNet',
+                label: constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountOptionGross',
+                label: constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
         ],
         headInstitutionCells: [
             {
@@ -91,6 +103,18 @@ class PlanPositionRealization extends Component {
             {
                 id: 'amountGross',
                 label: constants.COORDINATOR_REALIZATION_INVOICE_POSITION_AMOUNT_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountOptionNet',
+                label: constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'amountOptionGross',
+                label: constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },

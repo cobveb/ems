@@ -43,12 +43,19 @@ public class InvoicePosition {
 
     private BigDecimal vat;
 
+    @Column(name = "opt_val_net")
+    private BigDecimal optionValueNet;
+
+    @Column(name = "opt_val_gross")
+    private BigDecimal optionValueGross;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "desc_id", referencedColumnName = "id")
     private Text description;
 
     @ToString.Exclude
     @ManyToOne
+    @NonNull
     @JoinColumn(name = "plan_position_id")
     private CoordinatorPlanPosition coordinatorPlanPosition;
 

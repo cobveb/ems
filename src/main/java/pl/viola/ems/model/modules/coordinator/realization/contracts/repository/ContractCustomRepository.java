@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import pl.viola.ems.model.common.search.SearchCondition;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
-import pl.viola.ems.payload.modules.coordinator.application.realization.contract.ContractPayload;
+import pl.viola.ems.payload.modules.coordinator.realization.contract.ContractPayload;
 
 import java.util.List;
 

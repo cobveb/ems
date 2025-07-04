@@ -22,6 +22,7 @@ import pl.viola.ems.model.modules.coordinator.plans.FinancialPosition;
 import pl.viola.ems.model.modules.coordinator.plans.InvestmentPosition;
 import pl.viola.ems.model.modules.coordinator.plans.repository.CoordinatorPlanPositionRepository;
 import pl.viola.ems.model.modules.coordinator.publicProcurement.repository.PublicProcurementApplicationRepository;
+import pl.viola.ems.model.modules.coordinator.realization.contracts.Contract;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.Invoice;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.InvoicePosition;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.repository.InvoicePositionRepository;
@@ -30,10 +31,11 @@ import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.payload.export.ExportConditions;
 import pl.viola.ems.payload.modules.accountant.institution.plans.InvoiceInstitutionPositionsResponse;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationPlanPosition;
-import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePayload;
-import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePositionPayload;
+import pl.viola.ems.payload.modules.coordinator.realization.invoice.InvoicePayload;
+import pl.viola.ems.payload.modules.coordinator.realization.invoice.InvoicePositionPayload;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 import pl.viola.ems.service.modules.coordinator.plans.PlanService;
+import pl.viola.ems.service.modules.coordinator.realization.ContractService;
 import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
 import pl.viola.ems.utils.Utils;
 
@@ -42,6 +44,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
@@ -51,6 +54,9 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Autowired
     InvoiceRepository invoiceRepository;
+
+    @Autowired
+    ContractService contractService;
 
     @Autowired
     InvoicePositionRepository invoicePositionRepository;
@@ -107,6 +113,29 @@ public class InvoiceServiceImpl implements InvoiceService {
             invoice.setCoordinator(Utils.getCurrentUser().getOrganizationUnit());
         } else if (action.equals("edit") && !invoice.getInvoicePositions().isEmpty()) {
             invoice.getInvoicePositions().forEach(invoicePosition -> invoicePosition.setInvoice(invoice));
+            Invoice prevInvoice = invoiceRepository.findById(invoice.getId())
+                    .orElseThrow(() -> new AppException("Coordinator.invoice.notFound", HttpStatus.NOT_FOUND));
+            if (prevInvoice.getContract() != null && prevInvoice.getContract() != invoice.getContract()) {
+                // Updated previous contract values
+                Map<String, BigDecimal> updatedPrevContractValues = this.updateContractValues(prevInvoice, "delete");
+                Contract prevContract = contractService.getContractDetails(prevInvoice.getContract().getId());
+
+                prevContract.setInvoicesValueNet(updatedPrevContractValues.get("contractInvoicesValueNet"));
+                prevContract.setInvoicesValueGross(updatedPrevContractValues.get("contractInvoicesValueGross"));
+                prevContract.setRealizedOptionValueNet(updatedPrevContractValues.get("contractRealizedInvoicesOptionValueNet"));
+                prevContract.setRealizedOptionValueGross(updatedPrevContractValues.get("contractRealizedInvoicesOptionValueGross"));
+                contractService.saveContract(prevContract, "edit");
+            }
+            if (invoice.getContract() != null && prevInvoice.getContract() != invoice.getContract()) {
+                // Updated values if current contract changed
+                Map<String, BigDecimal> updatedContractValues = this.updateContractValues(invoice, "add");
+                Contract contract = contractService.getContractDetails(invoice.getContract().getId());
+                contract.setInvoicesValueNet(updatedContractValues.get("contractInvoicesValueNet"));
+                contract.setInvoicesValueGross(updatedContractValues.get("contractInvoicesValueGross"));
+                contract.setRealizedOptionValueNet(updatedContractValues.get("contractRealizedInvoicesOptionValueNet"));
+                contract.setRealizedOptionValueGross(updatedContractValues.get("contractRealizedInvoicesOptionValueGross"));
+                contractService.saveContract(contract, "edit");
+            }
         }
 
         if (invoice.getPublicProcurementApplication() != null) {
@@ -134,12 +163,25 @@ public class InvoiceServiceImpl implements InvoiceService {
                             invoicePosition.getCoordinatorPlanPosition()
                     );
 
-                    this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition);
+                    this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition, invoicePosition);
                 }
             });
         }
 
+
+        // Update contract values if the deleted invoice was related to a contract
+        if (invoice.getContract() != null) {
+            invoice.getContract().getInvoices().remove(invoice);
+            Map<String, BigDecimal> updatedContractValues = this.updateContractValues(invoice, "delete");
+
+            invoice.getContract().setInvoicesValueNet(updatedContractValues.get("contractInvoicesValueNet"));
+            invoice.getContract().setInvoicesValueGross(updatedContractValues.get("contractInvoicesValueGross"));
+            invoice.getContract().setRealizedOptionValueNet(updatedContractValues.get("contractRealizedInvoicesOptionValueNet"));
+            invoice.getContract().setRealizedOptionValueGross(updatedContractValues.get("contractRealizedInvoicesOptionValueGross"));
+        }
+
         invoiceRepository.deleteById(invoice.getId());
+
         return messageSource.getMessage("Coordinator.invoice.deleteMsg", null, Locale.getDefault());
     }
 
@@ -167,7 +209,9 @@ public class InvoiceServiceImpl implements InvoiceService {
                     invoicePosition.getInvoice().getContractor().getName(),
                     invoicePosition.getName(),
                     invoicePosition.getAmountNet(),
-                    invoicePosition.getAmountGross()
+                    invoicePosition.getAmountGross(),
+                    invoicePosition.getOptionValueNet(),
+                    invoicePosition.getOptionValueGross()
             );
 
             positions.add(positionPayload);
@@ -189,11 +233,19 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         if (action.equals("add")) {
             this.setCoordinatorPlanPositionAmountRealizedAdd(invoicePosition);
-
+            this.updateInvoiceValues(invoice, invoicePosition, "save");
         } else if (action.equals("edit")) {
-            invoice.getInvoicePositions().stream().filter(position -> position.getId().equals(invoicePosition.getId()))
-                    .findFirst().ifPresent(this::setCoordinatorPlanPositionAmountRealizedSubtract);
+            InvoicePosition tmp = invoice.getInvoicePositions().stream().filter(position -> position.getId().equals(invoicePosition.getId()))
+                    .findFirst().orElseThrow(() -> new AppException("Coordinator.plan.position.notFound", HttpStatus.NOT_FOUND));
+            /*
+                Check if changed coordinator plan position on the current edited invoice position.
+                If change find old institution plan position and subtract action on old plan position
+            */
+            if (!tmp.getCoordinatorPlanPosition().equals(invoicePosition.getCoordinatorPlanPosition())) {
+                this.setCoordinatorPlanPositionAmountRealizedSubtract(tmp);
+            }
 
+            this.updateInvoiceValues(invoice, invoicePosition, "save");
             this.setCoordinatorPlanPositionAmountRealizedAdd(invoicePosition);
         }
 
@@ -201,13 +253,20 @@ public class InvoiceServiceImpl implements InvoiceService {
             InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPositionIn(Collections.singletonList(invoicePosition.getCoordinatorPlanPosition()))
                     .stream().findFirst().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
             if (action.equals("add")) {
-                this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition);
+                this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition, invoicePosition);
             } else if (action.equals("edit")) {
-
-                invoice.getInvoicePositions().stream().filter(position -> position.getId().equals(invoicePosition.getId()))
-                        .findFirst().ifPresent(tmp -> this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition));
-
-                this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition);
+                InvoicePosition tmp = invoice.getInvoicePositions().stream().filter(position -> position.getId().equals(invoicePosition.getId()))
+                        .findFirst().orElseThrow(() -> new AppException("Coordinator.plan.position.notFound", HttpStatus.NOT_FOUND));
+                /*
+                    Check if changed coordinator plan position on current editable invoice position.
+                    If change find old institution plan position and update reazlized values on old plan position
+                */
+                if (!tmp.getCoordinatorPlanPosition().equals(invoicePosition.getCoordinatorPlanPosition())) {
+                    InstitutionCoordinatorPlanPosition tmpInstitutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPositionIn(Collections.singletonList(tmp.getCoordinatorPlanPosition()))
+                            .stream().findFirst().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
+                    this.setInstitutionPlanPositionAmountRealizedSubtract(tmpInstitutionCoordinatorPlanPosition, invoicePosition);
+                }
+                this.setInstitutionPlanPositionAmountRealizedAdd(institutionCoordinatorPlanPosition, invoicePosition);
             }
         }
         return invoicePositionRepository.save(invoicePosition);
@@ -215,19 +274,27 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Transactional
     @Override
-    public String deleteInvoicePosition(final Long invoicePositionId) {
+    public String deleteInvoicePosition(final Long invoiceId, final Long invoicePositionId) {
         InvoicePosition invoicePosition = invoicePositionRepository.findById(invoicePositionId)
                 .orElseThrow(() -> new AppException("Coordinator.invoice.positionNotExists", HttpStatus.BAD_REQUEST));
+        Invoice invoice = invoiceRepository.findById(invoiceId)
+                .orElseThrow(() -> new AppException("Coordinator.invoice.notFound", HttpStatus.NOT_FOUND));
 
+        if (!invoice.getInvoicePositions().contains(invoicePosition)) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Coordinator.invoice.notContainsPosition");
+        }
+        this.updateInvoiceValues(invoice, invoicePosition, "delete");
         this.setCoordinatorPlanPositionAmountRealizedSubtract(invoicePosition);
 
         if (invoicePosition.getPositionIncludedPlanType().equals(CoordinatorPlan.PlanType.FIN)) {
             InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition = institutionCoordinatorPlanPositionRepository.findByCoordinatorPlanPositionIn(Collections.singletonList(invoicePosition.getCoordinatorPlanPosition()))
                     .stream().findFirst().orElseThrow(() -> new AppException("Accountant.institution.planPositionNotFound", HttpStatus.NOT_FOUND));
 
-            this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition);
+            this.setInstitutionPlanPositionAmountRealizedSubtract(institutionCoordinatorPlanPosition, invoicePosition);
         }
-        invoicePositionRepository.deleteById(invoicePosition.getId());
+
+        invoice.setInvoicePositions(invoice.getInvoicePositions().stream().filter(position -> !position.getId().equals(invoicePosition.getId())).collect(Collectors.toSet()));
+        invoicePositionRepository.delete(invoicePosition);
 
         return messageSource.getMessage("Coordinator.invoice.position.deleteMsg", null, Locale.getDefault());
     }
@@ -279,7 +346,9 @@ public class InvoiceServiceImpl implements InvoiceService {
                         invoicePosition.getInvoice().getContractor().getName(),
                         invoicePosition.getName(),
                         invoicePosition.getAmountNet(),
-                        invoicePosition.getAmountGross()
+                        invoicePosition.getAmountGross(),
+                        invoicePosition.getOptionValueNet(),
+                        invoicePosition.getOptionValueGross()
                 );
                 invoicesPositions.add(invoiceInstitutionPositionsResponse);
             });
@@ -320,6 +389,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                 row.put("name.content", invoicesInstitutionPosition.getName().getContent());
                 row.put("amountNet", invoicesInstitutionPosition.getAmountNet());
                 row.put("amountGross", invoicesInstitutionPosition.getAmountGross());
+                row.put("amountOptionNet", invoicesInstitutionPosition.getAmountOptionNet());
+                row.put("amountOptionGross", invoicesInstitutionPosition.getAmountOptionGross());
                 rows.add(row);
             });
 
@@ -333,6 +404,8 @@ public class InvoiceServiceImpl implements InvoiceService {
                 row.put("name.content", invoicePositionPayload.getName().getContent());
                 row.put("amountNet", invoicePositionPayload.getAmountNet());
                 row.put("amountGross", invoicePositionPayload.getAmountGross());
+                row.put("amountOptionNet", invoicePositionPayload.getAmountOptionNet());
+                row.put("amountOptionGross", invoicePositionPayload.getAmountOptionGross());
                 rows.add(row);
             });
         }
@@ -341,148 +414,130 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
 
-    private void setCoordinatorPlanPositionAmountRealizedAdd(InvoicePosition invoicePosition) {
-        invoicePosition.getCoordinatorPlanPosition().setAmountRealizedNet(
-                invoicePosition.getCoordinatorPlanPosition().getAmountRealizedNet() != null ?
-                        invoicePosition.getCoordinatorPlanPosition().getAmountRealizedNet().add(invoicePosition.getAmountNet()) :
-                        invoicePosition.getAmountNet()
-        );
+    private void updateInvoiceValues(final Invoice invoice, final InvoicePosition invoicePosition, final String action) {
+        BigDecimal invoiceValueNet = new BigDecimal(0);
+        BigDecimal invoiceValueGross = new BigDecimal(0);
+        BigDecimal optionValueNet = new BigDecimal(0);
+        BigDecimal optionValueGross = new BigDecimal(0);
+        Set<InvoicePosition> invoicePositions;
 
-        invoicePosition.getCoordinatorPlanPosition().setAmountRealizedGross(
-                invoicePosition.getCoordinatorPlanPosition().getAmountRealizedGross() != null ?
-                        invoicePosition.getCoordinatorPlanPosition().getAmountRealizedGross().add(invoicePosition.getAmountGross()) :
-                        invoicePosition.getAmountGross()
-        );
+        invoicePositions = invoice.getInvoicePositions().stream().filter(position -> !position.getId().equals(invoicePosition.getId())).collect(Collectors.toSet());
+        if (!action.equals("delete")) {
+            invoicePositions.add(invoicePosition);
+        }
+
+        for (InvoicePosition position : invoicePositions) {
+            invoiceValueNet = invoiceValueNet.add(position.getAmountNet());
+            invoiceValueGross = invoiceValueGross.add(position.getAmountGross());
+            /* Setup invoice option value */
+            if (position.getOptionValueGross() != null && position.getOptionValueGross().signum() > 0) {
+                optionValueNet = optionValueNet.add(position.getOptionValueNet());
+                optionValueGross = optionValueGross.add(position.getOptionValueGross());
+            }
+        }
+
+        invoice.setInvoiceValueNet(invoiceValueNet);
+        invoice.setInvoiceValueGross(invoiceValueGross);
+        invoice.setOptionValueNet(optionValueNet.compareTo(BigDecimal.ZERO) > 0 ? optionValueNet : null);
+        invoice.setOptionValueGross(optionValueGross.compareTo(BigDecimal.ZERO) > 0 ? optionValueGross : null);
+
+        if (invoice.getContract() != null) {
+            Map<String, BigDecimal> updatedContractValues = this.updateContractValues(invoice, "add");
+
+            invoice.getContract().setInvoicesValueNet(updatedContractValues.get("contractInvoicesValueNet"));
+            invoice.getContract().setInvoicesValueGross(updatedContractValues.get("contractInvoicesValueGross"));
+            invoice.getContract().setRealizedOptionValueNet(updatedContractValues.get("contractRealizedInvoicesOptionValueNet"));
+            invoice.getContract().setRealizedOptionValueGross(updatedContractValues.get("contractRealizedInvoicesOptionValueGross"));
+        }
+    }
+
+    private void setCoordinatorPlanPositionAmountRealizedAdd(InvoicePosition invoicePosition) {
+        Map<String, BigDecimal> updatedValues = this.updateCoordinatorPlanPositionRealizedValues(invoicePosition.getCoordinatorPlanPosition(), invoicePosition, "add");
+        invoicePosition.getCoordinatorPlanPosition().setAmountRealizedNet(updatedValues.get("planPositionAmountRealizedNet"));
+        invoicePosition.getCoordinatorPlanPosition().setAmountRealizedGross(updatedValues.get("planPositionAmountRealizedGross"));
 
         this.updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedAdd(invoicePosition.getCoordinatorPlanPosition(), invoicePosition);
-
     }
 
     private void setCoordinatorPlanPositionAmountRealizedSubtract(InvoicePosition invoicePosition) {
-        invoicePosition.getCoordinatorPlanPosition().setAmountRealizedNet(
-                invoicePosition.getCoordinatorPlanPosition().getAmountRealizedNet().subtract(invoicePosition.getAmountNet())
-        );
-
-        invoicePosition.getCoordinatorPlanPosition().setAmountRealizedGross(
-                invoicePosition.getCoordinatorPlanPosition().getAmountRealizedGross().subtract(invoicePosition.getAmountGross())
-        );
+        Map<String, BigDecimal> updatedValues = this.updateCoordinatorPlanPositionRealizedValues(invoicePosition.getCoordinatorPlanPosition(), invoicePosition, "subtract");
+        invoicePosition.getCoordinatorPlanPosition().setAmountRealizedNet(updatedValues.get("planPositionAmountRealizedNet"));
+        invoicePosition.getCoordinatorPlanPosition().setAmountRealizedGross(updatedValues.get("planPositionAmountRealizedGross"));
 
         this.updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedSubtract(invoicePosition.getCoordinatorPlanPosition(), invoicePosition);
     }
 
-    private void setInstitutionPlanPositionAmountRealizedAdd(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition) {
-        institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedNet(
-                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
-        );
-
-        institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedGross(
-                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
-
-        );
+    private void setInstitutionPlanPositionAmountRealizedAdd(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition, final InvoicePosition invoicePosition) {
+        Map<String, BigDecimal> updatedValues = updateInstitutionPlanPositionRealizedValues(institutionCoordinatorPlanPosition.getInstitutionPlanPosition(), invoicePosition, "add");
+        institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedNet(updatedValues.get("planPositionAmountRealizedNet"));
+        institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedGross(updatedValues.get("planPositionAmountRealizedGross"));
 
         if (Objects.equals(InstitutionPlan.InstitutionPlanStatus.ZA, institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().getStatus())) {
             institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getPlan().setStatus(InstitutionPlan.InstitutionPlanStatus.RE);
         }
 
-        this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(institutionCoordinatorPlanPosition.getInstitutionPlanPosition());
+        this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(institutionCoordinatorPlanPosition.getInstitutionPlanPosition(), invoicePosition);
     }
 
-    private void setInstitutionPlanPositionAmountRealizedSubtract(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition) {
+    private void setInstitutionPlanPositionAmountRealizedSubtract(final InstitutionCoordinatorPlanPosition institutionCoordinatorPlanPosition, final InvoicePosition invoicePosition) {
+        Map<String, BigDecimal> updatedValues = updateInstitutionPlanPositionRealizedValues(institutionCoordinatorPlanPosition.getInstitutionPlanPosition(), invoicePosition, "subtract");
+        institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedNet(updatedValues.get("planPositionAmountRealizedNet"));
+        institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedGross(updatedValues.get("planPositionAmountRealizedGross"));
 
-        institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedNet(
-                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
-
-        );
-
-        institutionCoordinatorPlanPosition.getInstitutionPlanPosition().setAmountRealizedGross(
-                institutionCoordinatorPlanPosition.getInstitutionPlanPosition().getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
-        );
-
-        this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(institutionCoordinatorPlanPosition.getInstitutionPlanPosition());
+        this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(institutionCoordinatorPlanPosition.getInstitutionPlanPosition(), invoicePosition);
     }
 
     private void updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedAdd(final CoordinatorPlanPosition coordinatorPlanPosition, final InvoicePosition invoicePosition) {
-
-
         CoordinatorPlanPosition correctedPlanPosition = coordinatorPlanPosition.getPlan().getType().equals(CoordinatorPlan.PlanType.FIN) ?
                 financialPositionRepository.findByCorrectionPlanPosition(coordinatorPlanPosition) :
                 investmentPositionRepository.findByCorrectionPlanPosition(coordinatorPlanPosition);
 
         if (correctedPlanPosition != null) {
-            correctedPlanPosition.setAmountRealizedNet(
-                    correctedPlanPosition.getAmountRealizedNet() != null ?
-                            correctedPlanPosition.getAmountRealizedNet().add(invoicePosition.getAmountNet()) :
-                            invoicePosition.getAmountNet()
-            );
+            Map<String, BigDecimal> updatedValues = this.updateCoordinatorPlanPositionRealizedValues(correctedPlanPosition, invoicePosition, "add");
+            correctedPlanPosition.setAmountRealizedNet(updatedValues.get("planPositionAmountRealizedNet"));
+            correctedPlanPosition.setAmountRealizedGross(updatedValues.get("planPositionAmountRealizedGross"));
 
-            correctedPlanPosition.setAmountRealizedGross(
-                    correctedPlanPosition.getAmountRealizedGross() != null ?
-                            correctedPlanPosition.getAmountRealizedGross().add(invoicePosition.getAmountGross()) :
-                            invoicePosition.getAmountGross()
-            );
-
-            updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedAdd(correctedPlanPosition, invoicePosition);
+            this.updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedAdd(correctedPlanPosition, invoicePosition);
         }
     }
 
     private void updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedSubtract(final CoordinatorPlanPosition coordinatorPlanPosition, final InvoicePosition invoicePosition) {
 
+        /* Check if exist corrected plan position */
         CoordinatorPlanPosition correctedPlanPosition = coordinatorPlanPosition.getPlan().getType().equals(CoordinatorPlan.PlanType.FIN) ?
                 financialPositionRepository.findByCorrectionPlanPosition(coordinatorPlanPosition) :
                 investmentPositionRepository.findByCorrectionPlanPosition(coordinatorPlanPosition);
 
         if (correctedPlanPosition != null) {
-            correctedPlanPosition.setAmountRealizedNet(
-                    correctedPlanPosition.getAmountRealizedNet() != null ?
-                            correctedPlanPosition.getAmountRealizedNet().subtract(invoicePosition.getAmountNet()) :
-                            invoicePosition.getAmountNet()
-            );
+            Map<String, BigDecimal> updatedValues = this.updateCoordinatorPlanPositionRealizedValues(correctedPlanPosition, invoicePosition, "subtract");
+            correctedPlanPosition.setAmountRealizedNet(updatedValues.get("planPositionAmountRealizedNet"));
+            correctedPlanPosition.setAmountRealizedGross(updatedValues.get("planPositionAmountRealizedGross"));
 
-            correctedPlanPosition.setAmountRealizedGross(
-                    correctedPlanPosition.getAmountRealizedGross() != null ?
-                            correctedPlanPosition.getAmountRealizedGross().subtract(invoicePosition.getAmountGross()) :
-                            invoicePosition.getAmountGross()
-            );
-
-            updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedSubtract(correctedPlanPosition, invoicePosition);
+            this.updateValueCorrectedCoordinatorPlanPositionOnAmountRealizedSubtract(correctedPlanPosition, invoicePosition);
         }
     }
 
-    private void updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(final InstitutionPlanPosition institutionPlanPosition) {
-
+    private void updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(final InstitutionPlanPosition institutionPlanPosition, final InvoicePosition invoicePosition) {
         InstitutionPlanPosition correctionInstitutionPlanPosition = institutionPlanPositionRepository.findByCorrectionPlanPosition(institutionPlanPosition);
 
         if (correctionInstitutionPlanPosition != null) {
-            correctionInstitutionPlanPosition.setAmountRealizedNet(
-                    correctionInstitutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
+            Map<String, BigDecimal> updatedValues = updateInstitutionPlanPositionRealizedValues(correctionInstitutionPlanPosition, invoicePosition, "add");
+            correctionInstitutionPlanPosition.setAmountRealizedNet(updatedValues.get("planPositionAmountRealizedNet"));
+            correctionInstitutionPlanPosition.setAmountRealizedGross(updatedValues.get("planPositionAmountRealizedGross"));
 
-            );
-
-            correctionInstitutionPlanPosition.setAmountRealizedGross(
-                    correctionInstitutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
-
-            );
-
-            updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(correctionInstitutionPlanPosition);
+            this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedAdd(correctionInstitutionPlanPosition, invoicePosition);
         }
     }
 
-    private void updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(final InstitutionPlanPosition institutionPlanPosition) {
-
+    private void updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(final InstitutionPlanPosition institutionPlanPosition, final InvoicePosition invoicePosition) {
         InstitutionPlanPosition correctionInstitutionPlanPosition = institutionPlanPositionRepository.findByCorrectionPlanPosition(institutionPlanPosition);
 
         if (correctionInstitutionPlanPosition != null) {
-            correctionInstitutionPlanPosition.setAmountRealizedNet(
-                    correctionInstitutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
+            Map<String, BigDecimal> updatedValues = updateInstitutionPlanPositionRealizedValues(correctionInstitutionPlanPosition, invoicePosition, "subtract");
+            correctionInstitutionPlanPosition.setAmountRealizedNet(updatedValues.get("planPositionAmountRealizedNet"));
+            correctionInstitutionPlanPosition.setAmountRealizedGross(updatedValues.get("planPositionAmountRealizedGross"));
 
-            );
-
-            correctionInstitutionPlanPosition.setAmountRealizedGross(
-                    correctionInstitutionPlanPosition.getInstitutionCoordinatorPlanPositions().stream().map(InstitutionCoordinatorPlanPosition::getAmountRealizedGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add)
-
-            );
-
-            updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(correctionInstitutionPlanPosition);
+            this.updateValueCorrectedInstitutionPlanPositionOnAmountRealizedSubtract(correctionInstitutionPlanPosition, invoicePosition);
         }
     }
 
@@ -502,4 +557,123 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
     }
 
+    private Map<String, BigDecimal> updateCoordinatorPlanPositionRealizedValues(final CoordinatorPlanPosition coordinatorPlanPosition, final InvoicePosition invoicePosition, final String action) {
+        Map<String, BigDecimal> updatedPlanPositionValues = new HashMap<>();
+        BigDecimal planPositionInvoicesPositionsValueNet = new BigDecimal(0);
+        BigDecimal planPositionInvoicesPositionsValueGross = new BigDecimal(0);
+        BigDecimal planPositionInvoicesPositionsOptionsValueNet = new BigDecimal(0);
+        BigDecimal planPositionInvoicesPositionsOptionsValueGross = new BigDecimal(0);
+
+        Set<InvoicePositionPayload> positionInvoices = this.getInvoicesPositionsByCoordinatorPlanPosition(
+                coordinatorPlanPosition.getPlan().getType(), coordinatorPlanPosition.getId()
+        ).stream().filter(position -> !position.getId().equals(invoicePosition.getId())).collect(Collectors.toSet());
+
+        for (InvoicePositionPayload position : positionInvoices) {
+            planPositionInvoicesPositionsValueNet = planPositionInvoicesPositionsValueNet.add(position.getAmountNet());
+            planPositionInvoicesPositionsValueGross = planPositionInvoicesPositionsValueGross.add(position.getAmountGross());
+            /* Setup invoice option value */
+            if (position.getAmountOptionGross() != null && position.getAmountOptionGross().signum() > 0) {
+                planPositionInvoicesPositionsOptionsValueNet = planPositionInvoicesPositionsOptionsValueNet.add(position.getAmountOptionNet());
+                planPositionInvoicesPositionsOptionsValueGross = planPositionInvoicesPositionsOptionsValueGross.add(position.getAmountOptionGross());
+            }
+        }
+
+        planPositionInvoicesPositionsValueNet = planPositionInvoicesPositionsValueNet.add(planPositionInvoicesPositionsOptionsValueNet);
+        planPositionInvoicesPositionsValueGross = planPositionInvoicesPositionsValueGross.add(planPositionInvoicesPositionsOptionsValueGross);
+
+        if (action.equals("add")) {
+            if (invoicePosition.getOptionValueGross() != null) {
+                planPositionInvoicesPositionsValueNet = planPositionInvoicesPositionsValueNet.add(invoicePosition.getAmountNet().add(invoicePosition.getOptionValueNet()));
+                planPositionInvoicesPositionsValueGross = planPositionInvoicesPositionsValueGross.add(invoicePosition.getAmountGross().add(invoicePosition.getOptionValueGross()));
+
+            } else {
+                planPositionInvoicesPositionsValueNet = planPositionInvoicesPositionsValueNet.add(invoicePosition.getAmountNet());
+                planPositionInvoicesPositionsValueGross = planPositionInvoicesPositionsValueGross.add(invoicePosition.getAmountGross());
+            }
+        }
+
+        updatedPlanPositionValues.put("planPositionAmountRealizedNet", planPositionInvoicesPositionsValueNet);
+        updatedPlanPositionValues.put("planPositionAmountRealizedGross", planPositionInvoicesPositionsValueGross);
+
+        return updatedPlanPositionValues;
+    }
+
+    private Map<String, BigDecimal> updateInstitutionPlanPositionRealizedValues(final InstitutionPlanPosition institutionPlanPosition, final InvoicePosition invoicePosition, final String action) {
+        Map<String, BigDecimal> updatedPlanPositionValues = new HashMap<>();
+        BigDecimal planPositionInvoicesPositionsValueNet = new BigDecimal(0);
+        BigDecimal planPositionInvoicesPositionsValueGross = new BigDecimal(0);
+        BigDecimal planPositionInvoicesPositionsOptionsValueNet = new BigDecimal(0);
+        BigDecimal planPositionInvoicesPositionsOptionsValueGross = new BigDecimal(0);
+
+        Set<InvoiceInstitutionPositionsResponse> institutionPlanPositionInvoicesPositions = this.getInvoicesByInstitutionPlanPositions(
+                institutionPlanPosition.getId()).stream().filter(position -> !position.getId().equals(invoicePosition.getId())).collect(Collectors.toSet());
+
+
+        for (InvoiceInstitutionPositionsResponse position : institutionPlanPositionInvoicesPositions) {
+            planPositionInvoicesPositionsValueNet = planPositionInvoicesPositionsValueNet.add(position.getAmountNet());
+            planPositionInvoicesPositionsValueGross = planPositionInvoicesPositionsValueGross.add(position.getAmountGross());
+            /* Setup invoice option value */
+            if (position.getAmountOptionGross() != null && position.getAmountOptionGross().signum() > 0) {
+                planPositionInvoicesPositionsOptionsValueNet = planPositionInvoicesPositionsOptionsValueNet.add(position.getAmountOptionNet());
+                planPositionInvoicesPositionsOptionsValueGross = planPositionInvoicesPositionsOptionsValueGross.add(position.getAmountOptionGross());
+            }
+        }
+
+        planPositionInvoicesPositionsValueNet = planPositionInvoicesPositionsValueNet.add(planPositionInvoicesPositionsOptionsValueNet);
+        planPositionInvoicesPositionsValueGross = planPositionInvoicesPositionsValueGross.add(planPositionInvoicesPositionsOptionsValueGross);
+
+        if (action.equals("add")) {
+            if (invoicePosition.getOptionValueGross() != null) {
+                planPositionInvoicesPositionsValueNet = planPositionInvoicesPositionsValueNet.add(invoicePosition.getAmountNet().add(invoicePosition.getOptionValueNet()));
+                planPositionInvoicesPositionsValueGross = planPositionInvoicesPositionsValueGross.add(invoicePosition.getAmountGross().add(invoicePosition.getOptionValueGross()));
+
+            } else {
+                planPositionInvoicesPositionsValueNet = planPositionInvoicesPositionsValueNet.add(invoicePosition.getAmountNet());
+                planPositionInvoicesPositionsValueGross = planPositionInvoicesPositionsValueGross.add(invoicePosition.getAmountGross());
+            }
+        }
+
+        updatedPlanPositionValues.put("planPositionAmountRealizedNet", planPositionInvoicesPositionsValueNet);
+        updatedPlanPositionValues.put("planPositionAmountRealizedGross", planPositionInvoicesPositionsValueGross);
+
+        return updatedPlanPositionValues;
+    }
+
+
+    private Map<String, BigDecimal> updateContractValues(final Invoice invoice, final String action) {
+        Map<String, BigDecimal> updatedContractValues = new HashMap<>();
+        BigDecimal contractInvoicesValueNet = new BigDecimal(0);
+        BigDecimal contractInvoicesValueGross = new BigDecimal(0);
+        BigDecimal contractInvoicesOptionValueNet = new BigDecimal(0);
+        BigDecimal contractInvoicesOptionValueGross = new BigDecimal(0);
+        Set<Invoice> contractInvoices = contractService.getInvoices(invoice.getContract().getId())
+                .stream().filter(inv -> !inv.getId().equals(invoice.getId()) && inv.getInvoiceValueGross() != null).collect(Collectors.toSet());
+
+        if (!contractInvoices.isEmpty()) {
+            for (Invoice crtInvoice : contractInvoices) {
+                contractInvoicesValueNet = contractInvoicesValueNet.add(crtInvoice.getInvoiceValueNet());
+                contractInvoicesValueGross = contractInvoicesValueGross.add(crtInvoice.getInvoiceValueGross());
+                if (crtInvoice.getOptionValueNet() != null) {
+                    contractInvoicesOptionValueNet = contractInvoicesOptionValueNet.add(crtInvoice.getOptionValueNet());
+                    contractInvoicesOptionValueGross = contractInvoicesOptionValueGross.add(crtInvoice.getOptionValueGross());
+                }
+            }
+        }
+
+        if (action.equals("add")) {
+            contractInvoicesValueNet = contractInvoicesValueNet.add(invoice.getInvoiceValueNet());
+            contractInvoicesValueGross = contractInvoicesValueGross.add(invoice.getInvoiceValueGross());
+
+            if (invoice.getOptionValueGross() != null) {
+                contractInvoicesOptionValueNet = contractInvoicesOptionValueNet.add(invoice.getOptionValueNet());
+                contractInvoicesOptionValueGross = contractInvoicesOptionValueGross.add(invoice.getOptionValueGross());
+            }
+        }
+        updatedContractValues.put("contractInvoicesValueNet", contractInvoicesValueNet);
+        updatedContractValues.put("contractInvoicesValueGross", contractInvoicesValueGross);
+        updatedContractValues.put("contractRealizedInvoicesOptionValueNet", contractInvoicesOptionValueNet);
+        updatedContractValues.put("contractRealizedInvoicesOptionValueGross", contractInvoicesOptionValueGross);
+
+        return updatedContractValues;
+    }
 }

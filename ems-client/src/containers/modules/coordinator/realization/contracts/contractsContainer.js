@@ -13,7 +13,6 @@ class ContractsContainer extends Component {
 
     handleGetContracts = () => {
         this.props.loading(true);
-        this.props.searchConditions.rowsPerPage = 25;
         ContractApi.getContracts(this.props.searchConditions)
         .then(response =>{
             this.props.setPageableTableProperties({
@@ -71,7 +70,7 @@ class ContractsContainer extends Component {
                     onSetSearchConditions={this.props.onSetSearchConditions}
                     onDelete={this.handleDelete}
                     onExcelExport={this.handleExcelExport}
-                    onClose={this.handleGetContractsPageable}
+                    onClose={this.handleGetContracts}
                 />
             </>
         );

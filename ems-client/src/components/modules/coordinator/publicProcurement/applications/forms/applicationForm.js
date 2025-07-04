@@ -1710,7 +1710,7 @@ class ApplicationForm extends Component {
                                                                     label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_PRICE_NON_COMPETITIVE}
                                                                     isRequired
                                                                     multiline
-                                                                    inputProps={{ maxLength: 1000 }}
+                                                                    inputProps={{ maxLength: 1600 }}
                                                                     disabled = {initialValues.status !== undefined && initialValues.status.code !== 'ZP'}
                                                                 />
                                                             }

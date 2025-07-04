@@ -10,8 +10,8 @@ import pl.viola.ems.payload.export.ExcelHeadRow;
 import pl.viola.ems.payload.export.ExportConditions;
 import pl.viola.ems.payload.modules.accountant.institution.plans.InvoiceInstitutionPositionsResponse;
 import pl.viola.ems.payload.modules.coordinator.application.ApplicationPlanPosition;
-import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePayload;
-import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePositionPayload;
+import pl.viola.ems.payload.modules.coordinator.realization.invoice.InvoicePayload;
+import pl.viola.ems.payload.modules.coordinator.realization.invoice.InvoicePositionPayload;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public interface InvoiceService {
 
     InvoicePosition saveInvoicePosition(InvoicePosition invoicePosition, Long invoiceId, String action);
 
-    String deleteInvoicePosition(Long invoicePositionId);
+    String deleteInvoicePosition(Long invoiceId, Long invoicePositionId);
 
     List<ApplicationPlanPosition> getPlanPositionByYearAndPlanType(Integer year, CoordinatorPlan.PlanType planType);
 

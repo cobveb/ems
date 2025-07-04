@@ -151,7 +151,7 @@ class modalDialog extends Component {
 
 modalDialog.propTypes = {
 	message: PropTypes.string.isRequired,
-	variant: PropTypes.oneOf(['confirm', 'warning', 'error', 'info']).isRequired,
+	variant: PropTypes.oneOf(['confirm', 'warning', 'error', 'info', 'warningInfo']).isRequired,
 	onConfirm: PropTypes.func,
 	onClose: PropTypes.func,
 };

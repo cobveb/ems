@@ -12,7 +12,6 @@ import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 
@@ -39,11 +38,17 @@ public class Invoice {
     @Column(name = "sell_date")
     private Date sellDate;
 
-    @Transient
+    @Column(name = "inv_val_net")
     private BigDecimal invoiceValueNet;
 
-    @Transient
+    @Column(name = "inv_val_gross")
     private BigDecimal invoiceValueGross;
+
+    @Column(name = "opt_val_net")
+    private BigDecimal optionValueNet;
+
+    @Column(name = "opt_val_gross")
+    private BigDecimal optionValueGross;
 
     @NonNull
     @ManyToOne
@@ -58,7 +63,6 @@ public class Invoice {
     @JoinColumn(name = "desc_id", referencedColumnName = "id")
     private Text description;
 
-
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "pub_proc_app_id", referencedColumnName = "id")
     private Application publicProcurementApplication;
@@ -68,25 +72,9 @@ public class Invoice {
     @ToString.Exclude
     private Contract contract;
 
-
 //    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "invoice", cascade = {CascadeType.ALL})
     @ToString.Exclude
     private Set<InvoicePosition> invoicePositions = new HashSet<>();
-
-
-    public BigDecimal getInvoiceValueNet() {
-        if (!invoicePositions.isEmpty()) {
-            invoiceValueNet = invoicePositions.stream().map(InvoicePosition::getAmountNet).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
-        return invoiceValueNet;
-    }
-
-    public BigDecimal getInvoiceValueGross() {
-        if (!invoicePositions.isEmpty()) {
-            invoiceValueGross = invoicePositions.stream().map(InvoicePosition::getAmountGross).filter(Objects::nonNull).reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
-        return invoiceValueGross;
-    }
 
 }

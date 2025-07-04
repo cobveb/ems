@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import { change } from 'redux-form';
 import { Spinner, ModalDialog } from 'common/';
 import { withStyles, Grid, Typography, Divider, Toolbar } from '@material-ui/core/';
 import * as constants from 'constants/uiNames';
 import PropTypes from 'prop-types';
 import { Button } from 'common/gui';
 import { Edit, LibraryBooks, Save, Cancel, Description } from '@material-ui/icons/';
-import { FormTableField, FormTextField, FormDateField, FormAmountField, FormDictionaryField } from 'common/form';
+import { FormTableField, FormTextField, FormDateField, FormAmountField, FormDictionaryField, FormDigitsField } from 'common/form';
 import InvoiceContainer from 'containers/modules/coordinator/realization/invoices/invoiceContainer';
 
 const styles = theme => ({
@@ -32,7 +33,7 @@ const styles = theme => ({
     },
     tableWrapper: {
         overflow: 'auto',
-        height: `calc(100vh - ${theme.spacing(80.5)}px)`,
+        height: `calc(100vh - ${theme.spacing(84.5)}px)`,
     },
 });
 
@@ -58,6 +59,12 @@ class ContractForm extends Component {
             {
                 id: 'invoiceValueGross',
                 label: constants.COORDINATOR_REALIZATION_INVOICE_VALUE_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'optionValueGross',
+                label: constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_GROSS,
                 suffix: 'zł.',
                 type: 'amount',
             },
@@ -118,6 +125,7 @@ class ContractForm extends Component {
     }
 
     componentDidUpdate(prevProps, prevState){
+        const {percentOption, contractValueNet, contractValueGross } = this.props;
         if(this.props.initialValues !== prevProps.initialValues){
             this.setState({
                 invoices: this.props.initialValues.invoices,
@@ -128,6 +136,26 @@ class ContractForm extends Component {
                 realPercent: ((this.props.initialValues.realizedValueGross / this.props.initialValues.contractValueGross) * 100).toFixed(2),
             });
         }
+
+
+
+        /* Update option values */
+        if(contractValueNet !== undefined && contractValueGross !== undefined && percentOption !== undefined && percentOption !== prevProps.percentOption){
+            if(percentOption === null){
+                // Percent option value has been cleared
+                this.props.dispatch(change('ContractForm', 'optionValueNet', null));
+                this.props.dispatch(change('ContractForm', 'optionValueGross', null));
+            } else {
+                //  Changed percent option contract value
+                this.props.dispatch(change('ContractForm', 'optionValueNet', parseFloat((Math.round(((percentOption / 100) * contractValueNet) * 100) / 100).toFixed(2))));
+                this.props.dispatch(change('ContractForm', 'optionValueGross', parseFloat((Math.round(((percentOption / 100) * contractValueGross) * 100) / 100).toFixed(2))));
+            }
+        }
+        if(percentOption !== null && (contractValueNet !== prevState.contractValueNet || contractValueGross !== prevState.contractValueGross)){
+            this.props.dispatch(change('ContractForm', 'optionValueNet', parseFloat((Math.round(((percentOption / 100) * contractValueNet) * 100) / 100).toFixed(2))));
+            this.props.dispatch(change('ContractForm', 'optionValueGross', parseFloat((Math.round(((percentOption / 100) * contractValueGross) * 100) / 100).toFixed(2))));
+        }
+
     }
 
     render(){
@@ -262,6 +290,43 @@ class ContractForm extends Component {
                                             label={constants.COORDINATOR_REALIZATION_CONTRACT_ORDER_REALIZED_PREV_YEARS_VALUE_GROSS}
                                         />
                                     </Grid>
+                                    <Grid item xs={1}>
+                                        <FormDigitsField
+                                            name="percentOption"
+                                            inputProps={{
+                                                maxLength: 3,
+                                            }}
+                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_PERCENT_OPTION}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <FormAmountField
+                                            name="optionValueNet"
+                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_NET}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <FormAmountField
+                                            name="optionValueGross"
+                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_GROSS}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <FormAmountField
+                                            name="realizedOptionValueNet"
+                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_REALIZED_VALUE_NET}
+                                            disabled
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <FormAmountField
+                                            name="realizedOptionValueGross"
+                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_REALIZED_VALUE_GROSS}
+                                            disabled
+                                        />
+                                    </Grid>
                                     <Grid item xs={2}>
                                         <FormAmountField
                                             name="invoicesValueNet"
@@ -349,7 +414,7 @@ class ContractForm extends Component {
                                             onSelect={this.handleSelect}
                                             onDoubleClick={this.handleDoubleClick}
                                             onExcelExport={this.handleExcelExport}
-                                            orderBy="id"
+                                            orderBy="sellDate"
                                         />
                                     </Grid>
                                 </Grid>

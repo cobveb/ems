@@ -61,7 +61,9 @@ export function RenderDigitsField({ label, input, meta: { touched, invalid, erro
     const [value, setValue] = React.useState(input.value);
 
     React.useEffect(() => {
-        if(input.value !== value){
+        if (input.value !== value && input.value.length === 0){
+            setValue('')
+        } else if (input.value !== value){
             if(!isNaN(parseInt(input.value))){
                 setValue(parseInt(input.value, 10))
             }
@@ -87,7 +89,7 @@ export function RenderDigitsField({ label, input, meta: { touched, invalid, erro
                     inputProps: custom.InputProps.inputProps,
                 }}
                 onChange={(event) => input.onChange(!event.target.value ? null : event.target.value)}
-                onBlur={(event) => input.onBlur(value)}
+                onBlur={(event) => input.onBlur(!value ? null : value)}
                 disabled={custom.disabled}
             />
         </>

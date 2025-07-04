@@ -26,8 +26,8 @@ class InvoicesApi {
         return Axios.put(`/api/coordinator/realization/invoice/${invoiceId}/${action}/saveInvoicePosition`, data)
     }
 
-    static deleteInvoicePosition(positionId){
-        return Axios.delete(`/api/coordinator/realization/invoice/deleteInvoicePosition/${positionId}`)
+    static deleteInvoicePosition(invoiceId, positionId){
+        return Axios.delete(`/api/coordinator/realization/invoice/${invoiceId}/deleteInvoicePosition/${positionId}`)
     }
 
     static getPlanPositions(year, planType){

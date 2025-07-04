@@ -226,8 +226,7 @@ class Invoices extends Component {
 
     render(){
         const { classes, isLoading, error } = this.props;
-        const { headCells, rows, saleFrom, saleTo, selected, isDetailsVisible, action, year, searchConditionsChange } = this.state;
-        console.log(this.props.searchConditions.sort.orderBy)
+        const { headCells, rows, saleFrom, saleTo, selected, isDetailsVisible, action, year, searchConditionsChange, number } = this.state;
         return (
             <>
                 {isLoading && <Spinner />}
@@ -280,6 +279,7 @@ class Invoices extends Component {
                                             onKeyDown={(e) => this.handleKeyDown(e)}
                                             label={constants.COORDINATOR_REALIZATION_INVOICE_NUMBER}
                                             valueType="all"
+                                            value={number}
                                         />
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>

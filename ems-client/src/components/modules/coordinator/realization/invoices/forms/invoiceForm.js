@@ -63,6 +63,18 @@ class InvoiceForm extends Component {
                 suffix: 'zł.',
                 type: 'amount',
             },
+            {
+                id: 'optionValueNet',
+                label: constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_NET,
+                suffix: 'zł.',
+                type: 'amount',
+            },
+            {
+                id: 'optionValueGross',
+                label: constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_GROSS,
+                suffix: 'zł.',
+                type: 'amount',
+            },
         ],
     }
 
@@ -221,17 +233,31 @@ class InvoiceForm extends Component {
                                         inputProps={{ maxLength: 500 }}
                                     />
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item xs={3}>
                                     <FormAmountField
                                         name="invoiceValueNet"
                                         label={constants.COORDINATOR_REALIZATION_INVOICE_VALUE_NET}
                                         disabled
                                     />
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item xs={3}>
                                     <FormAmountField
                                         name="invoiceValueGross"
                                         label={constants.COORDINATOR_REALIZATION_INVOICE_VALUE_GROSS}
+                                        disabled
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <FormAmountField
+                                        name="optionValueNet"
+                                        label={constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_NET}
+                                        disabled
+                                    />
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <FormAmountField
+                                        name="optionValueGross"
+                                        label={constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_GROSS}
                                         disabled
                                     />
                                 </Grid>
@@ -271,7 +297,7 @@ class InvoiceForm extends Component {
                                         onSelect={this.handleSelect}
                                         onDoubleClick={this.handleDoubleClick}
                                         onExcelExport={this.handleExcelExport}
-                                        orderBy="id"
+                                        defaultOrderBy="id"
                                     />
                                 </Grid>
                             </Grid>

@@ -21,7 +21,6 @@ class ContractsContainer extends Component {
 
     handleGetContracts = () =>{
         this.props.loading(true);
-        this.props.searchConditions.rowsPerPage = 25;
         ContractApi.getContracts(this.props.searchConditions)
         .then(response =>{
             this.props.setPageableTableProperties({

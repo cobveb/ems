@@ -29,31 +29,63 @@ const styles = theme => ({
 
 class InvoicePositionForm extends Component {
 
-    handleClose = () =>{
+    handleClose = (event, reason) =>{
+        if(reason && ["backdropClick", "escapeKeyDown"].includes(reason)) return;
         this.props.onClose();
         this.props.reset();
     };
 
     componentDidUpdate(prevProps){
-        const { vat, amountGross } = this.props;
-
+        const { vat, amountGross, optionValueGross, optionValueNet } = this.props;
         if((vat !== undefined && prevProps.vat !== undefined && vat !== prevProps.vat && amountGross !== undefined && vat.code !== 'R') ||
-            (amountGross !== undefined && prevProps.amountGross !== undefined && amountGross !== prevProps.amountGross && vat !== undefined && vat.code !== 'R')){
+            (amountGross !== undefined  && vat !== undefined && vat.code !== 'R')){
                 this.props.dispatch(change('InvoicePositionForm', 'amountNet', parseFloat((Math.round((amountGross / vat.code) * 100) / 100).toFixed(2))));
+        }
+
+        /* Option value change */
+        if(vat !== undefined && vat.code !== 'R'){
+            if(vat !== prevProps.vat){
+                if(optionValueGross !== null){
+                    /*
+                        VAT change and VAT different that "R" then calculate value base on gross.
+                        The gross value is treated as primary.
+                    */
+                    this.props.dispatch(change('InvoicePositionForm', 'optionValueNet', parseFloat((Math.round((optionValueGross / vat.code) * 100) / 100).toFixed(2))));
+                } else if (optionValueNet !== null && optionValueGross === null){
+                    /* VAT change and VAT different that "R" then calculate base on net value only if gross is undefined. */
+                    this.props.dispatch(change('InvoicePositionForm', 'optionValueGross', parseFloat((Math.round((optionValueNet * vat.code) * 100) / 100).toFixed(2))));
+                }
+            } else {
+                if(optionValueGross !== undefined && !isNaN(optionValueGross) &&
+                    ((optionValueGross !== null && optionValueGross.length !== 0 && prevProps.optionValueGross !== null && optionValueGross !== prevProps.optionValueGross) ||
+                        (optionValueGross !== null && prevProps.optionValueGross === null))){
+                    /* Option Value Gross change and VAT different that "R" then calculate value net */
+                    this.props.dispatch(change('InvoicePositionForm', 'optionValueNet', parseFloat((Math.round((optionValueGross / vat.code) * 100) / 100).toFixed(2))));
+                } else if((optionValueNet === undefined && prevProps.optionValueNet !== null) ||
+                        (optionValueNet !== undefined && optionValueNet !== null && optionValueNet.length === 0 &&
+                            prevProps.optionValueNet !== null && optionValueGross !== null)){
+                    /* Option value net was cleared. Delete option value gross if exist */
+                    this.props.dispatch(change('InvoicePositionForm', 'optionValueGross', null));
+                } else if ((optionValueGross === undefined && prevProps.optionValueGross !== null) ||
+                        (optionValueGross !== undefined && optionValueGross !== null && optionValueGross.length === 0 &&
+                            prevProps.optionValueGross !== null && optionValueNet !== null)){
+                    /* Option value gross was cleared and value is empty string. Delete option value */
+                    this.props.dispatch(change('InvoicePositionForm', 'optionValueNet', null));
+                }
+            }
         }
     }
 
     render(){
         const { classes, handleSubmit, pristine, submitting, invalid, submitSucceeded, isLoading, open, action, planTypes,
-            vats, financialPlanPositions, investmentPlanPositions, positionIncludedPlanType, vat } = this.props;
+            vats, financialPlanPositions, investmentPlanPositions, positionIncludedPlanType, vat, invoice } = this.props;
         return (
             <>
                 <Dialog
                     open={open}
-                    onClose={this.handleClose}
+                    onClose={(event, reason) => this.handleClose(event, reason)}
                     fullWidth={true}
                     maxWidth="lg"
-                    disableBackdropClick={true}
                 >
                     { (submitting || isLoading) && <Spinner /> }
                     <form onSubmit={handleSubmit}>
@@ -101,15 +133,15 @@ class InvoicePositionForm extends Component {
                                             options={planTypes}
                                         />
                                     </Grid>
-                                    <Grid item xs={5}>
+                                    <Grid item xs={3}>
                                         <FormAmountField
                                             name="amountNet"
                                             label={constants.COORDINATOR_REALIZATION_INVOICE_POSITION_AMOUNT_NET}
                                             isRequired={true}
-                                            disabled={vat === undefined}
+                                            disabled={vat === undefined || vat.code !== 'R'}
                                         />
                                     </Grid>
-                                    <Grid item xs={2}>
+                                    <Grid item xs={1}>
                                         <FormSelectField
                                             name="vat"
                                             label={constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ORDER_VAT}
@@ -117,11 +149,26 @@ class InvoicePositionForm extends Component {
                                             isRequired={true}
                                         />
                                     </Grid>
-                                    <Grid item xs={5}>
+                                    <Grid item xs={3}>
                                         <FormAmountField
                                             name="amountGross"
                                             label={constants.COORDINATOR_REALIZATION_INVOICE_POSITION_AMOUNT_GROSS}
                                             isRequired={true}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <FormAmountField
+                                            name="optionValueNet"
+                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_NET}
+                                            disabled = {invoice.contract === null || (invoice.contract !== null && invoice.contract.percentOption === null)
+                                            || ( vat === undefined || (vat !== undefined && vat.code !== 'R'))}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <FormAmountField
+                                            name="optionValueGross"
+                                            label={constants.COORDINATOR_REALIZATION_CONTRACT_OPTION_VALUE_GROSS}
+                                            disabled={invoice.contract === null || (invoice.contract !== null && invoice.contract.percentOption === null)}
                                         />
                                     </Grid>
                                     <Grid item xs={12}>
@@ -143,7 +190,7 @@ class InvoicePositionForm extends Component {
                                             name="description.content"
                                             label={constants.DESCRIPTION}
                                             multiline
-                                            rows="2"
+                                            minRows="2"
                                             inputProps={{ maxLength: 230 }}
                                         />
                                     </Grid>

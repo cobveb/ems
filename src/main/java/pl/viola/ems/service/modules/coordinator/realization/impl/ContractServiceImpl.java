@@ -16,7 +16,7 @@ import pl.viola.ems.model.modules.coordinator.realization.contracts.Contract;
 import pl.viola.ems.model.modules.coordinator.realization.contracts.repository.ContractRepository;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.Invoice;
 import pl.viola.ems.payload.export.ExportConditions;
-import pl.viola.ems.payload.modules.coordinator.application.realization.contract.ContractPayload;
+import pl.viola.ems.payload.modules.coordinator.realization.contract.ContractPayload;
 import pl.viola.ems.service.modules.administrator.OrganizationUnitService;
 import pl.viola.ems.service.modules.coordinator.realization.ContractService;
 import pl.viola.ems.service.modules.coordinator.realization.InvoiceService;
@@ -24,12 +24,7 @@ import pl.viola.ems.utils.Utils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.*;
-
-import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
-import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
 
 @Service
 public class ContractServiceImpl implements ContractService {
@@ -44,24 +39,6 @@ public class ContractServiceImpl implements ContractService {
 
     @Autowired
     MessageSource messageSource;
-
-//    @Override
-//    public Set<Contract> getContracts(final int year) {
-//        List<OrganizationUnit> coordinators = new ArrayList<>(Collections.singletonList(organizationUnitService.findCoordinatorByCode(
-//                Utils.getCurrentUser().getOrganizationUnit().getCode()
-//        ).orElseThrow(() -> new AppException("Coordinator.coordinator.notFound", HttpStatus.NOT_FOUND))));
-//
-//        coordinators.addAll(Utils.getChildesOu(coordinators.get(0).getCode()));
-//
-//        if (year != 0) {
-//            LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-//            Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-//            Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-//            return contractRepository.findBySigningDateBetweenAndCoordinatorIn(firstDay, lastDay, coordinators);
-//        } else {
-//            return contractRepository.findByCoordinatorIn(coordinators);
-//        }
-//    }
 
     @Override
     public Page<ContractPayload> getContracts(final SearchConditions searchConditions, final boolean isExport, final String accessLevel) {
@@ -104,17 +81,17 @@ public class ContractServiceImpl implements ContractService {
         ), isExport);
     }
 
-    @Override
-    public Set<Contract> getContractsByYear(final int year) {
-        if (year != 0) {
-            LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
-            Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
-            Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
-            return contractRepository.findBySigningDateBetween(firstDay, lastDay);
-        } else {
-            return new HashSet<>(contractRepository.findAll());
-        }
-    }
+//    @Override
+//    public Set<Contract> getContractsByYear(final int year) {
+//        if (year != 0) {
+//            LocalDate curYear = LocalDate.of(year, Month.JANUARY, 1);
+//            Date firstDay = java.sql.Date.valueOf(curYear.with(firstDayOfYear()));
+//            Date lastDay = java.sql.Date.valueOf(curYear.with(lastDayOfYear()));
+//            return contractRepository.findBySigningDateBetween(firstDay, lastDay);
+//        } else {
+//            return new HashSet<>(contractRepository.findAll());
+//        }
+//    }
 
     @Transactional
     @Override
@@ -141,11 +118,11 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public List<Invoice> getInvoices(final Long contractId) {
+    public Set<Invoice> getInvoices(final Long contractId) {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new AppException("Coordinator.contract.notFound", HttpStatus.NOT_FOUND));
 
-        return new ArrayList<>(contract.getInvoices());
+        return contract.getInvoices();
     }
 
     @Override
@@ -157,6 +134,8 @@ public class ContractServiceImpl implements ContractService {
             row.put("number", contract.getNumber());
             row.put("contractObject", contract.getContractObject());
             row.put("signingDate", contract.getSigningDate());
+            row.put("periodFrom", contract.getPeriodFrom());
+            row.put("periodTo", contract.getPeriodTo());
             row.put("contractValueGross", contract.getContractValueGross());
             if (!accessLevel.equals("coordinator")) {
                 row.put("coordinator", contract.getCoordinator());

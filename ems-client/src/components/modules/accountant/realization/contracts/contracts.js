@@ -68,6 +68,18 @@ class Contracts extends Component {
                 dateFormat: 'dd-MM-yyyy',
             },
             {
+                id: 'periodFrom',
+                label: constants.COORDINATOR_REALIZATION_CONTRACT_PERIOD_FROM,
+                type:'date',
+                dateFormat: 'dd-MM-yyyy',
+            },
+            {
+                id: 'periodTo',
+                label: constants.COORDINATOR_REALIZATION_CONTRACT_PERIOD_TO,
+                type:'date',
+                dateFormat: 'dd-MM-yyyy',
+            },
+            {
                 id: 'contractValueGross',
                 label: constants.COORDINATOR_REALIZATION_CONTRACT_VALUE_GROSS,
                 suffix: 'zł.',

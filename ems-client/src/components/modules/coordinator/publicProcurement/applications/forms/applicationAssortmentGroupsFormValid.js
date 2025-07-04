@@ -29,7 +29,7 @@ export const validate =  ( values, props ) => {
         if(props.applicationMode.code === 'PL'){
             if(values.applicationProcurementPlanPosition.amountRequestedNet < values.orderGroupValueNet){
                 errors.orderGroupValueNet = constants.COORDINATOR_PUBLIC_PROCUREMENT_APPLICATION_ASSORTMENT_ORDER_VALUE_GROUP_REQUESTED_INVALID;
-            } else if ((values.applicationProcurementPlanPosition.coordinatorPlanPosition.amountRequestedNet - (values.applicationProcurementPlanPosition.coordinatorPlanPosition.amountInferredNet + values.applicationProcurementPlanPosition.coordinatorPlanPosition.amountRealizedNet)) < values.orderGroupValueNet){
+            } else if (values.applicationProcurementPlanPosition.coordinatorPlanPosition != undefined && (values.applicationProcurementPlanPosition.coordinatorPlanPosition.amountRequestedNet - (values.applicationProcurementPlanPosition.coordinatorPlanPosition.amountInferredNet + values.applicationProcurementPlanPosition.coordinatorPlanPosition.amountRealizedNet)) < values.orderGroupValueNet){
                 /*
                     Disable validation in Public procurement module if application status is "ZA"
                     this will allow the release of amounts inferred under submitted applications

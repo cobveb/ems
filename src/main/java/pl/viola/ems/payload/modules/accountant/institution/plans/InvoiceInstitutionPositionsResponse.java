@@ -28,5 +28,9 @@ public class InvoiceInstitutionPositionsResponse {
 
     private BigDecimal amountGross;
 
+    private BigDecimal amountOptionNet;
+
+    private BigDecimal amountOptionGross;
+
 
 }

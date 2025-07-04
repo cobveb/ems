@@ -1,4 +1,4 @@
-package pl.viola.ems.payload.modules.coordinator.application.realization.invoice;
+package pl.viola.ems.payload.modules.coordinator.realization.invoice;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,5 +25,9 @@ public class InvoicePositionPayload {
     private BigDecimal amountNet;
 
     private BigDecimal amountGross;
+
+    private BigDecimal amountOptionNet;
+
+    private BigDecimal amountOptionGross;
 
 }

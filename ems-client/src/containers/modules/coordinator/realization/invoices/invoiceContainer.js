@@ -96,22 +96,22 @@ class InvoiceContainer extends Component {
         .catch(error => {})
     }
 
-    handleGetInvoicePositions = () =>{
-        InvoicesApi.getInvoicePositions(this.props.initialValues.id)
-        .then(response =>{
-            this.setState( prevState => {
-                let initData = {...prevState.initData};
-                Object.assign(initData, this.props.initialValues);
-                response.data.data.map(position =>(
-                    this.setupPositionIncludedPlanType(position)
-                ))
-                initData.invoicePositions = response.data.data;
-                return {initData}
-            })
-            this.props.loading(false);
-        })
-        .catch(error => {})
-    }
+//    handleGetInvoicePositions = () =>{
+//        InvoicesApi.getInvoicePositions(this.props.initialValues.id)
+//        .then(response =>{
+//            this.setState( prevState => {
+//                let initData = {...prevState.initData};
+//                Object.assign(initData, this.props.initialValues);
+//                response.data.data.map(position =>(
+//                    this.setupPositionIncludedPlanType(position)
+//                ))
+//                initData.invoicePositions = response.data.data;
+//                return {initData}
+//            })
+//            this.props.loading(false);
+//        })
+//        .catch(error => {})
+//    }
 
     handleGetFinancialPlanPositions = (sellDate) => {
         InvoicesApi.getPlanPositions(new Date(sellDate).getFullYear(), 'FIN')
@@ -143,7 +143,7 @@ class InvoiceContainer extends Component {
         if(this.state.action === "edit" && payload.invoicePositions.length > 0){
             payload.invoicePositions.forEach(position => {
                 position.positionIncludedPlanType =  position.positionIncludedPlanType.code;
-                position.vat =  position.vat.code;
+                position.vat =  position.vat.code !== 'R' ? position.vat.code : null;
             });
         }
         InvoicesApi.saveInvoice(this.state.action, payload)
@@ -193,14 +193,24 @@ class InvoiceContainer extends Component {
                     initData.invoicePositions.push(response.data.data);
                     initData.invoiceValueNet = initData.invoiceValueNet + response.data.data.amountNet;
                     initData.invoiceValueGross = initData.invoiceValueGross + response.data.data.amountGross;
+                    if(response.data.data.optionValueGross !== undefined){
+                        initData.optionValueNet = initData.optionValueNet + response.data.data.optionValueNet;
+                        initData.optionValueGross = initData.optionValueGross + response.data.data.optionValueGross;
+                    }
                 } else {
                     const idx = findIndexElement(response.data.data, this.state.initData.invoicePositions);
                     if(idx !== null){
                         initData.invoiceValueNet = initData.invoiceValueNet - this.state.initData.invoicePositions[idx].amountNet;
                         initData.invoiceValueGross = initData.invoiceValueGross - this.state.initData.invoicePositions[idx].amountGross;
+                        if(initData.optionValueGross !== null && initData.optionValueGross !== 0){
+                            initData.optionValueNet = initData.optionValueNet - this.state.initData.invoicePositions[idx].optionValueNet;
+                            initData.optionValueGross = initData.optionValueGross - this.state.initData.invoicePositions[idx].optionValueGross;
+                        }
                         initData.invoicePositions.splice(idx, 1, response.data.data);
                         initData.invoiceValueNet = initData.invoiceValueNet + response.data.data.amountNet;
                         initData.invoiceValueGross = initData.invoiceValueGross + response.data.data.amountGross;
+                        initData.optionValueNet = initData.optionValueNet + response.data.data.optionValueNet;
+                        initData.optionValueGross = initData.optionValueGross + response.data.data.optionValueGross;
                     }
                 }
                 isUpdate = true;
@@ -215,14 +225,20 @@ class InvoiceContainer extends Component {
         this.props.loading(true);
         const idx = findIndexElement(position, this.state.initData.invoicePositions);
         if(idx !== null){
-            InvoicesApi.deleteInvoicePosition(position.id)
+            InvoicesApi.deleteInvoicePosition(this.state.initData.id, position.id)
             .then(response => {
                 this.setState(prevState => {
                     let initData = {...prevState.initData};
+                    let isUpdate = prevState.isUpdate;
                     initData.invoicePositions.splice(idx, 1);
                     initData.invoiceValueNet = initData.invoiceValueNet - position.amountNet;
                     initData.invoiceValueGross = initData.invoiceValueGross - position.amountGross;
-                    return {initData};
+                    if(position.optionValueGross !== null && position.optionValueGross !== 0){
+                        initData.optionValueNet = initData.optionValueNet - position.optionValueNet;
+                        initData.optionValueGross = initData.optionValueGross - position.optionValueGross;
+                    }
+                    isUpdate = true;
+                    return {initData, isUpdate};
                 })
             })
             .catch(error => {})

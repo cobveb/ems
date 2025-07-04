@@ -9,7 +9,7 @@ import pl.viola.ems.model.common.search.SearchCondition;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.coordinator.realization.contracts.Contract;
 import pl.viola.ems.model.modules.coordinator.realization.contracts.repository.ContractCustomRepository;
-import pl.viola.ems.payload.modules.coordinator.application.realization.contract.ContractPayload;
+import pl.viola.ems.payload.modules.coordinator.realization.contract.ContractPayload;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -87,14 +87,21 @@ public class ContractCustomRepositoryImpl implements ContractCustomRepository {
                     contract.getContractObject().getContent(),
                     contract.getCoordinator().getName(),
                     contract.getSigningDate(),
+                    contract.getPeriodFrom(),
+                    contract.getPeriodTo(),
                     contract.getContractObject().getContent(),
                     contract.getContractValueNet(),
                     contract.getContractValueGross(),
+                    contract.getOptionValueNet(),
+                    contract.getOptionValueGross(),
                     contract.getInvoicesValueNet(),
                     contract.getInvoicesValueGross(),
                     contract.getRealPrevYearsValueNet(),
                     contract.getRealPrevYearsValueGross(),
-                    contract.getRealizedValueGross()
+                    contract.getRealizedValueNet(),
+                    contract.getRealizedValueGross(),
+                    contract.getRealizedOptionValueNet(),
+                    contract.getRealizedOptionValueGross()
             );
             results.add(contractPayload);
         });
@@ -191,14 +198,21 @@ public class ContractCustomRepositoryImpl implements ContractCustomRepository {
                     contract.getContractObject().getContent(),
                     contract.getCoordinator().getName(),
                     contract.getSigningDate(),
+                    contract.getPeriodFrom(),
+                    contract.getPeriodTo(),
                     contract.getContractObject().getContent(),
+                    contract.getContractValueNet(),
+                    contract.getContractValueGross(),
                     contract.getContractValueNet(),
                     contract.getContractValueGross(),
                     contract.getInvoicesValueNet(),
                     contract.getInvoicesValueGross(),
                     contract.getRealPrevYearsValueNet(),
                     contract.getRealPrevYearsValueGross(),
-                    contract.getRealizedValueGross()
+                    contract.getRealizedValueNet(),
+                    contract.getRealizedValueGross(),
+                    contract.getRealizedOptionValueNet(),
+                    contract.getRealizedOptionValueGross()
             );
             results.add(contractPayload);
         });

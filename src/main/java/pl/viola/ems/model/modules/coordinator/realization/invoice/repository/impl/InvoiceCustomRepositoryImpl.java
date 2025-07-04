@@ -9,7 +9,7 @@ import pl.viola.ems.model.common.search.SearchCondition;
 import pl.viola.ems.model.modules.administrator.OrganizationUnit;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.Invoice;
 import pl.viola.ems.model.modules.coordinator.realization.invoice.repository.InvoiceCustomRepository;
-import pl.viola.ems.payload.modules.coordinator.application.realization.invoice.InvoicePayload;
+import pl.viola.ems.payload.modules.coordinator.realization.invoice.InvoicePayload;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

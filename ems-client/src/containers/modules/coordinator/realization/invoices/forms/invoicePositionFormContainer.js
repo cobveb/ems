@@ -15,11 +15,15 @@ const selector = formValueSelector('InvoicePositionForm') // <-- same as form na
 InvoicePositionFormContainer = connect(state => {
     const positionIncludedPlanType = selector(state, 'positionIncludedPlanType');
     const amountGross = selector(state, 'amountGross')
+    const optionValueNet = selector(state, 'optionValueNet')
+    const optionValueGross = selector(state, 'optionValueGross')
     const vat = selector(state, 'vat')
 
     return{
         positionIncludedPlanType,
         amountGross,
+        optionValueNet,
+        optionValueGross,
         vat,
     }
 })(InvoicePositionFormContainer)

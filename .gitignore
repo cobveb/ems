@@ -56,3 +56,5 @@
 /src/main/resources/application.properties
 /ems-client/package-lock.json
 /ems-client/package-lock.json_old
+/src/main/resources/*.p12
+/src/main/resources/*.pfx

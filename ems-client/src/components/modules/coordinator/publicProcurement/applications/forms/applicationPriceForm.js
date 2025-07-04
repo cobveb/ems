@@ -48,7 +48,7 @@ class ApplicationPriceForm extends Component {
     componentDidUpdate(prevProps){
         const { vat, amountContractAwardedNet, applicationAssortmentGroup } = this.props;
         //Setup vat on applicationAssortmentGroup change
-        if(applicationAssortmentGroup !== undefined && applicationAssortmentGroup !== prevProps.applicationAssortmentGroup){
+        if(applicationAssortmentGroup !== undefined && prevProps.applicationAssortmentGroup !== undefined && applicationAssortmentGroup !== prevProps.applicationAssortmentGroup){
             this.props.dispatch(change('ApplicationPriceForm', 'vat', applicationAssortmentGroup.vat));
         }
         //Setup amountContractAwardedGross

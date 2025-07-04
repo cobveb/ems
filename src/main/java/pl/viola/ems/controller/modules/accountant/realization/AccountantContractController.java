@@ -22,11 +22,11 @@ public class AccountantContractController {
     @Autowired
     ContractService contractService;
 
-    @GetMapping("/{year}/getContracts")
-    @PreAuthorize("hasGroup('admin') or hasPrivilege('1144')")
-    public ApiResponse getContracts(@PathVariable int year) {
-        return new ApiResponse(HttpStatus.FOUND, contractService.getContractsByYear(year));
-    }
+//    @GetMapping("/{year}/getContracts")
+//    @PreAuthorize("hasGroup('admin') or hasPrivilege('1144')")
+//    public ApiResponse getContracts(@PathVariable int year) {
+//        return new ApiResponse(HttpStatus.FOUND, contractService.getContractsByYear(year));
+//    }
 
     @PostMapping("/getContracts")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('1242')")

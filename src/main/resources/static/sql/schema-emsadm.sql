@@ -834,6 +834,13 @@ create TABLE emsadm.cor_real_contracts(
     ctr_object_id NUMBER(19,0) NOT NULL,
     ctr_val_net NUMBER(20,5) NOT NULL,
     ctr_val_gross NUMBER(20,5) NOT NULL,
+    inv_val_net NUMBER(20,5),
+    inv_val_gross NUMBER(20,5),
+    percent_opt INTEGER,
+    opt_val_net NUMBER(20,5),
+    opt_val_gross NUMBER(20,5)
+    rel_opt_val_net NUMBER(20,5),
+    rel_opt_val_gross NUMBER(20,5),
     coordinator_id VARCHAR2(10) NOT NULL,
     contractor_id NUMBER(19,0) NOT NULL,
     representative VARCHAR2(50) NOT NULL,
@@ -851,6 +858,13 @@ COMMENT on COLUMN cor_real_contracts.period_to is 'Contract period validity to';
 COMMENT on COLUMN cor_real_contracts.ctr_object_id is 'Contract object (text)';
 COMMENT on COLUMN cor_real_contracts.ctr_val_net is 'Contract value net';
 COMMENT on COLUMN cor_real_contracts.ctr_val_gross is 'Contract value gross';
+COMMENT on COLUMN cor_real_contracts.inv_val_net is 'Contract invoces value net';
+COMMENT on COLUMN cor_real_contracts.inv_val_gross is 'Contract invoices value gross';
+COMMENT on COLUMN cor_real_contracts.percent_opt is 'Contract percent option value';
+COMMENT on COLUMN cor_real_contracts.opt_val_net is 'Contract option value net';
+COMMENT on COLUMN cor_real_contracts.opt_val_gross is 'Contract option value gross';
+COMMENT on COLUMN cor_real_contracts.rel_opt_val_net is 'Contract realized option value net';
+COMMENT on COLUMN cor_real_contracts.rel_opt_val_gross is 'Contract realized option value gross';
 COMMENT on COLUMN cor_real_contracts.coordinator_id is 'Coordinator FK (organization_units)';
 COMMENT on COLUMN cor_real_contracts.contractor_id is 'Contractor FK (acc_contractors)';
 COMMENT on COLUMN cor_real_contracts.representative is 'Contractor representative';
@@ -862,6 +876,10 @@ create TABLE emsadm.cor_real_invoices(
     id NUMBER(19,0) NOT NULL,
     inv_number VARCHAR2(26) NOT NULL,
     sell_date DATE NOT NULL,
+    inv_val_net NUMBER(20,5),
+    inv_val_gross NUMBER(20,5),
+    opt_val_net NUMBER(20,5),
+    opt_val_gross NUMBER(20,5)
     desc_id NUMBER(19,0),
     coordinator_id VARCHAR2(10) NOT NULL,
     contractor_id NUMBER(19,0) NOT NULL,
@@ -875,6 +893,10 @@ create TABLE emsadm.cor_real_invoices(
 COMMENT on COLUMN cor_real_invoices.id is 'Invoice PK';
 COMMENT on COLUMN cor_real_invoices.inv_number is 'Invoice number';
 COMMENT on COLUMN cor_real_invoices.sell_date is 'Invoice sell date';
+COMMENT on COLUMN cor_real_invoices.inv_val_net is 'Invoice value net';
+COMMENT on COLUMN cor_real_invoices.inv_val_gross is 'Invoice value gross';
+COMMENT on COLUMN cor_real_invoices.opt_val_net is 'Invoice option value net';
+COMMENT on COLUMN cor_real_invoices.opt_val_gross is 'Invoice option value gross';
 COMMENT on COLUMN cor_real_invoices.desc_id is 'Invoice description (text)';
 COMMENT on COLUMN cor_real_invoices.coordinator_id is 'Coordinator FK (organization_units)';
 COMMENT on COLUMN cor_real_invoices.contractor_id is 'Contractor FK (acc_contractors)';
@@ -889,6 +911,8 @@ create TABLE emsadm.cor_real_invoice_positions(
     pos_incl_plan_type VARCHAR(3) NOT NULL,
     amount_net NUMBER(20,5) NOT NULL,
     amount_gross NUMBER(20,5) NOT NULL,
+    opt_val_net NUMBER(20,5),
+    opt_val_gross NUMBER(20,5)
     desc_id NUMBER(19,0),
     plan_position_id NUMBER(19,0) NOT NULL,
     invoice_id NUMBER(19,0) NOT NULL,
@@ -902,6 +926,8 @@ COMMENT on COLUMN cor_real_invoice_positions.name_id is 'Invoice position name (
 COMMENT on COLUMN cor_real_invoice_positions.pos_incl_plan_type is 'Invoice position included in plan FIN or INW';
 COMMENT on COLUMN cor_real_invoice_positions.amount_net is 'Invoice position amount net';
 COMMENT on COLUMN cor_real_invoice_positions.amount_gross is 'Invoice position amount gross';
+COMMENT on COLUMN cor_real_invoice_positions.opt_val_net is 'Invoice position option value net';
+COMMENT on COLUMN cor_real_invoice_positions.opt_val_gross is 'Invoice position option value gross';
 COMMENT on COLUMN cor_real_invoice_positions.desc_id is 'Invoice position description (text)';
 COMMENT on COLUMN cor_real_invoice_positions.plan_position_id is 'Financial or inwestment plan position FK (cor_plan_positions)';
 COMMENT on COLUMN cor_real_invoice_positions.invoice_id is 'Invoice FK (cor_real_invoices)';
@@ -2198,6 +2224,14 @@ create or replace trigger trg_app_number_gen
                     :new.app_number := application_mgmt.generate_number(:new.applicant_id);
                 end;
 /
+
+
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+/*                                                   INDEXES                                           				   */
+/*-------------------------------------------------------------------------------------------------------------------- */
+
+create index EMSADM.IDX$$_00150001 on EMSADM.COR_PLAN_SUB_POSITIONS("PLAN_POSITION_ID"); -- Oracle Tuning
 
 /*Close connection of user emsadm*/
 disconnect;

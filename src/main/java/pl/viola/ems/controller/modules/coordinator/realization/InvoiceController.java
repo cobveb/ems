@@ -62,10 +62,10 @@ public class InvoiceController {
         return new ApiResponse(HttpStatus.CREATED, invoiceService.saveInvoicePosition(invoicePosition, invoiceId, action));
     }
 
-    @DeleteMapping("/deleteInvoicePosition/{invoicePositionId}")
+    @DeleteMapping("/{invoiceId}/deleteInvoicePosition/{invoicePositionId}")
     @PreAuthorize("hasGroup('admin') or hasPrivilege('3142')")
-    public ApiResponse deleteInvoicePosition(@PathVariable Long invoicePositionId) {
-        return new ApiResponse(HttpStatus.ACCEPTED, invoiceService.deleteInvoicePosition(invoicePositionId));
+    public ApiResponse deleteInvoicePosition(@PathVariable Long invoiceId, @PathVariable Long invoicePositionId) {
+        return new ApiResponse(HttpStatus.ACCEPTED, invoiceService.deleteInvoicePosition(invoiceId, invoicePositionId));
     }
 
     @GetMapping("/{year}/{planType}/getPlanPositions")

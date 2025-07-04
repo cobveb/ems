@@ -259,14 +259,14 @@
 	<variable name="ORDER_VALUE_YEAR_GROSS" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$V{ORDER_VALUE_YEAR_GROSS}]]></variableExpression>
 	</variable>
-    <variable name="GROUP_VALUE_NET" class="java.math.BigDecimal" resetType="Master" incrementType="Report"
-              calculation="Sum">
-        <variableExpression><![CDATA[$V{GROUP_VALUE_NET}]]></variableExpression>
-    </variable>
-    <variable name="ORDER_OPTION_VALUE" class="java.math.BigDecimal" resetType="Master" incrementType="Report"
-              calculation="Sum">
-        <variableExpression><![CDATA[$V{ORDER_OPTION_VALUE}]]></variableExpression>
-    </variable>
+	<variable name="GROUP_VALUE_NET" class="java.math.BigDecimal" resetType="Master" incrementType="Report"
+			  calculation="Sum">
+		<variableExpression><![CDATA[$V{GROUP_VALUE_NET}]]></variableExpression>
+	</variable>
+	<variable name="ORDER_OPTION_VALUE" class="java.math.BigDecimal" resetType="Master" incrementType="Report"
+			  calculation="Sum">
+		<variableExpression><![CDATA[$V{ORDER_OPTION_VALUE}]]></variableExpression>
+	</variable>
 	<variable name="PARTS_VALUE_NET" class="java.math.BigDecimal" resetType="Master">
 		<variableExpression><![CDATA[$V{PARTS_VALUE_NET}]]></variableExpression>
 	</variable>
@@ -279,14 +279,14 @@
 	<variable name="PARTS_OPTION_VALUE_GROSS" class="java.math.BigDecimal">
 		<variableExpression><![CDATA[$V{PARTS_OPTION_VALUE_GROSS}]]></variableExpression>
 	</variable>
-    <variable name="GROUP_VALUE_GROSS" class="java.math.BigDecimal" resetType="Master" incrementType="Report"
-              calculation="Sum">
-        <variableExpression><![CDATA[$V{GROUP_VALUE_GROSS}]]></variableExpression>
-    </variable>
-    <variable name="ORDER_OPTION_VALUE_GROSS" class="java.math.BigDecimal" resetType="Master" incrementType="Report"
-              calculation="Sum">
-        <variableExpression><![CDATA[$V{ORDER_OPTION_VALUE_GROSS}]]></variableExpression>
-    </variable>
+	<variable name="GROUP_VALUE_GROSS" class="java.math.BigDecimal" resetType="Master" incrementType="Report"
+			  calculation="Sum">
+		<variableExpression><![CDATA[$V{GROUP_VALUE_GROSS}]]></variableExpression>
+	</variable>
+	<variable name="ORDER_OPTION_VALUE_GROSS" class="java.math.BigDecimal" resetType="Master" incrementType="Report"
+			  calculation="Sum">
+		<variableExpression><![CDATA[$V{ORDER_OPTION_VALUE_GROSS}]]></variableExpression>
+	</variable>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -297,12 +297,12 @@
 				<textElement textAlignment="Right">
 					<font fontName="PDF_fonts" isBold="true"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["Katowice, "+ new SimpleDateFormat("dd-MM-yyyy").format($F{CREATE_DATE})]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["Katowice, "+ new SimpleDateFormat("dd-MM-yyyy").format($F{CREATE_DATE})]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-                <reportElement stretchType="ElementGroupHeight" x="12" y="81" width="512" height="32"
-                               uuid="bdd2662e-7b4a-40cd-a821-3aedddae9254"/>
+				<reportElement stretchType="ElementGroupHeight" x="12" y="81" width="512" height="32"
+							   uuid="bdd2662e-7b4a-40cd-a821-3aedddae9254"/>
 				<textElement textAlignment="Center">
 					<font fontName="PDF_fonts" isBold="true"/>
 				</textElement>
@@ -339,10 +339,10 @@
 	<detail>
 		<band height="178" splitType="Stretch">
 			<staticText>
-                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="75" height="18"
-                               uuid="77e480cb-5fd9-4806-9aab-953064c3c8cc">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="75" height="18"
+							   uuid="77e480cb-5fd9-4806-9aab-953064c3c8cc">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Top">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
@@ -359,16 +359,16 @@
                     <![CDATA[$F{APL_MODE}.equals( "PL" ) ? "planowy" : "nieplanowy"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-                <reportElement x="0" y="18" width="555" height="18" isRemoveLineWhenBlank="true"
-                               uuid="5ec244ab-83f7-46b8-80ec-c8aa20fdb722">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                    <printWhenExpression><![CDATA[$F{APL_MODE}.equals("NP")]]></printWhenExpression>
-                </reportElement>
+				<reportElement x="0" y="18" width="555" height="18" isRemoveLineWhenBlank="true"
+							   uuid="5ec244ab-83f7-46b8-80ec-c8aa20fdb722">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<printWhenExpression><![CDATA[$F{APL_MODE}.equals("NP")]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font fontName="PDF_fonts" isBold="true" isItalic="false"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["Powód nieujęcia w „Planie ZP”: " + $F{REASON_NOT_INCLUDED}]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["Powód nieujęcia w „Planie ZP”: " + $F{REASON_NOT_INCLUDED}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="0" y="72" width="555" height="18" uuid="c4fe1b06-1a23-4dd2-b4b6-d3aedd71f427">
@@ -383,10 +383,10 @@
                     <![CDATA["4. Przedmiot zamówienia: <style isBold='true'>" +  $F{ORDERED_OBJECT} + "</style>"]]></textFieldExpression>
 			</textField>
 			<staticText>
-                <reportElement stretchType="ElementGroupHeight" x="0" y="36" width="40" height="18"
-                               uuid="5fcd2767-87fa-4955-9b55-044db72f9564">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ElementGroupHeight" x="0" y="36" width="40" height="18"
+							   uuid="5fcd2767-87fa-4955-9b55-044db72f9564">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Top">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
@@ -404,10 +404,10 @@
 			$F{ESTIMATION_TYPE}.equals( "PO130" ) ? "Równy lub przekraczający 130 000 zł netto BZP" : "Równy lub przekraczający progi unijne" )]]></textFieldExpression>
 			</textField>
 			<staticText>
-                <reportElement stretchType="ElementGroupHeight" x="0" y="54" width="194" height="18"
-                               uuid="6ac2c146-22fa-4acc-8477-fd99c3c4aa44">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ElementGroupHeight" x="0" y="54" width="194" height="18"
+							   uuid="6ac2c146-22fa-4acc-8477-fd99c3c4aa44">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Top">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
@@ -424,27 +424,27 @@
                     <![CDATA[($F{IS_ART30} != null && $F{IS_ART30}.intValue() == 1 ) ? "Tak" : "Nie"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-                <reportElement positionType="Float" x="90" y="90" width="26" height="16"
-                               uuid="0a25f541-2e2e-4020-80ae-b35bff66b9f1">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement positionType="Float" x="90" y="90" width="26" height="16"
+							   uuid="0a25f541-2e2e-4020-80ae-b35bff66b9f1">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Top">
 					<font fontName="PDF_fonts" isBold="true"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA[$F{IS_COMBINED} !=null && $F{IS_COMBINED}.intValue() == 1 ? "Tak" : "Nie"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA[$F{IS_COMBINED} !=null && $F{IS_COMBINED}.intValue() == 1 ? "Tak" : "Nie"]]></textFieldExpression>
 			</textField>
 			<staticText>
-                <reportElement positionType="Float" x="0" y="90" width="90" height="16"
-                               uuid="9e5a4bee-7ddf-4d6f-865f-d3693ef093ee">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement positionType="Float" x="0" y="90" width="90" height="16"
+							   uuid="9e5a4bee-7ddf-4d6f-865f-d3693ef093ee">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Top">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
 				<text><![CDATA[5. Wniosek łączony: ]]></text>
 			</staticText>
-            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
                 <reportElement positionType="Float" x="0" y="106" width="555" height="18" isRemoveLineWhenBlank="true"
                                uuid="ade54e7d-6a2d-4a5d-b60d-0f5edede3ddd">
                     <printWhenExpression>
@@ -455,10 +455,10 @@
                 </textElement>
                 <textFieldExpression>
                     <![CDATA["Wskazanie z jakim koorynatorem łączy się wniosek: <style isBold='true'>" + $F{COORDINATOR_COMBINED} + "</style>"]]></textFieldExpression>
-            </textField>
+			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-                <reportElement positionType="Float" x="0" y="124" width="555" height="18"
-                               uuid="df78ac8d-4182-484d-bfb0-53ca6e052173"/>
+				<reportElement positionType="Float" x="0" y="124" width="555" height="18"
+							   uuid="df78ac8d-4182-484d-bfb0-53ca6e052173"/>
 				<textElement markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
@@ -467,8 +467,8 @@
 + "</style>"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-                <reportElement positionType="Float" x="0" y="142" width="555" height="18"
-                               uuid="9b09a088-5b2e-4b2e-a7ca-70c31c050021"/>
+				<reportElement positionType="Float" x="0" y="142" width="555" height="18"
+							   uuid="9b09a088-5b2e-4b2e-a7ca-70c31c050021"/>
 				<textElement markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
@@ -476,18 +476,18 @@
 	+($F{IS_REPLAY} != null && $F{IS_REPLAY}.intValue() == 1 ? "Tak" : "Nie")  
 + "</style>"]]></textFieldExpression>
 			</textField>
-            <textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
                 <reportElement positionType="Float" x="0" y="160" width="555" height="18" isRemoveLineWhenBlank="true"
-                               uuid="e96c8c01-8674-45c8-8ffa-48d11e7f3f94">
-                    <printWhenExpression>
-                        <![CDATA[$F{IS_REPLAY} !=null && $F{IS_REPLAY}.intValue() == 1]]></printWhenExpression>
-                </reportElement>
-                <textElement verticalAlignment="Top" markup="styled">
-                    <font fontName="PDF_fonts"/>
-                </textElement>
-                <textFieldExpression>
-                    <![CDATA["numer wniosku źródłowego: <style isBold='true'>" + $F{REP_SOUR_APP} + "</style>"]]></textFieldExpression>
-            </textField>
+							   uuid="e96c8c01-8674-45c8-8ffa-48d11e7f3f94">
+					<printWhenExpression>
+						<![CDATA[$F{IS_REPLAY} !=null && $F{IS_REPLAY}.intValue() == 1]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Top" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["numer wniosku źródłowego: <style isBold='true'>" + $F{REP_SOUR_APP} + "</style>"]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="30">
 			<staticText>
@@ -503,16 +503,16 @@
 				<reportElement x="12" y="18" width="542" height="12" uuid="3c7b2c1e-dcd5-4ba0-a8ca-3dc50c0b933c"/>
 				<subreportParameter name="APPLICATION_ID">
 					<subreportParameterExpression><![CDATA[$F{ID}]]></subreportParameterExpression>
-                </subreportParameter>
-                <subreportParameter name="ESTIMATION_TYPE">
-                    <subreportParameterExpression><![CDATA[$F{ESTIMATION_TYPE}]]></subreportParameterExpression>
-                </subreportParameter>
-                <subreportParameter name="ORDER_INCLUDED_PLAN_TYPE">
-                    <subreportParameterExpression>
-                        <![CDATA[$F{ORDER_INCLUDED_PLAN_TYPE}]]></subreportParameterExpression>
-                </subreportParameter>
-                <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-                <returnValue subreportVariable="GROUP_SUM_VALUE_NET" toVariable="GROUP_VALUE_NET" calculation="Sum"/>
+				</subreportParameter>
+				<subreportParameter name="ESTIMATION_TYPE">
+					<subreportParameterExpression><![CDATA[$F{ESTIMATION_TYPE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ORDER_INCLUDED_PLAN_TYPE">
+					<subreportParameterExpression>
+						<![CDATA[$F{ORDER_INCLUDED_PLAN_TYPE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<returnValue subreportVariable="GROUP_SUM_VALUE_NET" toVariable="GROUP_VALUE_NET" calculation="Sum"/>
                 <returnValue subreportVariable="GROUP_OPTION_VALUE" toVariable="ORDER_OPTION_VALUE" calculation="Sum"/>
                 <returnValue subreportVariable="GROUP_VALUE_YEAR_NET" toVariable="ORDER_VALUE_YEAR_NET"
                              calculation="Sum"/>
@@ -534,19 +534,19 @@
 				<textElement verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA[($F{ESTIMATION_TYPE}.equals( "DO50" ) ? "9. Wartość udzielonego zamówienia / cena wybranej oferty: " : "9. Szacunkowa wartość udzielanego zamówienia : ")]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA[($F{ESTIMATION_TYPE}.equals( "DO50" ) ? "9. Wartość udzielonego zamówienia / cena wybranej oferty: " : "9. Szacunkowa wartość udzielanego zamówienia : ")]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" evaluationTime="Auto">
-                <reportElement x="12" y="40" width="543" height="20" isRemoveLineWhenBlank="true"
-                               uuid="8abcb7e0-0f6e-43a8-bf53-92b3ec6c66a9">
-                    <printWhenExpression><![CDATA[$V{ORDER_VALUE_YEAR_NET} != null]]></printWhenExpression>
-                </reportElement>
+				<reportElement x="12" y="40" width="543" height="20" isRemoveLineWhenBlank="true"
+							   uuid="8abcb7e0-0f6e-43a8-bf53-92b3ec6c66a9">
+					<printWhenExpression><![CDATA[$V{ORDER_VALUE_YEAR_NET} != null]]></printWhenExpression>
+				</reportElement>
 				<textElement verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["w tym do wydania w roku bieżącym: netto <style isBold='true'>" +  (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($V{ORDER_VALUE_YEAR_NET})) + "</style> / brutto <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($V{ORDER_VALUE_YEAR_GROSS})) + "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["w tym do wydania w roku bieżącym: netto <style isBold='true'>" +  (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($V{ORDER_VALUE_YEAR_NET})) + "</style> / brutto <style isBold='true'>" + (new java.text.DecimalFormat("#,##0.00 ¤;#,##0.00 - ¤").format($V{ORDER_VALUE_YEAR_GROSS})) + "</style>"]]></textFieldExpression>
 			</textField>
             <textField textAdjust="StretchHeight" evaluationTime="Auto" isBlankWhenNull="true">
                 <reportElement x="13" y="60" width="542" height="20" isRemoveLineWhenBlank="true"
@@ -575,8 +575,8 @@
 )]]></textFieldExpression>
             </textField>
 			<textField textAdjust="StretchHeight" evaluationTime="Auto" isBlankWhenNull="true">
-                <reportElement x="13" y="20" width="542" height="20" isRemoveLineWhenBlank="true"
-                               uuid="a9ddb7af-3141-45e3-8943-97570a4e7e04"/>
+				<reportElement x="13" y="20" width="542" height="20" isRemoveLineWhenBlank="true"
+							   uuid="a9ddb7af-3141-45e3-8943-97570a4e7e04"/>
 				<textElement verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
@@ -587,19 +587,19 @@
 		</band>
 		<band height="50">
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-                <reportElement positionType="Float" x="0" y="20" width="555" height="16" isRemoveLineWhenBlank="true"
-                               uuid="c21bc592-8f98-48b5-a39d-4a1870eda33c">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                    <property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
-                    <printWhenExpression>
-                        <![CDATA[($F{IS_PARTS} != null && $F{IS_PARTS}.intValue() == 0 && $V{IS_BZP})]]></printWhenExpression>
-                </reportElement>
+				<reportElement positionType="Float" x="0" y="20" width="555" height="16" isRemoveLineWhenBlank="true"
+							   uuid="c21bc592-8f98-48b5-a39d-4a1870eda33c">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+					<printWhenExpression>
+						<![CDATA[($F{IS_PARTS} != null && $F{IS_PARTS}.intValue() == 0 && $V{IS_BZP})]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Justified" markup="styled">
 					<font fontName="PDF_fonts"/>
 					<paragraph firstLineIndent="10"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["Zamówienie nie zostało podzielone na części ponieważ: <style isBold='true'>" +$F{ORDER_REASON_LACK_PARTS} + "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["Zamówienie nie zostało podzielone na części ponieważ: <style isBold='true'>" +$F{ORDER_REASON_LACK_PARTS} + "</style>"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="0" y="0" width="555" height="20" uuid="da6b6285-874d-47a7-8683-7bdbeb5f6286">
@@ -608,31 +608,31 @@
 				<textElement verticalAlignment="Middle">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["10. Podział zamówienia na części: " + ($F{IS_PARTS} != null && $F{IS_PARTS}.intValue() == 0 ? "Nie" : "" )]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["10. Podział zamówienia na części: " + ($F{IS_PARTS} != null && $F{IS_PARTS}.intValue() == 0 ? "Nie" : "" )]]></textFieldExpression>
 			</textField>
-            <subreport>
-                <reportElement x="12" y="36" width="542" height="14" isRemoveLineWhenBlank="true"
-                               uuid="803bfefb-0241-4957-81d1-29e760006dfa">
-                    <printWhenExpression>
-                        <![CDATA[($F{IS_PARTS} != null && $F{IS_PARTS}.intValue() == 1)]]></printWhenExpression>
-                </reportElement>
-                <subreportParameter name="APPLICATION_ID">
+			<subreport>
+				<reportElement x="12" y="36" width="542" height="14" isRemoveLineWhenBlank="true"
+							   uuid="803bfefb-0241-4957-81d1-29e760006dfa">
+					<printWhenExpression>
+						<![CDATA[($F{IS_PARTS} != null && $F{IS_PARTS}.intValue() == 1)]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="APPLICATION_ID">
                     <subreportParameterExpression><![CDATA[$F{ID}]]></subreportParameterExpression>
                 </subreportParameter>
                 <subreportParameter name="ESTIMATION_TYPE">
                     <subreportParameterExpression><![CDATA[$F{ESTIMATION_TYPE}]]></subreportParameterExpression>
                 </subreportParameter>
-                <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-                <returnValue subreportVariable="PARTS_OPTION_VALUE_NET" toVariable="PARTS_OPTION_VALUE_NET"
-                             calculation="Sum"/>
-                <returnValue subreportVariable="PARTS_VALUE_NET" toVariable="PARTS_VALUE_NET"/>
-                <returnValue subreportVariable="PARTS_VALUE_GROSS" toVariable="PARTS_VALUE_GROSS"/>
-                <returnValue subreportVariable="PARTS_OPTION_VALUE_GROSS" toVariable="PARTS_OPTION_VALUE_GROSS"
-                             calculation="Sum"/>
-                <subreportExpression>
-                    <![CDATA["jasper/prints/modules/coordinator/publicProcurement/applicationParts.jasper"]]></subreportExpression>
-            </subreport>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<returnValue subreportVariable="PARTS_OPTION_VALUE_NET" toVariable="PARTS_OPTION_VALUE_NET"
+							 calculation="Sum"/>
+				<returnValue subreportVariable="PARTS_VALUE_NET" toVariable="PARTS_VALUE_NET"/>
+				<returnValue subreportVariable="PARTS_VALUE_GROSS" toVariable="PARTS_VALUE_GROSS"/>
+				<returnValue subreportVariable="PARTS_OPTION_VALUE_GROSS" toVariable="PARTS_OPTION_VALUE_GROSS"
+							 calculation="Sum"/>
+				<subreportExpression>
+					<![CDATA["jasper/prints/modules/coordinator/publicProcurement/applicationParts.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 		<band height="80">
 			<printWhenExpression><![CDATA[!$V{ESTIMATION_TYPES}.contains( $F{ESTIMATION_TYPE} )]]></printWhenExpression>
@@ -647,36 +647,36 @@
                     <![CDATA["11. Podstawa określenia wartości szacunkowej zamówienia: <style isBold='true'>" + $F{ORDER_VALUE_BASED} + "</style>"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-                <reportElement positionType="Float" x="0" y="20" width="555" height="20"
-                               uuid="42555ffe-ad58-472a-8fb9-3cf472ba635f">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement positionType="Float" x="0" y="20" width="555" height="20"
+							   uuid="42555ffe-ad58-472a-8fb9-3cf472ba635f">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["12. Z należytą starannością wartość szacunkową zamówienia ustalił/a: <style isBold='true'>" + $F{ORDER_VALUE_SETTING_PERSON} + "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["12. Z należytą starannością wartość szacunkową zamówienia ustalił/a: <style isBold='true'>" + $F{ORDER_VALUE_SETTING_PERSON} + "</style>"]]></textFieldExpression>
 			</textField>
 			<staticText>
-                <reportElement positionType="Float" x="0" y="40" width="180" height="20"
-                               uuid="db010368-512c-4a02-84ef-5894f16bcdf9">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement positionType="Float" x="0" y="40" width="180" height="20"
+							   uuid="db010368-512c-4a02-84ef-5894f16bcdf9">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
 				<text><![CDATA[13. Data ustalenia wartości zamówienia:]]></text>
 			</staticText>
 			<textField textAdjust="StretchHeight">
-                <reportElement positionType="Float" x="0" y="60" width="555" height="20"
-                               uuid="612eeecc-4110-434c-923b-d19aeb963881">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement positionType="Float" x="0" y="60" width="555" height="20"
+							   uuid="612eeecc-4110-434c-923b-d19aeb963881">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["14. CPV(Wspólny Słownik Zamówień): <style isBold='true'>" + $F{CPV} + "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["14. CPV(Wspólny Słownik Zamówień): <style isBold='true'>" + $F{CPV} + "</style>"]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd-MM-YYYY">
                 <reportElement positionType="Float" x="180" y="40" width="100" height="20"
@@ -689,46 +689,46 @@
 		</band>
 		<band height="20" splitType="Stretch">
 			<textField textAdjust="StretchHeight">
-                <reportElement stretchType="ContainerHeight" x="0" y="0" width="555" height="20"
-                               uuid="bd9504dc-60c4-408f-9384-2ff9826b447d">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ContainerHeight" x="0" y="0" width="555" height="20"
+							   uuid="bd9504dc-60c4-408f-9384-2ff9826b447d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA[(!$V{IS_BZP} ?"11" : "15") +". Uzasadnienie zakupu: <style isBold='true'>" + $F{JUSTIFICATION_PURCHASE} + "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA[(!$V{IS_BZP} ?"11" : "15") +". Uzasadnienie zakupu: <style isBold='true'>" + $F{JUSTIFICATION_PURCHASE} + "</style>"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="20" splitType="Stretch">
 			<textField textAdjust="StretchHeight">
-                <reportElement stretchType="ContainerHeight" x="0" y="0" width="555" height="20"
-                               uuid="e1b69c37-3c4c-4b04-bb5c-91c7b4d920e7">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                    <property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
-                    <property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ContainerHeight" x="0" y="0" width="555" height="20"
+							   uuid="e1b69c37-3c4c-4b04-bb5c-91c7b4d920e7">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts"/>
 					<paragraph firstLineIndent="0" leftIndent="0"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA[(!$V{IS_BZP} ?"12" : "16") +". Opis przedmiotu zamówienia: <style isBold='true'>" + $F{ORDER_DESCRIPTION} + "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA[(!$V{IS_BZP} ?"12" : "16") +". Opis przedmiotu zamówienia: <style isBold='true'>" + $F{ORDER_DESCRIPTION} + "</style>"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="40">
 			<printWhenExpression><![CDATA[!$V{ESTIMATION_TYPES}.contains( $F{ESTIMATION_TYPE} )]]></printWhenExpression>
 			<textField textAdjust="StretchHeight">
-                <reportElement stretchType="ContainerHeight" x="0" y="0" width="555" height="20"
-                               uuid="e18f50d2-5827-4bfc-92a4-5424f9530214">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ContainerHeight" x="0" y="0" width="555" height="20"
+							   uuid="e18f50d2-5827-4bfc-92a4-5424f9530214">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["17. Osoba przygotowująca opis przedmiotu zamówienia: <style isBold='true'>" + $F{PERSONS_PREP_DESCRIPTION} + "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["17. Osoba przygotowująca opis przedmiotu zamówienia: <style isBold='true'>" + $F{PERSONS_PREP_DESCRIPTION} + "</style>"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
 				<reportElement x="0" y="20" width="555" height="20" uuid="9f105144-29a1-4b86-8304-b2f1d315902a">
@@ -743,15 +743,15 @@
 		</band>
 		<band height="20">
 			<textField textAdjust="StretchHeight">
-                <reportElement stretchType="ContainerHeight" x="0" y="0" width="555" height="20"
-                               uuid="f0c18ae6-f603-4870-a7ed-0b1b08f64edb">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ContainerHeight" x="0" y="0" width="555" height="20"
+							   uuid="f0c18ae6-f603-4870-a7ed-0b1b08f64edb">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA[(!$V{IS_BZP} ?"13" : "19") +". Termin (okres) realizacji zamówienia: <style isBold='true'>"+ $F{ORDER_REALIZATION_TERM} + "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA[(!$V{IS_BZP} ?"13" : "19") +". Termin (okres) realizacji zamówienia: <style isBold='true'>"+ $F{ORDER_REALIZATION_TERM} + "</style>"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="98">
@@ -773,16 +773,16 @@
                     <![CDATA["W przypadku proponowania trybu innego niż przetarg nieograniczony (UE) lub ograniczony (UE), tryb podstawowy (BZP) - wskazać uzasadnienie: <style isBold='true'>" + $F{PROPOSED_ORDERING_PROC} + "</style>"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-                <reportElement positionType="Float" x="0" y="40" width="555" height="20"
-                               uuid="64a53c58-9255-428a-a455-a2b1e50967ac">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
-                </reportElement>
+				<reportElement positionType="Float" x="0" y="40" width="555" height="20"
+							   uuid="64a53c58-9255-428a-a455-a2b1e50967ac">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["21. Osoba przygotowująca uzasadnienie wyboru trybu udzielenia zamówienia innego niż przetarg nieograniczony (UE) lub ograniczony (UE), tryb podstawowy (BZP): <style isBold='true'>" + $F{PERSONS_PREP_JUSTIFICATION} + "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["21. Osoba przygotowująca uzasadnienie wyboru trybu udzielenia zamówienia innego niż przetarg nieograniczony (UE) lub ograniczony (UE), tryb podstawowy (BZP): <style isBold='true'>" + $F{PERSONS_PREP_JUSTIFICATION} + "</style>"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
                 <reportElement positionType="Float" x="0" y="60" width="555" height="20"
@@ -794,15 +794,15 @@
                     <![CDATA["22. Nazwa wykonawcy, z którym będą przeprowadzone negocjacje (dotyczy zamówienia z wolnej ręki lub negocjacji bez ogłoszenia):  <style isBold='true'>" + $F{ORDER_CONTRACTOR_NAME} + "</style>"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-                <reportElement positionType="Float" x="0" y="80" width="555" height="18"
-                               uuid="9bcc568b-b794-47d8-bfb8-a5e41b56c190">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement positionType="Float" x="0" y="80" width="555" height="18"
+							   uuid="9bcc568b-b794-47d8-bfb8-a5e41b56c190">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["23. Osoba dokonująca wyboru wykonawcy zaproszonego do negocjacji (dotyczy zamówienia z wolnej ręki lub negocjacji bez ogłoszenia): <style isBold='true'>"+$F{PERSONS_CHOOSING_CONTRACTOR}+ "</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["23. Osoba dokonująca wyboru wykonawcy zaproszonego do negocjacji (dotyczy zamówienia z wolnej ręki lub negocjacji bez ogłoszenia): <style isBold='true'>"+$F{PERSONS_CHOOSING_CONTRACTOR}+ "</style>"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="20">
@@ -834,15 +834,15 @@
 			</textField>
 		</band>
 		<band height="20">
-            <printWhenExpression><![CDATA[!$F{ESTIMATION_TYPE}.equals( "DO50" )]]></printWhenExpression>
-            <textField textAdjust="StretchHeight">
-                <reportElement x="0" y="0" width="555" height="20" uuid="e1256c4e-b90a-4e25-94a4-9fc77ef78fdd"/>
-                <textElement textAlignment="Justified" verticalAlignment="Middle" markup="styled">
-                    <font fontName="PDF_fonts"/>
-                </textElement>
-                <textFieldExpression><![CDATA[(!$V{IS_BZP} ?"15" : "26") +". Istotne zapisy związane z przedmiotem zamówienia, konieczne do"+
+			<printWhenExpression><![CDATA[!$F{ESTIMATION_TYPE}.equals( "DO50" )]]></printWhenExpression>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="0" width="555" height="20" uuid="e1256c4e-b90a-4e25-94a4-9fc77ef78fdd"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="styled">
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(!$V{IS_BZP} ?"15" : "26") +". Istotne zapisy związane z przedmiotem zamówienia, konieczne do"+
 	(!$V{IS_BZP} ? " umieszczenia w zaproszeniu do składania ofert" : "SWZ") +"  lub/i projekcie umowy: <style isBold='true'>" + $F{ORDER_IMPORTANT_RECORDS} + "</style>"]]></textFieldExpression>
-            </textField>
+			</textField>
 		</band>
 		<band height="40">
 			<textField>
@@ -866,37 +866,37 @@
 		<band height="20">
 			<printWhenExpression><![CDATA[!$V{ESTIMATION_TYPES}.contains( $F{ESTIMATION_TYPE} )]]></printWhenExpression>
 			<textField>
-                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="555" height="20"
-                               uuid="08c46fed-51a8-492d-a1d6-6ce27c39974b">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="555" height="20"
+							   uuid="08c46fed-51a8-492d-a1d6-6ce27c39974b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["28. Osoba określająca kryteria oceny ofert: <style isBold='true'>"+$F{PERSONS_PREPARING_CRITERIA}+"</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["28. Osoba określająca kryteria oceny ofert: <style isBold='true'>"+$F{PERSONS_PREPARING_CRITERIA}+"</style>"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="21">
 			<printWhenExpression><![CDATA[!$V{ESTIMATION_TYPES}.contains( $F{ESTIMATION_TYPE} )]]></printWhenExpression>
 			<textField textAdjust="StretchHeight">
-                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="555" height="21"
-                               uuid="a481327a-73bb-43a6-b1b8-8916201e7954">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="555" height="21"
+							   uuid="a481327a-73bb-43a6-b1b8-8916201e7954">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="styled">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["29. Osoba/y proponowane do składu Komisji Przetargowej/przeprowadzenia negocjacji: <style isBold='true'>"+$F{TENDER_COMMITTEE}+"</style>"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["29. Osoba/y proponowane do składu Komisji Przetargowej/przeprowadzenia negocjacji: <style isBold='true'>"+$F{TENDER_COMMITTEE}+"</style>"]]></textFieldExpression>
 			</textField>
 		</band>
 		<band height="21">
 			<staticText>
-                <reportElement stretchType="ElementGroupHeight" x="0" y="0" width="170" height="20"
-                               uuid="3955139b-c7c5-4fd3-8a2f-a7b5f77e05a7">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ElementGroupHeight" x="0" y="0" width="170" height="20"
+							   uuid="3955139b-c7c5-4fd3-8a2f-a7b5f77e05a7">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Justified">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
@@ -960,18 +960,18 @@
 				<textFieldExpression><![CDATA["34. Informacja na temat zabezpieczenia należytego wykonania umowy  <style isBold='true'>" +
 ($F{IS_SECURING_CTR} != null && $F{IS_SECURING_CTR}.intValue() == 1? "Tak" : "Nie") + "</style>"]]></textFieldExpression>
 			</textField>
-            <textField textAdjust="StretchHeight">
-                <reportElement x="0" y="49" width="555" height="16" isRemoveLineWhenBlank="true"
-                               uuid="e9f518cb-545a-447e-816d-c4793272ddb2">
-                    <printWhenExpression>
-                        <![CDATA[($F{IS_PARTICIPATED_PREP} != null && $F{IS_PARTICIPATED_PREP}.intValue() == 1)]]></printWhenExpression>
-                </reportElement>
-                <textElement>
-                    <font fontName="PDF_fonts"/>
-                </textElement>
-                <textFieldExpression>
-                    <![CDATA["Wskazać środki mające na celu  zapobieżenie zakłócenia uczciwej konkurencji  "]]></textFieldExpression>
-            </textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="49" width="555" height="16" isRemoveLineWhenBlank="true"
+							   uuid="e9f518cb-545a-447e-816d-c4793272ddb2">
+					<printWhenExpression>
+						<![CDATA[($F{IS_PARTICIPATED_PREP} != null && $F{IS_PARTICIPATED_PREP}.intValue() == 1)]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font fontName="PDF_fonts"/>
+				</textElement>
+				<textFieldExpression>
+					<![CDATA["Wskazać środki mające na celu  zapobieżenie zakłócenia uczciwej konkurencji  "]]></textFieldExpression>
+			</textField>
 		</band>
 		<band height="21">
 			<textField textAdjust="StretchHeight">
@@ -1014,11 +1014,11 @@
                     <![CDATA["<style isBold='true'>" +$F{COORDINATOR_USR} + "</style>\n..............................................................."]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-                <reportElement stretchType="ElementGroupHeight" x="369" y="91" width="186" height="20"
-                               uuid="c5c8a2ae-4ccf-4456-b0e2-825b827c83d7">
-                    <property name="com.jaspersoft.studio.unit.width" value="px"/>
-                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
-                </reportElement>
+				<reportElement stretchType="ElementGroupHeight" x="369" y="91" width="186" height="20"
+							   uuid="c5c8a2ae-4ccf-4456-b0e2-825b827c83d7">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Center">
 					<font fontName="PDF_fonts" isBold="false"/>
 				</textElement>
@@ -1096,27 +1096,27 @@
                     <![CDATA["ZATWIERDZAM\nDyrektor Szpitala" + (!$V{IS_BZP} ? " lub Zastępca" : "")]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-                <reportElement x="185" y="91" width="194" height="20" isRemoveLineWhenBlank="true"
-                               uuid="f32692b0-a321-40bb-9d10-0cad5003e63f">
-                    <property name="com.jaspersoft.studio.unit.height" value="px"/>
-                    <printWhenExpression><![CDATA[$F{MEDICAL_USR} != null]]></printWhenExpression>
-                </reportElement>
+				<reportElement x="185" y="91" width="194" height="20" isRemoveLineWhenBlank="true"
+							   uuid="f32692b0-a321-40bb-9d10-0cad5003e63f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$F{MEDICAL_USR} != null]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Center">
 					<font fontName="PDF_fonts"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["Zatwierdzenie merytoryczne\n(Z-cy Dyrektora ds. medycznych)"]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["Zatwierdzenie merytoryczne\n(Z-cy Dyrektora ds. medycznych)"]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
-                <reportElement x="189" y="137" width="190" height="20" isRemoveLineWhenBlank="true"
-                               uuid="f2e2cb60-a71d-495b-a0e7-76f5768311f2">
-                    <printWhenExpression><![CDATA[$F{MEDICAL_USR} != null]]></printWhenExpression>
-                </reportElement>
+				<reportElement x="189" y="137" width="190" height="20" isRemoveLineWhenBlank="true"
+							   uuid="f2e2cb60-a71d-495b-a0e7-76f5768311f2">
+					<printWhenExpression><![CDATA[$F{MEDICAL_USR} != null]]></printWhenExpression>
+				</reportElement>
 				<textElement textAlignment="Center" markup="styled">
 					<font fontName="PDF_fonts"/>
 				</textElement>
-                <textFieldExpression>
-                    <![CDATA["<style isBold='true'>" + ($F{MEDICAL_USR} != null ? $F{MEDICAL_USR} : "") + "</style>\n..............................................................."]]></textFieldExpression>
+				<textFieldExpression>
+					<![CDATA["<style isBold='true'>" + ($F{MEDICAL_USR} != null ? $F{MEDICAL_USR} : "") + "</style>\n..............................................................."]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
